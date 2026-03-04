@@ -1,30 +1,89 @@
 {
   "version": 3,
   "targets": {
-    "net10.0-windows7.0": {}
+    "net10.0-windows7.0": {
+      "TransportTycoon.MapData/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/TransportTycoon.MapData.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TransportTycoon.MapData.dll": {}
+        }
+      },
+      "TransportTycoon.Model/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "TransportTycoon.MapData": "1.0.0",
+          "TransportTycoon.Persistence": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/TransportTycoon.Model.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TransportTycoon.Model.dll": {}
+        }
+      },
+      "TransportTycoon.Persistence/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "TransportTycoon.MapData": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/TransportTycoon.Persistence.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/TransportTycoon.Persistence.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "TransportTycoon.MapData/1.0.0": {
+      "type": "project",
+      "path": "../TransportTycoon.MapData/TransportTycoon.MapData.csproj",
+      "msbuildProject": "../TransportTycoon.MapData/TransportTycoon.MapData.csproj"
+    },
+    "TransportTycoon.Model/1.0.0": {
+      "type": "project",
+      "path": "../TransportTycoon.Model/TransportTycoon.Model.csproj",
+      "msbuildProject": "../TransportTycoon.Model/TransportTycoon.Model.csproj"
+    },
+    "TransportTycoon.Persistence/1.0.0": {
+      "type": "project",
+      "path": "../TransportTycoon.Persistence/TransportTycoon.Persistence.csproj",
+      "msbuildProject": "../TransportTycoon.Persistence/TransportTycoon.Persistence.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0-windows7.0": []
+    "net10.0-windows7.0": [
+      "TransportTycoon.Model >= 1.0.0",
+      "TransportTycoon.Persistence >= 1.0.0"
+    ]
   },
   "packageFolders": {
-    "C:\\Users\\Tomi\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\kocsm\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Tomi\\Documents\\Elte_proginf\\2025-26-2\\Szoftech\\TransportTycoon\\TransportTycoon.WPF\\TransportTycoon.WPF.csproj",
+      "projectUniqueName": "C:\\Users\\kocsm\\Documents\\Balu_ELTE\\4\\szofttech\\TransportTycoon\\TransportTycoon\\TransportTycoon.WPF\\TransportTycoon.WPF.csproj",
       "projectName": "TransportTycoon.WPF",
-      "projectPath": "C:\\Users\\Tomi\\Documents\\Elte_proginf\\2025-26-2\\Szoftech\\TransportTycoon\\TransportTycoon.WPF\\TransportTycoon.WPF.csproj",
-      "packagesPath": "C:\\Users\\Tomi\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Tomi\\Documents\\Elte_proginf\\2025-26-2\\Szoftech\\TransportTycoon\\TransportTycoon.WPF\\obj\\",
+      "projectPath": "C:\\Users\\kocsm\\Documents\\Balu_ELTE\\4\\szofttech\\TransportTycoon\\TransportTycoon\\TransportTycoon.WPF\\TransportTycoon.WPF.csproj",
+      "packagesPath": "C:\\Users\\kocsm\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\kocsm\\Documents\\Balu_ELTE\\4\\szofttech\\TransportTycoon\\TransportTycoon\\TransportTycoon.WPF\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\Tomi\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\kocsm\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -39,7 +98,14 @@
       "frameworks": {
         "net10.0-windows7.0": {
           "targetAlias": "net10.0-windows",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\kocsm\\Documents\\Balu_ELTE\\4\\szofttech\\TransportTycoon\\TransportTycoon\\TransportTycoon.Model\\TransportTycoon.Model.csproj": {
+              "projectPath": "C:\\Users\\kocsm\\Documents\\Balu_ELTE\\4\\szofttech\\TransportTycoon\\TransportTycoon\\TransportTycoon.Model\\TransportTycoon.Model.csproj"
+            },
+            "C:\\Users\\kocsm\\Documents\\Balu_ELTE\\4\\szofttech\\TransportTycoon\\TransportTycoon\\TransportTycoon.Persistence\\TransportTycoon.Persistence.csproj": {
+              "projectPath": "C:\\Users\\kocsm\\Documents\\Balu_ELTE\\4\\szofttech\\TransportTycoon\\TransportTycoon\\TransportTycoon.Persistence\\TransportTycoon.Persistence.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
