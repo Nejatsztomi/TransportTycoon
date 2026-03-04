@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="GameModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TransportTycoon.MapData\TransportTycoon.MapData.csproj" />
     <ProjectReference Include="..\TransportTycoon.Persistence\TransportTycoon.Persistence.csproj" />
   </ItemGroup>

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TransportTycoon.WPF")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d13c4286806ff9169557ad85a521546e9d07acd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8b829fd7749dfcfa64286172e77dcf4828c59c7e")]
 [assembly: System.Reflection.AssemblyProductAttribute("TransportTycoon.WPF")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TransportTycoon.WPF")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
