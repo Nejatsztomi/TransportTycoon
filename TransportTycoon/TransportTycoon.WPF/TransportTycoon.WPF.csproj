@@ -8,4 +8,13 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="ViewModel\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TransportTycoon.Model\TransportTycoon.Model.csproj" />
+    <ProjectReference Include="..\TransportTycoon.Persistence\TransportTycoon.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>
