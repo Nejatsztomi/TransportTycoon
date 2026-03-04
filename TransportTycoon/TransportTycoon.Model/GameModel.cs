@@ -6,7 +6,6 @@ namespace TransportTycoon.Model
 {
     public class GameModel
     {
-        Console.WriteLine("Hello World");
-        ez meg fog jelenni.
+        
     }
 }
