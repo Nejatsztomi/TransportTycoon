@@ -16,18 +16,18 @@ namespace TransportTycoon.Model
     public abstract class Vehicle
     {
         #region Fields
-        public int TopSpeed { get; private set; }
-        public int CurrentSpeed { get; private set; }
-        public Load? CurrentLoad { get; private set; }
-        public int MaxCapacity { get; private set; }
-        public int CurrentCapacity { get; private set; }
-        public Prouth? Route { get; private set; }
-        public VehicleType Type { get; private set; }
-        public int X { get; private set; }
-        public int Y { get; private set; }
-        public Direction Direction { get; private set; }
-        public int Price { get; private set; }
-        public int Maintance { get; private set; }
+        public int TopSpeed { get; protected set; }
+        public int CurrentSpeed { get; protected set; }
+        public Load? CurrentLoad { get; protected set; }
+        public int MaxCapacity { get; protected set; }
+        public int CurrentCapacity { get; protected set; }
+        public Prouth? Route { get; protected set; }
+        public VehicleType Type { get; protected set; }
+        public int X { get; protected set; }
+        public int Y { get; protected set; }
+        public Direction Direction { get; protected set; }
+        public int Price { get; protected set; }
+        public int Maintance { get; protected set; }
         #endregion
 
         #region Public methods
