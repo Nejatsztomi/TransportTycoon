@@ -1,0 +1,73 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace TransportTycoon.Model
+{
+    public abstract class Goods : Load
+    {
+        public static int Tax { get; protected set; } 
+
+        protected int Value() 
+        {
+            return Tax * Price;
+        }
+
+        //nincs benne az osztálydiagrammba
+        public static void SetGlobalTax(Difficulty level)
+        {
+            Tax = level switch
+            {
+                Difficulty.Easy => 10,
+                Difficulty.Medium => 20,
+                Difficulty.Hard => 50,
+                _ => 0,
+            };
+        }
+    }
+
+    public class Wheat : Goods 
+    {
+        public Wheat()
+        {
+            Price = 150;
+        }
+    }
+    public class Oil : Goods
+    {
+        public Oil()
+        {
+            Price = 200;
+        }
+    }
+    public class Wood : Goods
+    {
+        public Wood()
+        {
+            Price = 130;
+        }
+    }
+
+    public class Flour : Goods
+    {
+        public Flour()
+        {
+            Price = 400;
+
+        }
+    }
+    public class Rubber : Goods
+    {
+        public Rubber()
+        {
+            Price = 260;
+        }
+    }
+    public class Paper : Goods
+    {
+        public Paper()
+        {
+            Price = 300;
+        }
+    }
+}
