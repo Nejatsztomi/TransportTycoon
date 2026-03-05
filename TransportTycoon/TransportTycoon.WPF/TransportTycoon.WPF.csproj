@@ -13,6 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TransportTycoon.Model\TransportTycoon.Model.csproj" />
     <ProjectReference Include="..\TransportTycoon.Persistence\TransportTycoon.Persistence.csproj" />
   </ItemGroup>
