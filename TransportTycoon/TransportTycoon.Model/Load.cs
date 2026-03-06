@@ -15,9 +15,19 @@ namespace TransportTycoon.Model
         People
     }
 
-    public class Load
+    public abstract class Load
     {
-        public int Price { protected get; set; }
-
+        public int Price { protected get; set; } 
     }
+
+    public class People : Load
+    {
+        public People() 
+        {
+            Price = 120;
+        }
+    }
+
+
+
 }
