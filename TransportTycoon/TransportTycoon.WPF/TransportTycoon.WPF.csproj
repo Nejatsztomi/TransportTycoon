@@ -13,6 +13,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="ELTE.FI.SARuleSet" Version="3.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TransportTycoon.Model\TransportTycoon.Model.csproj" />
     <ProjectReference Include="..\TransportTycoon.Persistence\TransportTycoon.Persistence.csproj" />
   </ItemGroup>
