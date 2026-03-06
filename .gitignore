@@ -15,6 +15,10 @@
 *.v2
 *.cache
 
+.vs/
+bin/
+obj/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
