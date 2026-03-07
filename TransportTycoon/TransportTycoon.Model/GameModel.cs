@@ -104,8 +104,8 @@ namespace TransportTycoon.Model
         private void SetTax()
         {
             int tax = 30;
-            switch (this.Difficulty) 
-            {                
+            switch (this.Difficulty)
+            {
                 case Difficulty.Easy:
                     tax = 10;
                     break;
@@ -115,7 +115,6 @@ namespace TransportTycoon.Model
                 case Difficulty.Hard:
                     tax = 50;
                     break;
-                        
             }
             Goods.SetGlobalTax(tax);
         }

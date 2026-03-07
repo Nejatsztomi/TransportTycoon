@@ -1,7 +1,4 @@
 <Solution>
-  <Folder Name="/Solution Items/">
-    <File Path=".editorconfig" />
-  </Folder>
   <Project Path="TransportTycoon.MapData/TransportTycoon.MapData.csproj" Id="9a941ffe-0df3-44f2-99a6-11f9fdc15a48" />
   <Project Path="TransportTycoon.Model/TransportTycoon.Model.csproj" Id="c6fe7877-e36d-440c-a54f-15cfb5c07bc3" />
   <Project Path="TransportTycoon.Persistence/TransportTycoon.Persistence.csproj" Id="c27daee1-e8c1-4989-adac-e8960ed3b3d7" />
