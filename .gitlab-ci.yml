@@ -21,15 +21,14 @@ variables:
     TEST_PATH: '${ROOT}/TransportTycoon.Test/TransportTycoon.Test.csproj'
     WPF_PATH: '${ROOT}/TransportTycoon.WPF/TransportTycoon.WPF.csproj'
 
-# 1. Linting on Linux
+# 1. Linting on Windows
 check_formatting:
     stage: lint
-    # Using the official .NET 10 Linux SDK image
-    image: mcr.microsoft.com/dotnet/sdk:10.0
+    image: mcr.microsoft.com/dotnet/sdk:10.0-windowsservercore-ltsc2022
+    tags:
+        - windows # This routes the job to your Windows runner
     script:
-        - echo "Checking code formatting against .editorconfig on Linux..."
-        - ls
-        - pwd
+        - echo "Checking code formatting against .editorconfig on Windows..."
         - dotnet format ${ROOT} --verify-no-changes
 
 # 2. Testing the Model on Linux
