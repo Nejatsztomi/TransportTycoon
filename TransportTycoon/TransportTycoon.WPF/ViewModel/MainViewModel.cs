@@ -43,6 +43,8 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model = model;
 
+            model.NewGameCreated += Model_NewGameCreated;
+
             NewGameCommand = new(OnNewGame);
             ExitCommand = new(OnExit);
             NormalSpeedCommand = new(OnNormalSpeed);
@@ -117,6 +119,10 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Event methods
+        private void Model_NewGameCreated(object? sender, EventArgs e)
+        {
+            RefreshTable();
+        }
         #endregion
     }
 }
