@@ -107,8 +107,8 @@ namespace TransportTycoon.MapData
         #region Constructor
         public House(int x, int y) : base(x, y)
         {
-            Offset = 0;
-            Scaler = 10;
+            Offset = 10;
+            Scaler = 1;
         }
         #endregion
 
