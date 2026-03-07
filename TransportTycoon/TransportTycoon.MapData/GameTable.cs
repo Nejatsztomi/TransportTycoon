@@ -22,11 +22,9 @@
             Width = width;
             Height = height;
             Table = new Field[width, height];
-            
+
             Pointers = [];
             BuildingIDs = [];
-
-            GenerateMap();
         }
 
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
@@ -37,8 +35,8 @@
         public void CheckNeighboringTrees(int x, int y) { }
         #endregion
 
-        #region Private methods
-        private void GenerateMap()
+        #region Public methods
+        public void GenerateMap()
         {
             for (int i = 0; i < Table.GetLength(0); i++)
             {
@@ -48,6 +46,9 @@
                 }
             }
         }
+        #endregion
+
+        #region Private methods
         #endregion
     }
 }

@@ -36,6 +36,7 @@ namespace TransportTycoon.Model
         #region Properties
         public GameTable Map { get; private set; }
         public int Balance { get; private set; }
+        public int GameTime { get; private set; }
 
         public GameMode Mode { get; private set; }
         public TimeSpeed TimeSpeed { get; private set; }
@@ -43,6 +44,7 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Events
+        public event EventHandler? NewGameCreated;
         #endregion
 
         #region Constructor
@@ -55,8 +57,8 @@ namespace TransportTycoon.Model
 
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
-
-            _timer.Start();
+            GameTime = 0;
+            Map = new();
         }
 
         public GameModel(int balance, ITimer timer) : this(InitialDifficulty, balance, timer) { }
@@ -65,6 +67,12 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public Methods
+        public void NewGame()
+        {
+            Map.GenerateMap();
+            _timer.Start();
+            NewGameCreated?.Invoke(this, EventArgs.Empty);
+        }
 
         public void SetTimeSpeed(TimeSpeed timeSpeed)
         {
@@ -99,7 +107,7 @@ namespace TransportTycoon.Model
         #region Timer event handlers
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            GameTime++;
         }
         #endregion
 
