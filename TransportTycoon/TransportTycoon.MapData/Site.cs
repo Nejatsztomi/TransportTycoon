@@ -7,7 +7,10 @@ namespace TransportTycoon.MapData
 {
     public abstract class Site : BuildingBlocks
     {
-        protected Site(int x, int y) : base(x, y) { }
+        protected Site(int x, int y) : base(x, y) 
+        {
+            Scaler = 1;
+        }
         
     }
 
@@ -17,7 +20,6 @@ namespace TransportTycoon.MapData
         public LumberCamp(int x, int y) : base(x, y)
         {
             Offset = 20;
-            Scaler = 1;
         }
         #endregion
 
@@ -35,7 +37,6 @@ namespace TransportTycoon.MapData
         public Mine(int x, int y) : base(x, y)
         {
             Offset = 30;
-            Scaler = 1;
         }
         #endregion
 
@@ -53,7 +54,6 @@ namespace TransportTycoon.MapData
         public Farm(int x, int y) : base(x, y)
         {
             Offset = 40;
-            Scaler = 1;
         }
         #endregion
 
