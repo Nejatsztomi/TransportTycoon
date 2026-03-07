@@ -14,15 +14,9 @@ namespace TransportTycoon.Model
         }
 
         //nincs benne az osztálydiagrammba
-        public static void SetGlobalTax(Difficulty level)
+        public static void SetGlobalTax(int tax)
         {
-            Tax = level switch
-            {
-                Difficulty.Easy => 10,
-                Difficulty.Medium => 20,
-                Difficulty.Hard => 50,
-                _ => 0,
-            };
+            Tax = tax;
         }
     }
 
