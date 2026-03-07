@@ -25,6 +25,17 @@ namespace TransportTycoon.MapData
         public (int X, int Y) Pointer { protected set; get; }
         #endregion
 
+        protected BuildingBlocks(int x, int y) 
+        {
+            X = x;
+            Y = y;
+            Height = -1;
+            Modifiable = false;
+            Occupancy = 0;
+            Id = (x, y);
+            Pointer = (x, y);
+        }
+
         #region Public Methods
         protected double GetMultiplier() 
         {
@@ -91,23 +102,17 @@ namespace TransportTycoon.MapData
 
     }
 
-    public class House() : BuildingBlocks 
+    public class House : BuildingBlocks 
     {
-        public House(int x, int y) 
+        #region Constructor
+        public House(int x, int y) : base(x, y)
         {
-            X= x;
-            Y = y;
             Offset = 0;
-            Id = (x, y);
             Scaler = 10;
         }
+        #endregion
 
         #region Methods
-        public override void Production()
-        {
-            int generated
-        }
-
         public override LoadType GetLoad()
         {
             return LoadType.People;
