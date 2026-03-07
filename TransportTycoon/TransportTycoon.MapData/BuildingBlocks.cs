@@ -17,10 +17,10 @@ namespace TransportTycoon.MapData
         //jeleneleg mennyit termelt
         public int Occupancy { protected set; get; }
         //milyen mennyiseggel termel
-        public int Productivity { protected set; get; }
+        public int Productivity { protected set; get; } = 1;
         //melyik telephely milyen szorzoval termel
-        public double Scaler { protected set; get; }
-        public double Offset { protected set; get; }
+        public int Scaler { protected set; get; }
+        public int Offset { protected set; get; }
         public (int X, int Y) Id { protected set; get; }
         public (int X, int Y) Pointer { protected set; get; }
         #endregion
@@ -41,7 +41,20 @@ namespace TransportTycoon.MapData
         }
 
         //the production itself
-        public abstract void Production();
+        public virtual void Production() 
+        {
+            double multiplier = GetMultiplier();
+            int production =Scaler * Convert.ToInt32( (double)Productivity * multiplier);
+
+            if (Occupancy + production > Capacity)
+            {
+                Occupancy = Capacity;
+            }
+            else 
+            {
+                Occupancy += production;
+            }
+        }
         
 
         public bool IsMain() 
@@ -50,7 +63,7 @@ namespace TransportTycoon.MapData
         }
 
         //Returns the facility's load  
-        public abstract Load GetLoad(); 
+        public abstract LoadType GetLoad(); 
         
         
         public int Unload(int q) //returns the maximum what the factory can give
@@ -69,7 +82,6 @@ namespace TransportTycoon.MapData
             return Occupancy;
         }
 
-
         #endregion
 
         #region Private Methods
@@ -81,13 +93,25 @@ namespace TransportTycoon.MapData
 
     public class House() : BuildingBlocks 
     {
-        public House(int x, int y ) 
+        public House(int x, int y) 
         {
             X= x;
             Y = y;
-            Id.Item1. = x;
-            Id.Item2 = y;
+            Offset = 0;
+            Id = (x, y);
             Scaler = 10;
         }
+
+        #region Methods
+        public override void Production()
+        {
+            int generated
+        }
+
+        public override LoadType GetLoad()
+        {
+            return LoadType.People;
+        }
+        #endregion
     }
 }
