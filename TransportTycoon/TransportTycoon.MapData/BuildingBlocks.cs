@@ -12,37 +12,55 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Properties
+        //mennyit tud tárolni
         public int Capacity { protected set; get; } = 1000;
+        //jeleneleg mennyit termelt
         public int Occupancy { protected set; get; }
+        //milyen mennyiseggel termel
         public int Productivity { protected set; get; }
+        //melyik telephely milyen szorzoval termel
         public double Scaler { protected set; get; }
+
+        public double Offset { protected set; get; }
         public (int, int) Id { protected set; get; }
         public (int, int) Pointer { protected set; get; }
         #endregion
 
         #region Public Methods
-        public int ChangeProduction() 
+        protected double ChangeProduction() 
         {
 
         }
 
-        public virtual int Production() 
+        public int Production() 
         {
 
+            Occupancy = Math.Max(Capacity, Occupancy + Productivity * Scaler);
         }
 
         public bool IsMain() 
         {
-
+            return Id.Item1==Pointer.Item1 && Id.Item2==Pointer.Item2;
         }
 
-        public virtual Load GetLoad() 
+        //Returns the facility's load  
+        public abstract Load GetLoad(); 
+        
+        
+        public int Unload(int q) //returns the maximum what the factory can give
         {
+            if (q >= Occupancy)
+            {
+                Occupancy = 0;
+                
+            }
+            else 
+            {
+                Occupancy -= q;
+                
+            }
 
-        }
-        public void Unload(int q) 
-        {
-
+            return Occupancy;
         }
 
 
@@ -59,7 +77,8 @@ namespace TransportTycoon.MapData
     {
         public House(int x, int y ) 
         {
-            
+
+            Scaler = 10;
         }
     }
 }
