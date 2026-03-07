@@ -28,6 +28,8 @@ check_formatting:
     image: mcr.microsoft.com/dotnet/sdk:10.0
     script:
         - echo "Checking code formatting against .editorconfig on Linux..."
+        - ls
+        - pwd
         - dotnet format ${ROOT} --verify-no-changes
 
 # 2. Testing the Model on Linux
