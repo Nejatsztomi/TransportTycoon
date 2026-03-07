@@ -45,6 +45,8 @@ namespace TransportTycoon.Model
 
         #region Events
         public event EventHandler? NewGameCreated;
+        public event EventHandler<GameMode>? GameModeChanged;
+        public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         #endregion
 
         #region Constructor
@@ -78,6 +80,7 @@ namespace TransportTycoon.Model
         {
             TimeSpeed = timeSpeed;
             _timer.Interval = InitialInterval / (double)(timeSpeed);
+            TimeSpeedChanged?.Invoke(this, timeSpeed);
         }
 
         public void SetMode(GameMode mode)
@@ -91,6 +94,7 @@ namespace TransportTycoon.Model
             {
                 _timer.Start();
             }
+            GameModeChanged?.Invoke(this, mode);
         }
         #endregion
 
