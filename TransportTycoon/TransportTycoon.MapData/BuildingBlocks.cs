@@ -20,23 +20,29 @@ namespace TransportTycoon.MapData
         public int Productivity { protected set; get; }
         //melyik telephely milyen szorzoval termel
         public double Scaler { protected set; get; }
-
         public double Offset { protected set; get; }
-        public (int, int) Id { protected set; get; }
-        public (int, int) Pointer { protected set; get; }
+        public (int X, int Y) Id { protected set; get; }
+        public (int X, int Y) Pointer { protected set; get; }
         #endregion
 
         #region Public Methods
-        protected double ChangeProduction() 
+        protected double GetMultiplier() 
         {
+            double period = 300;
+            double time = DateTime.Now.TimeOfDay.Seconds;
 
+            //sin()->[-1,1]
+            //0.5*sin() ->[-0.5, 0.5]
+            //1.5 + 0.5*sin() ->[1.0, 2.0]
+
+            double multiplier =1.5 + 0.5 *Math.Sin(( 2 * Math.PI * (time+Offset)) / period);
+
+            return multiplier;
         }
 
-        public int Production() 
-        {
-
-            Occupancy = Math.Max(Capacity, Occupancy + Productivity * Scaler);
-        }
+        //the production itself
+        public abstract void Production();
+        
 
         public bool IsMain() 
         {
@@ -77,7 +83,10 @@ namespace TransportTycoon.MapData
     {
         public House(int x, int y ) 
         {
-
+            X= x;
+            Y = y;
+            Id.Item1. = x;
+            Id.Item2 = y;
             Scaler = 10;
         }
     }
