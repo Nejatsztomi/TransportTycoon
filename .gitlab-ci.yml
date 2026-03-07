@@ -17,8 +17,9 @@ stages:
 
 variables:
     BUILD_CONFIGURATION: 'Release'
-    TEST_PATH: './TransportTycoon/TransportTycoon.Test/TransportTycoon.Test.csproj'
-    WPF_PATH: './TransportTycoon/TransportTycoon.WPF/TransportTycoon.WPF.csproj'
+    ROOT: './TransportTycoon'
+    TEST_PATH: '${ROOT}/TransportTycoon.Test/TransportTycoon.Test.csproj'
+    WPF_PATH: '${ROOT}/TransportTycoon.WPF/TransportTycoon.WPF.csproj'
 
 # 1. Linting on Linux
 check_formatting:
@@ -40,7 +41,7 @@ test_model:
         # IMPORTANT: Point directly to the test project file!
         # If you point to a .sln that includes the WPF app, the build will fail.
         # Note: We removed --no-build because this Linux runner needs to compile the test project itself.
-        - dotnet test $TEST_PATH --verbosity normal
+        - dotnet test ${TEST_PATH} --verbosity normal
 
 # 3. Building the WPF UI on Windows
 build_wpf:
@@ -53,4 +54,4 @@ build_wpf:
     script:
         - echo "Building the WPF project on Windows..."
         # Point directly to the WPF project file
-        - dotnet build $WPF_PATH -c $BUILD_CONFIGURATION
+        - dotnet build ${WPF_PATH} -c $BUILD_CONFIGURATION
