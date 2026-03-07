@@ -7,13 +7,19 @@
         private const int DefaultHeight = 100;
         #endregion
 
-        #region Fields
+        #region Properties
         public Field[,] Table { get; }
         public int Width { get; }
         public int Height { get; }
 
         public List<(int, int)> Pointers { get; }
         public List<(int, int)> BuildingIDs { get; }
+
+        public Field this[int x, int y]
+        {
+            get => Table[x, y];
+            set => Table[x, y] = value;
+        }
         #endregion
 
         #region Constructors
@@ -22,11 +28,9 @@
             Width = width;
             Height = height;
             Table = new Field[width, height];
-            
+
             Pointers = [];
             BuildingIDs = [];
-
-            GenerateMap();
         }
 
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
@@ -37,8 +41,8 @@
         public void CheckNeighboringTrees(int x, int y) { }
         #endregion
 
-        #region Private methods
-        private void GenerateMap()
+        #region Public methods
+        public void GenerateMap()
         {
             for (int i = 0; i < Table.GetLength(0); i++)
             {
@@ -48,6 +52,9 @@
                 }
             }
         }
+        #endregion
+
+        #region Private methods
         #endregion
     }
 }
