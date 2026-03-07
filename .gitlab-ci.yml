@@ -1,37 +1,44 @@
 stages:
     - lint
-    - build
     - test
+    - build
 
 variables:
     BUILD_CONFIGURATION: 'Release'
+    TEST_PATH: './TransportTycoon/TransportTycoon.Test/TransportTycoon.Test.csproj'
+    WPF_PATH: './TransportTycoon/TransportTycoon.WPF/TransportTycoon.WPF.csproj'
 
+# 1. Linting on Linux
 check_formatting:
     stage: lint
-    tags:
-        - windows
+    # Using the official .NET 10 Linux SDK image
+    image: mcr.microsoft.com/dotnet/sdk:10.0
     script:
-        - echo "Checking code formatting against .editorconfig..."
-        # --verify-no-changes ensures the pipeline fails if formatting rules are violated
+        - echo "Checking code formatting against .editorconfig on Linux..."
         - dotnet format --verify-no-changes
 
-build_project:
-    stage: build
-    tags:
-        - windows
+# 2. Testing the Model on Linux
+test_model:
+    stage: test
+    image: mcr.microsoft.com/dotnet/sdk:10.0
     needs:
         - check_formatting
     script:
-        - echo "Restoring dependencies and building the .NET 10 WPF project..."
-        - dotnet build -c $BUILD_CONFIGURATION
+        - echo "Running unit tests on Linux..."
+        # IMPORTANT: Point directly to the test project file!
+        # If you point to a .sln that includes the WPF app, the build will fail.
+        # Note: We removed --no-build because this Linux runner needs to compile the test project itself.
+        - dotnet test $TEST_PATH --verbosity normal
 
-test_project:
-    stage: test
+# 3. Building the WPF UI on Windows
+build_wpf:
+    stage: build
+    image: mcr.microsoft.com/dotnet/sdk:10.0-windowsservercore-ltsc2022
     tags:
-        - windows
+        - windows # This routes the job to your Windows runner
     needs:
-        - build_project
+        - test_model
     script:
-        - echo "Running unit tests..."
-        # Note: Remove --no-build if your runners don't share workspaces between jobs
-        - dotnet test -c $BUILD_CONFIGURATION --no-build --verbosity normal
+        - echo "Building the WPF project on Windows..."
+        # Point directly to the WPF project file
+        - dotnet build $WPF_PATH -c $BUILD_CONFIGURATION
