@@ -1,3 +1,15 @@
+workflow:
+    rules:
+        # 1. Run automatically on Merge Requests
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+        # 2. Run automatically when code is pushed or merged into the master branch
+        - if: $CI_COMMIT_BRANCH == "master"
+        # 3. Allow the pipeline to be triggered manually from the GitLab Web UI or API
+        - if: $CI_PIPELINE_SOURCE == "web"
+        - if: $CI_PIPELINE_SOURCE == "api"
+        # 4. Prevent the pipeline from running in any other case (e.g., standard pushes to feature branches)
+        - when: never
+
 stages:
     - lint
     - test
