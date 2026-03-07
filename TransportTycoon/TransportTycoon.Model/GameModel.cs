@@ -103,7 +103,21 @@ namespace TransportTycoon.Model
         #region Private Methods
         private void SetTax()
         {
-            Goods.SetGlobalTax(this.Difficulty);
+            int tax = 30;
+            switch (this.Difficulty) 
+            {                
+                case Difficulty.Easy:
+                    tax = 10;
+                    break;
+                case Difficulty.Medium:
+                    tax = 30;
+                    break;
+                case Difficulty.Hard:
+                    tax = 50;
+                    break;
+                        
+            }
+            Goods.SetGlobalTax(tax);
         }
         #endregion
 
