@@ -116,7 +116,24 @@ namespace TransportTycoon.Model
             return false;
         }
 
-        
+        public bool DecreaseHeight(int x, int y)
+        {
+            Field field = Map[x, y];
+
+            if (field is Terrain terrain)
+            {
+                int nextHeight = terrain.Height - 1;
+
+                if (Map.IsTileHeightPossible(x, y, nextHeight))
+                {
+                    terrain.DecreaseHeight();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         #endregion
 
         #region Private Methods
