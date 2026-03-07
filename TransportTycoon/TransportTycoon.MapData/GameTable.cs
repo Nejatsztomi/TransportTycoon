@@ -15,6 +15,8 @@
         public List<(int, int)> Pointers { get; }
         public List<(int, int)> BuildingIDs { get; }
 
+
+
         public Field this[int x, int y]
         {
             get => Table[x, y];
@@ -61,6 +63,11 @@
         {
             
             return true;
+        }
+
+        private bool IsTilePossible(int x, int y, int height) 
+        {
+            
         }
 
 
