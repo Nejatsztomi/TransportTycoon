@@ -14,6 +14,12 @@
 
         public List<(int, int)> Pointers { get; }
         public List<(int, int)> BuildingIDs { get; }
+
+        public Field this[int x, int y]
+        {
+            get => Table[x, y];
+            set => Table[x, y] = value;
+        }
         #endregion
 
         #region Constructors
