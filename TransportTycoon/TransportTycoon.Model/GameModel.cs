@@ -71,6 +71,8 @@ namespace TransportTycoon.Model
         #region Public Methods
         public void NewGame()
         {
+            Balance = InitialBalance;
+
             Map.GenerateMap();
             _timer.Start();
             NewGameCreated?.Invoke(this, EventArgs.Empty);
