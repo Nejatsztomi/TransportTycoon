@@ -1,0 +1,37 @@
+stages:
+    - lint
+    - build
+    - test
+
+variables:
+    BUILD_CONFIGURATION: 'Release'
+
+check_formatting:
+    stage: lint
+    tags:
+        - windows
+    script:
+        - echo "Checking code formatting against .editorconfig..."
+        # --verify-no-changes ensures the pipeline fails if formatting rules are violated
+        - dotnet format --verify-no-changes
+
+build_project:
+    stage: build
+    tags:
+        - windows
+    needs:
+        - check_formatting
+    script:
+        - echo "Restoring dependencies and building the .NET 10 WPF project..."
+        - dotnet build -c $BUILD_CONFIGURATION
+
+test_project:
+    stage: test
+    tags:
+        - windows
+    needs:
+        - build_project
+    script:
+        - echo "Running unit tests..."
+        # Note: Remove --no-build if your runners don't share workspaces between jobs
+        - dotnet test -c $BUILD_CONFIGURATION --no-build --verbosity normal
