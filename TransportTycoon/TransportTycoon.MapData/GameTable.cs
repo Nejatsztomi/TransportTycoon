@@ -56,25 +56,7 @@ namespace TransportTycoon.MapData
                 }
             }
         }
-        #endregion
-
-        #region Private methods
-
-        //TODO
-        private bool IsMapAccurate() 
-        {
-            bool isAccurate = true;
-            for (int i = 0; i < Table.GetLength(0); i++)
-            {
-                for (int j = 0; j < Table.GetLength(1); j++)
-                {
-                    isAccurate = isAccurate && IsTilePossible(i, j, Table[i, j].Height);
-                }
-            }
-            return isAccurate;
-        }
-
-        private bool IsTilePossible(int x, int y, int height) 
+        public bool IsTileHeightPossible(int x, int y, int height)
         {
             if (x < 0 || x >= Height || y < 0 || y >= Width) return false;
 
@@ -94,8 +76,27 @@ namespace TransportTycoon.MapData
 
 
             return isValid;
-                
+
         }
+        #endregion
+
+        #region Private methods
+
+
+        private bool IsMapAccurate() 
+        {
+            bool isAccurate = true;
+            for (int i = 0; i < Table.GetLength(0); i++)
+            {
+                for (int j = 0; j < Table.GetLength(1); j++)
+                {
+                    isAccurate = isAccurate && IsTileHeightPossible(i, j, Table[i, j].Height);
+                }
+            }
+            return isAccurate;
+        }
+
+        
 
 
         #endregion
