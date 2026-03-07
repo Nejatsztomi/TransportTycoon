@@ -7,7 +7,7 @@
         private const int DefaultHeight = 100;
         #endregion
 
-        #region Fields
+        #region Properties
         public Field[,] Table { get; }
         public int Width { get; }
         public int Height { get; }
