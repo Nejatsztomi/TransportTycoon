@@ -31,6 +31,11 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Events
+        public event EventHandler? NewGame;
+        public event EventHandler? Exit;
+
+        public event EventHandler<GameMode>? GameModeChanged;
+        public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         #endregion
 
         #region Constructors
@@ -72,42 +77,42 @@ namespace TransportTycoon.WPF.ViewModel
         #region Relay command methods
         private void OnNewGame()
         {
-            Model.NewGame();
+            NewGame?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnExit()
         {
-            throw new NotImplementedException();
+            Exit?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnNormalSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.Normal);
+            TimeSpeedChanged?.Invoke(this, TimeSpeed.Normal);
         }
 
         private void OnFastSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.Fast);
+            TimeSpeedChanged?.Invoke(this, TimeSpeed.Fast);
         }
 
         private void OnSuperFastSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.SuperFast);
+            TimeSpeedChanged?.Invoke(this, TimeSpeed.SuperFast);
         }
 
         private void OnPauseGame()
         {
-            Model.SetMode(GameMode.Paused);
+            GameModeChanged?.Invoke(this, GameMode.Paused);
         }
 
         private void OnResumeGame()
         {
-            Model.SetMode(GameMode.Run);
+            GameModeChanged?.Invoke(this, GameMode.Run);
         }
 
         private void OnEditorMode()
         {
-            Model.SetMode(GameMode.Editor);
+            GameModeChanged?.Invoke(this, GameMode.Editor);
         }
         #endregion
 
