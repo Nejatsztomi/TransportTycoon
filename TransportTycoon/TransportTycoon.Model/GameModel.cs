@@ -3,7 +3,7 @@ using TransportTycoon.MapData;
 namespace TransportTycoon.Model
 {
     public enum GameMode { Run, Paused, Editor }
-    public enum TimeSpeed { Normal, Fast, SuperFast }
+    public enum TimeSpeed { Normal = 1, Fast = 2, SuperFast = 3 }
     public enum Difficulty { Easy, Medium, Hard }
 
     //Mintázat az összes osztályban
@@ -23,6 +23,8 @@ namespace TransportTycoon.Model
     public class GameModel
     {
         #region Private constants
+        private const int InitialInterval = 1_000;
+
         private const int InitialBalance = 1_000;
         private static readonly Difficulty InitialDifficulty = Difficulty.Easy;
         #endregion
@@ -49,9 +51,12 @@ namespace TransportTycoon.Model
             Difficulty = difficulty;
             Balance = balance;
             _timer = timer;
+            _timer.Elapsed += Timer_Tick;
 
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
+
+            _timer.Start();
         }
 
         public GameModel(int balance, ITimer timer) : this(InitialDifficulty, balance, timer) { }
@@ -60,6 +65,25 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public Methods
+
+        public void SetTimeSpeed(TimeSpeed timeSpeed)
+        {
+            TimeSpeed = timeSpeed;
+            _timer.Interval = InitialInterval / (double)(timeSpeed);
+        }
+
+        public void SetMode(GameMode mode)
+        {
+            Mode = mode;
+            if (mode == GameMode.Paused || mode == GameMode.Editor)
+            {
+                _timer.Stop();
+            }
+            else
+            {
+                _timer.Start();
+            }
+        }
         #endregion
 
         #region Private Methods
@@ -73,6 +97,10 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Timer event handlers
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
     }
