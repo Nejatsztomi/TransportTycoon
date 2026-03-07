@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TransportTycoon.Model
+namespace TransportTycoon.MapData
 {
     public enum LoadType 
     {

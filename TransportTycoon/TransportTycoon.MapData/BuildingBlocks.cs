@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TransportTycoon.Model;
 
 namespace TransportTycoon.MapData
 {
@@ -52,7 +51,7 @@ namespace TransportTycoon.MapData
         }
 
         //the production itself
-        public virtual void Production() 
+        protected virtual void Production() 
         {
             double multiplier = GetMultiplier();
             int production =Scaler * Convert.ToInt32( (double)Productivity * multiplier);
