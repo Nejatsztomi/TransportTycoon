@@ -5,14 +5,14 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.MapData
 {
-    public abstract class BuildingBlocks
+    public abstract class BuildingBlocks : Field
     {
 
         #region Fields
         #endregion
 
         #region Properties
-        public int Capacity { protected set; get; } = 500;
+        public int Capacity { protected set; get; } = 1000;
         public int Occupancy { protected set; get; }
         public int Productivity { protected set; get; }
         public double Scaler { protected set; get; }
@@ -57,7 +57,7 @@ namespace TransportTycoon.MapData
 
     public class House() : BuildingBlocks 
     {
-        public House() 
+        public House(int x, int y ) 
         {
             
         }
