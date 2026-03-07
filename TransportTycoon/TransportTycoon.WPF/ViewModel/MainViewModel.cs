@@ -49,13 +49,23 @@ namespace TransportTycoon.WPF.ViewModel
             EditorModeCommand = new(OnEditorMode);
 
             Tiles = [];
+            RefreshTable();
         }
         #endregion
 
         #region Private methods
         private void RefreshTable()
         {
-
+            Tiles.Clear();
+            for (int x = 0; x < Model.Map.Width; x++)
+            {
+                for (int y = 0; y < Model.Map.Height; y++)
+                {
+                    //FieldViewModel tile = new(Model.Map[x, y]);
+                    FieldViewModel tile = new();
+                    Tiles.Add(tile);
+                }
+            }
         }
         #endregion
 
