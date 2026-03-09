@@ -48,10 +48,33 @@ namespace TransportTycoon.WPF
             view.Closing += new System.ComponentModel.CancelEventHandler(View_Closing);
             view.Show();
         }
+
+
         #endregion
         #region Private event Methods
 
-        
+        private void Model_GameOver(object? sender, TransportTycoonEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Unfortunately, you lost!" + Environment.NewLine +
+                                                        "Fate has a cruel sense of humor." + Environment.NewLine +
+                                                        "Survived Time: " + e.GameTime + Environment.NewLine +
+                                                        "Owned Vehicles: " + e.NumberOfVehicles + Environment.NewLine +
+                                                        "Would you like to return to the Main menu?",
+                                                        "TransportTycoon",
+                                                        MessageBoxButton.YesNo,
+                                                        MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                //TODO:We need a method that will open the main menu
+            }
+            else 
+            {
+
+            }
+
+
+        }
 
         private void ViewModel_Exit(object? sender, EventArgs e)
         {
