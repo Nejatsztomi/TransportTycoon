@@ -48,7 +48,7 @@
             {
                 for (int j = 0; j < Table.GetLength(1); j++)
                 {
-                    Table[i, j] = new Plain(i, j, 0, 0);
+                    Table[i, j] = new Plain(i, j);
                 }
             }
         }
