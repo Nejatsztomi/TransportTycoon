@@ -12,10 +12,13 @@ namespace TransportTycoon.MapData
         public int X { protected set; get; }
         public int Y { protected set; get; }
         public int Height { protected set; get; }
-        public virtual bool Modifiable { protected set; get; }
-        #endregion
         
+        public virtual bool Modifiable { protected set; get; }
+
+        #endregion
+
         #region Public Methods
+        public virtual int GetTrees() => 0;
         #endregion
         #region Private Methods
         #endregion

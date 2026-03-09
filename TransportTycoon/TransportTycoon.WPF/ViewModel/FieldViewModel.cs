@@ -11,17 +11,7 @@ namespace TransportTycoon.WPF.ViewModel
         public int X => _field.X;
         public int Y => _field.Y;
         public int Height => _field.Height;
-        public int TreeCounter
-        {
-            get
-            {
-                if (_field is Terrain terrain)
-                {
-                    return terrain.Trees;
-                }
-                else return 0;
-            }
-        }
+        public int TreeCounter => _field.GetTrees();
 
         #endregion
         #region Constructor

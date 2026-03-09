@@ -35,6 +35,8 @@
         {
             Trees = 1;
         }
+
+        public override int GetTrees() => Trees;
     }
 
 
