@@ -31,21 +31,20 @@ namespace TransportTycoon.WPF
         private void App_Startup(object sender, StartupEventArgs e)
         {
             //model
-            model = new GameModel();
+            model = new GameModel(,new WpfDispatcherTimer());
             model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
             model.NewGame();
 
-            //nézetmodel
+            //ViewModel
             mainViewModel = new MainViewModel(model);
-            //viewModel.GameOver += new EventHandler<BombazoEventArgs>(ViewModel_GameOver);
-            mainViewModel.Exit += new EventHandler(ViewModel_Exit);
+            mainViewModel.Exit += new EventHandler(ViewModel_Close);
 
-            //nézet
+            //View
             view = new MainWindow
             {
                 DataContext = mainViewModel,
             };
-            view.Closing += new System.ComponentModel.CancelEventHandler(View_Closing);
+            view.Closing += new System.ComponentModel.CancelEventHandler(View_Close);
             view.Show();
         }
 
@@ -53,7 +52,7 @@ namespace TransportTycoon.WPF
         #endregion
         #region Private event Methods
 
-        private void View_Closing(object? sender, CancelEventArgs e)
+        private void View_Close(object? sender, CancelEventArgs e)
         {
             bool isGameOver = model.IsGameOver;
             model.SetMode(GameMode.Paused);
@@ -90,7 +89,7 @@ namespace TransportTycoon.WPF
 
         }
 
-        private void ViewModel_Exit(object? sender, EventArgs e)
+        private void ViewModel_Close(object? sender, EventArgs e)
         {
             view.Close();
         }
