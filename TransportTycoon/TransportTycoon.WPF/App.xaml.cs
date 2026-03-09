@@ -30,7 +30,23 @@ namespace TransportTycoon.WPF
         #region Private Methods
         private void App_Startup(object sender, StartupEventArgs e)
         {
-            
+            //model
+            model = new GameModel();
+            model.GameOver += new EventHandler<>(Model_GameOver);
+            model.NewGame();
+
+            //nézetmodel
+            viewModel = new MainViewModel(model);
+            //viewModel.GameOver += new EventHandler<BombazoEventArgs>(ViewModel_GameOver);
+            viewModel.Exit += new EventHandler(ViewModel_Exit);
+
+            //nézet
+            view = new MainWindow
+            {
+                DataContext = mainViewModel,
+            };
+            view.Closing += new System.ComponentModel.CancelEventHandler(View_Closing);
+            view.Show();
         }
         #endregion
         #region Private event Methods
