@@ -32,7 +32,7 @@ namespace TransportTycoon.WPF
         {
             //model
             model = new GameModel();
-            model.GameOver += new EventHandler<>(Model_GameOver);
+            model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
             model.NewGame();
 
             //nézetmodel
