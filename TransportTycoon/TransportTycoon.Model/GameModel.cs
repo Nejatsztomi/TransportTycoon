@@ -43,6 +43,14 @@ namespace TransportTycoon.Model
         public TimeSpeed TimeSpeed { get; private set; }
         public Difficulty Difficulty { get; private set; }
 
+        public bool IsGameOver 
+        {
+            get 
+            {
+                return Balance <= 0;
+            }
+        }
+
         public List<Vehicle> Vehicles { get; private set; }
 
         public int NumberOfVehicles => Vehicles.Count;
@@ -104,6 +112,7 @@ namespace TransportTycoon.Model
             }
             GameModeChanged?.Invoke(this, mode);
         }
+        
         #endregion
 
         #region Private Methods

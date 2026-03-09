@@ -36,9 +36,9 @@ namespace TransportTycoon.WPF
             model.NewGame();
 
             //nézetmodel
-            viewModel = new MainViewModel(model);
+            mainViewModel = new MainViewModel(model);
             //viewModel.GameOver += new EventHandler<BombazoEventArgs>(ViewModel_GameOver);
-            viewModel.Exit += new EventHandler(ViewModel_Exit);
+            mainViewModel.Exit += new EventHandler(ViewModel_Exit);
 
             //nézet
             view = new MainWindow
@@ -52,6 +52,20 @@ namespace TransportTycoon.WPF
 
         #endregion
         #region Private event Methods
+
+        private void View_Closing(object? sender, CancelEventArgs e)
+        {
+            bool isGameOver = model.IsGameOver;
+            model.SetMode(GameMode.Paused);
+
+            if (MessageBox.Show("Are you sure, that you want to exit?", "Bombazo", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+            {
+                e.Cancel = true; 
+
+                if (!isGameOver)
+                    model.SetMode(GameMode.Run);
+            }
+        }
 
         private void Model_GameOver(object? sender, TransportTycoonEventArgs e)
         {
