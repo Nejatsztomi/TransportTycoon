@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Windows;
 using TransportTycoon.Model;
@@ -19,12 +20,27 @@ namespace TransportTycoon.WPF
         #region Properties
         #endregion
         #region Constructor
+        public App()
+        {
+            Startup += new StartupEventHandler(App_Startup);
+        }
         #endregion
         #region Public Methods
         #endregion
         #region Private Methods
+        private void App_Startup(object sender, StartupEventArgs e)
+        {
+            
+        }
         #endregion
         #region Private event Methods
+
+        
+
+        private void ViewModel_Exit(object? sender, EventArgs e)
+        {
+            view.Close();
+        }
         #endregion
 
     }
