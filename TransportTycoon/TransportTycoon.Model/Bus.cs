@@ -12,10 +12,10 @@ namespace TransportTycoon.Model
         #endregion 
     }
 
-    public class SmallBus : Vehicle
+    public class SmallBus : Bus
     {
         #region Constructor
-        public SmallBus(int speed, Prouth route, int x, int y, Direction direction)
+        public SmallBus(Prouth route, int x, int y, Direction direction)
         {
             //fixed fields
             TopSpeed = 100;
@@ -25,7 +25,7 @@ namespace TransportTycoon.Model
             this.Type = VehicleType.SmallBus;
 
             //modifiable fields
-            CurrentSpeed = speed; // or is it max in the beginning?
+            CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
             Route = route;
@@ -36,10 +36,10 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class BigBus : Vehicle
+    public class BigBus : Bus
     {
         #region Constructor
-        public BigBus(int speed, Prouth route, int x, int y, Direction direction)
+        public BigBus(Prouth route, int x, int y, Direction direction)
         {
             //fixed fields
             TopSpeed = 100;
@@ -49,7 +49,7 @@ namespace TransportTycoon.Model
             this.Type = VehicleType.BigBus;
 
             //modifiable fields
-            CurrentSpeed = speed; // or is it max in the beginning?
+            CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
             Route = route;

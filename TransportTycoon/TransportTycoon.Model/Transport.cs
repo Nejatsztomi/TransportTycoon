@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
 {
     public abstract class Transport : Vehicle
     {
         #region Field
-        public List<Goods> AcceptedGoods {  get; protected set; }
+        public List<LoadType>? AcceptedGoods {  get; protected set; }
         #endregion      
     }
 
     public class Van : Transport
     {
         #region Constructor
-        public Van(int speed, Prouth route, int x, int y, Direction direction, List<Goods> acceptedGoods)
+        public Van(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
         {
             //fixed fields
             TopSpeed = 100;
@@ -25,7 +26,7 @@ namespace TransportTycoon.Model
             AcceptedGoods = acceptedGoods;
 
             //modifiable fields
-            CurrentSpeed = speed; // or is it max in the beginning?
+            CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
             Route=route;
@@ -39,7 +40,7 @@ namespace TransportTycoon.Model
     public class Pickup : Transport
     {
         #region Constructor
-        public Pickup(int speed, Prouth route, int x, int y, Direction direction, List<Goods> acceptedGoods)
+        public Pickup(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
         {
             //fixed fields
             TopSpeed = 100;
@@ -50,7 +51,7 @@ namespace TransportTycoon.Model
             AcceptedGoods = acceptedGoods;
 
             //modifiable fields
-            CurrentSpeed = speed; // or is it max in the beginning?
+            CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
             Route = route;
@@ -64,7 +65,7 @@ namespace TransportTycoon.Model
     public class Truck : Transport
     {
         #region Constructor
-        public Truck(int speed, Prouth route, int x, int y, Direction direction, List<Goods> acceptedGoods)
+        public Truck(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
         {
             //fixed fields
             TopSpeed = 100;
@@ -75,7 +76,7 @@ namespace TransportTycoon.Model
             AcceptedGoods = acceptedGoods;
 
             //modifiable fields
-            CurrentSpeed = speed; // or is it max in the beginning?
+            CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
             Route = route;
@@ -89,7 +90,7 @@ namespace TransportTycoon.Model
     public class LiquidTruck : Transport
     {
         #region Constructor
-        public LiquidTruck(int speed, Prouth route, int x, int y, Direction direction, List<Goods> acceptedGoods)
+        public LiquidTruck(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
         {
             //fixed fields
             TopSpeed = 100;
@@ -100,7 +101,7 @@ namespace TransportTycoon.Model
             AcceptedGoods = acceptedGoods;
 
             //modifiable fields
-            CurrentSpeed = speed; // or is it max in the beginning?
+            CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
             Route = route;
