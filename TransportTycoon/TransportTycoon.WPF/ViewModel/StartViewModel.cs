@@ -26,7 +26,17 @@ namespace TransportTycoon.WPF.ViewModel
         #region Constructor
         public StartViewModel() 
         {
+            SelectedDifficulty = Difficulty.Medium;
 
+            NewGameCommand = new RelayCommand(() =>
+            {
+                StartNewGame?.Invoke(this, SelectedDifficulty);
+            });
+
+            OpenGameCommand = new RelayCommand(() =>
+            {
+                throw new NotImplementedException();
+            });
         }
         #endregion
 
