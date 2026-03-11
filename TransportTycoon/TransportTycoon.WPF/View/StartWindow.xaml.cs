@@ -21,5 +21,6 @@ namespace TransportTycoon.WPF.View
         {
             InitializeComponent();
         }
+
     }
 }

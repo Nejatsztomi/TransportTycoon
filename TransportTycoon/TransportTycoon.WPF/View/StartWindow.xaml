@@ -5,8 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TransportTycoon.WPF.View"
         mc:Ignorable="d"
-        Title="StartWindow" Height="450" Width="800">
+        Title="StartWindow" Height="450" Width="600">
     <Grid>
-        
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
+            
+            <Button>
+                
+            </Button>
+            <Button>
+
+            </Button>
+
+        </StackPanel>
     </Grid>
 </Window>
