@@ -20,7 +20,8 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand SetHardMode { get; set; }
         #endregion
         #region Events
-        
+        public EventHandler<Difficulty> StartNewGame;
+        public EventHandler<string> LoadGame;
         #endregion
         #region Constructor
         public StartViewModel() 
