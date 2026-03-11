@@ -155,6 +155,29 @@ namespace TransportTycoon.Model
             }
             Goods.SetGlobalTax(tax);
         }
+        public void ForestGrowing()
+        {
+            Random rnd = new Random();
+            List<Field> spreadedFields = new List<Field>();
+            for (int i = 0; i < Map.Height - 1; i++)
+            {
+                for (int j = 0; j < Map.Width - 1; j++)
+                {
+                    if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull())
+                    {
+                        if (rnd.Next(1, 101) <= 5)
+                        {
+                            terrain.Grow();
+                            if (terrain.IsFull())
+                            {
+                                spreadedFields.AddRange(Map.CheckNeighboringTrees(i, j));
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
         #endregion
 
         #region Private event Methods
