@@ -31,6 +31,7 @@ namespace TransportTycoon.Model
 
         #region Private fields
         private readonly ITimer _timer;
+        
         #endregion
 
         #region Properties
@@ -41,12 +42,25 @@ namespace TransportTycoon.Model
         public GameMode Mode { get; private set; }
         public TimeSpeed TimeSpeed { get; private set; }
         public Difficulty Difficulty { get; private set; }
+
+        public bool IsGameOver 
+        {
+            get 
+            {
+                return Balance <= 0;
+            }
+        }
+
+        public List<Vehicle> Vehicles { get; private set; }
+
+        public int NumberOfVehicles => Vehicles.Count;
         #endregion
 
         #region Events
         public event EventHandler? NewGameCreated;
         public event EventHandler<GameMode>? GameModeChanged;
         public event EventHandler<TimeSpeed>? TimeSpeedChanged;
+        public event EventHandler<TransportTycoonEventArgs>? GameOver;
         #endregion
 
         #region Constructor
@@ -158,6 +172,11 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Private event Methods
+        private void OnGameOver() 
+        {
+            _timer.Stop();
+            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles));
+        }
         #endregion
 
         #region Timer event handlers

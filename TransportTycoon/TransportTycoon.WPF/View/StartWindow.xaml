@@ -1,0 +1,32 @@
+﻿<Window x:Class="TransportTycoon.WPF.View.StartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel"
+        xmlns:local="clr-namespace:TransportTycoon.WPF.View" 
+        mc:Ignorable="d"
+        Title="StartWindow" Height="450" Width="600">
+
+  
+
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
+            <!--nem erzekelni a Commandot-->
+            <Button Content="Start new game" Command="{Binding NewGameCommand}">
+                
+            </Button>
+            <ComboBox>
+                <ComboBoxItem Content="Easy Mode"></ComboBoxItem>
+                <ComboBoxItem Content="Medium Mode"></ComboBoxItem>
+                <ComboBoxItem Content="Hard Mode"></ComboBoxItem>
+            </ComboBox>
+            <Button Content="Load game">
+
+            </Button>
+            <Button Content="Exit Game"></Button>
+
+        </StackPanel>
+    </Grid>
+</Window>
