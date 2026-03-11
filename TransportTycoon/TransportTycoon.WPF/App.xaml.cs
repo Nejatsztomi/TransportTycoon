@@ -31,7 +31,7 @@ namespace TransportTycoon.WPF
         private void App_Startup(object sender, StartupEventArgs e)
         {
             //model
-            model = new GameModel(,new WpfDispatcherTimer());
+            model = new GameModel(2000,new WpfDispatcherTimer());
             model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
             model.NewGame();
 
