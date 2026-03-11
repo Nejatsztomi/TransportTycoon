@@ -112,7 +112,42 @@ namespace TransportTycoon.Model
             }
             GameModeChanged?.Invoke(this, mode);
         }
-        
+        public bool IncreaseHeight(int x, int y) 
+        {
+            Field field = Map[x, y];
+
+            if (field is Terrain terrain)
+            {
+                int nextHeight = terrain.Height + 1;
+
+                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees==0)
+                {
+                    terrain.IncreaseHeight();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool DecreaseHeight(int x, int y)
+        {
+            Field field = Map[x, y];
+
+            if (field is Terrain terrain)
+            {
+                int nextHeight = terrain.Height - 1;
+
+                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees==0)
+                {
+                    terrain.DecreaseHeight();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         #endregion
 
         #region Private Methods
