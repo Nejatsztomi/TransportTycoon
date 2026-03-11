@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Windows;
 using TransportTycoon.Model;
+using TransportTycoon.WPF.View;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF
@@ -16,6 +17,9 @@ namespace TransportTycoon.WPF
         private GameModel model = null!;
         private MainViewModel mainViewModel = null!;
         private MainWindow view = null!;
+
+        private StartViewModel startViewModel = null!;
+        private StartWindow startView = null!;
         #endregion
         #region Properties
         #endregion
