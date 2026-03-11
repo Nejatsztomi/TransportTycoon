@@ -37,6 +37,21 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 throw new NotImplementedException();
             });
+
+            SetEasyMode = new RelayCommand(() =>
+            {
+                SelectedDifficulty = Difficulty.Easy;
+            });
+
+            SetMediumMode = new RelayCommand(() =>
+            {
+                SelectedDifficulty = Difficulty.Medium;
+            });
+
+            SetHardMode = new RelayCommand(() =>
+            {
+                SelectedDifficulty = Difficulty.Hard;
+            });
         }
         #endregion
 
