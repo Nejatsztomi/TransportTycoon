@@ -13,11 +13,14 @@ namespace TransportTycoon.WPF.ViewModel
         public Difficulty SelectedDifficulty { get; set; }
         #endregion
         #region Commands
-        public RelayCommand NewGameCommand { get; private set; }
-        public RelayCommand OpenGameCommand { get; private set; }
+        public RelayCommand NewGameCommand { get; set; }
+        public RelayCommand OpenGameCommand { get; set; }
+        public RelayCommand SetEasyMode { get; set; }
+        public RelayCommand SetMediumMode { get; set; }
+        public RelayCommand SetHardMode { get; set; }
         #endregion
         #region Events
-
+        
         #endregion
         #region Constructor
         public StartViewModel() 
