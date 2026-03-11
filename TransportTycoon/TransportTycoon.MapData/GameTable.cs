@@ -42,7 +42,20 @@ namespace TransportTycoon.MapData
 
         #region Public methods
         // TODO: Megcsinálni
-        public void CheckNeighboringTrees(int x, int y) { }
+        public List<Field> CheckNeighboringTrees(int x, int y)
+        {
+            List<Field> neighbours = new List<Field>();
+            List<Field> acceptedNeighbours = new List<Field>();
+            if (x - 1 >= 0) neighbours.Add(Table[x - 1, y]);
+            if (y + 1 <= Width - 1) neighbours.Add(Table[x, y + 1]);
+            if (x + 1 <= Height - 1) neighbours.Add(Table[x + 1, y]);
+            if (y - 1 >= 0) neighbours.Add(Table[x, y - 1]);
+            for (int i = 0; i < neighbours.Count; i++)
+            {
+                if (neighbours[i] is Terrain terrain && terrain.Trees == 0) acceptedNeighbours.Add(neighbours[i]);
+            }
+            return acceptedNeighbours;
+        }
         #endregion
 
         #region Public methods
@@ -83,7 +96,7 @@ namespace TransportTycoon.MapData
         #region Private methods
 
 
-        private bool IsMapAccurate() 
+        private bool IsMapAccurate()
         {
             bool isAccurate = true;
             for (int i = 0; i < Table.GetLength(0); i++)
@@ -96,7 +109,7 @@ namespace TransportTycoon.MapData
             return isAccurate;
         }
 
-        
+
 
 
         #endregion

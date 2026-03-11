@@ -112,7 +112,7 @@ namespace TransportTycoon.Model
             }
             GameModeChanged?.Invoke(this, mode);
         }
-        public bool IncreaseHeight(int x, int y) 
+        public bool IncreaseHeight(int x, int y)
         {
             Field field = Map[x, y];
 
@@ -120,7 +120,7 @@ namespace TransportTycoon.Model
             {
                 int nextHeight = terrain.Height + 1;
 
-                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees==0)
+                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees == 0)
                 {
                     terrain.IncreaseHeight();
                     return true;
@@ -138,7 +138,7 @@ namespace TransportTycoon.Model
             {
                 int nextHeight = terrain.Height - 1;
 
-                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees==0)
+                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees == 0)
                 {
                     terrain.DecreaseHeight();
                     return true;
@@ -154,8 +154,8 @@ namespace TransportTycoon.Model
         private void SetTax()
         {
             int tax = 30;
-            switch (this.Difficulty) 
-            {                
+            switch (this.Difficulty)
+            {
                 case Difficulty.Easy:
                     tax = 10;
                     break;
@@ -165,9 +165,35 @@ namespace TransportTycoon.Model
                 case Difficulty.Hard:
                     tax = 50;
                     break;
-                        
+
             }
             Goods.SetGlobalTax(tax);
+        }
+        public void ForestGrowing()
+        {
+            Random rnd = new Random();
+            HashSet<Field> spreadedFields = new HashSet<Field>();
+            for (int i = 0; i < Map.Height - 1; i++)
+            {
+                for (int j = 0; j < Map.Width - 1; j++)
+                {
+                    if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull())
+                    {
+                        if (rnd.Next(1, 101) <= 5)
+                        {
+                            terrain.Grow();
+                            if (terrain.IsFull())
+                            {
+                                spreadedFields.UnionWith(Map.CheckNeighboringTrees(i, j));
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (Field f in spreadedFields)
+            {
+                if (f is Terrain t) t.SpreadForest();
+            }
         }
         #endregion
 
