@@ -42,7 +42,7 @@ namespace TransportTycoon.WPF.ViewModel
             ExitGameCommand = new RelayCommand(() =>
             {
                 ExitGame?.Invoke(this, EventArgs.Empty);
-            };
+            });
 
             SetEasyMode = new RelayCommand(() =>
             {
