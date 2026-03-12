@@ -26,7 +26,7 @@ namespace TransportTycoon.WPF
         #region Constructor
         public App()
         {
-            Startup += new StartupEventHandler(App_Startup);
+            Startup += new StartupEventHandler(ShowStartMenu);
         }
         #endregion
         #region Public Methods
@@ -37,9 +37,8 @@ namespace TransportTycoon.WPF
         {
             startViewModel = new StartViewModel();
 
-            startViewModel.StartNewGame += (sender, startViewModel.SelectedDifficulty) =>
+            startViewModel.StartNewGame += (sender, SelectedDifficulty) =>
             {
-
             };
 
             startView = new StartWindow
@@ -48,6 +47,26 @@ namespace TransportTycoon.WPF
             };
 
             startView.Show();
+        }
+
+        private void StartGame(GameModel model) 
+        {
+            //model
+            this.model = model; 
+            model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
+            model.NewGame();
+
+            //ViewModel
+            mainViewModel = new MainViewModel(model);
+            mainViewModel.Exit += new EventHandler(ViewModel_Close);
+
+            //View
+            view = new MainWindow
+            {
+                DataContext = mainViewModel,
+            };
+            view.Closing += new System.ComponentModel.CancelEventHandler(View_Close);
+            view.Show();
         }
 
         private void App_Startup(object sender, StartupEventArgs e)
