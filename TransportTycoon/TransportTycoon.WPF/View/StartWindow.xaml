@@ -16,7 +16,7 @@
             <!--nem erzekelni a Commandot-->
             <Button Content="Start new game" Command="{Binding NewGameCommand}"></Button>
             <TextBlock Text="Select Difficulty" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-            <ComboBox>
+            <ComboBox SelectedIndex="{Binding SelectedDifficulty}">
                 <ComboBoxItem Content="Easy Mode"></ComboBoxItem>
                 <ComboBoxItem Content="Medium Mode"></ComboBoxItem>
                 <ComboBoxItem Content="Hard Mode"></ComboBoxItem>
