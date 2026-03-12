@@ -9,11 +9,22 @@ namespace TransportTycoon.WPF.ViewModel
     public class StartViewModel : ViewModelBase
     {
         #region Fields
+        private Difficulty selectedGameDifficulty;
         //We need an interface for Dependecy Injection
-        private int selectedDifficulty;
+        private int selectedDifficulty=1;
         public int SelectedDifficulty 
         {
+            get => selectedDifficulty;
+            set
+            {
+                if (selectedDifficulty != value) 
+                {
+                    selectedDifficulty = value;
+                    OnPropertyChanged(nameof(SelectedDifficulty));
 
+                    selectedGameDifficulty = (Difficulty)selectedDifficulty;
+                }
+            }
         }
         #endregion
         #region Commands
@@ -30,11 +41,11 @@ namespace TransportTycoon.WPF.ViewModel
         #region Constructor
         public StartViewModel() 
         {
-            SelectedDifficulty = Difficulty.Medium;
 
+            selectedGameDifficulty = (Difficulty)selectedDifficulty;
             NewGameCommand = new RelayCommand(() =>
             {
-                StartNewGame?.Invoke(this, SelectedDifficulty);
+                StartNewGame?.Invoke(this, selectedGameDifficulty);
             });
 
             OpenGameCommand = new RelayCommand(() =>
