@@ -2,10 +2,12 @@
 {
     public abstract class Terrain : Field
     {
-        //datas
+        #region Fields
         public int Trees { protected set; get; }
         public override bool Modifiable { get; protected set; }
-        //methods
+        #endregion
+
+        #region Public methods
         public void IncreaseHeight() 
         {
             Height++;
@@ -21,7 +23,6 @@
                 Trees++;
             }
         }
-
         public bool IsFull() 
         {
             if (Trees == 4) 
@@ -30,15 +31,13 @@
             }
             return false;
         }
-
         public void SpreadForest() 
         {
             Trees = 1;
         }
-
         public override int GetTrees() => Trees;
+        #endregion
     }
-
 
     public class Plain : Terrain 
     {
@@ -81,8 +80,4 @@
             Trees = 0;
         }
     }
-
-    
-
-
 }
