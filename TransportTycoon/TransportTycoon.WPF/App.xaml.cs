@@ -32,6 +32,14 @@ namespace TransportTycoon.WPF
         #region Public Methods
         #endregion
         #region Private Methods
+
+        private void ShowStartMenu(object sender, StartupEventArgs e) 
+        {
+            startViewModel = new StartViewModel();
+
+            
+        }
+
         private void App_Startup(object sender, StartupEventArgs e)
         {
             //model
