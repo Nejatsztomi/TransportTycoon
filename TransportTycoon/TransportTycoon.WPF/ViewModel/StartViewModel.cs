@@ -15,6 +15,7 @@ namespace TransportTycoon.WPF.ViewModel
         #region Commands
         public RelayCommand NewGameCommand { get; set; }
         public RelayCommand OpenGameCommand { get; set; }
+        public RelayCommand ExitGameCommand { get; set; }
         public RelayCommand SetEasyMode { get; set; }
         public RelayCommand SetMediumMode { get; set; }
         public RelayCommand SetHardMode { get; set; }
@@ -38,6 +39,10 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 throw new NotImplementedException();
             });
+            ExitGameCommand = new RelayCommand(() =>
+            {
+                ExitGame?.Invoke(this, EventArgs.Empty);
+            };
 
             SetEasyMode = new RelayCommand(() =>
             {
