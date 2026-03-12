@@ -10,7 +10,11 @@ namespace TransportTycoon.WPF.ViewModel
     {
         #region Fields
         //We need an interface for Dependecy Injection
-        public Difficulty SelectedDifficulty { get; set; }
+        private int SelectedDifficulty;
+        public int Difficulty 
+        {
+
+        }
         #endregion
         #region Commands
         public RelayCommand NewGameCommand { get; set; }
