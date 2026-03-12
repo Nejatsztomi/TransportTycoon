@@ -17,8 +17,6 @@ namespace TransportTycoon.MapData
         public List<(int, int)> Pointers { get; }
         public List<(int, int)> BuildingIDs { get; }
 
-
-
         public Field this[int x, int y]
         {
             get => Table[x, y];
@@ -36,12 +34,10 @@ namespace TransportTycoon.MapData
             Pointers = [];
             BuildingIDs = [];
         }
-
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
 
         #region Public methods
-        // TODO: Megcsinálni
         public List<Field> CheckNeighboringTrees(int x, int y)
         {
             List<Field> neighbours = new List<Field>();
@@ -56,9 +52,6 @@ namespace TransportTycoon.MapData
             }
             return acceptedNeighbours;
         }
-        #endregion
-
-        #region Public methods
         public void GenerateMap()
         {
             for (int i = 0; i < Table.GetLength(0); i++)
@@ -94,8 +87,6 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Private methods
-
-
         private bool IsMapAccurate()
         {
             bool isAccurate = true;
@@ -108,10 +99,6 @@ namespace TransportTycoon.MapData
             }
             return isAccurate;
         }
-
-
-
-
         #endregion
     }
 }
