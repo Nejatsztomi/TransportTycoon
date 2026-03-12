@@ -169,7 +169,7 @@ namespace TransportTycoon.Model
             }
             Goods.SetGlobalTax(tax);
         }
-        public void ForestGrowing()
+        private void ForestGrowing()
         {
             Random rnd = new Random();
             HashSet<Field> spreadedFields = new HashSet<Field>();
