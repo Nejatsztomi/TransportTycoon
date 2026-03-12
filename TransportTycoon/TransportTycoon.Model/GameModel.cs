@@ -173,9 +173,9 @@ namespace TransportTycoon.Model
         {
             Random rnd = new Random();
             HashSet<Field> spreadedFields = new HashSet<Field>();
-            for (int i = 0; i < Map.Height - 1; i++)
+            for (int i = 0; i < Map.Height; i++)
             {
-                for (int j = 0; j < Map.Width - 1; j++)
+                for (int j = 0; j < Map.Width; j++)
                 {
                     if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull())
                     {
@@ -192,7 +192,7 @@ namespace TransportTycoon.Model
             }
             foreach (Field f in spreadedFields)
             {
-                if (f is Terrain t) t.SpreadForest();
+                if (f is Terrain t && rnd.Next(1, 101) <= 5) t.SpreadForest();
             }
         }
         #endregion
