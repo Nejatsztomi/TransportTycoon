@@ -63,7 +63,9 @@ namespace TransportTycoon.WPF
 
             //ViewModel
             MainViewModel = new MainViewModel(Model);
-            MainViewModel.Exit += new EventHandler(ViewModel_Close);
+            MainViewModel.Exit += ViewModel_Close;
+            MainViewModel.GameModeChanged += MainViewModel_GameModeChanged;
+            MainViewModel.TimeSpeedChanged += MainViewModel_TimeSpeedChanged;
 
             // StartView
             //StartView = new StartWindow
@@ -118,6 +120,18 @@ namespace TransportTycoon.WPF
         private void ViewModel_Close(object? sender, EventArgs e)
         {
             //view.Close();
+        }
+        #endregion
+
+        #region Game event methods
+        private void MainViewModel_TimeSpeedChanged(object? sender, TimeSpeed e)
+        {
+            Model.SetTimeSpeed(e);
+        }
+
+        private void MainViewModel_GameModeChanged(object? sender, GameMode e)
+        {
+            Model.SetMode(e);
         }
         #endregion
     }
