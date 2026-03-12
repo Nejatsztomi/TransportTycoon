@@ -37,7 +37,17 @@ namespace TransportTycoon.WPF
         {
             startViewModel = new StartViewModel();
 
-            
+            startViewModel.StartNewGame += (sender, startViewModel.SelectedDifficulty) =>
+            {
+
+            };
+
+            startView = new StartWindow
+            {
+                DataContext = startView
+            };
+
+            startView.Show();
         }
 
         private void App_Startup(object sender, StartupEventArgs e)
