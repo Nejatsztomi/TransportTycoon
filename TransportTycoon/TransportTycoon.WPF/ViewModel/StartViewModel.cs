@@ -16,9 +16,9 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand NewGameCommand { get; set; }
         public RelayCommand OpenGameCommand { get; set; }
         public RelayCommand ExitGameCommand { get; set; }
-        public RelayCommand SetEasyMode { get; set; }
-        public RelayCommand SetMediumMode { get; set; }
-        public RelayCommand SetHardMode { get; set; }
+        public RelayCommand SetEasyModeCommand{ get; set; }
+        public RelayCommand SetMediumModeCommand{ get; set; }
+        public RelayCommand SetHardModeCommand { get; set; }
         #endregion
         #region Events
         public EventHandler<Difficulty> StartNewGame;
@@ -44,17 +44,17 @@ namespace TransportTycoon.WPF.ViewModel
                 ExitGame?.Invoke(this, EventArgs.Empty);
             });
 
-            SetEasyMode = new RelayCommand(() =>
+            SetEasyModeCommand = new RelayCommand(() =>
             {
                 SelectedDifficulty = Difficulty.Easy;
             });
 
-            SetMediumMode = new RelayCommand(() =>
+            SetMediumModeCommand = new RelayCommand(() =>
             {
                 SelectedDifficulty = Difficulty.Medium;
             });
 
-            SetHardMode = new RelayCommand(() =>
+            SetHardModeCommand = new RelayCommand(() =>
             {
                 SelectedDifficulty = Difficulty.Hard;
             });
