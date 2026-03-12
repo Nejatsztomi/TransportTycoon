@@ -39,7 +39,7 @@ namespace TransportTycoon.WPF
 
             startViewModel.StartNewGame += (sender, SelectedDifficulty) =>
             {
-                GameModel model = new GameModel(SelectedDifficulty, new WpfDispatcherTimer());
+                //GameModel model = new GameModel(SelectedDifficulty, new WpfDispatcherTimer());
             };
 
             startViewModel.LoadGame += (sender, e) =>
@@ -53,7 +53,7 @@ namespace TransportTycoon.WPF
             {
                 DataContext = startView
             };
-
+            startView.Closing += new System.ComponentModel.CancelEventHandler(View_Close);
             startView.Show();
         }
 
