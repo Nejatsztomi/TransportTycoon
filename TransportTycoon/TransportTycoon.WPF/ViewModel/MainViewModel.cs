@@ -1,10 +1,11 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public class MainViewModel : ViewModelBase
+    public partial class MainViewModel : ViewModelBase
     {
         #region Properties
         #region Relay commands
@@ -44,6 +45,7 @@ namespace TransportTycoon.WPF.ViewModel
             Model = model;
 
             model.NewGameCreated += Model_NewGameCreated;
+            model.GameTicked += Model_GameTicked;
 
             NewGameCommand = new(OnNewGame);
             ExitCommand = new(OnExit);
@@ -122,6 +124,11 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_NewGameCreated(object? sender, EventArgs e)
         {
             RefreshTable();
+        }
+
+        private void Model_GameTicked(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(GameTime));
         }
         #endregion
     }
