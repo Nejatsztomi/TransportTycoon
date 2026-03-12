@@ -14,13 +14,33 @@ namespace TransportTycoon.WPF
     public partial class App : Application
     {
         #region Fields
-        private GameModel model = null!;
-        private MainViewModel mainViewModel = null!;
-        private MainWindow mainView = null!;
-        private StartWindow startView = null!;
+        private GameModel? _model;
+        private MainViewModel? _mainViewModel;
+        private MainWindow? _mainView;
+        private StartWindow? _startView;
         #endregion
 
         #region Properties
+        private GameModel Model
+        {
+            get => _model ?? throw new InvalidOperationException("Model is not initialized.");
+            set => _model = value;
+        }
+        private MainViewModel MainViewModel
+        {
+            get => _mainViewModel ?? throw new InvalidOperationException("MainViewModel is not initialized.");
+            set => _mainViewModel = value;
+        }
+        private MainWindow MainView
+        {
+            get => _mainView ?? throw new InvalidOperationException("MainView is not initialized.");
+            set => _mainView = value;
+        }
+        private StartWindow StartView
+        {
+            get => _startView ?? throw new InvalidOperationException("StartView is not initialized.");
+            set => _startView = value;
+        }
         #endregion
 
         #region Constructor
@@ -37,44 +57,44 @@ namespace TransportTycoon.WPF
         private void App_Startup(object sender, StartupEventArgs e)
         {
             //model
-            model = new GameModel(2000, new WpfDispatcherTimer());
-            model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
-            model.NewGame();
+            Model = new GameModel(2000, new WpfDispatcherTimer());
+            Model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
+            Model.NewGame();
 
             //ViewModel
-            mainViewModel = new MainViewModel(model);
-            mainViewModel.Exit += new EventHandler(ViewModel_Close);
+            MainViewModel = new MainViewModel(Model);
+            MainViewModel.Exit += new EventHandler(ViewModel_Close);
 
             // StartView
-            startView = new StartWindow
-            {
-                DataContext = mainViewModel,
-            };
-            startView.Closing += new CancelEventHandler(View_Close);
-            startView.Show();
+            //StartView = new StartWindow
+            //{
+            //    DataContext = MainViewModel,
+            //};
+            //StartView.Closing += new CancelEventHandler(View_Close);
+            //StartView.Show();
 
             //MainView
-            //mainView = new MainWindow
-            //{
-            //    DataContext = mainViewModel,
-            //};
-            //mainView.Closing += new CancelEventHandler(View_Close);
-            //mainView.Show();
+            MainView = new MainWindow
+            {
+                DataContext = MainViewModel,
+            };
+            MainView.Closing += new CancelEventHandler(View_Close);
+            MainView.Show();
         }
         #endregion
 
         #region Private event Methods
         private void View_Close(object? sender, CancelEventArgs e)
         {
-            bool isGameOver = model.IsGameOver;
-            model.SetMode(GameMode.Paused);
+            bool isGameOver = Model.IsGameOver;
+            Model.SetMode(GameMode.Paused);
 
             if (MessageBox.Show("Are you sure, that you want to exit?", "Bombazo", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
             {
                 e.Cancel = true;
 
                 if (!isGameOver)
-                    model.SetMode(GameMode.Run);
+                    Model.SetMode(GameMode.Run);
             }
         }
 
