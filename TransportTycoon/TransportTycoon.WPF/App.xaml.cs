@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Windows;
 using TransportTycoon.Model;
+using TransportTycoon.WPF.View;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF
@@ -15,23 +16,28 @@ namespace TransportTycoon.WPF
         #region Fields
         private GameModel model = null!;
         private MainViewModel mainViewModel = null!;
-        private MainWindow view = null!;
+        private MainWindow mainView = null!;
+        private StartWindow startView = null!;
         #endregion
+
         #region Properties
         #endregion
+
         #region Constructor
         public App()
         {
             Startup += new StartupEventHandler(App_Startup);
         }
         #endregion
+
         #region Public Methods
         #endregion
+
         #region Private Methods
         private void App_Startup(object sender, StartupEventArgs e)
         {
             //model
-            model = new GameModel(2000,new WpfDispatcherTimer());
+            model = new GameModel(2000, new WpfDispatcherTimer());
             model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
             model.NewGame();
 
@@ -39,19 +45,25 @@ namespace TransportTycoon.WPF
             mainViewModel = new MainViewModel(model);
             mainViewModel.Exit += new EventHandler(ViewModel_Close);
 
-            //View
-            view = new MainWindow
+            // StartView
+            startView = new StartWindow
             {
                 DataContext = mainViewModel,
             };
-            view.Closing += new System.ComponentModel.CancelEventHandler(View_Close);
-            view.Show();
+            startView.Closing += new CancelEventHandler(View_Close);
+            startView.Show();
+
+            //MainView
+            //mainView = new MainWindow
+            //{
+            //    DataContext = mainViewModel,
+            //};
+            //mainView.Closing += new CancelEventHandler(View_Close);
+            //mainView.Show();
         }
-
-
         #endregion
-        #region Private event Methods
 
+        #region Private event Methods
         private void View_Close(object? sender, CancelEventArgs e)
         {
             bool isGameOver = model.IsGameOver;
@@ -59,7 +71,7 @@ namespace TransportTycoon.WPF
 
             if (MessageBox.Show("Are you sure, that you want to exit?", "Bombazo", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
             {
-                e.Cancel = true; 
+                e.Cancel = true;
 
                 if (!isGameOver)
                     model.SetMode(GameMode.Run);
@@ -81,20 +93,12 @@ namespace TransportTycoon.WPF
             {
                 //TODO:We need a method that will open the main menu
             }
-            else 
-            {
-
-            }
-
-
         }
 
         private void ViewModel_Close(object? sender, EventArgs e)
         {
-            view.Close();
+            //view.Close();
         }
         #endregion
-
     }
-
 }
