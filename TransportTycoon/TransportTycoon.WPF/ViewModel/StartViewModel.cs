@@ -22,6 +22,7 @@ namespace TransportTycoon.WPF.ViewModel
         #region Events
         public EventHandler<Difficulty> StartNewGame;
         public EventHandler<string> LoadGame;
+        public EventHandler<EventArgs> ExitGame;
         #endregion
         #region Constructor
         public StartViewModel() 

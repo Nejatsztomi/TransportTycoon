@@ -47,6 +47,7 @@ namespace TransportTycoon.WPF
                 //TODO::
             };
 
+
             startView = new StartWindow
             {
                 DataContext = startView
