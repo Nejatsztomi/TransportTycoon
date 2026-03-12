@@ -39,7 +39,7 @@ namespace TransportTycoon.WPF
 
             startViewModel.StartNewGame += (sender, SelectedDifficulty) =>
             {
-                //GameModel model = new GameModel(SelectedDifficulty, new WpfDispatcherTimer());
+                GameModel model = new GameModel(SelectedDifficulty, new WpfDispatcherTimer());
             };
 
             startViewModel.LoadGame += (sender, e) =>
@@ -53,7 +53,7 @@ namespace TransportTycoon.WPF
             {
                 DataContext = startView
             };
-            startView.Closing += new System.ComponentModel.CancelEventHandler(View_Close);
+            startView.Closing += new System.ComponentModel.CancelEventHandler(StartView_Close);
             startView.Show();
         }
 
@@ -100,13 +100,21 @@ namespace TransportTycoon.WPF
 
         #endregion
         #region Private event Methods
+        private void StartView_Close(object? sender, CancelEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+            {
+                e.Cancel = true;
+
+            }
+        }
 
         private void View_Close(object? sender, CancelEventArgs e)
         {
             bool isGameOver = model.IsGameOver;
             model.SetMode(GameMode.Paused);
 
-            if (MessageBox.Show("Are you sure, that you want to exit?", "Bombazo", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+            if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
             {
                 e.Cancel = true; 
 

@@ -14,11 +14,10 @@
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
             <!--nem erzekelni a Commandot-->
-            <Button Content="Start new game">
-                <!--="{Binding NewGameCommand}"-->
+            <Button Content="Start new game" Command="{Binding NewGameCommand}">
 
             </Button>
-            <ComboBox>
+            <ComboBox Text="Select Difficulty">
                 <ComboBoxItem Content="Easy Mode"></ComboBoxItem>
                 <ComboBoxItem Content="Medium Mode"></ComboBoxItem>
                 <ComboBoxItem Content="Hard Mode"></ComboBoxItem>
