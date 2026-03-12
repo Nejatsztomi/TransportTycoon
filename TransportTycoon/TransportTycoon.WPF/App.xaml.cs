@@ -47,6 +47,7 @@ namespace TransportTycoon.WPF
                 //TODO::
             };
 
+            startViewModel.ExitGame += new EventHandler(ViewModel_Close);
 
             startView = new StartWindow
             {
