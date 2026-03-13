@@ -60,27 +60,46 @@
                 <TextBlock Text="20% Panel" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray"/>
             </Border>
 
-            <Border Grid.Column="2" Background="#2C2C2C" CornerRadius="5" ClipToBounds="True">
+            <Border
+                Grid.Column="2"
+                Background="#2C2C2C"
+                CornerRadius="5"
+                ClipToBounds="True"
+                >
 
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer
+                    x:Name="MapScrollViewer"
+                    HorizontalScrollBarVisibility="Auto"
+                    VerticalScrollBarVisibility="Auto"
+                    PreviewMouseWheel="MapScrollViewer_PreviewMouseWheel"
+                    >
 
                     <ItemsControl ItemsSource="{Binding Tiles}">
 
                         <ItemsControl.LayoutTransform>
-                            <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}" />
+                            <ScaleTransform
+                                ScaleX="{Binding ZoomLevel}"
+                                ScaleY="{Binding ZoomLevel}"
+                                />
                         </ItemsControl.LayoutTransform>
 
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid
                                     Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                    Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Width="50" Height="50" BorderBrush="#404040" BorderThickness="1">
+                                <Border
+                                    Width="50"
+                                    Height="50"
+                                    BorderBrush="#404040"
+                                    BorderThickness="1"
+                                    >
                                     <Border.Background>
                                         <!-- RenderOptions give more perfomance, but can make visual worse when zooming out too much -->
                                         <ImageBrush ImageSource="{Binding ImagePath}"
