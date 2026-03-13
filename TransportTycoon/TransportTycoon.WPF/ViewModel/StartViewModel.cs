@@ -9,48 +9,52 @@ namespace TransportTycoon.WPF.ViewModel
     public class StartViewModel : ViewModelBase
     {
         #region Fields
+        private Difficulty selectedGameDifficulty;
         //We need an interface for Dependecy Injection
-        public Difficulty SelectedDifficulty { get; set; }
+        private int selectedDifficulty=1;
+        public int SelectedDifficulty 
+        {
+            get => selectedDifficulty;
+            set
+            {
+                if (selectedDifficulty != value) 
+                {
+                    selectedDifficulty = value;
+                    OnPropertyChanged(nameof(SelectedDifficulty));
+
+                    selectedGameDifficulty = (Difficulty)selectedDifficulty;
+                }
+            }
+        }
         #endregion
         #region Commands
         public RelayCommand NewGameCommand { get; set; }
         public RelayCommand OpenGameCommand { get; set; }
-        public RelayCommand SetEasyMode { get; set; }
-        public RelayCommand SetMediumMode { get; set; }
-        public RelayCommand SetHardMode { get; set; }
+        public RelayCommand ExitGameCommand { get; set; }
+
         #endregion
         #region Events
         public EventHandler<Difficulty> StartNewGame;
         public EventHandler<string> LoadGame;
+        public event EventHandler? ExitGame;
         #endregion
         #region Constructor
         public StartViewModel() 
         {
-            SelectedDifficulty = Difficulty.Medium;
 
+            selectedGameDifficulty = (Difficulty)selectedDifficulty;
             NewGameCommand = new RelayCommand(() =>
             {
-                StartNewGame?.Invoke(this, SelectedDifficulty);
+                StartNewGame?.Invoke(this, selectedGameDifficulty);
             });
 
             OpenGameCommand = new RelayCommand(() =>
             {
                 throw new NotImplementedException();
             });
-
-            SetEasyMode = new RelayCommand(() =>
+            ExitGameCommand = new RelayCommand(() =>
             {
-                SelectedDifficulty = Difficulty.Easy;
-            });
-
-            SetMediumMode = new RelayCommand(() =>
-            {
-                SelectedDifficulty = Difficulty.Medium;
-            });
-
-            SetHardMode = new RelayCommand(() =>
-            {
-                SelectedDifficulty = Difficulty.Hard;
+                ExitGame?.Invoke(this, EventArgs.Empty);
             });
         }
         #endregion

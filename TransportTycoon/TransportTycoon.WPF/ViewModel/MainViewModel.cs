@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using TransportTycoon.Model;
@@ -71,7 +71,6 @@ namespace TransportTycoon.WPF.ViewModel
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
                     FieldViewModel tile = new(Model.Map[x, y]);
-                    //FieldViewModel tile = new();
                     Tiles.Add(tile);
                 }
             }

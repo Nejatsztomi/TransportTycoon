@@ -17,18 +17,15 @@
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
             <!--nem erzekelni a Commandot-->
-            <Button Content="Start new game" Command="{Binding NewGameCommand}">
-                
-            </Button>
-            <ComboBox>
-                <ComboBoxItem Content="Easy Mode" IsSelected="True"></ComboBoxItem>
+            <Button Content="Start new game" Command="{Binding NewGameCommand}"></Button>
+            <TextBlock Text="Select Difficulty" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+            <ComboBox SelectedIndex="{Binding SelectedDifficulty}">
+                <ComboBoxItem Content="Easy Mode"></ComboBoxItem>
                 <ComboBoxItem Content="Medium Mode"></ComboBoxItem>
                 <ComboBoxItem Content="Hard Mode"></ComboBoxItem>
             </ComboBox>
-            <Button Content="Load game">
-
-            </Button>
-            <Button Content="Exit Game"></Button>
+            <Button Content="Load game" Command="{Binding LoadGameCommand}"></Button>
+            <Button Content="Exit Game" Command="{Binding ExitGameCommand}"></Button>
 
         </StackPanel>
     </Grid>
