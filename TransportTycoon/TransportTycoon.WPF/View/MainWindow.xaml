@@ -73,8 +73,8 @@
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid
-                                    Columns="{Binding MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    Rows="{Binding MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                    Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
