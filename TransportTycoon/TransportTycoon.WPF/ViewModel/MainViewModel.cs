@@ -29,6 +29,13 @@ namespace TransportTycoon.WPF.ViewModel
         public int GameTime => Model.GameTime;
         public bool IsPaused => Model.Mode == GameMode.Paused;
         public bool IsEditorMode => Model.Mode == GameMode.Editor;
+
+        #region Map
+        public int MapColumns => Model.Map.Width;
+        public int MapRows => Model.Map.Height;
+        [ObservableProperty]
+        private double _zoomLevel = 1.0;
+        #endregion
         #endregion
 
         #region Events
@@ -70,7 +77,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
-                    FieldViewModel tile = new(Model.Map[x, y]);
+                    FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/1_klasszikus_fu.png");
                     Tiles.Add(tile);
                 }
             }
