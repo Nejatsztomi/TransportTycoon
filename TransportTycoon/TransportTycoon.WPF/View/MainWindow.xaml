@@ -72,7 +72,9 @@
 
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <UniformGrid Columns="{Binding MapColumns}" Rows="{Binding MapRows}" />
+                                <UniformGrid
+                                    Columns="{Binding MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    Rows="{Binding MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
@@ -80,7 +82,11 @@
                             <DataTemplate>
                                 <Border Width="50" Height="50" BorderBrush="#404040" BorderThickness="1">
                                     <Border.Background>
-                                        <ImageBrush ImageSource="{Binding ImagePath}" Stretch="UniformToFill" />
+                                        <!-- RenderOptions give more perfomance, but can make visual worse when zooming out too much -->
+                                        <ImageBrush ImageSource="{Binding ImagePath}"
+                                                    Stretch="UniformToFill"
+                                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                    />
                                     </Border.Background>
                                 </Border>
                             </DataTemplate>
