@@ -1,7 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -11,13 +8,13 @@ namespace TransportTycoon.WPF.ViewModel
         #region Fields
         private Difficulty selectedGameDifficulty;
         //We need an interface for Dependecy Injection
-        private int selectedDifficulty=1;
-        public int SelectedDifficulty 
+        private int selectedDifficulty = 1;
+        public int SelectedDifficulty
         {
             get => selectedDifficulty;
             set
             {
-                if (selectedDifficulty != value) 
+                if (selectedDifficulty != value)
                 {
                     selectedDifficulty = value;
                     OnPropertyChanged(nameof(SelectedDifficulty));
@@ -27,37 +24,35 @@ namespace TransportTycoon.WPF.ViewModel
             }
         }
         #endregion
+
         #region Commands
         public RelayCommand NewGameCommand { get; set; }
-        public RelayCommand OpenGameCommand { get; set; }
         public RelayCommand ExitGameCommand { get; set; }
-
+        public RelayCommand LoadGameCommand { get; set; }
         #endregion
+
         #region Events
-        public EventHandler<Difficulty> StartNewGame;
-        public EventHandler<string> LoadGame;
+        public event EventHandler<Difficulty>? StartNewGame;
+        public event EventHandler<string>? LoadGame;
         public event EventHandler? ExitGame;
         #endregion
-        #region Constructor
-        public StartViewModel() 
-        {
 
+        #region Constructor
+        public StartViewModel()
+        {
             selectedGameDifficulty = (Difficulty)selectedDifficulty;
             NewGameCommand = new RelayCommand(() =>
             {
                 StartNewGame?.Invoke(this, selectedGameDifficulty);
             });
 
-            OpenGameCommand = new RelayCommand(() =>
-            {
-                throw new NotImplementedException();
-            });
             ExitGameCommand = new RelayCommand(() =>
             {
                 ExitGame?.Invoke(this, EventArgs.Empty);
             });
+
+            LoadGameCommand = new(() => LoadGame?.Invoke(this, String.Empty));
         }
         #endregion
-
     }
 }

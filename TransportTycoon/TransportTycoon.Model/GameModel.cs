@@ -4,7 +4,7 @@ namespace TransportTycoon.Model
 {
     public enum GameMode { Run, Paused, Editor }
     public enum TimeSpeed { Normal = 1, Fast = 2, SuperFast = 3 }
-    public enum Difficulty { Easy=0, Medium=1, Hard=2 }
+    public enum Difficulty { Easy = 0, Medium = 1, Hard = 2 }
 
     //Mintázat az összes osztályban
     #region Fields

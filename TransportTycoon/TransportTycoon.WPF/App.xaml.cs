@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 using TransportTycoon.Model;
 using TransportTycoon.WPF.View;
@@ -47,6 +45,8 @@ namespace TransportTycoon.WPF
             get => _startViewModel ?? throw new InvalidOperationException("StartViewModel is not initialized.");
             set => _startViewModel = value;
         }
+
+        private Window? CurrentView { get; set; } // Vagy event argumentként átadni a view-t a ViewModel-nek
         #endregion
 
         #region Constructor
@@ -60,79 +60,54 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Private Methods
-
-        private void ShowStartMenu(object sender, StartupEventArgs e) 
+        private void ShowStartMenu(object sender, StartupEventArgs e)
         {
-            startViewModel = new StartViewModel();
+            StartViewModel = new StartViewModel();
 
-            startViewModel.StartNewGame += (sender, SelectedDifficulty) =>
+            StartViewModel.StartNewGame += (sender, SelectedDifficulty) =>
             {
-                GameModel model = new GameModel(SelectedDifficulty, new WpfDispatcherTimer());
+                StartGame(SelectedDifficulty);
             };
 
-            startViewModel.LoadGame += (sender, e) =>
+            StartViewModel.LoadGame += (sender, e) =>
             {
-                //TODO::
+                throw new NotImplementedException("Load game functionality is not implemented yet!");
             };
 
-            startViewModel.ExitGame += new EventHandler(ViewModel_Close);
+            StartViewModel.ExitGame += new EventHandler(ViewModel_Close);
 
-            startView = new StartWindow
+            StartView = new StartWindow
             {
-                DataContext = startView
+                DataContext = StartViewModel
             };
-            startView.Closing += new System.ComponentModel.CancelEventHandler(StartView_Close);
-            startView.Show();
+            StartView.Closing += new CancelEventHandler(StartView_Close);
+            CurrentView = StartView;
+            StartView.Show();
         }
 
-        private void StartGame(GameModel model) 
+        private void StartGame(Difficulty difficulty)
         {
             //model
-            this.model = model;
-            model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
-            model.NewGame();
-
-            //ViewModel
-            mainViewModel = new MainViewModel(model);
-            mainViewModel.Exit += new EventHandler(ViewModel_Close);
-
-            //View
-            view = new MainWindow
-            {
-                DataContext = mainViewModel,
-            };
-            view.Closing += new System.ComponentModel.CancelEventHandler(View_Close);
-            view.Show();
-        }
-
-        private void App_Startup(object sender, StartupEventArgs e)
-        {
-            //model
-            Model = new GameModel(2000, new WpfDispatcherTimer());
+            Model = new(difficulty, new WpfDispatcherTimer());
             Model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
             Model.NewGame();
 
             //ViewModel
-            MainViewModel = new MainViewModel(Model);
-            MainViewModel.Exit += ViewModel_Close;
-            MainViewModel.GameModeChanged += MainViewModel_GameModeChanged;
-            MainViewModel.TimeSpeedChanged += MainViewModel_TimeSpeedChanged;
+            MainViewModel = new(Model);
+            MainViewModel.Exit += new EventHandler(ViewModel_Close);
 
-            // StartView
-            //StartView = new StartWindow
-            //{
-            //    DataContext = MainViewModel,
-            //};
-            //StartView.Closing += new CancelEventHandler(View_Close);
-            //StartView.Show();
-
-            //MainView
+            //View
             MainView = new MainWindow
             {
                 DataContext = MainViewModel,
             };
             MainView.Closing += new CancelEventHandler(View_Close);
             MainView.Show();
+
+            // Close the start view
+            // Must be called after .Show(), otherwise the app exists, because ShutdownMode = OnLastWindowClose by default
+            // TODO: fix closing event firing
+            StartView.Close();
         }
         #endregion
 
@@ -142,7 +117,6 @@ namespace TransportTycoon.WPF
             if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
             {
                 e.Cancel = true;
-
             }
         }
 
@@ -179,7 +153,8 @@ namespace TransportTycoon.WPF
 
         private void ViewModel_Close(object? sender, EventArgs e)
         {
-            //view.Close();
+            CurrentView?.Close();
+            CurrentView = null;
         }
         #endregion
 
