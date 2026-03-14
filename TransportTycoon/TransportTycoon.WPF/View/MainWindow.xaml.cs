@@ -18,7 +18,8 @@ namespace TransportTycoon.WPF
     public partial class MainWindow : Window
     {
         #region Properties
-        private Point? LastDragPoint { get; set; } = null;
+        private Point? DragStartPoint { get; set; } = null;
+        private Point? DragStartOffset { get; set; } = null;
         #endregion
 
         #region Constructors
@@ -53,31 +54,31 @@ namespace TransportTycoon.WPF
 
         private void MapScrollViewer_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            LastDragPoint = e.GetPosition(MapScrollViewer);
+            DragStartPoint = e.GetPosition(MapScrollViewer);
+            DragStartOffset = new(MapScrollViewer.HorizontalOffset, MapScrollViewer.VerticalOffset);
+            MapScrollViewer.CaptureMouse();
         }
 
         private void MapScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (LastDragPoint.HasValue)
+            if (DragStartPoint.HasValue && DragStartOffset.HasValue)
             {
                 Point currentPoint = e.GetPosition(MapScrollViewer);
 
-                double deltaX = currentPoint.X - LastDragPoint.Value.X;
-                double deltaY = currentPoint.Y - LastDragPoint.Value.Y;
+                double deltaX = currentPoint.X - DragStartPoint.Value.X;
+                double deltaY = currentPoint.Y - DragStartPoint.Value.Y;
 
-                MapScrollViewer.ScrollToHorizontalOffset(MapScrollViewer.HorizontalOffset - deltaX);
-                MapScrollViewer.ScrollToVerticalOffset(MapScrollViewer.VerticalOffset - deltaY);
-
-                LastDragPoint = currentPoint;
+                MapScrollViewer.ScrollToHorizontalOffset(DragStartOffset.Value.X - deltaX);
+                MapScrollViewer.ScrollToVerticalOffset(DragStartOffset.Value.Y - deltaY);
             }
         }
 
         private void MapScrollViewer_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (LastDragPoint.HasValue)
+            if (DragStartPoint.HasValue)
             {
                 MapScrollViewer.ReleaseMouseCapture();
-                LastDragPoint = null;
+                DragStartPoint = null;
             }
         }
         #endregion
