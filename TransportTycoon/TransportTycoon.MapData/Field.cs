@@ -37,6 +37,7 @@ namespace TransportTycoon.MapData
             X = x;
             Y = y;
             Height = 0;
+            Modifiable = false;
         }
     }
 }
