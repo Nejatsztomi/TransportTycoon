@@ -19,6 +19,8 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand PauseGameCommand { get; init; }
         public RelayCommand ResumeGameCommand { get; init; }
         public RelayCommand EditorModeCommand { get; init; }
+
+        public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
         #endregion
 
         public GameModel Model { get; init; }
@@ -35,6 +37,8 @@ namespace TransportTycoon.WPF.ViewModel
         public int MapRows => Model.Map.Height;
         [ObservableProperty]
         private double _zoomLevel = 1.0;
+        [ObservableProperty]
+        private string _selectedTile = "Click a tile!";
         #endregion
         #endregion
 
@@ -63,6 +67,8 @@ namespace TransportTycoon.WPF.ViewModel
             PauseGameCommand = new(OnPauseGame);
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
+
+            TileClickCommand = new(OnTileClick);
 
             Tiles = [];
             RefreshTable();
@@ -123,6 +129,13 @@ namespace TransportTycoon.WPF.ViewModel
         private void OnEditorMode()
         {
             GameModeChanged?.Invoke(this, GameMode.Editor);
+        }
+        private void OnTileClick(object param)
+        {
+            if (param is FieldViewModel tile)
+            {
+                SelectedTile = $"Clicked tile at ({tile.X}, {tile.Y})";
+            }
         }
         #endregion
 

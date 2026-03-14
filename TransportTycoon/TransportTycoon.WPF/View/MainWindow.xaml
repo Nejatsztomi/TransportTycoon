@@ -56,10 +56,16 @@
                 <ColumnDefinition Width="8*" />
             </Grid.ColumnDefinitions>
 
+            <!-- Left panel -->
             <Border Grid.Column="0" Background="#ECECEC" CornerRadius="5">
-                <TextBlock Text="20% Panel" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray"/>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Map Info" FontWeight="Bold" FontSize="18" Foreground="#333" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="{Binding SelectedTile}" FontSize="16" Foreground="#555" TextAlignment="Center" />
+                </StackPanel>
             </Border>
 
+            <!-- Right panel -->
             <Border
                 Grid.Column="2"
                 Background="#2C2C2C"
@@ -98,9 +104,24 @@
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid Width="50" Height="50">
+                                <Grid
+                                    Width="50"
+                                    Height="50"
+                                    Background="Transparent"
+                                    >
 
-                                    <Border BorderBrush="#404040" BorderThickness="1">
+                                    <Grid.InputBindings>
+                                        <MouseBinding 
+                                                      MouseAction="LeftClick" 
+                                                      Command="{Binding DataContext.TileClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                      CommandParameter="{Binding}"
+                                                      />
+                                    </Grid.InputBindings>
+
+                                    <Border
+                                            BorderBrush="#404040"
+                                            BorderThickness="1"
+                                            >
                                         <Border.Background>
                                             <ImageBrush ImageSource="{Binding ImagePath}" 
                                                         Stretch="UniformToFill" 
