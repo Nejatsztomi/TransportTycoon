@@ -139,6 +139,7 @@ namespace TransportTycoon.WPF
             if (result == MessageBoxResult.Yes)
             {
                 //TODO:We need a method that will open the main menu
+                view.Close();
                 startView.Show();
             }
             else 
