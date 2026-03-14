@@ -98,20 +98,32 @@
 
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border
-                                    Width="50"
-                                    Height="50"
-                                    BorderBrush="#404040"
-                                    BorderThickness="1"
-                                    >
-                                    <Border.Background>
-                                        <!-- RenderOptions give more perfomance, but can make visual worse when zooming out too much -->
-                                        <ImageBrush ImageSource="{Binding ImagePath}"
-                                                    Stretch="UniformToFill"
-                                                    RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                                    />
-                                    </Border.Background>
-                                </Border>
+                                <Grid Width="50" Height="50">
+
+                                    <Border BorderBrush="#404040" BorderThickness="1">
+                                        <Border.Background>
+                                            <ImageBrush ImageSource="{Binding ImagePath}" 
+                                                        Stretch="UniformToFill" 
+                                                        RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                                        </Border.Background>
+                                    </Border>
+
+                                    <Border x:Name="HoverOverlay" 
+                                            Visibility="Hidden" 
+                                            BorderBrush="Yellow" 
+                                            BorderThickness="2" 
+                                            Background="#33FFFFFF" 
+                                            IsHitTestVisible="False"
+                                            />
+                                </Grid>
+
+                                <DataTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="HoverOverlay" Property="Visibility" Value="Visible" />
+
+                                        <Setter Property="Panel.ZIndex" Value="1" />
+                                    </Trigger>
+                                </DataTemplate.Triggers>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 
