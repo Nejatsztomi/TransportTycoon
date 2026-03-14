@@ -40,6 +40,8 @@ namespace TransportTycoon.WPF
             startViewModel.StartNewGame += (sender, SelectedDifficulty) =>
             {
                 GameModel model = new GameModel(SelectedDifficulty, new WpfDispatcherTimer());
+                StartGame(model);
+                startView.Close();
             };
 
             startViewModel.LoadGame += (sender, e) =>
@@ -47,11 +49,11 @@ namespace TransportTycoon.WPF
                 //TODO::
             };
 
-            startViewModel.ExitGame += new EventHandler(ViewModel_Close);
+            startViewModel.ExitGame += new EventHandler(StartView_Close);
 
             startView = new StartWindow
             {
-                DataContext = startView
+                DataContext = startViewModel,
             };
             startView.Closing += new System.ComponentModel.CancelEventHandler(StartView_Close);
             startView.Show();
@@ -66,7 +68,7 @@ namespace TransportTycoon.WPF
 
             //ViewModel
             mainViewModel = new MainViewModel(model);
-            mainViewModel.Exit += new EventHandler(ViewModel_Close);
+            mainViewModel.Exit += new EventHandler(GameView_Close);
 
             //View
             view = new MainWindow
@@ -86,7 +88,7 @@ namespace TransportTycoon.WPF
 
             //ViewModel
             mainViewModel = new MainViewModel(model);
-            mainViewModel.Exit += new EventHandler(ViewModel_Close);
+            mainViewModel.Exit += new EventHandler(GameView_Close);
 
             //View
             view = new MainWindow
@@ -137,6 +139,7 @@ namespace TransportTycoon.WPF
             if (result == MessageBoxResult.Yes)
             {
                 //TODO:We need a method that will open the main menu
+                startView.Show();
             }
             else 
             {
@@ -146,7 +149,11 @@ namespace TransportTycoon.WPF
 
         }
 
-        private void ViewModel_Close(object? sender, EventArgs e)
+        private void StartView_Close(object? sender, EventArgs e)
+        {
+            startView.Close();
+        }
+        private void GameView_Close(object? sender, EventArgs e)
         {
             view.Close();
         }

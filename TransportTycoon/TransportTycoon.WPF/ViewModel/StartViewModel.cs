@@ -29,7 +29,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
         #region Commands
         public RelayCommand NewGameCommand { get; set; }
-        public RelayCommand OpenGameCommand { get; set; }
+        public RelayCommand LoadGameCommand { get; set; }
         public RelayCommand ExitGameCommand { get; set; }
 
         #endregion
@@ -41,14 +41,14 @@ namespace TransportTycoon.WPF.ViewModel
         #region Constructor
         public StartViewModel() 
         {
-
-            selectedGameDifficulty = (Difficulty)selectedDifficulty;
+            selectedDifficulty = 1;
+            selectedGameDifficulty = (Difficulty)selectedDifficulty; 
             NewGameCommand = new RelayCommand(() =>
             {
                 StartNewGame?.Invoke(this, selectedGameDifficulty);
             });
 
-            OpenGameCommand = new RelayCommand(() =>
+            LoadGameCommand = new RelayCommand(() =>
             {
                 throw new NotImplementedException();
             });
