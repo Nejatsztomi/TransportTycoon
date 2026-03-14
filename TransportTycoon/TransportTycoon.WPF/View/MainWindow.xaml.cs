@@ -17,6 +17,10 @@ namespace TransportTycoon.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        #region Properties
+        private Point? LastDragPoint { get; set; } = null;
+        #endregion
+
         #region Constructors
         public MainWindow()
         {
@@ -44,6 +48,36 @@ namespace TransportTycoon.WPF
                         vm.ZoomLevel -= 0.1;
                     }
                 }
+            }
+        }
+
+        private void MapScrollViewer_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            LastDragPoint = e.GetPosition(MapScrollViewer);
+        }
+
+        private void MapScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (LastDragPoint.HasValue)
+            {
+                Point currentPoint = e.GetPosition(MapScrollViewer);
+
+                double deltaX = currentPoint.X - LastDragPoint.Value.X;
+                double deltaY = currentPoint.Y - LastDragPoint.Value.Y;
+
+                MapScrollViewer.ScrollToHorizontalOffset(MapScrollViewer.HorizontalOffset - deltaX);
+                MapScrollViewer.ScrollToVerticalOffset(MapScrollViewer.VerticalOffset - deltaY);
+
+                LastDragPoint = currentPoint;
+            }
+        }
+
+        private void MapScrollViewer_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (LastDragPoint.HasValue)
+            {
+                MapScrollViewer.ReleaseMouseCapture();
+                LastDragPoint = null;
             }
         }
         #endregion

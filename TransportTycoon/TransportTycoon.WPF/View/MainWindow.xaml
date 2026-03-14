@@ -71,7 +71,11 @@
                     x:Name="MapScrollViewer"
                     HorizontalScrollBarVisibility="Auto"
                     VerticalScrollBarVisibility="Auto"
+                    
                     PreviewMouseWheel="MapScrollViewer_PreviewMouseWheel"
+                    PreviewMouseRightButtonDown="MapScrollViewer_PreviewMouseRightButtonDown"
+                    PreviewMouseMove="MapScrollViewer_PreviewMouseMove"
+                    PreviewMouseRightButtonUp="MapScrollViewer_PreviewMouseRightButtonUp"
                     >
 
                     <ItemsControl ItemsSource="{Binding Tiles}">
