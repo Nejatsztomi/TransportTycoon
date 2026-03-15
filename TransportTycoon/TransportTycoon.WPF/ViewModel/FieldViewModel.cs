@@ -15,6 +15,16 @@ namespace TransportTycoon.WPF.ViewModel
         public int Y => Field.Y;
         public int Height => Field.Height;
         public int TreeCounter => Field.GetTrees();
+        public string MinimapColor 
+        {
+            get 
+            {
+                return Field.Type switch
+                {
+
+                };
+            }
+        }
         #endregion
 
         #region Constructor
