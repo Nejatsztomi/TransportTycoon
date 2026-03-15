@@ -5,6 +5,24 @@ using System.Text;
 
 namespace TransportTycoon.MapData
 {
+    public enum FieldType
+    {
+        Water,
+        Plain,
+        Hill,
+        Mountain,
+        HighMountain,
+        House,
+        Farm,
+        Mine,
+        LumberCamp,
+        Mill,
+        Factory,
+        Road,
+        Bridge,
+        Stop,
+    }
+
     public abstract class Field
     {
 
@@ -14,7 +32,7 @@ namespace TransportTycoon.MapData
         public int Height { protected set; get; }
         
         public virtual bool Modifiable { protected set; get; }
-
+        public FieldType Type { protected set; get; }
         #endregion
 
         #region Public Methods
@@ -22,11 +40,6 @@ namespace TransportTycoon.MapData
         #endregion
         #region Private Methods
         #endregion
-        
-
-
-       
-
 
     }
 }
