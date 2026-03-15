@@ -21,7 +21,21 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 return Field.Type switch
                 {
-
+                    FieldType.Water => "Blue",
+                    FieldType.Plain => "Green",
+                    FieldType.Hill => "DarkGreen",
+                    FieldType.Mountain => "Gray",
+                    FieldType.HighMountain => "DarkGray",
+                    FieldType.House => "Yellow",
+                    FieldType.Farm => "LightGreen",
+                    FieldType.Mine => "DarkYellow",
+                    FieldType.LumberCamp => "SaddleBrown",
+                    FieldType.Mill => "LightGray",
+                    FieldType.Factory => "DimGray",
+                    FieldType.Road => "Black",
+                    FieldType.Bridge => "Peru",
+                    FieldType.Stop => "Red",
+                    _ => throw new InvalidOperationException("Unknown field type.")
                 };
             }
         }
