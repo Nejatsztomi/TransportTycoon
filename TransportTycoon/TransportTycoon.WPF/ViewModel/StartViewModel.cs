@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -27,8 +27,9 @@ namespace TransportTycoon.WPF.ViewModel
 
         #region Commands
         public RelayCommand NewGameCommand { get; set; }
-        public RelayCommand ExitGameCommand { get; set; }
         public RelayCommand LoadGameCommand { get; set; }
+        public RelayCommand ExitGameCommand { get; set; }
+
         #endregion
 
         #region Events
@@ -37,21 +38,25 @@ namespace TransportTycoon.WPF.ViewModel
         public event EventHandler? ExitGame;
         #endregion
 
+
         #region Constructor
         public StartViewModel()
         {
             selectedGameDifficulty = (Difficulty)selectedDifficulty;
+
             NewGameCommand = new RelayCommand(() =>
             {
                 StartNewGame?.Invoke(this, selectedGameDifficulty);
             });
+
+            LoadGameCommand = new(() => LoadGame?.Invoke(this, String.Empty));
 
             ExitGameCommand = new RelayCommand(() =>
             {
                 ExitGame?.Invoke(this, EventArgs.Empty);
             });
 
-            LoadGameCommand = new(() => LoadGame?.Invoke(this, String.Empty));
+            
         }
         #endregion
     }

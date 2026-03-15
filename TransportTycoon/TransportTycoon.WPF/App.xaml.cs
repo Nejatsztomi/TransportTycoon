@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows;
 using TransportTycoon.Model;
 using TransportTycoon.WPF.View;
@@ -74,11 +74,14 @@ namespace TransportTycoon.WPF
                 throw new NotImplementedException("Load game functionality is not implemented yet!");
             };
 
-            StartViewModel.ExitGame += new EventHandler(ViewModel_Close);
+
+            startViewModel.ExitGame += new EventHandler(StartView_Close);
+
+
 
             StartView = new StartWindow
             {
-                DataContext = StartViewModel
+                DataContext = startViewModel,
             };
             StartView.Closing += new CancelEventHandler(StartView_Close);
             CurrentView = StartView;
@@ -93,8 +96,10 @@ namespace TransportTycoon.WPF
             Model.NewGame();
 
             //ViewModel
-            MainViewModel = new(Model);
-            MainViewModel.Exit += new EventHandler(ViewModel_Close);
+
+            mainViewModel = new MainViewModel(model);
+            mainViewModel.Exit += new EventHandler(GameView_Close);
+
 
             //View
             MainView = new MainWindow
@@ -109,6 +114,8 @@ namespace TransportTycoon.WPF
             // TODO: fix closing event firing
             StartView.Close();
         }
+
+
         #endregion
 
         #region Private event Methods
@@ -148,10 +155,16 @@ namespace TransportTycoon.WPF
             if (result == MessageBoxResult.Yes)
             {
                 //TODO:We need a method that will open the main menu
+                view.Close();
+                startView.Show();
             }
         }
 
-        private void ViewModel_Close(object? sender, EventArgs e)
+        private void StartView_Close(object? sender, EventArgs e)
+        {
+            startView.Close();
+        }
+        private void GameView_Close(object? sender, EventArgs e)
         {
             CurrentView?.Close();
             CurrentView = null;
