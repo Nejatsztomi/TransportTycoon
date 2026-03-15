@@ -188,15 +188,7 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Game event methods
-        //private void MainViewModel_TimeSpeedChanged(object? sender, TimeSpeed e)
-        //{
-        //    Model.SetTimeSpeed(e);
-        //}
-
-        //private void MainViewModel_GameModeChanged(object? sender, GameMode e)
-        //{
-        //    Model.SetMode(e);
-        //}
+        
         #endregion
     }
 }
