@@ -113,7 +113,7 @@ namespace TransportTycoon.WPF
             // Close the start view
             // Must be called after .Show(), otherwise the app exists, because ShutdownMode = OnLastWindowClose by default
             // TODO: fix closing event firing
-            _startView?.Close();
+            _startView?.Hide();
         }
 
 
@@ -144,6 +144,14 @@ namespace TransportTycoon.WPF
                 if (!isGameOver)
                     Model.SetMode(GameMode.Run);
             }
+            else
+            {
+                if (_startView != null)
+                {
+                    _startView.Closing -= StartView_Close;
+                }
+                Application.Current.Shutdown();
+            }
         }
 
         private void Model_GameOver(object? sender, TransportTycoonEventArgs e)
@@ -160,7 +168,10 @@ namespace TransportTycoon.WPF
             if (result == MessageBoxResult.Yes)
             {
                 //TODO:We need a method that will open the main menu
+                _mainView!.Closing -= View_Close;
+
                 _mainView!.Close();
+
                 _startView!.Show();
             }
         }
