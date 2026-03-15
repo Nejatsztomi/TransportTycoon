@@ -6,10 +6,13 @@
         xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel"
         xmlns:local="clr-namespace:TransportTycoon.WPF.View" d:DataContext="{d:DesignInstance Type=vm:StartViewModel}"
         mc:Ignorable="d"
-        Title="StartWindow" Height="450" Width="600">
-
-
-
+        Title="Transport Tycoon - Start menu"
+        Height="450"
+        Width="600"
+        MinHeight="450"
+        MinWidth="600"
+        >
+    
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
