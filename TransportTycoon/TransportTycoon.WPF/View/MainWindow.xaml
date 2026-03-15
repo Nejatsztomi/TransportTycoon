@@ -11,7 +11,7 @@
         MinHeight="450"
         MinWidth="800"
         >
-    
+
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
 
@@ -58,11 +58,89 @@
 
             <!-- Left panel -->
             <Border Grid.Column="0" Background="#ECECEC" CornerRadius="5">
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!--<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <TextBlock Text="Map Info" FontWeight="Bold" FontSize="18" Foreground="#333" HorizontalAlignment="Center" Margin="0,0,0,10"/>
 
                     <TextBlock Text="{Binding SelectedTile}" FontSize="16" Foreground="#555" TextAlignment="Center" />
-                </StackPanel>
+                </StackPanel>-->
+                <TabControl Background="Transparent"
+                            BorderThickness="0"
+                            HorizontalContentAlignment="Center">
+
+                    <!-- TAB GOMBOK STÍLUSA -->
+                    <TabControl.Resources>
+
+                        <Style TargetType="TabItem">
+                            <Setter Property="Width" Value="60"/>
+                            <Setter Property="Height" Value="60"/>
+                            <Setter Property="Margin" Value="4"/>
+
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Border x:Name="border"
+                                                Background="#E0E0E0"
+                                                BorderBrush="#888"
+                                                BorderThickness="1">
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="border" Property="BorderThickness" Value="3"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="Black"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                    </TabControl.Resources>
+
+                    <!-- TABOK EGY SORBAN, KÖZÉPEN -->
+                    <TabControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"/>
+                            
+                        </ItemsPanelTemplate>
+                    </TabControl.ItemsPanel>
+                    
+                    
+
+                    <!-- TAB 1 -->
+                    <TabItem>
+                        <WrapPanel Margin="15">
+                            <Button Width="50" Height="50" Margin="8"/>
+                            <Button Width="50" Height="50" Margin="8"/>
+                            <Button Width="50" Height="50" Margin="8"/>
+                        </WrapPanel>
+                    </TabItem>
+
+                    <!-- TAB 2 -->
+                    <TabItem>
+                        <WrapPanel Margin="15">
+                            <Button Width="50" Height="50" Margin="8"/>
+                            <Button Width="50" Height="50" Margin="8"/>
+                        </WrapPanel>
+                    </TabItem>
+
+                    <!-- TAB 3 -->
+                    <TabItem>
+                        <WrapPanel Margin="15">
+                            <Button Width="50" Height="50" Margin="8"/>
+                        </WrapPanel>
+                    </TabItem>
+
+                    <!-- TAB 4 -->
+                    <TabItem>
+                        <WrapPanel Margin="15">
+                            <Button Width="50" Height="50" Margin="8"/>
+                        </WrapPanel>
+                    </TabItem>
+
+                </TabControl>
+
             </Border>
 
             <!-- Right panel -->
