@@ -238,6 +238,11 @@
                                                      RenderOptions.BitmapScalingMode="NearestNeighbor" />
                                             </Border.Background>
                                         </Border>
+                                        
+                                        <Image Source="{Binding TreeImagePath}" Stretch="Uniform"
+                                               RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                               IsHitTestVisible="False"
+                                               Margin="2"/>
 
                                         <Border x:Name="HoverOverlay" 
                                              Visibility="Hidden" 
@@ -245,7 +250,7 @@
                                              BorderThickness="2" 
                                              Background="#33FFFFFF" 
                                              IsHitTestVisible="False"
-                                             />
+                                             Panel.ZIndex="5"/>
                                     </Grid>
 
                                     <DataTemplate.Triggers>

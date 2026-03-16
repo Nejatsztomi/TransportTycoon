@@ -19,7 +19,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             get 
             {
-                return Field.Type switch
+                return Field.FieldType switch
                 {
                     FieldType.Water => "Blue",
                     FieldType.Plain => "Green",
@@ -37,6 +37,19 @@ namespace TransportTycoon.WPF.ViewModel
                     FieldType.Stop => "Red",
                     _ => throw new InvalidOperationException("Unknown field type.")
                 };
+            }
+        }
+        public string? TreeImagePath
+        {
+            get
+            {
+                if (TreeCounter == 0) return null;
+
+                if(Field is Terrain)
+                {
+                    return $"/Assets/Images/Trees/tree{TreeCounter}.png";
+                }
+                return null;
             }
         }
         #endregion

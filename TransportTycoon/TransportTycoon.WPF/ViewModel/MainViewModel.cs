@@ -83,7 +83,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
-                    FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/1_klasszikus_fu.png");
+                    FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/plain.png");
                     Tiles.Add(tile);
                 }
             }
