@@ -12,6 +12,9 @@
     <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Terrain\1_klasszikus_fu.png" />
     <None Remove="Assets\Images\Terrain\plain.png" />
+    <None Remove="Assets\Images\Trees\tree2.png" />
+    <None Remove="Assets\Images\Trees\tree3.png" />
+    <None Remove="Assets\Images\Trees\tree4.png" />
     <None Remove="Assets\Images\Vehicle\largeBus.png" />
   </ItemGroup>
 
@@ -20,6 +23,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Terrain\plain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Assets\Images\Trees\tree1.png">
