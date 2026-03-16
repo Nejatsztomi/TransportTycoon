@@ -47,6 +47,7 @@
             Y = y;
             Height = 1;
             Trees = 0;
+            Type = FieldType.Plain;
         }
 
     }
