@@ -48,8 +48,12 @@
         </StatusBar>
 
         <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" MinHeight="250"/>
+                <!-- Ez biztosítja, hogy a bal panel legalább 250 pixel magas legyen -->
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" MinWidth="330"/>
 
                 <ColumnDefinition Width="15" />
 
@@ -63,27 +67,26 @@
 
                     <TextBlock Text="{Binding SelectedTile}" FontSize="16" Foreground="#555" TextAlignment="Center" />
                 </StackPanel>-->
-                <TabControl Background="Transparent"
-                            BorderThickness="0"
-                            HorizontalContentAlignment="Center">
+                <TabControl Background="Transparent" BorderThickness="0" MinWidth="330">
 
-                    <!-- TAB GOMBOK STÍLUSA -->
+                    <!-- TabItem-ek stílusa (kiegészítve a fejléc szövegének megjelenítésével) -->
                     <TabControl.Resources>
-
                         <Style TargetType="TabItem">
                             <Setter Property="Width" Value="60"/>
                             <Setter Property="Height" Value="60"/>
-                            <Setter Property="Margin" Value="4"/>
 
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="TabItem">
                                         <Border x:Name="border"
-                                                Background="#E0E0E0"
-                                                BorderBrush="#888"
-                                                BorderThickness="1">
+                                Background="#E0E0E0"
+                                BorderBrush="#888"
+                                BorderThickness="1">
+                                            <ContentPresenter x:Name="contentPresenter"
+                                              ContentSource="Header"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                                         </Border>
-
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter TargetName="border" Property="BorderThickness" Value="3"/>
@@ -94,47 +97,72 @@
                                 </Setter.Value>
                             </Setter>
                         </Style>
-
                     </TabControl.Resources>
 
-                    <!-- TABOK EGY SORBAN, KÖZÉPEN -->
-                    <TabControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Center"/>
-                            
-                        </ItemsPanelTemplate>
-                    </TabControl.ItemsPanel>
-                    
-                    
+                    <!-- Egyedi Template a vonal hozzáadásához -->
+                    <TabControl.Template>
+                        <ControlTemplate TargetType="TabControl">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" MinHeight="80"/>
+                                    <!-- fejléc sora -->
+                                    <RowDefinition Height="2"/>
+                                    <!-- vonal sora -->
+                                    <RowDefinition Height="*"/>
+                                    <!-- tartalom sora -->
+                                </Grid.RowDefinitions>
 
-                    <!-- TAB 1 -->
+                                <!-- Fejléc panel (alapértelmezett TabPanel, görgethető) -->
+                                <TabPanel Grid.Row="0"
+                          Name="HeaderPanel"
+                          Panel.ZIndex="1"
+                          KeyboardNavigation.TabIndex="1"
+                          IsItemsHost="True"
+                                          HorizontalAlignment="Center" Margin="10"/>
+
+                                <!-- Elválasztó vonal -->
+                                <Border Grid.Row="1"
+                        Background="Gray"
+                        Margin="10,0"/>
+
+                                <!-- Tartalom -->
+                                <Border Grid.Row="2"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter x:Name="PART_SelectedContentHost"
+                                      ContentSource="SelectedContent"/>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </TabControl.Template>
+
+                    <!-- TabItem-ek (fontos: add meg a Header-t!) -->
                     <TabItem>
-                        <WrapPanel Margin="15">
-                            <Button Width="50" Height="50" Margin="8"/>
+                        <WrapPanel Margin="10" HorizontalAlignment="Center">
+                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="6"/>
+                        </WrapPanel>
+                    </TabItem>
+
+                    <TabItem>
+                        <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="8"/>
                             <Button Width="50" Height="50" Margin="8"/>
                         </WrapPanel>
                     </TabItem>
 
-                    <!-- TAB 2 -->
                     <TabItem>
-                        <WrapPanel Margin="15">
-                            <Button Width="50" Height="50" Margin="8"/>
+                        <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="8"/>
                         </WrapPanel>
                     </TabItem>
 
-                    <!-- TAB 3 -->
                     <TabItem>
-                        <WrapPanel Margin="15">
-                            <Button Width="50" Height="50" Margin="8"/>
-                        </WrapPanel>
-                    </TabItem>
-
-                    <!-- TAB 4 -->
-                    <TabItem>
-                        <WrapPanel Margin="15">
+                        <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="8"/>
                         </WrapPanel>
                     </TabItem>
