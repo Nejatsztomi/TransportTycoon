@@ -48,10 +48,6 @@
         </StatusBar>
 
         <Grid Margin="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" MinHeight="250"/>
-                <!-- Ez biztosítja, hogy a bal panel legalább 250 pixel magas legyen -->
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" MinWidth="330"/>
 
@@ -78,14 +74,11 @@
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="TabItem">
-                                        <Border x:Name="border"
-                                Background="#E0E0E0"
-                                BorderBrush="#888"
-                                BorderThickness="1">
+                                        <Border x:Name="border" Background="#E0E0E0" BorderBrush="#888" BorderThickness="1">
                                             <ContentPresenter x:Name="contentPresenter"
-                                              ContentSource="Header"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
+                                                              ContentSource="Header"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"/>
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsSelected" Value="True">
@@ -104,7 +97,7 @@
                         <ControlTemplate TargetType="TabControl">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" MinHeight="80"/>
+                                    <RowDefinition Height="Auto" MinHeight="90"/>
                                     <!-- fejléc sora -->
                                     <RowDefinition Height="2"/>
                                     <!-- vonal sora -->
@@ -114,23 +107,21 @@
 
                                 <!-- Fejléc panel (alapértelmezett TabPanel, görgethető) -->
                                 <TabPanel Grid.Row="0"
-                          Name="HeaderPanel"
-                          Panel.ZIndex="1"
-                          KeyboardNavigation.TabIndex="1"
-                          IsItemsHost="True"
+                                          Name="HeaderPanel"
+                                          Panel.ZIndex="1"
+                                          KeyboardNavigation.TabIndex="1"
+                                          IsItemsHost="True"
                                           HorizontalAlignment="Center" Margin="10"/>
 
                                 <!-- Elválasztó vonal -->
-                                <Border Grid.Row="1"
-                        Background="Gray"
-                        Margin="10,0"/>
+                                <Border Grid.Row="1" Background="Gray" Margin="10,0"/>
 
                                 <!-- Tartalom -->
                                 <Border Grid.Row="2"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        Padding="{TemplateBinding Padding}">
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Padding="{TemplateBinding Padding}">
                                     <ContentPresenter x:Name="PART_SelectedContentHost"
                                       ContentSource="SelectedContent"/>
                                 </Border>
@@ -140,7 +131,8 @@
 
                     <!-- TabItem-ek (fontos: add meg a Header-t!) -->
                     <TabItem>
-                        <WrapPanel Margin="10" HorizontalAlignment="Center">
+                        <WrapPanel Margin="15" HorizontalAlignment="Center">
+                            <Button Width="50" Height="50" Margin="6"/>
                             <Button Width="50" Height="50" Margin="6"/>
                             <Button Width="50" Height="50" Margin="6"/>
                             <Button Width="50" Height="50" Margin="6"/>
@@ -152,12 +144,15 @@
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="8"/>
                             <Button Width="50" Height="50" Margin="8"/>
+                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="6"/>
                         </WrapPanel>
                     </TabItem>
 
                     <TabItem>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="8"/>
+                            <Button Width="50" Height="50" Margin="6"/>
                         </WrapPanel>
                     </TabItem>
 
