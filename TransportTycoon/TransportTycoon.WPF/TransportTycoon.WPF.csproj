@@ -11,11 +11,15 @@
   <ItemGroup>
     <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Terrain\1_klasszikus_fu.png" />
+    <None Remove="Assets\Images\Terrain\plain.png" />
     <None Remove="Assets\Images\Vehicle\largeBus.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\Images\Terrain\1_klasszikus_fu.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\plain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Assets\Trees\tree1.png">
