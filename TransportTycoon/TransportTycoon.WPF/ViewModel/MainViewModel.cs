@@ -68,7 +68,7 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
-            TileClickCommand = new(OnTileClick);
+            TileClickCommand = new(OnTileClick!);
 
             Tiles = [];
             RefreshTable();
