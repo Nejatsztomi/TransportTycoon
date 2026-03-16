@@ -19,7 +19,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             get 
             {
-                return Field.Type switch
+                return Field.FieldType switch
                 {
                     FieldType.Water => "Blue",
                     FieldType.Plain => "Green",
@@ -45,8 +45,11 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 if (TreeCounter == 0) return null;
 
-                FieldType typeName = Field.GetType().Name;
-
+                if(Field is Terrain)
+                {
+                    return $"Assets/Images/Trees/tree_{TreeCounter}.png";
+                }
+                return null;
             }
         }
         #endregion
