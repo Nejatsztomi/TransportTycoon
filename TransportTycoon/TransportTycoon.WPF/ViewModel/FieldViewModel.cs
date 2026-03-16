@@ -16,14 +16,28 @@ namespace TransportTycoon.WPF.ViewModel
         public int Y => Field.Y;
         public int Height => Field.Height;
         public int TreeCounter => Field.GetTrees();
-        public string? TreeImagePath
+        public string MinimapColor 
         {
-            get
+            get 
             {
-                if(TreeCounter==0) return null;
-
-                FieldType typeName = Field.GetType().Name;
-
+                return Field.Type switch
+                {
+                    FieldType.Water => "Blue",
+                    FieldType.Plain => "Green",
+                    FieldType.Hill => "DarkGreen",
+                    FieldType.Mountain => "Gray",
+                    FieldType.HighMountain => "DarkGray",
+                    FieldType.House => "Yellow",
+                    FieldType.Farm => "LightGreen",
+                    FieldType.Mine => "DarkYellow",
+                    FieldType.LumberCamp => "SaddleBrown",
+                    FieldType.Mill => "LightGray",
+                    FieldType.Factory => "DimGray",
+                    FieldType.Road => "Black",
+                    FieldType.Bridge => "Peru",
+                    FieldType.Stop => "Red",
+                    _ => throw new InvalidOperationException("Unknown field type.")
+                };
             }
         }
         #endregion

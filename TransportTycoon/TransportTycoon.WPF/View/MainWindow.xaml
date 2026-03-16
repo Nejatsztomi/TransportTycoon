@@ -175,90 +175,127 @@
             </Border>
 
             <!-- Right panel -->
+            
             <Border
                 Grid.Column="2"
                 Background="#2C2C2C"
                 CornerRadius="5"
                 ClipToBounds="True"
                 >
+                <Grid>
+                    <ScrollViewer
+                         x:Name="MapScrollViewer"
+                         HorizontalScrollBarVisibility="Auto"
+                         VerticalScrollBarVisibility="Auto"
+     
+                         PreviewMouseWheel="MapScrollViewer_PreviewMouseWheel"
+                         PreviewMouseRightButtonDown="MapScrollViewer_PreviewMouseRightButtonDown"
+                         PreviewMouseMove="MapScrollViewer_PreviewMouseMove"
+                         PreviewMouseRightButtonUp="MapScrollViewer_PreviewMouseRightButtonUp"
+                         >
 
-                <ScrollViewer
-                    x:Name="MapScrollViewer"
-                    HorizontalScrollBarVisibility="Auto"
-                    VerticalScrollBarVisibility="Auto"
-                    
-                    PreviewMouseWheel="MapScrollViewer_PreviewMouseWheel"
-                    PreviewMouseRightButtonDown="MapScrollViewer_PreviewMouseRightButtonDown"
-                    PreviewMouseMove="MapScrollViewer_PreviewMouseMove"
-                    PreviewMouseRightButtonUp="MapScrollViewer_PreviewMouseRightButtonUp"
-                    >
+                        <ItemsControl ItemsSource="{Binding Tiles}">
 
-                    <ItemsControl ItemsSource="{Binding Tiles}">
+                            <ItemsControl.LayoutTransform>
+                                <ScaleTransform
+                                     ScaleX="{Binding ZoomLevel}"
+                                     ScaleY="{Binding ZoomLevel}"
+                                     />
+                            </ItemsControl.LayoutTransform>
 
-                        <ItemsControl.LayoutTransform>
-                            <ScaleTransform
-                                ScaleX="{Binding ZoomLevel}"
-                                ScaleY="{Binding ZoomLevel}"
-                                />
-                        </ItemsControl.LayoutTransform>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid
+                                         Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                         Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                         />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid
-                                    Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid
+                                         Width="50"
+                                         Height="50"
+                                         Background="Transparent"
+                                         >
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid
-                                    Width="50"
-                                    Height="50"
-                                    Background="Transparent"
-                                    >
+                                        <Grid.InputBindings>
+                                            <MouseBinding 
+                                               MouseAction="LeftClick" 
+                                               Command="{Binding DataContext.TileClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                               CommandParameter="{Binding}"
+                                               />
+                                        </Grid.InputBindings>
 
-                                    <Grid.InputBindings>
-                                        <MouseBinding 
-                                                      MouseAction="LeftClick" 
-                                                      Command="{Binding DataContext.TileClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                                      CommandParameter="{Binding}"
-                                                      />
-                                    </Grid.InputBindings>
+                                        <Border
+                                             BorderBrush="#404040"
+                                             BorderThickness="1"
+                                             >
+                                            <Border.Background>
+                                                <ImageBrush ImageSource="{Binding ImagePath}" 
+                                                     Stretch="UniformToFill" 
+                                                     RenderOptions.BitmapScalingMode="NearestNeighbor" />
+                                            </Border.Background>
+                                        </Border>
 
-                                    <Border
-                                            BorderBrush="#404040"
-                                            BorderThickness="1"
-                                            >
-                                        <Border.Background>
-                                            <ImageBrush ImageSource="{Binding ImagePath}" 
-                                                        Stretch="UniformToFill" 
-                                                        RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                                        </Border.Background>
-                                    </Border>
+                                        <Border x:Name="HoverOverlay" 
+                                             Visibility="Hidden" 
+                                             BorderBrush="Yellow" 
+                                             BorderThickness="2" 
+                                             Background="#33FFFFFF" 
+                                             IsHitTestVisible="False"
+                                             />
+                                    </Grid>
 
-                                    <Border x:Name="HoverOverlay" 
-                                            Visibility="Hidden" 
-                                            BorderBrush="Yellow" 
-                                            BorderThickness="2" 
-                                            Background="#33FFFFFF" 
-                                            IsHitTestVisible="False"
-                                            />
-                                </Grid>
+                                    <DataTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="HoverOverlay" Property="Visibility" Value="Visible" />
 
-                                <DataTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="HoverOverlay" Property="Visibility" Value="Visible" />
+                                            <Setter Property="Panel.ZIndex" Value="1" />
+                                        </Trigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
 
-                                        <Setter Property="Panel.ZIndex" Value="1" />
-                                    </Trigger>
-                                </DataTemplate.Triggers>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
 
-                    </ItemsControl>
-                </ScrollViewer>
+
+                    <Border HorizontalAlignment="Right" 
+                            VerticalAlignment="Top" 
+                            Width="150" 
+                            Height="150" 
+                            Margin="20" 
+                            BorderBrush="#404040" 
+                            BorderThickness="2" 
+                            Background="Black"
+                            Opacity="0.9">
+                        <Viewbox Stretch="Uniform">
+                            <ItemsControl ItemsSource="{Binding Tiles}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid 
+                                            Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Rectangle Width="10" Height="10" Fill="{Binding MinimapColor}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Viewbox>
+
+                    </Border>
+
+
+
+                </Grid>
+                
+               
+                
 
             </Border>
 
