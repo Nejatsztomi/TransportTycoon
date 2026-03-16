@@ -10,14 +10,9 @@
 
   <ItemGroup>
     <None Remove="Assets\Images\Road\road.png" />
-    <None Remove="Assets\Images\Terrain\1_klasszikus_fu.png" />
+    <None Remove="Assets\Images\Terrain\field.png" />
+    <None Remove="Assets\Images\Terrain\water2.png" />
     <None Remove="Assets\Images\Vehicle\largeBus.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\Images\Terrain\1_klasszikus_fu.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -38,7 +33,13 @@
     <Content Include="Assets\Images\Road\road.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Images\Terrain\field.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Images\Terrain\hill.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\water2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Vehicle\largeBus.png">

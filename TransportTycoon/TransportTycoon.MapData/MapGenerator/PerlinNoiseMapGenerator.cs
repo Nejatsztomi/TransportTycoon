@@ -38,7 +38,6 @@
         {
             int[,] map = new int[Width, Height];
 
-            // Step 1: Base Terrain Generation
             float offsetX = Random.Next(-10000, 10000);
             float offsetY = Random.Next(-10000, 10000);
 
@@ -49,7 +48,26 @@
                     // Calculate normalized noise (0.0 to 1.0)
                     float noiseValue = CalculateNoise((x + offsetX) * noiseScale, (y + offsetY) * noiseScale);
 
-                    map[x, y] = (int)Math.Clamp(Math.Round(noiseValue * 5), 0, 4);
+                    if (noiseValue < 0.35f)
+                    {
+                        map[x, y] = Water;          // Bottom 35% of heights become water
+                    }
+                    else if (noiseValue < 0.55f)
+                    {
+                        map[x, y] = Plain;          // Next 20% become plains
+                    }
+                    else if (noiseValue < 0.75f)
+                    {
+                        map[x, y] = Hills;          // Next 20% become hills
+                    }
+                    else if (noiseValue < 0.90f)
+                    {
+                        map[x, y] = Mountains;      // Next 15% become mountains
+                    }
+                    else
+                    {
+                        map[x, y] = HighMountains;  // Top 10% become high mountains
+                    }
                 }
             }
 

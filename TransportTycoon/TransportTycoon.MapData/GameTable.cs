@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿using TransportTycoon.Model.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
@@ -22,6 +22,8 @@ namespace TransportTycoon.MapData
             get => Table[x, y];
             set => Table[x, y] = value;
         }
+
+        private IMapGenerator MapGenerator { get; }
         #endregion
 
         #region Constructors
@@ -33,6 +35,8 @@ namespace TransportTycoon.MapData
 
             Pointers = [];
             BuildingIDs = [];
+
+            MapGenerator = PerlinNoiseMapGeneratorFactory.Create(width, height, 0);
         }
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
@@ -52,21 +56,39 @@ namespace TransportTycoon.MapData
             }
             return acceptedNeighbours;
         }
+
         public void GenerateMap()
         {
-            for (int i = 0; i < Table.GetLength(0); i++)
+            int[,] randomMap = MapGenerator.GenerateMap(0.1f);
+            for (int i = 0; i < Width; i++)
             {
-                for (int j = 0; j < Table.GetLength(1); j++)
+                for (int j = 0; j < Height; j++)
                 {
-                    Table[i, j] = new Plain(i, j);
+                    switch (randomMap[i, j])
+                    {
+                        case 0:
+                            Table[i, j] = new Water(i, j);
+                            break;
+                        case 1:
+                            Table[i, j] = new Plain(i, j);
+                            break;
+                        case 2:
+                            Table[i, j] = new Hill(i, j);
+                            break;
+                        case 3:
+                            Table[i, j] = new Mountin(i, j);
+                            break;
+                        case 4:
+                            Table[i, j] = new HightMountin(i, j);
+                            break;
+                    }
                 }
             }
         }
+
         public bool IsTileHeightPossible(int x, int y, int height)
         {
             if (x < 0 || x >= Height || y < 0 || y >= Width) return false;
-
-            bool isValid = true;
 
             //Up
             if (x > 0 && Math.Abs(height - Table[x - 1, y].Height) > 2) return false;
@@ -80,9 +102,7 @@ namespace TransportTycoon.MapData
             // Right
             if (y < Width - 1 && Math.Abs(height - Table[x, y + 1].Height) > 2) return false;
 
-
-            return isValid;
-
+            return true;
         }
         #endregion
 

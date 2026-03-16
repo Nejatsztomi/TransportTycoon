@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -83,7 +84,14 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
-                    FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/1_klasszikus_fu.png");
+                    string path = Model.Map[x, y] switch
+                    {
+                        Plain _ => "Assets/Images/Terrain/field.png",
+                        Hill _ => "Assets/Images/Terrain/hill.png",
+                        Water _ => "Assets/Images/Terrain/water2.png",
+                        _ => "Assets/Images/Terrain/field.png"
+                    };
+                    FieldViewModel tile = new(Model.Map[x, y], path);
                     Tiles.Add(tile);
                 }
             }
@@ -130,7 +138,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             GameModeChanged?.Invoke(this, GameMode.Editor);
         }
-        private void OnTileClick(object param)
+        private void OnTileClick(object? param)
         {
             if (param is FieldViewModel tile)
             {
