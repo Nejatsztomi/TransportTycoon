@@ -47,7 +47,7 @@ namespace TransportTycoon.WPF.ViewModel
 
                 if(Field is Terrain)
                 {
-                    return $"Assets/Images/Trees/tree_{TreeCounter}.png";
+                    return $"/Assets/Trees/tree{TreeCounter}.png";
                 }
                 return null;
             }

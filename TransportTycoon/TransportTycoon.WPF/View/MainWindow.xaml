@@ -250,7 +250,7 @@
                                              BorderThickness="2" 
                                              Background="#33FFFFFF" 
                                              IsHitTestVisible="False"
-                                             />
+                                             Panel.ZIndex="5"/>
                                     </Grid>
 
                                     <DataTemplate.Triggers>
