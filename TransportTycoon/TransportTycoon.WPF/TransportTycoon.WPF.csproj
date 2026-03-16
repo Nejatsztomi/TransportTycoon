@@ -9,8 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Terrain\1_klasszikus_fu.png" />
-    <None Remove="Assets\Images\Terrain\domb.png" />
+    <None Remove="Assets\Images\Vehicle\largeBus.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,9 +35,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Images\Terrain\domb.png">
+    <Content Include="Assets\Images\Road\road.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    </Content>
+    <Content Include="Assets\Images\Terrain\hill.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Vehicle\largeBus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

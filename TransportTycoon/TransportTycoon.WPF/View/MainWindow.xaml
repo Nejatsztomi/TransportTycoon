@@ -131,7 +131,7 @@
                     <!-- TabItem-ek-->
                     <TabItem>
                         <TabItem.Background>
-                            <ImageBrush ImageSource="/Assets/Images/Terrain/domb.png" Stretch="UniformToFill"/>
+                            <ImageBrush ImageSource="/Assets/Images/Terrain/hill.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="6"/>
@@ -143,6 +143,9 @@
                     </TabItem>
 
                     <TabItem>
+                        <TabItem.Background>
+                            <ImageBrush ImageSource="/Assets/Images/Road/road.png" Stretch="UniformToFill"/>
+                        </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="8"/>
                             <Button Width="50" Height="50" Margin="8"/>
@@ -152,6 +155,9 @@
                     </TabItem>
 
                     <TabItem>
+                        <TabItem.Background>
+                            <ImageBrush ImageSource="/Assets/Images/Vehicle/largeBus.png" Stretch="UniformToFill"/>
+                        </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="8"/>
                             <Button Width="50" Height="50" Margin="6"/>
