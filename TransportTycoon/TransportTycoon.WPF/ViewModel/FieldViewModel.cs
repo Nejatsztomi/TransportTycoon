@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData;
+﻿using Microsoft.VisualBasic.FileIO;
+using TransportTycoon.MapData;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -15,6 +16,16 @@ namespace TransportTycoon.WPF.ViewModel
         public int Y => Field.Y;
         public int Height => Field.Height;
         public int TreeCounter => Field.GetTrees();
+        public string? TreeImagePath
+        {
+            get
+            {
+                if(TreeCounter==0) return null;
+
+                FieldType typeName = Field.GetType().Name;
+
+            }
+        }
         #endregion
 
         #region Constructor
