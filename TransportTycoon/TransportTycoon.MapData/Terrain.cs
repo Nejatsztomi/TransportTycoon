@@ -46,7 +46,7 @@
             X = x;
             Y = y;
             Height = 1;
-            Trees = 0;
+            Trees = 1;
             FieldType = FieldType.Plain;
         }
 
