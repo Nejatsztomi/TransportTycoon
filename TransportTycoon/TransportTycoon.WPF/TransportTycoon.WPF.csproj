@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <None Remove="Assets\Images\Terrain\1_klasszikus_fu.png" />
+    <None Remove="Assets\Images\Terrain\domb.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,12 @@
   <ItemGroup>
     <ProjectReference Include="..\TransportTycoon.Model\TransportTycoon.Model.csproj" />
     <ProjectReference Include="..\TransportTycoon.Persistence\TransportTycoon.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Images\Terrain\domb.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
