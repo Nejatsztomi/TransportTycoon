@@ -29,4 +29,15 @@ namespace TransportTycoon.MapData
 
 
     }
+
+    public class Water : Field
+    {
+        public Water(int x, int y)
+        {
+            X = x;
+            Y = y;
+            Height = 0;
+            Modifiable = false;
+        }
+    }
 }
