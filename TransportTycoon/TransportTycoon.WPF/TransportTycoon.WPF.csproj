@@ -22,7 +22,7 @@
     <Content Include="Assets\Images\Terrain\plain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="Assets\Trees\tree1.png">
+    <Resource Include="Assets\Images\Trees\tree1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
