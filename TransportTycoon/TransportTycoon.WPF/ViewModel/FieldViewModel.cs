@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using TransportTycoon.MapData;
+﻿using TransportTycoon.MapData;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -38,6 +37,16 @@ namespace TransportTycoon.WPF.ViewModel
                     FieldType.Stop => "Red",
                     _ => throw new InvalidOperationException("Unknown field type.")
                 };
+            }
+        }
+        public string? TreeImagePath
+        {
+            get
+            {
+                if (TreeCounter == 0) return null;
+
+                FieldType typeName = Field.GetType().Name;
+
             }
         }
         #endregion
