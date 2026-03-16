@@ -30,9 +30,9 @@ namespace TransportTycoon.MapData
         public int X { protected set; get; }
         public int Y { protected set; get; }
         public int Height { protected set; get; }
-        
-        public virtual bool Modifiable { protected set; get; }
-        public FieldType Type { protected set; get; }
+
+        public virtual bool Modifiable { protected set; get; } = true;
+
         #endregion
 
         #region Public Methods
@@ -41,5 +41,16 @@ namespace TransportTycoon.MapData
         #region Private Methods
         #endregion
 
+    }
+
+    public class Water : Field
+    {
+        public Water(int x, int y)
+        {
+            X = x;
+            Y = y;
+            Height = 0;
+            Modifiable = false;
+        }
     }
 }
