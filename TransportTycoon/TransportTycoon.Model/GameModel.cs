@@ -180,7 +180,7 @@ namespace TransportTycoon.Model
                 {
                     if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull())
                     {
-                        if (rnd.Next(1, 101) <= 20)
+                        if (rnd.Next(1, 101) <= 10)
                         {
                             terrain.Grow();
                             if (terrain.IsFull())
@@ -193,7 +193,7 @@ namespace TransportTycoon.Model
             }
             foreach (Field f in spreadedFields)
             {
-                if (f is Terrain t && rnd.Next(1, 101) <= 5) t.SpreadForest();
+                if (f is Terrain t && rnd.Next(1, 101) <= 100) t.SpreadForest();
             }
         }
         #endregion
