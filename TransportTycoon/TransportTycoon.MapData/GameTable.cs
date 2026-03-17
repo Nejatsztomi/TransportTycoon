@@ -58,7 +58,8 @@ namespace TransportTycoon.MapData
             {
                 for (int j = 0; j < Table.GetLength(1); j++)
                 {
-                    Table[i, j] = new Plain(i, j);
+                    if(i % 3 == 0 && j % 3 == 0) Table[i, j] = new Hill(i, j);
+                    else Table[i, j] = new Plain(i, j);
                 }
             }
         }

@@ -57,6 +57,7 @@ namespace TransportTycoon.WPF.ViewModel
 
             model.NewGameCreated += Model_NewGameCreated;
             model.GameTicked += Model_GameTicked;
+            model.GameAdvanced += Model_GameAdvanced;
 
             NewGameCommand = new(OnNewGame);
             ExitCommand = new(OnExit);
@@ -73,6 +74,11 @@ namespace TransportTycoon.WPF.ViewModel
             Tiles = [];
             RefreshTable();
         }
+
+        private void Model_GameAdvanced(object? sender, EventArgs e)
+        {
+            RefreshTable();
+        }
         #endregion
 
         #region Private methods
@@ -83,8 +89,16 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
-                    FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/plain.png");
-                    Tiles.Add(tile);
+                    if (Model.Map[x, y].FieldType == MapData.FieldType.Plain)
+                    {
+                        FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/plain.png");
+                        Tiles.Add(tile);
+                    }
+                    else if (Model.Map[x, y].FieldType == MapData.FieldType.Hill)
+                    {
+                        FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/hill.png");
+                        Tiles.Add(tile);
+                    }                   
                 }
             }
         }
