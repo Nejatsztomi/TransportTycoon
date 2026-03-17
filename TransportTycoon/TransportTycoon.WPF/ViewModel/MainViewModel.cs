@@ -26,7 +26,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public GameModel Model { get; init; }
 
-        public ObservableCollection<FieldViewModel> Tiles { get; init; }
+        public ObservableCollection<FieldViewModel> Tiles { get; private set; }
 
         public int Balance => Model.Balance;
         public int GameTime => Model.GameTime;
@@ -85,7 +85,8 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private methods
         private void RefreshTable()
         {
-            Tiles.Clear();
+            //Tiles.Clear();
+            List<FieldViewModel> tempList = new(Model.Map.Width * Model.Map.Height + 1);
             for (int x = 0; x < Model.Map.Width; x++)
             {
                 for (int y = 0; y < Model.Map.Height; y++)
@@ -97,10 +98,10 @@ namespace TransportTycoon.WPF.ViewModel
                         Water _ => "Assets/Images/Terrain/water2.png",
                         _ => "Assets/Images/Terrain/field.png"
                     };
-                    FieldViewModel tile = new(Model.Map[x, y], path);
-                    Tiles.Add(tile);
+                    tempList.Add(new(Model.Map[x, y], path));
                 }
             }
+            Tiles = new(tempList);
         }
         #endregion
 
