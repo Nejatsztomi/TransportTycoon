@@ -209,6 +209,7 @@ namespace TransportTycoon.Model
         private void Timer_Tick(object? sender, EventArgs e)
         {
             GameTime++;
+            if (GameTime > 0 && GameTime % 10 == 0) ForestGrowing();
             GameTicked?.Invoke(this, EventArgs.Empty);
         }
         #endregion
