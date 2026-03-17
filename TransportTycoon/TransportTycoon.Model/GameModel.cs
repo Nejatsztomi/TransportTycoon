@@ -61,6 +61,7 @@ namespace TransportTycoon.Model
         public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
         public event EventHandler? GameTicked;
+        public event EventHandler? GameAdvanced;
         #endregion
 
         #region Constructor
@@ -179,7 +180,7 @@ namespace TransportTycoon.Model
                 {
                     if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull())
                     {
-                        if (rnd.Next(1, 101) <= 50)
+                        if (rnd.Next(1, 101) <= 100)
                         {
                             terrain.Grow();
                             if (terrain.IsFull())
@@ -209,7 +210,11 @@ namespace TransportTycoon.Model
         private void Timer_Tick(object? sender, EventArgs e)
         {
             GameTime++;
-            if (GameTime > 0 && GameTime % 10 == 0) ForestGrowing();
+            if (GameTime > 0 && GameTime % 10 == 0)
+            {
+                ForestGrowing();
+                GameAdvanced?.Invoke(this, EventArgs.Empty);
+            }
             GameTicked?.Invoke(this, EventArgs.Empty);
         }
         #endregion
