@@ -179,7 +179,7 @@ namespace TransportTycoon.Model
                 {
                     if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull())
                     {
-                        if (rnd.Next(1, 101) <= 5)
+                        if (rnd.Next(1, 101) <= 50)
                         {
                             terrain.Grow();
                             if (terrain.IsFull())
