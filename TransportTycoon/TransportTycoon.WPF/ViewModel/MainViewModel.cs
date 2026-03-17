@@ -57,6 +57,7 @@ namespace TransportTycoon.WPF.ViewModel
 
             model.NewGameCreated += Model_NewGameCreated;
             model.GameTicked += Model_GameTicked;
+            model.GameAdvanced += Model_GameAdvanced;
 
             NewGameCommand = new(OnNewGame);
             ExitCommand = new(OnExit);
@@ -71,6 +72,11 @@ namespace TransportTycoon.WPF.ViewModel
             TileClickCommand = new(OnTileClick!);
 
             Tiles = [];
+            RefreshTable();
+        }
+
+        private void Model_GameAdvanced(object? sender, EventArgs e)
+        {
             RefreshTable();
         }
         #endregion
