@@ -46,7 +46,8 @@
             X = x;
             Y = y;
             Height = 1;
-            Trees = 0;
+            Trees = 2;
+            FieldType = FieldType.Plain;
         }
 
     }
@@ -58,6 +59,7 @@
             Y = y;
             Height = 2;
             Trees = 0;
+            FieldType = FieldType.Hill;
         }
     }
     public class Mountin : Terrain
@@ -68,6 +70,7 @@
             Y = y;
             Height = 3;
             Trees = 0;
+            FieldType = FieldType.Mountain;
         }
     }
     public class HightMountin : Terrain
@@ -78,6 +81,7 @@
             Y = y;
             Height = 4;
             Trees = 0;
+            FieldType = FieldType.HighMountain;
         }
     }
 }
