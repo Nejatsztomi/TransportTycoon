@@ -88,6 +88,37 @@ namespace TransportTycoon.MapData
             }
         }
 
+        public void GenerateTrees()
+        {
+            float[,] randomTreeMap = NoiseGenerator.GenerateNoise(0.1f);
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    if (Table[i, j] is not Terrain terrain) continue;
+
+                    if (randomTreeMap[i, j] < 0.5f) continue;
+
+                    if (randomTreeMap[i, j] < 0.75f)
+                    {
+                        terrain.Trees = 1;
+                    }
+                    else if (randomTreeMap[i, j] < 0.85f)
+                    {
+                        terrain.Trees = 2;
+                    }
+                    else if (randomTreeMap[i, j] < 0.95f)
+                    {
+                        terrain.Trees = 3;
+                    }
+                    else
+                    {
+                        terrain.Trees = 4;
+                    }
+                }
+            }
+        }
+
         public bool IsTileHeightPossible(int x, int y, int height)
         {
             if (x < 0 || x >= Height || y < 0 || y >= Width) return false;

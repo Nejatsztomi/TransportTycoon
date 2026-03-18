@@ -172,18 +172,18 @@ namespace TransportTycoon.Model
         }
         private void ForestGrowing()
         {
-            Random rnd = new Random();
-            HashSet<Field> spreadedFields = new HashSet<Field>();
+            Random rnd = new();
+            HashSet<Field> spreadedFields = [];
             for (int i = 0; i < Map.Height; i++)
             {
                 for (int j = 0; j < Map.Width; j++)
                 {
-                    if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull())
+                    if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull)
                     {
                         if (rnd.Next(1, 101) <= 10)
                         {
                             terrain.Grow();
-                            if (terrain.IsFull())
+                            if (terrain.IsFull)
                             {
                                 spreadedFields.UnionWith(Map.CheckNeighboringTrees(i, j));
                             }

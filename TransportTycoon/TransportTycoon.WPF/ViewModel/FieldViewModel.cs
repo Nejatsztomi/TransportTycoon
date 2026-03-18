@@ -15,9 +15,9 @@ namespace TransportTycoon.WPF.ViewModel
         public int Y => Field.Y;
         public int Height => Field.Height;
         public int TreeCounter => Field.GetTrees();
-        public string MinimapColor 
+        public string MinimapColor
         {
-            get 
+            get
             {
                 return Field.FieldType switch
                 {
@@ -45,7 +45,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 if (TreeCounter == 0) return null;
 
-                if(Field is Terrain)
+                if (Field is Terrain)
                 {
                     return $"/Assets/Images/Trees/tree{TreeCounter}.png";
                 }
