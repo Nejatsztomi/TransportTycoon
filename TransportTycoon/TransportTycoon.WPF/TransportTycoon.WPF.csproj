@@ -13,6 +13,10 @@
     <None Remove="Assets\Images\Terrain\field.png" />
     <None Remove="Assets\Images\Terrain\hill.png" />
     <None Remove="Assets\Images\Terrain\water2.png" />
+    <None Remove="Assets\Images\Trees\tree1.png" />
+    <None Remove="Assets\Images\Trees\tree2.png" />
+    <None Remove="Assets\Images\Trees\tree3.png" />
+    <None Remove="Assets\Images\Trees\tree4.png" />
     <None Remove="Assets\Images\Vehicle\largeBus.png" />
   </ItemGroup>
 
@@ -41,6 +45,18 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Terrain\water2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Vehicle\largeBus.png">
