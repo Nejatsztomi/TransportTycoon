@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Terrain\field.png" />
+    <None Remove="Assets\Images\Terrain\hill.png" />
     <None Remove="Assets\Images\Terrain\water2.png" />
     <None Remove="Assets\Images\Vehicle\largeBus.png" />
   </ItemGroup>

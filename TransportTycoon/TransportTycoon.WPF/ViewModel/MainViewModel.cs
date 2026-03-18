@@ -78,7 +78,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_GameAdvanced(object? sender, EventArgs e)
         {
-            RefreshTable();
+            //RefreshTable();
         }
         #endregion
 

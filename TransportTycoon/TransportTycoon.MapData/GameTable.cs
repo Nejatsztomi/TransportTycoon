@@ -1,4 +1,4 @@
-﻿using TransportTycoon.Model.MapGenerator;
+﻿using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
@@ -23,7 +23,7 @@ namespace TransportTycoon.MapData
             set => Table[x, y] = value;
         }
 
-        private IMapGenerator MapGenerator { get; }
+        private INoiseGenerator NoiseGenerator { get; }
         #endregion
 
         #region Constructors
@@ -36,7 +36,7 @@ namespace TransportTycoon.MapData
             Pointers = [];
             BuildingIDs = [];
 
-            MapGenerator = PerlinNoiseMapGeneratorFactory.Create(width, height, 0);
+            NoiseGenerator = PerlinNoiseGeneratorFactory.Create(width, height, 0);
         }
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
@@ -59,28 +59,30 @@ namespace TransportTycoon.MapData
 
         public void GenerateMap()
         {
-            int[,] randomMap = MapGenerator.GenerateMap(0.1f);
+            float[,] randomMap = NoiseGenerator.GenerateNoise(0.1f);
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    switch (randomMap[i, j])
+                    if (randomMap[i, j] < 0.35f)
                     {
-                        case 0:
-                            Table[i, j] = new Water(i, j);
-                            break;
-                        case 1:
-                            Table[i, j] = new Plain(i, j);
-                            break;
-                        case 2:
-                            Table[i, j] = new Hill(i, j);
-                            break;
-                        case 3:
-                            Table[i, j] = new Mountin(i, j);
-                            break;
-                        case 4:
-                            Table[i, j] = new HightMountin(i, j);
-                            break;
+                        Table[i, j] = new Water(i, j);          // Bottom 35% of heights become water
+                    }
+                    else if (randomMap[i, j] < 0.55f)
+                    {
+                        Table[i, j] = new Plain(i, j);          // Next 20% become plains
+                    }
+                    else if (randomMap[i, j] < 0.75f)
+                    {
+                        Table[i, j] = new Hill(i, j);          // Next 20% become hills
+                    }
+                    else if (randomMap[i, j] < 0.90f)
+                    {
+                        Table[i, j] = new Mountin(i, j);      // Next 15% become mountains
+                    }
+                    else
+                    {
+                        Table[i, j] = new HightMountin(i, j);  // Top 10% become high mountains
                     }
                 }
             }
