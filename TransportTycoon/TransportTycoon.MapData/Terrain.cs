@@ -18,12 +18,11 @@
             Height--;
         }
 
-        public void Grow()
+        public bool Grow()
         {
-            if (!IsFull)
-            {
-                Trees++;
-            }
+            if (IsFull) return false;
+            Trees++;
+            return true;
         }
 
         public bool IsFull => Trees == 4;

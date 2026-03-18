@@ -70,15 +70,18 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
-            TileClickCommand = new(OnTileClick!);
+            TileClickCommand = new(OnTileClick);
 
             Tiles = [];
             RefreshTable();
         }
 
-        private void Model_GameAdvanced(object? sender, EventArgs e)
+        private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
         {
-            //RefreshTable();
+            // O(n * m + m)
+            Tiles.Where(tile => grownTrees.Any(tuple => tuple.Item1 == tile.X && tuple.Item2 == tile.Y))
+                .ToList()
+                .ForEach(tile => tile.RefreshTreeCount());
         }
         #endregion
 

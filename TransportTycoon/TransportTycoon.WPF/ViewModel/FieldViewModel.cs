@@ -63,6 +63,11 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Public Methods
+        public void RefreshTreeCount()
+        {
+            OnPropertyChanged(nameof(TreeCounter));
+            OnPropertyChanged(nameof(TreeImagePath));
+        }
         #endregion
 
         #region Private Methods
