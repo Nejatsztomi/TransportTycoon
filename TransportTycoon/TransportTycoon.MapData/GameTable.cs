@@ -86,6 +86,8 @@ namespace TransportTycoon.MapData
                     }
                 }
             }
+
+            GenerateTrees();
         }
 
         public void GenerateTrees()
@@ -96,6 +98,7 @@ namespace TransportTycoon.MapData
                 for (int j = 0; j < Height; j++)
                 {
                     if (Table[i, j] is not Terrain terrain) continue;
+                    if (terrain is HightMountin) continue;
 
                     if (randomTreeMap[i, j] < 0.5f) continue;
 
