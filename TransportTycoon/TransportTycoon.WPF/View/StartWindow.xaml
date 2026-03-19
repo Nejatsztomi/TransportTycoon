@@ -1,0 +1,32 @@
+﻿<Window x:Class="TransportTycoon.WPF.View.StartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel"
+        xmlns:local="clr-namespace:TransportTycoon.WPF.View" d:DataContext="{d:DesignInstance Type=vm:StartViewModel}"
+        mc:Ignorable="d"
+        Title="Transport Tycoon - Start menu"
+        Height="450"
+        Width="600"
+        MinHeight="450"
+        MinWidth="600"
+        >
+    
+    <Grid>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
+            <!--nem erzekelni a Commandot-->
+            <Button Content="Start new game" Command="{Binding NewGameCommand}"></Button>
+            <TextBlock Text="Select Difficulty" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+            <ComboBox SelectedIndex="{Binding SelectedDifficulty}">
+                <ComboBoxItem Content="Easy Mode"></ComboBoxItem>
+                <ComboBoxItem Content="Medium Mode"></ComboBoxItem>
+                <ComboBoxItem Content="Hard Mode"></ComboBoxItem>
+            </ComboBox>
+            <Button Content="Load game" Command="{Binding LoadGameCommand}"></Button>
+            <Button Content="Exit Game" Command="{Binding ExitGameCommand}"></Button>
+
+        </StackPanel>
+    </Grid>
+</Window>

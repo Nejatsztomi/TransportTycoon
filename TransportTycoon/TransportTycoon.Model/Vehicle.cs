@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
 {
@@ -33,7 +34,7 @@ namespace TransportTycoon.Model
         #region Public methods
         public void ChangeSpeed(int speed)
         {
-            CurrentSpeed = speed;
+            if (speed>=0 && speed<=TopSpeed) CurrentSpeed = speed;
         }
 
         public void Step(Direction dir)
@@ -74,7 +75,7 @@ namespace TransportTycoon.Model
                     return quantity - MaxCapacity;
                 }
             }
-            else if (CurrentLoad != null){
+            else {
                 if (CurrentCapacity + quantity <= MaxCapacity)
                 {
                     CurrentCapacity = quantity;
@@ -86,7 +87,6 @@ namespace TransportTycoon.Model
                     return quantity - (MaxCapacity - CurrentCapacity);
                 }
             }
-            return quantity;
         }
 
         public int UnLoad(int quantity, Load load) //returns unloaded quantity

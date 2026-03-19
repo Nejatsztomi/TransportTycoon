@@ -2,43 +2,41 @@
 {
     public abstract class Terrain : Field
     {
-        //datas
-        public int Trees { protected set; get; }
+        #region Fields
+        public int Trees { set; get; }
         public override bool Modifiable { get; protected set; }
-        //methods
-        public void IncreaseHeight() 
+        #endregion
+
+        #region Public methods
+        public void IncreaseHeight()
         {
             Height++;
         }
-        public void DecreaseHeight() 
+
+        public void DecreaseHeight()
         {
-            Height--; 
-        }
-        public void Grow() 
-        {
-            if (!IsFull()) 
-            {
-                Trees++;
-            }
+            Height--;
         }
 
-        public bool IsFull() 
+        public bool Grow()
         {
-            if (Trees == 4) 
-            {
-                return true;
-            }
-            return false;
+            if (IsFull) return false;
+            Trees++;
+            return true;
         }
 
-        public void SpreadForest() 
+        public bool IsFull => Trees == 4;
+
+        public void SpreadForest()
         {
             Trees = 1;
         }
+
+        public override int GetTrees() => Trees;
+        #endregion
     }
 
-
-    public class Plain : Terrain 
+    public class Plain : Terrain
     {
         public Plain(int x, int y)
         {
@@ -46,6 +44,7 @@
             Y = y;
             Height = 1;
             Trees = 0;
+            FieldType = FieldType.Plain;
         }
 
     }
@@ -57,6 +56,7 @@
             Y = y;
             Height = 2;
             Trees = 0;
+            FieldType = FieldType.Hill;
         }
     }
     public class Mountin : Terrain
@@ -67,6 +67,7 @@
             Y = y;
             Height = 3;
             Trees = 0;
+            FieldType = FieldType.Mountain;
         }
     }
     public class HightMountin : Terrain
@@ -77,10 +78,7 @@
             Y = y;
             Height = 4;
             Trees = 0;
+            FieldType = FieldType.HighMountain;
         }
     }
-
-    
-
-
 }

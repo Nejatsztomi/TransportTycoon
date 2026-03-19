@@ -9,6 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\Road\road.png" />
+    <None Remove="Assets\Images\Terrain\field.png" />
+    <None Remove="Assets\Images\Terrain\hill.png" />
+    <None Remove="Assets\Images\Terrain\water2.png" />
+    <None Remove="Assets\Images\Trees\tree1.png" />
+    <None Remove="Assets\Images\Trees\tree2.png" />
+    <None Remove="Assets\Images\Trees\tree3.png" />
+    <None Remove="Assets\Images\Trees\tree4.png" />
+    <None Remove="Assets\Images\Vehicle\largeBus.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="ELTE.FI.SARuleSet" Version="3.2.1">
@@ -20,6 +32,36 @@
   <ItemGroup>
     <ProjectReference Include="..\TransportTycoon.Model\TransportTycoon.Model.csproj" />
     <ProjectReference Include="..\TransportTycoon.Persistence\TransportTycoon.Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Images\Road\road.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\field.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\hill.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\water2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Trees\tree4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Vehicle\largeBus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
