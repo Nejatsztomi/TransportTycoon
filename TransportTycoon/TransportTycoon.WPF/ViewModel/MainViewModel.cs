@@ -122,16 +122,19 @@ namespace TransportTycoon.WPF.ViewModel
         private void OnNormalSpeed()
         {
             Model.SetTimeSpeed(TimeSpeed.Normal);
+            OnResumeGame();
         }
 
         private void OnFastSpeed()
         {
             Model.SetTimeSpeed(TimeSpeed.Fast);
+            OnResumeGame();
         }
 
         private void OnSuperFastSpeed()
         {
             Model.SetTimeSpeed(TimeSpeed.SuperFast);
+            OnResumeGame();
         }
 
         private void OnPauseGame()
