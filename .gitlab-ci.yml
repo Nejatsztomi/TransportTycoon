@@ -1,0 +1,54 @@
+workflow:
+    rules:
+        # 1. Run automatically on Merge Requests
+        - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+        # 2. Run automatically when code is pushed or merged into the master branch
+        - if: $CI_COMMIT_BRANCH == "master"
+        # 3. Allow the pipeline to be triggered manually from the GitLab Web UI or API
+        - if: $CI_PIPELINE_SOURCE == "web"
+        - if: $CI_PIPELINE_SOURCE == "api"
+        # 4. Prevent the pipeline from running in any other case (e.g., standard pushes to feature branches)
+        - when: never
+
+stages:
+    - lint
+    - test
+    - build
+
+variables:
+    BUILD_CONFIGURATION: 'Release'
+    ROOT: './TransportTycoon'
+    TEST_PATH: '${ROOT}/TransportTycoon.Test/TransportTycoon.Test.csproj'
+    WPF_PATH: '${ROOT}/TransportTycoon.WPF/TransportTycoon.WPF.csproj'
+
+# 1. Linting on Windows
+check_formatting:
+    stage: lint
+    image: mcr.microsoft.com/dotnet/sdk:10.0-windowsservercore-ltsc2025
+    tags:
+        - windows # This routes the job to your Windows runner
+    script:
+        - echo "Checking code formatting against .editorconfig on Windows..."
+        - dotnet format ${ROOT} --verify-no-changes
+
+# 2. Testing the Model on Linux
+test_model:
+    stage: test
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    needs:
+        - check_formatting
+    script:
+        - echo "Running unit tests on Linux..."
+        - dotnet test ${TEST_PATH} --verbosity normal
+
+# 3. Building the WPF UI on Windows
+build_wpf:
+    stage: build
+    image: mcr.microsoft.com/dotnet/sdk:10.0-windowsservercore-ltsc2025
+    tags:
+        - windows # This routes the job to your Windows runner
+    needs:
+        - test_model
+    script:
+        - echo "Building the WPF project on Windows..."
+        - dotnet build ${WPF_PATH} -c $BUILD_CONFIGURATION
