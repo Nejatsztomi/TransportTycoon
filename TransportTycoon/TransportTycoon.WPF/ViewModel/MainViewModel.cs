@@ -136,17 +136,17 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void OnPauseGame()
         {
-            GameModeChanged?.Invoke(this, GameMode.Paused);
+            Model.SetMode(GameMode.Paused);
         }
 
         private void OnResumeGame()
         {
-            GameModeChanged?.Invoke(this, GameMode.Run);
+            Model.SetMode(GameMode.Run);
         }
 
         private void OnEditorMode()
         {
-            GameModeChanged?.Invoke(this, GameMode.Editor);
+            Model.SetMode(GameMode.Editor);
         }
         private void OnTileClick(object? param)
         {
