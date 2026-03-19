@@ -61,7 +61,7 @@ namespace TransportTycoon.Model
         public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
         public event EventHandler? GameTicked;
-        public event EventHandler? GameAdvanced;
+        public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         #endregion
 
         #region Constructor
@@ -170,20 +170,26 @@ namespace TransportTycoon.Model
             }
             Goods.SetGlobalTax(tax);
         }
-        private void ForestGrowing()
+        private List<Tuple<int, int>> ForestGrowing()
         {
-            Random rnd = new Random();
-            HashSet<Field> spreadedFields = new HashSet<Field>();
+            List<Tuple<int, int>> grownTrees = [];
+
+            Random rnd = new();
+            HashSet<Field> spreadedFields = [];
             for (int i = 0; i < Map.Height; i++)
             {
                 for (int j = 0; j < Map.Width; j++)
                 {
-                    if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull())
+                    if (Map[i, j] is Terrain terrain && terrain.Trees > 0 && !terrain.IsFull)
                     {
                         if (rnd.Next(1, 101) <= 10)
                         {
-                            terrain.Grow();
-                            if (terrain.IsFull())
+                            if (terrain.Grow())
+                            {
+                                grownTrees.Add(new(i, j));
+                            }
+
+                            if (terrain.IsFull)
                             {
                                 spreadedFields.UnionWith(Map.CheckNeighboringTrees(i, j));
                             }
@@ -191,10 +197,17 @@ namespace TransportTycoon.Model
                     }
                 }
             }
-            foreach (Field f in spreadedFields)
+
+            foreach (Field field in spreadedFields)
             {
-                if (f is Terrain t && rnd.Next(1, 101) <= 100) t.SpreadForest();
+                if (field is Terrain terrain && rnd.Next(1, 101) <= 100)
+                {
+                    terrain.SpreadForest();
+                    grownTrees.Add(new(terrain.X, terrain.Y));
+                }
             }
+
+            return grownTrees;
         }
         #endregion
 
@@ -212,8 +225,8 @@ namespace TransportTycoon.Model
             GameTime++;
             if (GameTime > 0 && GameTime % 10 == 0)
             {
-                ForestGrowing();
-                GameAdvanced?.Invoke(this, EventArgs.Empty);
+                var grownTrees = ForestGrowing();
+                GameAdvanced?.Invoke(this, grownTrees);
             }
             GameTicked?.Invoke(this, EventArgs.Empty);
         }

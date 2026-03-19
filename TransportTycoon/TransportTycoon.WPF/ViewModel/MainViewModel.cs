@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -25,7 +26,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public GameModel Model { get; init; }
 
-        public ObservableCollection<FieldViewModel> Tiles { get; init; }
+        public ObservableCollection<FieldViewModel> Tiles { get; private set; }
 
         public int Balance => Model.Balance;
         public int GameTime => Model.GameTime;
@@ -69,38 +70,41 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
-            TileClickCommand = new(OnTileClick!);
+            TileClickCommand = new(OnTileClick);
 
             Tiles = [];
             RefreshTable();
         }
 
-        private void Model_GameAdvanced(object? sender, EventArgs e)
+        private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
         {
-            RefreshTable();
+            // O(n * m + m)
+            Tiles.Where(tile => grownTrees.Any(tuple => tuple.Item1 == tile.X && tuple.Item2 == tile.Y))
+                .ToList()
+                .ForEach(tile => tile.RefreshTreeCount());
         }
         #endregion
 
         #region Private methods
         private void RefreshTable()
         {
-            Tiles.Clear();
+            //Tiles.Clear();
+            List<FieldViewModel> tempList = new(Model.Map.Width * Model.Map.Height + 1);
             for (int x = 0; x < Model.Map.Width; x++)
             {
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
-                    if (Model.Map[x, y].FieldType == MapData.FieldType.Plain)
+                    string path = Model.Map[x, y] switch
                     {
-                        FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/plain.png");
-                        Tiles.Add(tile);
-                    }
-                    else if (Model.Map[x, y].FieldType == MapData.FieldType.Hill)
-                    {
-                        FieldViewModel tile = new(Model.Map[x, y], "Assets/Images/Terrain/hill.png");
-                        Tiles.Add(tile);
-                    }                   
+                        Plain _ => "Assets/Images/Terrain/field.png",
+                        Hill _ => "Assets/Images/Terrain/hill.png",
+                        Water _ => "Assets/Images/Terrain/water2.png",
+                        _ => "Assets/Images/Terrain/field.png"
+                    };
+                    tempList.Add(new(Model.Map[x, y], path));
                 }
             }
+            Tiles = new(tempList);
         }
         #endregion
 
@@ -144,7 +148,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             GameModeChanged?.Invoke(this, GameMode.Editor);
         }
-        private void OnTileClick(object param)
+        private void OnTileClick(object? param)
         {
             if (param is FieldViewModel tile)
             {

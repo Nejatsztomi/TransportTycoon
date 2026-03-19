@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
@@ -22,6 +22,8 @@ namespace TransportTycoon.MapData
             get => Table[x, y];
             set => Table[x, y] = value;
         }
+
+        private INoiseGenerator NoiseGenerator { get; }
         #endregion
 
         #region Constructors
@@ -33,6 +35,8 @@ namespace TransportTycoon.MapData
 
             Pointers = [];
             BuildingIDs = [];
+
+            NoiseGenerator = PerlinNoiseGeneratorFactory.Create(width, height, 0);
         }
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
@@ -52,22 +56,75 @@ namespace TransportTycoon.MapData
             }
             return acceptedNeighbours;
         }
+
         public void GenerateMap()
         {
-            for (int i = 0; i < Table.GetLength(0); i++)
+            float[,] randomMap = NoiseGenerator.GenerateNoise(0.1f);
+            for (int i = 0; i < Width; i++)
             {
-                for (int j = 0; j < Table.GetLength(1); j++)
+                for (int j = 0; j < Height; j++)
                 {
-                    if(i % 3 == 0 && j % 3 == 0) Table[i, j] = new Hill(i, j);
-                    else Table[i, j] = new Plain(i, j);
+                    if (randomMap[i, j] < 0.35f)
+                    {
+                        Table[i, j] = new Water(i, j);          // Bottom 35% of heights become water
+                    }
+                    else if (randomMap[i, j] < 0.55f)
+                    {
+                        Table[i, j] = new Plain(i, j);          // Next 20% become plains
+                    }
+                    else if (randomMap[i, j] < 0.75f)
+                    {
+                        Table[i, j] = new Hill(i, j);          // Next 20% become hills
+                    }
+                    else if (randomMap[i, j] < 0.90f)
+                    {
+                        Table[i, j] = new Mountin(i, j);      // Next 15% become mountains
+                    }
+                    else
+                    {
+                        Table[i, j] = new HightMountin(i, j);  // Top 10% become high mountains
+                    }
+                }
+            }
+
+            GenerateTrees();
+        }
+
+        public void GenerateTrees()
+        {
+            float[,] randomTreeMap = NoiseGenerator.GenerateNoise(0.1f);
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    if (Table[i, j] is not Terrain terrain) continue;
+                    if (terrain is HightMountin) continue;
+
+                    if (randomTreeMap[i, j] < 0.5f) continue;
+
+                    if (randomTreeMap[i, j] < 0.75f)
+                    {
+                        terrain.Trees = 1;
+                    }
+                    else if (randomTreeMap[i, j] < 0.85f)
+                    {
+                        terrain.Trees = 2;
+                    }
+                    else if (randomTreeMap[i, j] < 0.95f)
+                    {
+                        terrain.Trees = 3;
+                    }
+                    else
+                    {
+                        terrain.Trees = 4;
+                    }
                 }
             }
         }
+
         public bool IsTileHeightPossible(int x, int y, int height)
         {
             if (x < 0 || x >= Height || y < 0 || y >= Width) return false;
-
-            bool isValid = true;
 
             //Up
             if (x > 0 && Math.Abs(height - Table[x - 1, y].Height) > 2) return false;
@@ -81,9 +138,7 @@ namespace TransportTycoon.MapData
             // Right
             if (y < Width - 1 && Math.Abs(height - Table[x, y + 1].Height) > 2) return false;
 
-
-            return isValid;
-
+            return true;
         }
         #endregion
 

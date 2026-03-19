@@ -3,50 +3,47 @@
     public abstract class Terrain : Field
     {
         #region Fields
-        public int Trees { protected set; get; }
+        public int Trees { set; get; }
         public override bool Modifiable { get; protected set; }
         #endregion
 
         #region Public methods
-        public void IncreaseHeight() 
+        public void IncreaseHeight()
         {
             Height++;
         }
-        public void DecreaseHeight() 
+
+        public void DecreaseHeight()
         {
-            Height--; 
+            Height--;
         }
-        public void Grow() 
+
+        public bool Grow()
         {
-            if (!IsFull()) 
-            {
-                Trees++;
-            }
+            if (IsFull) return false;
+            Trees++;
+            return true;
         }
-        public bool IsFull() 
-        {
-            if (Trees == 4) 
-            {
-                return true;
-            }
-            return false;
-        }
-        public void SpreadForest() 
+
+        public bool IsFull => Trees == 4;
+
+        public void SpreadForest()
         {
             Trees = 1;
         }
+
         public override int GetTrees() => Trees;
         #endregion
     }
 
-    public class Plain : Terrain 
+    public class Plain : Terrain
     {
         public Plain(int x, int y)
         {
             X = x;
             Y = y;
             Height = 1;
-            Trees = 2;
+            Trees = 0;
             FieldType = FieldType.Plain;
         }
 
