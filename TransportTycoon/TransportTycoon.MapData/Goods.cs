@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public abstract class Goods : Load
     {
-        public static int Tax { get; protected set; } 
+        public static int Tax { get; protected set; }
 
-        protected int Value() 
+        protected int Value()
         {
             return Tax * Price;
         }
@@ -20,13 +16,14 @@ namespace TransportTycoon.MapData
         }
     }
 
-    public class Wheat : Goods 
+    public class Wheat : Goods
     {
         public Wheat()
         {
             Price = 150;
         }
     }
+
     public class Oil : Goods
     {
         public Oil()
@@ -34,6 +31,7 @@ namespace TransportTycoon.MapData
             Price = 200;
         }
     }
+
     public class Wood : Goods
     {
         public Wood()
@@ -50,6 +48,7 @@ namespace TransportTycoon.MapData
 
         }
     }
+
     public class Rubber : Goods
     {
         public Rubber()
@@ -57,6 +56,7 @@ namespace TransportTycoon.MapData
             Price = 260;
         }
     }
+
     public class Paper : Goods
     {
         public Paper()

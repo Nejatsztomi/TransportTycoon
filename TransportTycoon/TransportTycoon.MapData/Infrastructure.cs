@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public abstract class Infrastructure : Field
     {
@@ -11,14 +7,10 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Public methods
-        public void Place()
-        {
+        public void Place() { }
 
-        }
-        public void Remove() // makes a terrain with a height based on infrastructure's height, and replace 
-        {
-
-        }
+        // makes a terrain with a height based on infrastructure's height, and replace 
+        public void Remove() { }
         #endregion
     }
 }

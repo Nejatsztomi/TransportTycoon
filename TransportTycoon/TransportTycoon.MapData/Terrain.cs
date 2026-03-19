@@ -38,6 +38,7 @@
 
     public class Plain : Terrain
     {
+        #region Constructors
         public Plain(int x, int y)
         {
             X = x;
@@ -46,10 +47,12 @@
             Trees = 0;
             FieldType = FieldType.Plain;
         }
-
+        #endregion
     }
+
     public class Hill : Terrain
     {
+        #region Constructors
         public Hill(int x, int y)
         {
             X = x;
@@ -58,10 +61,13 @@
             Trees = 0;
             FieldType = FieldType.Hill;
         }
+        #endregion
     }
-    public class Mountin : Terrain
+
+    public class Mountain : Terrain
     {
-        public Mountin(int x, int y)
+        #region Constructors
+        public Mountain(int x, int y)
         {
             X = x;
             Y = y;
@@ -69,10 +75,13 @@
             Trees = 0;
             FieldType = FieldType.Mountain;
         }
+        #endregion
     }
-    public class HightMountin : Terrain
+
+    public class HighMountain : Terrain
     {
-        public HightMountin(int x, int y)
+        #region Constructors
+        public HighMountain(int x, int y)
         {
             X = x;
             Y = y;
@@ -80,5 +89,6 @@
             Trees = 0;
             FieldType = FieldType.HighMountain;
         }
+        #endregion
     }
 }

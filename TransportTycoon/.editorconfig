@@ -1,7 +1,6 @@
-# Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
-# C# files
+# Only effect C# files
 [*.cs]
 
 #### Core EditorConfig Options ####
@@ -68,42 +67,49 @@ csharp_preserve_single_line_statements = true
 
 #### Naming styles ####
 
-# 1. Define Naming Styles
+# Naming Styles
+# PascalCase
 dotnet_naming_style.pascal_case_style.capitalization = pascal_case
 
+# camelCase
 dotnet_naming_style.camel_case_style.capitalization = camel_case
 
-# New style for private fields (_camelCase)
+# _camelCase (for private fields)
 dotnet_naming_style.underscore_camel_case_style.capitalization = camel_case
 dotnet_naming_style.underscore_camel_case_style.required_prefix = _
 
-# 2. Define Symbol Groups (What the rules apply to)
+# Symbol Groups
 
-# Group A: Everything (Catch-all)
+# Group A: PascalCase (Dotnet standard): everything (Catch-all)
 dotnet_naming_symbols.all_elements.applicable_kinds = *
 dotnet_naming_symbols.all_elements.applicable_accessibilities = *
 
-# Group B: Method Parameters (Arguments)
-dotnet_naming_symbols.parameters.applicable_kinds = parameter
+# Group B: camelCase: parameters and variables
+dotnet_naming_symbols.parameters.applicable_kinds = parameter, local
 dotnet_naming_symbols.parameters.applicable_accessibilities = *
 
-# Group C: Private Fields
+# Group C: underscore_camelCase: private Fields
 dotnet_naming_symbols.private_fields.applicable_kinds = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 
-# 3. Apply Naming Rules (Tying symbols to styles)
+# Apply Naming Rules
 
 # Rule 1: Make everything PascalCase by default
-dotnet_naming_rule.default_pascal_case_rule.severity = warning
+dotnet_naming_rule.default_pascal_case_rule.severity = suggestion
 dotnet_naming_rule.default_pascal_case_rule.symbols = all_elements
 dotnet_naming_rule.default_pascal_case_rule.style = pascal_case_style
 
 # Rule 2: Override for parameters to use camelCase
-dotnet_naming_rule.parameters_camel_case_rule.severity = warning
+dotnet_naming_rule.parameters_camel_case_rule.severity = suggestion
 dotnet_naming_rule.parameters_camel_case_rule.symbols = parameters
 dotnet_naming_rule.parameters_camel_case_rule.style = camel_case_style
 
 # Rule 3: Override for private fields to use _camelCase
-dotnet_naming_rule.private_fields_rule.severity = warning
+dotnet_naming_rule.private_fields_rule.severity = suggestion
 dotnet_naming_rule.private_fields_rule.symbols = private_fields
 dotnet_naming_rule.private_fields_rule.style = underscore_camel_case_style
+
+### Analyzer Rule Overrides ###
+
+# Disable SonarAnalyzer S3400: Remove this method and declare a constant
+dotnet_diagnostic.S3400.severity = none

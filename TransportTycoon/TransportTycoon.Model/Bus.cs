@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TransportTycoon.MapData;
+﻿using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
 {
     public abstract class Bus : Vehicle
     {
         #region Field
-        public static LoadType acceptedLoad { get; } = LoadType.People;
+        public static LoadType AcceptedLoad { get; } = LoadType.People;
         #endregion 
     }
 
@@ -22,7 +19,7 @@ namespace TransportTycoon.Model
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
-            this.Type = VehicleType.SmallBus;
+            Type = VehicleType.SmallBus;
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -46,7 +43,7 @@ namespace TransportTycoon.Model
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
-            this.Type = VehicleType.BigBus;
+            Type = VehicleType.BigBus;
 
             //modifiable fields
             CurrentSpeed = TopSpeed;

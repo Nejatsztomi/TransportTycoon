@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.Model
+﻿namespace TransportTycoon.Model
 {
-    public class Prouth
-    {
-
-    }
+    public class Prouth;
 }

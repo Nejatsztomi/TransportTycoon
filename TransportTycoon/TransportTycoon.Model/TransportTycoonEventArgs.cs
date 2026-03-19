@@ -1,34 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.Model
+﻿namespace TransportTycoon.Model
 {
-    public class TransportTycoonEventArgs : EventArgs
+    public class TransportTycoonEventArgs(int gameTime, int numberOfVehicles) : EventArgs
     {
-        private int gameTime;
-        private int numberOfVehicles;
+        #region Properties
+        public int GameTime => gameTime;
 
-        public int GameTime 
-        {
-            get 
-            {
-                return gameTime;
-            }
-        }
-
-        public int NumberOfVehicles
-        {
-            get
-            {
-                return numberOfVehicles;
-            }
-        }
-
-        public TransportTycoonEventArgs(int gameTime, int numberOfVehicles) 
-        {
-            this.gameTime = gameTime;
-            this.numberOfVehicles = numberOfVehicles;
-        }
+        public int NumberOfVehicles => numberOfVehicles;
+        #endregion
     }
 }

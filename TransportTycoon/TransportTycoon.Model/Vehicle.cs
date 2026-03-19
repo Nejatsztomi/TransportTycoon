@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
-using TransportTycoon.MapData;
+﻿using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
 {
@@ -10,10 +6,12 @@ namespace TransportTycoon.Model
     {
         Up = 0, Down = 1, Left = 2, Right = 3
     }
+
     public enum VehicleType
     {
-        Van=0,Pickup=1,Truck=2,LiquidTruck=3,SmallBus=4,BigBus=5
+        Van = 0, Pickup = 1, Truck = 2, LiquidTruck = 3, SmallBus = 4, BigBus = 5
     }
+
     public abstract class Vehicle
     {
         #region Fields
@@ -34,7 +32,7 @@ namespace TransportTycoon.Model
         #region Public methods
         public void ChangeSpeed(int speed)
         {
-            if (speed>=0 && speed<=TopSpeed) CurrentSpeed = speed;
+            if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
         }
 
         public void Step(Direction dir)
@@ -75,7 +73,8 @@ namespace TransportTycoon.Model
                     return quantity - MaxCapacity;
                 }
             }
-            else {
+            else
+            {
                 if (CurrentCapacity + quantity <= MaxCapacity)
                 {
                     CurrentCapacity = quantity;

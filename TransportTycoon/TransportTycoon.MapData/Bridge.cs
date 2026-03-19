@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public enum BridgeType
     {
         HorizontalBlueBridge = 0, VerticalBlueBridge = 1, HorizontalYellowBridge = 2, VerticalYellowBridge = 3, HorizontalRedBridge = 4, VerticalRedBridge = 5
     }
+
     public abstract class Bridge : Infrastructure
     {
         #region Fields
@@ -16,6 +13,7 @@ namespace TransportTycoon.MapData
         public BridgeType Type { get; private set; }
         #endregion
     }
+
     public class YellowBridge : Bridge
     {
         #region Constructor
@@ -25,6 +23,7 @@ namespace TransportTycoon.MapData
         }
         #endregion
     }
+
     public class BlueBridge : Bridge
     {
         #region Constructor
@@ -34,6 +33,7 @@ namespace TransportTycoon.MapData
         }
         #endregion
     }
+
     public class RedBridge : Bridge
     {
         #region Constructor
@@ -43,4 +43,5 @@ namespace TransportTycoon.MapData
         }
         #endregion
     }
+
 }

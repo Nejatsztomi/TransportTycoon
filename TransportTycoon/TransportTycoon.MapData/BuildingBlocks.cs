@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public abstract class BuildingBlocks : Field
     {
-
         #region Fields
         #endregion
 
@@ -24,7 +19,8 @@ namespace TransportTycoon.MapData
         public (int X, int Y) Pointer { protected set; get; }
         #endregion
 
-        protected BuildingBlocks(int x, int y) 
+        #region Constructors
+        protected BuildingBlocks(int x, int y)
         {
             X = x;
             Y = y;
@@ -34,9 +30,10 @@ namespace TransportTycoon.MapData
             Id = (x, y);
             Pointer = (x, y);
         }
+        #endregion
 
         #region Public Methods
-        protected double GetMultiplier() 
+        protected double GetMultiplier()
         {
             double period = 300;
             double time = DateTime.Now.TimeOfDay.Seconds;
@@ -45,65 +42,59 @@ namespace TransportTycoon.MapData
             //0.5*sin() ->[-0.5, 0.5]
             //1.5 + 0.5*sin() ->[1.0, 2.0]
 
-            double multiplier =1.5 + 0.5 *Math.Sin(( 2 * Math.PI * (time+Offset)) / period);
+            double multiplier = 1.5 + 0.5 * Math.Sin((2 * Math.PI * (time + Offset)) / period);
 
             return multiplier;
         }
 
         //the production itself
-        protected virtual void Production() 
+        protected virtual void Production()
         {
             double multiplier = GetMultiplier();
-            int production =Scaler * Convert.ToInt32( (double)Productivity * multiplier);
+            int production = Scaler * Convert.ToInt32((double)Productivity * multiplier);
 
             if (Occupancy + production > Capacity)
             {
                 Occupancy = Capacity;
             }
-            else 
+            else
             {
                 Occupancy += production;
             }
         }
-        
 
-        public bool IsMain() 
+
+        public bool IsMain()
         {
-            return Id.Item1==Pointer.Item1 && Id.Item2==Pointer.Item2;
+            return Id.X == Pointer.X && Id.Y == Pointer.Y;
         }
 
         //Returns the facility's load  
-        public abstract LoadType GetLoad(); 
-        
-        
+        public abstract LoadType GetLoad();
+
+
         public int Unload(int q) //returns the maximum what the factory can give
         {
             if (q >= Occupancy)
             {
                 Occupancy = 0;
-                
             }
-            else 
+            else
             {
                 Occupancy -= q;
-                
             }
 
             return Occupancy;
         }
-
         #endregion
 
         #region Private Methods
         #endregion
-
-
-
     }
 
-    public class House : BuildingBlocks 
+    public class House : BuildingBlocks
     {
-        #region Constructor
+        #region Constructors
         public House(int x, int y) : base(x, y)
         {
             Offset = 10;

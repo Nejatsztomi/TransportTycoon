@@ -1,37 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public class Stop : Infrastructure
     {
         #region Fields
         public List<BuildingBlocks>? Goods { get; private set; }
         #endregion
+
+        #region Constructors
+        public Stop() { }
+        #endregion
+
         #region Public Methods
-        public Stop()
-        {
-            //...
-        }
         public List<Load> ShowLoads()
         {
-            return null;//...
+            return [];
         }
+
         public bool VehicleToBuilding()
         {
-            return false;//...
+            return false;
         }
+
         public bool BuildingToVehicle()
         {
-            return false;//...
+            return false;
         }
         #endregion
+
         #region Private Methods
-        private void SetBuildingBlocks()
-        {
-            //...
-        }
+        private void SetBuildingBlocks() { }
         #endregion
     }
 }

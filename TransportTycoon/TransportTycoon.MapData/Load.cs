@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
-    public enum LoadType 
+    public enum LoadType
     {
         Wheat,
         Oil,
@@ -17,17 +13,18 @@ namespace TransportTycoon.MapData
 
     public abstract class Load
     {
-        public int Price { protected get; set; } 
+        #region Properties
+        public int Price { protected get; set; }
+        #endregion
     }
 
     public class People : Load
     {
-        public People() 
+        #region Constructors
+        public People()
         {
             Price = 120;
         }
+        #endregion
     }
-
-
-
 }
