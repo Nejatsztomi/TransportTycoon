@@ -59,9 +59,9 @@
             FieldType = FieldType.Hill;
         }
     }
-    public class Mountin : Terrain
+    public class Mountain : Terrain
     {
-        public Mountin(int x, int y)
+        public Mountain(int x, int y)
         {
             X = x;
             Y = y;
@@ -70,9 +70,9 @@
             FieldType = FieldType.Mountain;
         }
     }
-    public class HightMountin : Terrain
+    public class HighMountain : Terrain
     {
-        public HightMountin(int x, int y)
+        public HighMountain(int x, int y)
         {
             X = x;
             Y = y;

@@ -78,11 +78,11 @@ namespace TransportTycoon.MapData
                     }
                     else if (randomMap[i, j] < 0.90f)
                     {
-                        Table[i, j] = new Mountin(i, j);      // Next 15% become mountains
+                        Table[i, j] = new Mountain(i, j);      // Next 15% become mountains
                     }
                     else
                     {
-                        Table[i, j] = new HightMountin(i, j);  // Top 10% become high mountains
+                        Table[i, j] = new HighMountain(i, j);  // Top 10% become high mountains
                     }
                 }
             }
@@ -98,7 +98,7 @@ namespace TransportTycoon.MapData
                 for (int j = 0; j < Height; j++)
                 {
                     if (Table[i, j] is not Terrain terrain) continue;
-                    if (terrain is HightMountin) continue;
+                    if (terrain is HighMountain) continue;
 
                     if (randomTreeMap[i, j] < 0.5f) continue;
 
