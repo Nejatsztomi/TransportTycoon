@@ -26,7 +26,7 @@ namespace TransportTycoon.Model
         private const int InitialInterval = 1_000;
 
         private const int InitialBalance = 1_000;
-        private static readonly Difficulty InitialDifficulty = Difficulty.Easy;
+        private const Difficulty InitialDifficulty = Difficulty.Easy;
         #endregion
 
         #region Private fields

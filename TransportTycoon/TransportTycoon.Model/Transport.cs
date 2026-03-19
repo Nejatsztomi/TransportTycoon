@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TransportTycoon.MapData;
+﻿using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
 {
     public abstract class Transport : Vehicle
     {
         #region Field
-        public List<LoadType>? AcceptedGoods {  get; protected set; }
+        public List<LoadType>? AcceptedGoods { get; protected set; }
         #endregion      
     }
 
@@ -22,14 +19,14 @@ namespace TransportTycoon.Model
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
-            this.Type = VehicleType.Van;
+            Type = VehicleType.Van;
             AcceptedGoods = acceptedGoods;
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
-            Route=route;
+            Route = route;
             X = x;
             Y = y;
             Direction = direction; //get info from route?      
@@ -47,7 +44,7 @@ namespace TransportTycoon.Model
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
-            this.Type = VehicleType.Pickup;
+            Type = VehicleType.Pickup;
             AcceptedGoods = acceptedGoods;
 
             //modifiable fields
@@ -72,7 +69,7 @@ namespace TransportTycoon.Model
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
-            this.Type = VehicleType.Truck;
+            Type = VehicleType.Truck;
             AcceptedGoods = acceptedGoods;
 
             //modifiable fields
@@ -97,7 +94,7 @@ namespace TransportTycoon.Model
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
-            this.Type = VehicleType.LiquidTruck;
+            Type = VehicleType.LiquidTruck;
             AcceptedGoods = acceptedGoods;
 
             //modifiable fields

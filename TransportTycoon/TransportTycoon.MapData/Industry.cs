@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public abstract class Industry : BuildingBlocks
     {
@@ -16,14 +12,14 @@ namespace TransportTycoon.MapData
         protected override void Production()
         {
             double multiplier = GetMultiplier();
-            int production =Scaler * ConsumeOccupancy * Convert.ToInt32((double)Productivity * multiplier);
+            int production = Scaler * ConsumeOccupancy * Convert.ToInt32((double)Productivity * multiplier);
 
             if (Occupancy + production > Capacity)
             {
                 Occupancy = Capacity;
                 ConsumeOccupancy = (production / Scaler) / Convert.ToInt32((double)Productivity * multiplier);
             }
-            else 
+            else
             {
                 Occupancy += production;
                 ConsumeOccupancy = 0;
@@ -38,6 +34,7 @@ namespace TransportTycoon.MapData
             ConsumeGood = LoadType.Wheat;
             Offset = 70;
         }
+
         public override LoadType GetLoad()
         {
             return LoadType.Flour;
@@ -51,8 +48,6 @@ namespace TransportTycoon.MapData
             ConsumeGood = LoadType.Wood;
             Offset = 60;
         }
-
-        
 
         public override LoadType GetLoad()
         {

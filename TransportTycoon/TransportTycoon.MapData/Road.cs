@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public enum RoadType
     {
@@ -12,23 +8,22 @@ namespace TransportTycoon.MapData
     {
         #region Fields
         public RoadType Type { get; private set; }
-        public (int,int)? Pointer { get; private set; }
+        public (int, int)? Pointer { get; private set; }
         #endregion
 
-        #region Puplic methods
-        public Road()
-        {
-            //...
-        }
+        #region Constructors
+        public Road() { }
+        #endregion
 
+        #region Public methods
         public void ChangeType(RoadType type)
         {
-            Type = type; 
+            Type = type;
         }
+
         public bool InCity()
         {
-            if (Pointer == null) return false;
-            else return true;
+            return Pointer is null;
         }
         #endregion
     }

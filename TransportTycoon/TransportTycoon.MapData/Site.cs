@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public abstract class Site : BuildingBlocks
     {
-        protected Site(int x, int y) : base(x, y) 
+        protected Site(int x, int y) : base(x, y)
         {
             Scaler = 1;
         }
-        
     }
 
     public class LumberCamp : Site
