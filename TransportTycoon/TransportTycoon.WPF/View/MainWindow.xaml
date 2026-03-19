@@ -238,8 +238,9 @@
                                                      RenderOptions.BitmapScalingMode="NearestNeighbor" />
                                             </Border.Background>
                                         </Border>
-                                        
-                                        <Image Source="{Binding TreeImagePath}" Stretch="Uniform"
+
+                                        <Image Source="{Binding TreeImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                               Stretch="Uniform" 
                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                                IsHitTestVisible="False"
                                                Margin="2"/>
@@ -294,6 +295,7 @@
                         </Viewbox>
 
                     </Border>
+                    
 
 
 

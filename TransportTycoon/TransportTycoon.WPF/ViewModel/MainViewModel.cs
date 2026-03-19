@@ -121,32 +121,35 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void OnNormalSpeed()
         {
-            TimeSpeedChanged?.Invoke(this, TimeSpeed.Normal);
+            Model.SetTimeSpeed(TimeSpeed.Normal);
+            OnResumeGame();
         }
 
         private void OnFastSpeed()
         {
-            TimeSpeedChanged?.Invoke(this, TimeSpeed.Fast);
+            Model.SetTimeSpeed(TimeSpeed.Fast);
+            OnResumeGame();
         }
 
         private void OnSuperFastSpeed()
         {
-            TimeSpeedChanged?.Invoke(this, TimeSpeed.SuperFast);
+            Model.SetTimeSpeed(TimeSpeed.SuperFast);
+            OnResumeGame();
         }
 
         private void OnPauseGame()
         {
-            GameModeChanged?.Invoke(this, GameMode.Paused);
+            Model.SetMode(GameMode.Paused);
         }
 
         private void OnResumeGame()
         {
-            GameModeChanged?.Invoke(this, GameMode.Run);
+            Model.SetMode(GameMode.Run);
         }
 
         private void OnEditorMode()
         {
-            GameModeChanged?.Invoke(this, GameMode.Editor);
+            Model.SetMode(GameMode.Editor);
         }
         private void OnTileClick(object? param)
         {
