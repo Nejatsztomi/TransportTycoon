@@ -61,34 +61,6 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Private Methods
-        private void ShowStartMenu(object sender, StartupEventArgs e)
-        {
-            StartViewModel = new();
-
-            StartViewModel.StartNewGame += (sender, selectedDifficulty) =>
-            {
-                StartGame(selectedDifficulty);
-            };
-
-            StartViewModel.LoadGame += (sender, e) =>
-            {
-                throw new NotImplementedException("Load game functionality is not implemented yet!");
-            };
-
-
-            StartViewModel.ExitGame += new EventHandler(StartView_Close);
-
-
-
-            StartView = new StartWindow
-            {
-                DataContext = StartViewModel,
-            };
-            StartView.Closing += new CancelEventHandler(StartView_Close);
-            CurrentView = StartView;
-            StartView.Show();
-        }
-
         private void StartGame(Difficulty difficulty)
         {
             //model
@@ -99,7 +71,6 @@ namespace TransportTycoon.WPF
             //ViewModel
             MainViewModel = new(Model);
             MainViewModel.Exit += new EventHandler(GameView_Close);
-
 
             //View
             MainView = new()
@@ -113,11 +84,35 @@ namespace TransportTycoon.WPF
             // Must be called after .Show(), otherwise the app exists, because ShutdownMode = OnLastWindowClose by default
             StartView.Hide();
         }
-
-
         #endregion
 
         #region Private event Methods
+        private void ShowStartMenu(object? sender, StartupEventArgs e)
+        {
+            StartViewModel = new();
+
+            StartViewModel.StartNewGame += (sender, selectedDifficulty) =>
+            {
+                StartGame(selectedDifficulty);
+            };
+
+            StartViewModel.LoadGame += (sender, e) =>
+            {
+                throw new NotImplementedException("Load game functionality is not implemented yet!");
+            };
+
+            StartViewModel.ExitGame += new EventHandler(StartView_Close);
+
+            StartView = new StartWindow
+            {
+                DataContext = StartViewModel,
+            };
+            StartView.Closing += new CancelEventHandler(StartView_Close);
+            CurrentView = StartView;
+            StartView.Show();
+        }
+
+
         private void StartView_Close(object? sender, CancelEventArgs e)
         {
             if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
@@ -175,6 +170,7 @@ namespace TransportTycoon.WPF
         {
             StartView.Close();
         }
+
         private void GameView_Close(object? sender, EventArgs e)
         {
             CurrentView?.Close();

@@ -10,9 +10,6 @@ namespace TransportTycoon.WPF.ViewModel
     {
         #region Properties
         #region Relay commands
-        public RelayCommand NewGameCommand { get; init; }
-        public RelayCommand ExitCommand { get; init; }
-
         public RelayCommand NormalSpeedCommand { get; init; }
         public RelayCommand FastSpeedCommand { get; init; }
         public RelayCommand SuperFastSpeedCommand { get; init; }
@@ -46,9 +43,6 @@ namespace TransportTycoon.WPF.ViewModel
         #region Events
         public event EventHandler? NewGame;
         public event EventHandler? Exit;
-
-        public event EventHandler<GameMode>? GameModeChanged;
-        public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         #endregion
 
         #region Constructors
@@ -60,8 +54,6 @@ namespace TransportTycoon.WPF.ViewModel
             model.GameTicked += Model_GameTicked;
             model.GameAdvanced += Model_GameAdvanced;
 
-            NewGameCommand = new(OnNewGame);
-            ExitCommand = new(OnExit);
             NormalSpeedCommand = new(OnNormalSpeed);
             FastSpeedCommand = new(OnFastSpeed);
             SuperFastSpeedCommand = new(OnSuperFastSpeed);

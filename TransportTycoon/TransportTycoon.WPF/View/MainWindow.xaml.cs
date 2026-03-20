@@ -30,7 +30,7 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Private event methods
-        private void MapScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void MapScrollViewer_PreviewMouseWheel(object? sender, MouseWheelEventArgs e)
         {
             // Zoom with touchpad: Pinch-to-zoom
             // Zoom with mouse: Ctrl+Scroll wheel
@@ -38,7 +38,7 @@ namespace TransportTycoon.WPF
             {
                 e.Handled = true;
 
-                if (this.DataContext is MainViewModel vm)
+                if (DataContext is MainViewModel vm)
                 {
                     if (e.Delta > 0 && vm.ZoomLevel < 3.0)
                     {
@@ -52,14 +52,14 @@ namespace TransportTycoon.WPF
             }
         }
 
-        private void MapScrollViewer_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void MapScrollViewer_PreviewMouseRightButtonDown(object? sender, MouseButtonEventArgs e)
         {
             DragStartPoint = e.GetPosition(MapScrollViewer);
             DragStartOffset = new(MapScrollViewer.HorizontalOffset, MapScrollViewer.VerticalOffset);
             MapScrollViewer.CaptureMouse();
         }
 
-        private void MapScrollViewer_PreviewMouseMove(object sender, MouseEventArgs e)
+        private void MapScrollViewer_PreviewMouseMove(object? sender, MouseEventArgs e)
         {
             if (DragStartPoint.HasValue && DragStartOffset.HasValue)
             {
@@ -73,7 +73,7 @@ namespace TransportTycoon.WPF
             }
         }
 
-        private void MapScrollViewer_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void MapScrollViewer_PreviewMouseRightButtonUp(object? sender, MouseButtonEventArgs e)
         {
             if (DragStartPoint.HasValue)
             {
