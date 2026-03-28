@@ -148,12 +148,29 @@ namespace TransportTycoon.Model
 
             return false;
         }
-        public void BuildRoad(int x,int y)
+        public void BuildRoad(int x, int y)
         {
             if (Map[x, y] is not Terrain) return;
             List<int> neighbourCountAndWhere = Map.NeighbourRoadsCount(x, y);
-            List<(int,int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
-            Map[x, y] = new Road(x, y,***, Map[x, y].Height);
+            List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
+            RoadType type = RoadType.Vertical;
+            switch (neighbourCountAndWhere[0])
+            {
+                case 1:
+                    if (neighbourCountAndWhere[2] == 1 || neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
+                    break;
+                case 2:
+
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    type = RoadType.XRoad;
+                    break;
+                default:
+                    break;
+            }
+            Map[x, y] = new Road(x, y, type, Map[x, y].Height);
         }
 
         #endregion
