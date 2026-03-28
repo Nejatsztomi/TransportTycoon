@@ -52,6 +52,25 @@ namespace TransportTycoon.WPF.ViewModel
                 return null;
             }
         }
+        public string? InfrastructureImagePath
+        {
+            get
+            {
+                if (Field is not Infrastructure) return null;
+
+                if (Field is Road road)
+                {
+                    if(road.RoadType==RoadType.RightTurn || road.RoadType==RoadType.LeftTurn || road.RoadType == RoadType.UpperRightTurn || road.RoadType==RoadType.UpperLeftTurn)
+                        return $"/Assets/Images/Road/turn.png";
+                    else if (road.RoadType == RoadType.UpperTRoad || road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad || road.RoadType == RoadType.LeftTRoad)
+                        return $"/Assets/Images/Road/crossT.png";
+                    else if (road.RoadType == RoadType.XRoad)
+                        return $"/Assets/Images/Road/crossX.png";
+                    else return $"/Assets/Images/Road/road.png";
+                }
+                return null;
+            }
+        }
         #endregion
 
         #region Constructor
