@@ -65,6 +65,9 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
+            IncreaseHeightCommand = new(OnIncreaseHeight);
+            DecreaseHeightCommand = new(OnDecreaseHeight);
+
             TileClickCommand = new(OnTileClick);
 
             Tiles = [];
@@ -152,6 +155,14 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 SelectedTile = $"Clicked tile at ({tile.X}, {tile.Y})";
             }
+        }
+
+        private void OnIncreaseHeight()
+        {
+        }
+
+        private void OnDecreaseHeight()
+        {
         }
         #endregion
 
