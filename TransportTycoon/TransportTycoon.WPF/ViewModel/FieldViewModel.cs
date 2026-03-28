@@ -104,6 +104,11 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(TreeCounter));
             OnPropertyChanged(nameof(TreeImagePath));
         }
+        public void RefreshInfrastructure()
+        {
+            OnPropertyChanged(nameof(InfrastructureRotation));
+            OnPropertyChanged(nameof(InfrastructureImagePath));
+        }
         #endregion
 
         #region Private Methods
