@@ -98,7 +98,7 @@ namespace TransportTycoon.MapData
                 for (int j = 0; j < Height; j++)
                 {
                     if (Table[i, j] is not Terrain terrain) continue;
-                    if (terrain.FieldType != FieldType.HighMountain) continue;
+                    if (terrain.FieldType == FieldType.HighMountain) continue;
 
                     if (randomTreeMap[i, j] < 0.5f) continue;
 
