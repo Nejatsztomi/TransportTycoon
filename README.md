@@ -42,6 +42,6 @@ Jelenleg még nem áll rendelkezésre.
 
 ## Dokumentáció 📚
 
-A projekt dokumentációja [ezen a linken](Home) keresztül érhető el
+A projekt dokumentációja [ezen a linken](../../wikis/Home) keresztül érhető el
 
 \* Az elnevezés csupán kitaláció, a valósággal ([MÁV-Csoport](https://www.mavcsoport.hu/)) semmilyen kapcsolatban nem áll!
