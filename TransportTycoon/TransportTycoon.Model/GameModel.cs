@@ -62,6 +62,7 @@ namespace TransportTycoon.Model
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
+        public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         #endregion
 
         #region Constructor
@@ -238,6 +239,7 @@ namespace TransportTycoon.Model
                 }
                 ((Road)Map[x, y]).ChangeType(ntype);
             }
+
         }
 
         #endregion
