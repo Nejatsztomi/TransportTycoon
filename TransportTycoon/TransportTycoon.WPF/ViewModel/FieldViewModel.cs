@@ -71,6 +71,23 @@ namespace TransportTycoon.WPF.ViewModel
                 return null;
             }
         }
+        public double InfrastructureRotation
+        {
+            get
+            {
+                if (Field is Road road)
+                {
+                    return road.RoadType switch
+                    {
+                        RoadType.Horizontal or RoadType.LeftTRoad or RoadType.LeftTurn=> 90,
+                        RoadType.UpperTRoad or RoadType.UpperLeftTurn => 180,
+                        RoadType.RightTRoad or RoadType.UpperRightTurn => 270,
+                        _ => 0
+                    };
+                }
+                return 0;
+            }
+        }
         #endregion
 
         #region Constructor
