@@ -116,6 +116,12 @@ namespace TransportTycoon.Model
             }
             GameModeChanged?.Invoke(this, mode);
         }
+
+        public void SetSelectedField(int x, int y)
+        {
+            SelectedField = Map[x, y];
+        }
+
         public bool IncreaseHeight(int x, int y)
         {
             Field field = Map[x, y];
