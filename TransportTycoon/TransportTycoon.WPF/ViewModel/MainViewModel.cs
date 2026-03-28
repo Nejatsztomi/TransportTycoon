@@ -160,11 +160,12 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void OnIncreaseHeight()
         {
-
+            Model.IncreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
         }
 
         private void OnDecreaseHeight()
         {
+            Model.DecreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
         }
         #endregion
 
