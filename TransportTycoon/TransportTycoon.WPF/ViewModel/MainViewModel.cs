@@ -81,7 +81,7 @@ namespace TransportTycoon.WPF.ViewModel
 
             if (tile != null)
             {
-                tile.RefreshTerrain(Model.Map[e.X,e.Y]);
+                tile.RefreshTerrain(Model.Map[e.X, e.Y]);
             }
         }
 

@@ -82,8 +82,8 @@ namespace TransportTycoon.WPF.ViewModel
         {
             return Field.FieldType switch
             {
-                FieldType.Plain  => "Assets/Images/Terrain/field.png",
-                FieldType.Hill  => "Assets/Images/Terrain/hill.png",
+                FieldType.Plain => "Assets/Images/Terrain/field.png",
+                FieldType.Hill => "Assets/Images/Terrain/hill.png",
                 FieldType.Water => "Assets/Images/Terrain/water2.png",
                 _ => "Assets/Images/Terrain/field.png"
             };
