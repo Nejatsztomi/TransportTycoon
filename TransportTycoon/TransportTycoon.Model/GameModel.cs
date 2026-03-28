@@ -35,6 +35,8 @@ namespace TransportTycoon.Model
 
         #region Properties
         public GameTable Map { get; private set; }
+        public Field SelectedField { get; private set; }
+
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
 
@@ -75,6 +77,7 @@ namespace TransportTycoon.Model
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
+            SelectedField = null!;
             Map = new();
         }
 
