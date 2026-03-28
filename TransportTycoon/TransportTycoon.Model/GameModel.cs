@@ -148,6 +148,11 @@ namespace TransportTycoon.Model
 
             return false;
         }
+        public void BuildRoad(int x,int y)
+        {
+            if (Map[x, y] is not Terrain) return;
+            
+        }
 
         #endregion
 
