@@ -175,7 +175,7 @@
             </Border>
 
             <!-- Right panel -->
-            
+
             <Border
                 Grid.Column="2"
                 Background="#2C2C2C"
@@ -245,6 +245,18 @@
                                                IsHitTestVisible="False"
                                                Margin="2"/>
 
+                                        <Image Source="{Binding InfrastructureImagePath}"
+                                               Stretch="Uniform"
+                                               RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                               IsHitTestVisible="False"
+                                               Margin="2">
+                                            <Image.RenderTransform>
+                                                <RotateTransform Angle="{Binding InfrastructureRotation}"
+                                                                 CenterX="32" CenterY="32"/>
+                                            </Image.RenderTransform>
+                                        </Image>
+
+
                                         <Border x:Name="HoverOverlay" 
                                              Visibility="Hidden" 
                                              BorderBrush="Yellow" 
@@ -295,14 +307,14 @@
                         </Viewbox>
 
                     </Border>
-                    
+
 
 
 
                 </Grid>
-                
-               
-                
+
+
+
 
             </Border>
 
