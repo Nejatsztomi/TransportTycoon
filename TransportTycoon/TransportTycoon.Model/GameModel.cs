@@ -130,8 +130,13 @@ namespace TransportTycoon.Model
             {
                 int nextHeight = terrain.Height + 1;
 
-                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees == 0)
+                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                 {
+                    if(terrain.Trees > 0)
+                    {
+                        Balance -= 50;
+                    }
+                    Balance -= 100;
                     terrain.IncreaseHeight();
                     return true;
                 }
@@ -148,8 +153,13 @@ namespace TransportTycoon.Model
             {
                 int nextHeight = terrain.Height - 1;
 
-                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees == 0)
+                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                 {
+                    if (terrain.Trees > 0)
+                    {
+                        Balance -= 50;
+                    }
+                    Balance -= 100;
                     terrain.DecreaseHeight();
                     return true;
                 }

@@ -160,6 +160,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void OnIncreaseHeight()
         {
+
         }
 
         private void OnDecreaseHeight()
