@@ -53,6 +53,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.NewGameCreated += Model_NewGameCreated;
             model.GameTicked += Model_GameTicked;
             model.GameAdvanced += Model_GameAdvanced;
+            model.InfrastructureBuilt += Model_InfrastructureBuilt;
 
             NormalSpeedCommand = new(OnNormalSpeed);
             FastSpeedCommand = new(OnFastSpeed);
@@ -66,6 +67,11 @@ namespace TransportTycoon.WPF.ViewModel
 
             Tiles = [];
             RefreshTable();
+        }
+
+        private void Model_InfrastructureBuilt(object? sender, List<(int, int)> changedFields)
+        {
+            throw new NotImplementedException();
         }
 
         private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
