@@ -197,7 +197,46 @@ namespace TransportTycoon.Model
             List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
             foreach (var item in neighbourRoads)
             {
-                
+                RoadType ntype = RoadType.Vertical;
+                switch (neighbourCountAndWhere[0])
+                {
+                    case 1:
+                        if (neighbourCountAndWhere[2] == 1 || neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
+                        break;
+                    case 2:
+                        if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
+                        else if (neighbourCountAndWhere[1] == 1 && neighbourCountAndWhere[2] == 1) type = RoadType.UpperRightTurn;
+                        else if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[3] == 1) type = RoadType.RightTurn;
+                        else if (neighbourCountAndWhere[3] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.LeftTurn;
+                        else if (neighbourCountAndWhere[4] == 1 && neighbourCountAndWhere[1] == 1) type = RoadType.UpperLeftTurn;
+                        break;
+                    case 3:
+                        int noNeighbour = neighbourCountAndWhere.First(x => x == 0);
+                        switch (noNeighbour)
+                        {
+                            case 1:
+                                type = RoadType.DownTRoad;
+                                break;
+                            case 2:
+                                type = RoadType.LeftTRoad;
+                                break;
+                            case 3:
+                                type = RoadType.UpperTRoad;
+                                break;
+                            case 4:
+                                type = RoadType.RightTRoad;
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 4:
+                        type = RoadType.XRoad;
+                        break;
+                    default:
+                        break;
+                }
+                Map[x, y].FieldType=type;
             }
         }
 
