@@ -68,6 +68,11 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(TreeCounter));
             OnPropertyChanged(nameof(TreeImagePath));
         }
+
+        internal void RefreshTerrain()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Private Methods

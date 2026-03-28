@@ -75,6 +75,16 @@ namespace TransportTycoon.WPF.ViewModel
             RefreshTable();
         }
 
+        private void Model_FieldChanged(object? sender, TransportTycoonFieldEventArgs e)
+        {
+            var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
+
+            if (tile != null)
+            {
+                tile.RefreshTerrain();
+            }
+        }
+
         private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
         {
             // O(n * m + m)
