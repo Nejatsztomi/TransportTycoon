@@ -71,7 +71,11 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_InfrastructureBuilt(object? sender, List<(int, int)> changedFields)
         {
-            throw new NotImplementedException();
+            foreach (var (x, y) in changedFields)
+            {
+                var tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
+                tile?.RefreshInfrastructure();
+            }
         }
 
         private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
