@@ -163,6 +163,24 @@ namespace TransportTycoon.Model
 
                     break;
                 case 3:
+                    int noNeighbour = neighbourCountAndWhere.First(x => x == 0);
+                    switch (noNeighbour)
+                    {
+                        case 1:
+                            type = RoadType.DownTRoad;
+                            break;
+                        case 2:
+                            type = RoadType.LeftTRoad;
+                            break;
+                        case 3:
+                            type = RoadType.UpperTRoad;
+                            break;
+                        case 4:
+                            type = RoadType.RightTRoad;
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 case 4:
                     type = RoadType.XRoad;
