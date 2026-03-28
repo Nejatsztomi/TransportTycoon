@@ -140,6 +140,18 @@ namespace TransportTycoon.MapData
 
             return true;
         }
+        public List<int> NeighbourRoadsCount(int x, int y)
+        {
+            int c = 0;
+            List<int> result = new List<int>(5);//neighbour count,up,right,down,left
+            if (x - 1 >= 0 && Table[x - 1, y] is Infrastructure) result[1] = 1;
+            if (y + 1 <= Width - 1 && Table[x, y + 1] is Infrastructure) result[2] = 1;
+            if (x + 1 <= Height - 1 && Table[x + 1, y] is Infrastructure) result[3] = 1;
+            if (y - 1 >= 0 && Table[x, y - 1] is Infrastructure) result[4] = 1;
+
+            result[0] = result.Count(x => x != 0);
+            return result;
+        }
         #endregion
 
         #region Private methods

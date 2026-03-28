@@ -151,7 +151,9 @@ namespace TransportTycoon.Model
         public void BuildRoad(int x,int y)
         {
             if (Map[x, y] is not Terrain) return;
-            
+            int neighbourCount = 
+            List<(int,int)> 
+            Map[x, y] = new Road(x, y,***, Map[x, y].Height);
         }
 
         #endregion
