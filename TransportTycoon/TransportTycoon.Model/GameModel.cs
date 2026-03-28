@@ -151,8 +151,8 @@ namespace TransportTycoon.Model
         public void BuildRoad(int x, int y)
         {
             if (Map[x, y] is not Terrain) return;
+
             List<int> neighbourCountAndWhere = Map.NeighbourRoadsCount(x, y);
-            List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
             RoadType type = RoadType.Vertical;
             switch (neighbourCountAndWhere[0])
             {
@@ -160,7 +160,11 @@ namespace TransportTycoon.Model
                     if (neighbourCountAndWhere[2] == 1 || neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
                     break;
                 case 2:
-
+                    if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
+                    else if (neighbourCountAndWhere[1] == 1 && neighbourCountAndWhere[2] == 1) type = RoadType.UpperRightTurn;
+                    else if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[3] == 1) type = RoadType.RightTurn;
+                    else if (neighbourCountAndWhere[3] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.LeftTurn;
+                    else if (neighbourCountAndWhere[4] == 1 && neighbourCountAndWhere[1] == 1) type = RoadType.UpperLeftTurn;
                     break;
                 case 3:
                     int noNeighbour = neighbourCountAndWhere.First(x => x == 0);
@@ -189,6 +193,12 @@ namespace TransportTycoon.Model
                     break;
             }
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
+
+            List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
+            foreach (var item in neighbourRoads)
+            {
+                
+            }
         }
 
         #endregion
