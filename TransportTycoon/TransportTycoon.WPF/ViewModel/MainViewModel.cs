@@ -154,6 +154,7 @@ namespace TransportTycoon.WPF.ViewModel
             if (param is FieldViewModel tile)
             {
                 SelectedTile = $"Clicked tile at ({tile.X}, {tile.Y})";
+                Model.SetSelectedField(tile.X, tile.Y);
             }
         }
 
