@@ -1,11 +1,13 @@
 ﻿namespace TransportTycoon.MapData
 {
-    public abstract class Terrain : Field
+    public class Terrain : Field
     {
         #region Fields
         public int Trees { set; get; }
         public override bool Modifiable { get; protected set; }
         #endregion
+
+
 
         #region Public methods
         public void IncreaseHeight()
