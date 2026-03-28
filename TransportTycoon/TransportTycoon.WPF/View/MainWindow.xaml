@@ -221,9 +221,14 @@
                                          >
 
                                         <Grid.InputBindings>
-                                            <MouseBinding 
+                                            <!--<MouseBinding 
                                                MouseAction="LeftClick" 
                                                Command="{Binding DataContext.TileClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                               CommandParameter="{Binding}"
+                                               />-->
+                                            <MouseBinding 
+                                               MouseAction="LeftClick" 
+                                               Command="{Binding DataContext.BuildRoadCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                CommandParameter="{Binding}"
                                                />
                                         </Grid.InputBindings>
