@@ -13,6 +13,7 @@
             Y = y;
             Height = height;
             Trees = 0;
+            SetFieldType();
             Modifiable = true;
         }
 
@@ -21,11 +22,13 @@
         public void IncreaseHeight()
         {
             Height++;
+            SetFieldType();
         }
 
         public void DecreaseHeight()
         {
             Height--;
+            SetFieldType();
         }
 
         public bool Grow()
@@ -44,7 +47,17 @@
 
         public override int GetTrees() => Trees;
         #endregion
+
+        #region Private methods
+        private void SetFieldType()
+        {
+            if (Height == 1) FieldType = FieldType.Plain;
+            else if (Height == 2) FieldType = FieldType.Hill;
+            else if (Height == 3) FieldType = FieldType.Mountain;
+            else FieldType = FieldType.HighMountain;
+        }
+        #endregion
     }
 
-    
+
 }
