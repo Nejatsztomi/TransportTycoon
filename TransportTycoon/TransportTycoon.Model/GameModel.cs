@@ -153,6 +153,7 @@ namespace TransportTycoon.Model
         {
             if (Map[x, y] is not Terrain) return;
 
+            List<(int, int)> changedFields = new List<(int, int)>();
             List<int> neighbourCountAndWhere = Map.NeighbourRoadsCount(x, y);
             RoadType type = RoadType.Vertical;
             switch (neighbourCountAndWhere[0])
@@ -194,9 +195,10 @@ namespace TransportTycoon.Model
                     break;
             }
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
+            changedFields.Add((x, y));
 
             List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
-            foreach (var item in neighbourRoads)
+            foreach (var e in neighbourRoads)
             {
                 RoadType ntype = RoadType.Vertical;
                 switch (neighbourCountAndWhere[0])
@@ -237,9 +239,10 @@ namespace TransportTycoon.Model
                     default:
                         break;
                 }
-                ((Road)Map[x, y]).ChangeType(ntype);
+                ((Road)Map[e.Item1, e.Item2]).ChangeType(ntype);
+                changedFields.Add((e.Item1, e.Item2));
             }
-
+            InfrastructureBuilt?.Invoke(this, changedFields);
         }
 
         #endregion
