@@ -81,7 +81,7 @@ namespace TransportTycoon.WPF.ViewModel
 
             if (tile != null)
             {
-                tile.RefreshTerrain();
+                tile.RefreshTerrain(Model.Map[e.X,e.Y]);
             }
         }
 
@@ -103,14 +103,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
-                    string path = Model.Map[x, y] switch
-                    {
-                        Plain _ => "Assets/Images/Terrain/field.png",
-                        Hill _ => "Assets/Images/Terrain/hill.png",
-                        Water _ => "Assets/Images/Terrain/water2.png",
-                        _ => "Assets/Images/Terrain/field.png"
-                    };
-                    tempList.Add(new(Model.Map[x, y], path));
+                    tempList.Add(new(Model.Map[x, y]));
                 }
             }
             Tiles = new(tempList);
