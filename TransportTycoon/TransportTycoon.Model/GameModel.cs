@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
@@ -196,7 +197,7 @@ namespace TransportTycoon.Model
             }
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
             changedFields.Add((x, y));
-
+            Debug.WriteLine(Map[x,y].FieldType);
             List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
             foreach (var e in neighbourRoads)
             {
@@ -241,8 +242,12 @@ namespace TransportTycoon.Model
                 }
                 ((Road)Map[e.Item1, e.Item2]).ChangeType(ntype);
                 changedFields.Add((e.Item1, e.Item2));
+                
+                Debug.WriteLine(e.Item1 + " " + e.Item2);
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
+            Debug.WriteLine(changedFields.Count);
+            Debug.WriteLine(x + " " + y);
         }
 
         #endregion

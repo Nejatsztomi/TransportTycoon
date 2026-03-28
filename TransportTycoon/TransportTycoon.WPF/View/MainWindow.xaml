@@ -250,7 +250,7 @@
                                                IsHitTestVisible="False"
                                                Margin="2"/>
 
-                                        <Image Source="{Binding InfrastructureImagePath}"
+                                        <Image Source="{Binding InfrastructureImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
                                                Stretch="Uniform"
                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                                IsHitTestVisible="False"

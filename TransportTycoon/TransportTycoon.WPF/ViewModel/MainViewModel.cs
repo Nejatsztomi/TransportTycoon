@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.IO;
 using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
@@ -65,7 +66,7 @@ namespace TransportTycoon.WPF.ViewModel
             EditorModeCommand = new(OnEditorMode);
 
             TileClickCommand = new(OnTileClick);
-            BuildRoadCommand = new RelayCommand<FieldViewModel>(tile => model.BuildRoad(tile.X, tile.Y));
+            BuildRoadCommand = new RelayCommand<FieldViewModel>(tile => Model.BuildRoad(tile.X, tile.Y));
 
             Tiles = [];
             RefreshTable();
@@ -75,9 +76,16 @@ namespace TransportTycoon.WPF.ViewModel
         {
             foreach (var (x, y) in changedFields)
             {
-                var tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
-                tile?.RefreshInfrastructure();
+                FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
+                if (tile != null)
+                {
+                    string oldPath = tile.ImagePath;
+                    int index = Tiles.IndexOf(tile);
+                    Tiles[index] = new(Model.Map[x, y], oldPath);
+                    tile.RefreshInfrastructure();
+                }
             }
+            //RefreshTable();
         }
 
         private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
