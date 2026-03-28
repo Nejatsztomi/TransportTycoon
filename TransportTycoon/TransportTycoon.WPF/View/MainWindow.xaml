@@ -134,10 +134,10 @@
                             <ImageBrush ImageSource="/Assets/Images/Terrain/hill.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="6">
+                            <Button Width="50" Height="50" Margin="6" Command="{Binding DecreaseHeightCommand}">
                                 <Image Source="/Assets/Images/Buttons/minus.png" Stretch="Uniform"/>
                             </Button>
-                            <Button Width="50" Height="50" Margin="6">
+                            <Button Width="50" Height="50" Margin="6" Command="{Binding IncreaseHeightCommand}">
                                 <Image Source="/Assets/Images/Buttons/plus.png" Stretch="Uniform"/>
                             </Button>
                         </WrapPanel>
