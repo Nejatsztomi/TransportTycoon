@@ -18,6 +18,9 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand ResumeGameCommand { get; init; }
         public RelayCommand EditorModeCommand { get; init; }
 
+        public RelayCommand IncreaseHeightCommand { get; init; }
+        public RelayCommand DecreaseHeightCommand { get; init; }
+
         public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
         #endregion
 
