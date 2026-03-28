@@ -142,7 +142,6 @@ namespace TransportTycoon.MapData
         }
         public List<int> NeighbourRoadsCount(int x, int y)
         {
-            int c = 0;
             List<int> result = new List<int>(5);//neighbour count,up,right,down,left
             if (x - 1 >= 0 && Table[x - 1, y] is Infrastructure) result[1] = 1;
             if (y + 1 <= Width - 1 && Table[x, y + 1] is Infrastructure) result[2] = 1;
@@ -150,6 +149,14 @@ namespace TransportTycoon.MapData
             if (y - 1 >= 0 && Table[x, y - 1] is Infrastructure) result[4] = 1;
 
             result[0] = result.Count(x => x != 0);
+            return result;
+        }
+        public List<(int, int)> NeighbourRoadsCoord(int x, int y)
+        {
+            List<(int, int)> result = new List<(int, int)>();
+            if (x - 1 >= 0 && Table[x - 1, y] is Road) result.Add((Table[x - 1, y].X, Table[x - 1, y].Y));
+            if (y + 1 <= Width - 1 && Table[x, y + 1] is Road) result.Add((Table[x, y + 1].X, Table[x, y + 1].Y));
+            if (x + 1 <= Height - 1 && Table[x + 1, y] is Road) result.Add((Table[x + 1, y].X, Table[x + 1, y].Y));
             return result;
         }
         #endregion
