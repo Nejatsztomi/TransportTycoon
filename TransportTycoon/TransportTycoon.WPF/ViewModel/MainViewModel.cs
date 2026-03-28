@@ -56,6 +56,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.NewGameCreated += Model_NewGameCreated;
             model.GameTicked += Model_GameTicked;
             model.GameAdvanced += Model_GameAdvanced;
+            model.FieldChanged += Model_FieldChanged;
 
             NormalSpeedCommand = new(OnNormalSpeed);
             FastSpeedCommand = new(OnFastSpeed);
