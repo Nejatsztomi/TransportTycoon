@@ -13,7 +13,9 @@
     <None Remove="Assets\Images\Buttons\plus.png" />
     <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Terrain\field.png" />
+    <None Remove="Assets\Images\Terrain\highmountain.png" />
     <None Remove="Assets\Images\Terrain\hill.png" />
+    <None Remove="Assets\Images\Terrain\mountain.png" />
     <None Remove="Assets\Images\Terrain\water2.png" />
     <None Remove="Assets\Images\Trees\tree1.png" />
     <None Remove="Assets\Images\Trees\tree2.png" />
@@ -73,6 +75,12 @@
     <Resource Include="Assets\Images\Buttons\plus.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Content Include="Assets\Images\Terrain\highmountain.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\mountain.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
@@ -133,6 +134,7 @@ namespace TransportTycoon.Model
 
                 if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                 {
+                    if (field.Height == 4) return false;
                     if (terrain.Trees > 0)
                     {
                         Balance -= 50;
@@ -157,6 +159,7 @@ namespace TransportTycoon.Model
 
                 if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                 {
+                    if (field.Height == 1) return false;
                     if (terrain.Trees > 0)
                     {
                         Balance -= 50;
