@@ -7,23 +7,31 @@
     public class Road : Infrastructure
     {
         #region Fields
-        public RoadType Type { get; private set; }
+        public RoadType RoadType { get; private set; }
         public (int, int)? Pointer { get; private set; }
         #endregion
 
         #region Constructors
-        public Road() { }
+        public Road(int x, int y, RoadType type, int height)
+        {
+            X = x;
+            Y = y;
+            FieldType = FieldType.Road;
+            RoadType = type;
+            Pointer = null;
+            Height = height;
+        }
         #endregion
 
         #region Public methods
         public void ChangeType(RoadType type)
         {
-            Type = type;
+            RoadType = type;
         }
 
         public bool InCity()
         {
-            return Pointer is null;
+            return Pointer != null;
         }
         #endregion
     }
