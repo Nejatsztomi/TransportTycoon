@@ -80,11 +80,11 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private Methods
         private string DetermineImagePath()
         {
-            return Field switch
+            return Field.FieldType switch
             {
-                Plain _ => "Assets/Images/Terrain/field.png",
-                Hill _ => "Assets/Images/Terrain/hill.png",
-                Water _ => "Assets/Images/Terrain/water2.png",
+                FieldType.Plain => "Assets/Images/Terrain/field.png",
+                FieldType.Hill => "Assets/Images/Terrain/hill.png",
+                FieldType.Water => "Assets/Images/Terrain/water2.png",
                 _ => "Assets/Images/Terrain/field.png"
             };
         }

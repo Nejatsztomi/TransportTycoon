@@ -133,7 +133,7 @@ namespace TransportTycoon.Model
 
                 if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                 {
-                    if(terrain.Trees > 0)
+                    if (terrain.Trees > 0)
                     {
                         Balance -= 50;
                     }
