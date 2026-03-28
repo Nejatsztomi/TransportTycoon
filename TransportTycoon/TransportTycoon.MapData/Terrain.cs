@@ -7,6 +7,14 @@
         public override bool Modifiable { get; protected set; }
         #endregion
 
+        public Terrain(int x, int y, int height)
+        {
+            X = x;
+            Y = y;
+            Height = height;
+            Trees = 0;
+            Modifiable = true;
+        }
 
 
         #region Public methods
