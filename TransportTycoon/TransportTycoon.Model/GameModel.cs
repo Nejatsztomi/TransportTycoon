@@ -62,6 +62,7 @@ namespace TransportTycoon.Model
         public event EventHandler<GameMode>? GameModeChanged;
         public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
+
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         #endregion
