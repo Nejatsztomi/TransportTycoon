@@ -122,6 +122,7 @@ namespace TransportTycoon.MapData
             }
         }
 
+        //Checks if the new field is possible
         public bool IsTileHeightPossible(int x, int y, int height)
         {
             if (x < 0 || x >= Height || y < 0 || y >= Width) return false;
