@@ -254,10 +254,10 @@
                                                Stretch="Uniform"
                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                                IsHitTestVisible="False"
-                                               Margin="2">
+                                               Margin="2"
+                                               RenderTransformOrigin="0.5,0.5">
                                             <Image.RenderTransform>
-                                                <RotateTransform Angle="{Binding InfrastructureRotation}"
-                                                                 CenterX="32" CenterY="32"/>
+                                                <RotateTransform Angle="{Binding InfrastructureRotation}"/>
                                             </Image.RenderTransform>
                                         </Image>
 
