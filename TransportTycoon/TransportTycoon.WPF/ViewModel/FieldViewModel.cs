@@ -85,8 +85,8 @@ namespace TransportTycoon.WPF.ViewModel
                 FieldType.Plain => "Assets/Images/Terrain/field.png",
                 FieldType.Hill => "Assets/Images/Terrain/hill.png",
                 FieldType.Water => "Assets/Images/Terrain/water2.png",
-                FieldType.Mountain => "Assets/Images/Terrain/mountain.png",
-                FieldType.HighMountain => "Assets/Images/Terrain/highmountain.png",
+                FieldType.Mountain => "Assets/Images/Terrain/mountain3.png",
+                FieldType.HighMountain => "Assets/Images/Terrain/highmountain3.png",
                 _ => "Assets/Images/Terrain/field.png"
             };
         }

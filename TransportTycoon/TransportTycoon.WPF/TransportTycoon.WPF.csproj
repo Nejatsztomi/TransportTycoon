@@ -14,8 +14,12 @@
     <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Terrain\field.png" />
     <None Remove="Assets\Images\Terrain\highmountain.png" />
+    <None Remove="Assets\Images\Terrain\highmountain2.png" />
+    <None Remove="Assets\Images\Terrain\highmountain3.png" />
     <None Remove="Assets\Images\Terrain\hill.png" />
     <None Remove="Assets\Images\Terrain\mountain.png" />
+    <None Remove="Assets\Images\Terrain\mountain2.png" />
+    <None Remove="Assets\Images\Terrain\mountain3.png" />
     <None Remove="Assets\Images\Terrain\water2.png" />
     <None Remove="Assets\Images\Trees\tree1.png" />
     <None Remove="Assets\Images\Trees\tree2.png" />
@@ -45,8 +49,20 @@
     <Content Include="Assets\Images\Terrain\field.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\Images\Terrain\highmountain2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\highmountain3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Images\Terrain\hill.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\mountain2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Terrain\mountain3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Terrain\water2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
