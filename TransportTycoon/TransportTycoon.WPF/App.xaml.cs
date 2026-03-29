@@ -13,10 +13,6 @@ namespace TransportTycoon.WPF
     {
         #region Fields
         private GameModel? _model;
-        private GameViewModel? _gameViewModel;
-        private GameView? _gameView;
-        private StartMenuView? _startMenuView;
-        private StartMenuViewModel? _startMenuViewModel;
 
         private MainViewModel? _mainViewModel;
         private MainWindow? _mainView;
@@ -27,26 +23,6 @@ namespace TransportTycoon.WPF
         {
             get => _model ?? throw new InvalidOperationException("Model is not initialized.");
             set => _model = value;
-        }
-        private GameViewModel GameViewModel
-        {
-            get => _gameViewModel ?? throw new InvalidOperationException("GameViewModel is not initialized.");
-            set => _gameViewModel = value;
-        }
-        private GameView GameView
-        {
-            get => _gameView ?? throw new InvalidOperationException("GameView is not initialized.");
-            set => _gameView = value;
-        }
-        private StartMenuView StartMenuView
-        {
-            get => _startMenuView ?? throw new InvalidOperationException("StartMenuView is not initialized.");
-            set => _startMenuView = value;
-        }
-        private StartMenuViewModel StartMenuViewModel
-        {
-            get => _startMenuViewModel ?? throw new InvalidOperationException("StartMenuViewModel is not initialized.");
-            set => _startMenuViewModel = value;
         }
 
         private MainViewModel MainViewModel
@@ -60,8 +36,6 @@ namespace TransportTycoon.WPF
             get => _mainView ?? throw new InvalidOperationException("MainWindow is not initialized.");
             set => _mainView = value;
         }
-
-        private Window? CurrentView { get; set; } // Vagy event argumentként átadni a view-t a ViewModel-nek
         #endregion
 
         #region Constructor
