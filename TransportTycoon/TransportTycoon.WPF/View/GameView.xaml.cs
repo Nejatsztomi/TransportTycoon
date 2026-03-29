@@ -38,7 +38,7 @@ namespace TransportTycoon.WPF
             {
                 e.Handled = true;
 
-                if (DataContext is MainViewModel vm)
+                if (DataContext is GameViewModel vm)
                 {
                     if (e.Delta > 0 && vm.ZoomLevel < 3.0)
                     {

@@ -13,10 +13,10 @@ namespace TransportTycoon.WPF
     {
         #region Fields
         private GameModel? _model;
-        private MainViewModel? _mainViewModel;
+        private GameViewModel? _mainViewModel;
         private MainWindow? _mainView;
         private StartWindow? _startView;
-        private StartViewModel? _startViewModel;
+        private StartMenuViewModel? _startViewModel;
         #endregion
 
         #region Properties
@@ -25,7 +25,7 @@ namespace TransportTycoon.WPF
             get => _model ?? throw new InvalidOperationException("Model is not initialized.");
             set => _model = value;
         }
-        private MainViewModel MainViewModel
+        private GameViewModel MainViewModel
         {
             get => _mainViewModel ?? throw new InvalidOperationException("MainViewModel is not initialized.");
             set => _mainViewModel = value;
@@ -40,7 +40,7 @@ namespace TransportTycoon.WPF
             get => _startView ?? throw new InvalidOperationException("StartView is not initialized.");
             set => _startView = value;
         }
-        private StartViewModel StartViewModel
+        private StartMenuViewModel StartViewModel
         {
             get => _startViewModel ?? throw new InvalidOperationException("StartViewModel is not initialized.");
             set => _startViewModel = value;

@@ -6,7 +6,7 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class MainViewModel : ViewModelBase
+    public partial class GameViewModel : ViewModelBase
     {
         #region Properties
         #region Relay commands
@@ -46,7 +46,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Constructors
-        public MainViewModel(GameModel model)
+        public GameViewModel(GameModel model)
         {
             Model = model;
 
