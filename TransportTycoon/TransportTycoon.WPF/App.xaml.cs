@@ -17,6 +17,9 @@ namespace TransportTycoon.WPF
         private GameView? _gameView;
         private StartMenuView? _startMenuView;
         private StartMenuViewModel? _startMenuViewModel;
+
+        private MainViewModel? _mainViewModel;
+        private MainWindow? _mainView;
         #endregion
 
         #region Properties
@@ -46,6 +49,18 @@ namespace TransportTycoon.WPF
             set => _startMenuViewModel = value;
         }
 
+        private MainViewModel MainViewModel
+        {
+            get => _mainViewModel ?? throw new InvalidOperationException("MainViewModel is not initialized.");
+            set => _mainViewModel = value;
+        }
+
+        private MainWindow MainView
+        {
+            get => _mainView ?? throw new InvalidOperationException("MainWindow is not initialized.");
+            set => _mainView = value;
+        }
+
         private Window? CurrentView { get; set; } // Vagy event argumentként átadni a view-t a ViewModel-nek
         #endregion
 
@@ -57,61 +72,19 @@ namespace TransportTycoon.WPF
         }
         #endregion
 
-        #region Public Methods
-        #endregion
-
-        #region Private Methods
-        private void StartGame(Difficulty difficulty)
-        {
-            //model
-            Model = new(difficulty, new WpfDispatcherTimer());
-            Model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
-            Model.NewGame();
-
-            //ViewModel
-            GameViewModel = new(Model);
-            GameViewModel.Exit += new EventHandler(GameView_Close);
-
-            //View
-            GameView = new()
-            {
-                DataContext = GameViewModel,
-            };
-            GameView.Closing += new CancelEventHandler(View_Close);
-            GameView.Show();
-
-            // Close the start view
-            // Must be called after .Show(), otherwise the app exists, because ShutdownMode = OnLastWindowClose by default
-            StartMenuView.Hide();
-        }
-        #endregion
-
-        #region Private event Methods
+        #region Private event methods
         private void ShowStartMenu(object? sender, StartupEventArgs e)
         {
-            StartMenuViewModel = new();
+            MainViewModel = new();
 
-            StartMenuViewModel.StartNewGame += (sender, selectedDifficulty) =>
+            MainView = new()
             {
-                StartGame(selectedDifficulty);
+                DataContext = MainViewModel,
             };
 
-            StartMenuViewModel.LoadGame += (sender, e) =>
-            {
-                throw new NotImplementedException("Load game functionality is not implemented yet!");
-            };
-
-            StartMenuViewModel.ExitGame += new EventHandler(StartView_Close);
-
-            StartMenuView = new StartMenuView
-            {
-                DataContext = StartMenuViewModel,
-            };
-            StartMenuView.Closing += new CancelEventHandler(StartView_Close);
-            CurrentView = StartMenuView;
-            StartMenuView.Show();
+            //MainView.Closing += new CancelEventHandler(StartView_Close);
+            MainView.Show();
         }
-
 
         private void StartView_Close(object? sender, CancelEventArgs e)
         {
@@ -139,42 +112,9 @@ namespace TransportTycoon.WPF
             }
             else
             {
-                StartMenuView.Closing -= StartView_Close;
+                //StartMenuView.Closing -= StartView_Close;
                 Application.Current.Shutdown();
             }
-        }
-
-        private void Model_GameOver(object? sender, TransportTycoonEventArgs e)
-        {
-            MessageBoxResult result = MessageBox.Show("Unfortunately, you lost!" + Environment.NewLine +
-                                                        "Fate has a cruel sense of humor." + Environment.NewLine +
-                                                        "Survived Time: " + e.GameTime + Environment.NewLine +
-                                                        "Owned Vehicles: " + e.NumberOfVehicles + Environment.NewLine +
-                                                        "Would you like to return to the Main menu?",
-                                                        "TransportTycoon",
-                                                        MessageBoxButton.YesNo,
-                                                        MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                //TODO:We need a method that will open the main menu
-                GameView.Closing -= View_Close;
-
-                GameView.Close();
-
-                StartMenuView.Show();
-            }
-        }
-
-        private void StartView_Close(object? sender, EventArgs e)
-        {
-            StartMenuView.Close();
-        }
-
-        private void GameView_Close(object? sender, EventArgs e)
-        {
-            CurrentView?.Close();
-            CurrentView = null;
         }
         #endregion
 
