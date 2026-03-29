@@ -126,7 +126,7 @@ namespace TransportTycoon.Model
             SelectedField = Map[x, y];
         }
 
-        public bool IncreaseHeight(int x, int y)
+        public void IncreaseHeight(int x, int y)
         {
             if (Mode == GameMode.Editor) 
             {
@@ -138,7 +138,7 @@ namespace TransportTycoon.Model
 
                     if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                     {
-                        if (field.Height == 4) return false;
+                        if (field.Height == 4) return;
                         if (terrain.Trees > 0)
                         {
                             Balance -= 50;
@@ -147,16 +147,13 @@ namespace TransportTycoon.Model
                         terrain.IncreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
-                        return true;
+                        
                     }
                 }
             }
-            
-
-            return false;
         }
 
-        public bool DecreaseHeight(int x, int y)
+        public void DecreaseHeight(int x, int y)
         {
             if (Mode == GameMode.Editor)
             {
@@ -168,7 +165,7 @@ namespace TransportTycoon.Model
 
                     if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                     {
-                        if (field.Height == 1) return false;
+                        if (field.Height == 1) return;
                         if (terrain.Trees > 0)
                         {
                             Balance -= 50;
@@ -177,13 +174,10 @@ namespace TransportTycoon.Model
                         terrain.DecreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
-                        return true;
+                        
                     }
                 }
             }
-            
-
-            return false;
         }
 
         #endregion
