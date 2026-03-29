@@ -197,25 +197,26 @@ namespace TransportTycoon.Model
             }
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
             changedFields.Add((x, y));
-            Debug.WriteLine(Map[x,y].FieldType);
+            
             List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
             foreach (var e in neighbourRoads)
             {
+                List<int> neighbourCountAndWhere2 = Map.NeighbourRoadsCount(e.Item1, e.Item2);
                 RoadType ntype = RoadType.Vertical;
-                switch (neighbourCountAndWhere[0])
+                switch (neighbourCountAndWhere2[0])
                 {
                     case 1:
-                        if (neighbourCountAndWhere[2] == 1 || neighbourCountAndWhere[4] == 1) ntype = RoadType.Horizontal;
+                        if (neighbourCountAndWhere2[2] == 1 || neighbourCountAndWhere2[4] == 1) ntype = RoadType.Horizontal;
                         break;
                     case 2:
-                        if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[4] == 1) ntype = RoadType.Horizontal;
-                        else if (neighbourCountAndWhere[1] == 1 && neighbourCountAndWhere[2] == 1) ntype = RoadType.UpperRightTurn;
-                        else if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[3] == 1) ntype = RoadType.RightTurn;
-                        else if (neighbourCountAndWhere[3] == 1 && neighbourCountAndWhere[4] == 1) ntype = RoadType.LeftTurn;
-                        else if (neighbourCountAndWhere[4] == 1 && neighbourCountAndWhere[1] == 1) ntype = RoadType.UpperLeftTurn;
+                        if (neighbourCountAndWhere2[2] == 1 && neighbourCountAndWhere2[4] == 1) ntype = RoadType.Horizontal;
+                        else if (neighbourCountAndWhere2[1] == 1 && neighbourCountAndWhere2[2] == 1) ntype = RoadType.UpperRightTurn;
+                        else if (neighbourCountAndWhere2[2] == 1 && neighbourCountAndWhere2[3] == 1) ntype = RoadType.RightTurn;
+                        else if (neighbourCountAndWhere2[3] == 1 && neighbourCountAndWhere2[4] == 1) ntype = RoadType.LeftTurn;
+                        else if (neighbourCountAndWhere2[4] == 1 && neighbourCountAndWhere2[1] == 1) ntype = RoadType.UpperLeftTurn;
                         break;
                     case 3:
-                        int noNeighbour = neighbourCountAndWhere.FindIndex(x => x == 0);
+                        int noNeighbour = neighbourCountAndWhere2.FindIndex(x => x == 0);
                         switch (noNeighbour)
                         {
                             case 1:
