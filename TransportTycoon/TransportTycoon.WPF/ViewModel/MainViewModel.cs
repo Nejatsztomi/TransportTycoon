@@ -42,7 +42,8 @@ namespace TransportTycoon.WPF.ViewModel
 
             startMenuViewModel.ExitGame += (sender, e) =>
             {
-
+                // Calls the MainWindows close method, which is basically the same as pressing the X
+                Application.Current.MainWindow?.Close();
             };
 
             return startMenuViewModel;
