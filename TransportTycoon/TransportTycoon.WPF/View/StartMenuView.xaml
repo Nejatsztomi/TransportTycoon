@@ -11,7 +11,6 @@
     <Grid>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
-            <!--nem erzekelni a Commandot-->
             <Button Content="Start new game" Command="{Binding NewGameCommand}"></Button>
             <TextBlock Text="Select Difficulty" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
             <ComboBox SelectedIndex="{Binding SelectedDifficulty}">
