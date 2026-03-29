@@ -21,6 +21,13 @@ namespace TransportTycoon.WPF.ViewModel
         #region Constructors
         public MainViewModel()
         {
+            CurrentView = GetStartMenu();
+        }
+        #endregion
+
+        #region Private Methods
+        private StartMenuViewModel GetStartMenu()
+        {
             StartMenuViewModel startMenuViewModel = new();
 
             startMenuViewModel.StartNewGame += (sender, selectedDifficulty) =>
@@ -33,12 +40,14 @@ namespace TransportTycoon.WPF.ViewModel
                 throw new NotImplementedException("Load game functionality is not implemented yet!");
             };
 
-            // Itt a kezdeti nézetet adjuk meg
-            CurrentView = startMenuViewModel;
-        }
-        #endregion
+            startMenuViewModel.ExitGame += (sender, e) =>
+            {
 
-        #region Private Methods
+            };
+
+            return startMenuViewModel;
+        }
+
         private void StartGame(Difficulty difficulty)
         {
             Model = new(difficulty, new WpfDispatcherTimer());
@@ -65,12 +74,8 @@ namespace TransportTycoon.WPF.ViewModel
 
             if (result == MessageBoxResult.Yes)
             {
-                //TODO:We need a method that will open the main menu
-                //GameView.Closing -= View_Close;
-
-                //GameView.Close();
-
-                //StartMenuView.Show();
+                //Model = null;
+                CurrentView = GetStartMenu();
             }
         }
         #endregion
