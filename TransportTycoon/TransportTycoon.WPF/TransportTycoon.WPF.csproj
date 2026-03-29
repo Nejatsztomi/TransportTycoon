@@ -43,6 +43,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\Images\Buttons\minus.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\minus3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Assets\Images\Road\road.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -85,7 +91,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Images\Buttons\minus.png">
+    <Resource Include="Assets\Images\Buttons\minus2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Buttons\plus.png">
