@@ -57,6 +57,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.GameTicked += Model_GameTicked;
             model.GameAdvanced += Model_GameAdvanced;
             model.FieldChanged += Model_FieldChanged;
+            model.BalanceChanged += Model_BalanceChanged; 
 
             NormalSpeedCommand = new(OnNormalSpeed);
             FastSpeedCommand = new(OnFastSpeed);
@@ -73,6 +74,11 @@ namespace TransportTycoon.WPF.ViewModel
 
             Tiles = [];
             RefreshTable();
+        }
+
+        private void Model_BalanceChanged(object? sender, TransportTycoonEventArgs e)
+        {
+            OnPropertyChanged(nameof(Balance));
         }
 
         private void Model_FieldChanged(object? sender, TransportTycoonFieldEventArgs e)
