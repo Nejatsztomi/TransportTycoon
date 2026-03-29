@@ -78,6 +78,8 @@ namespace TransportTycoon.WPF.ViewModel
                 CurrentView = GetNewStartMenu();
             }
         }
+
+        private bool WantsToExit() => MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
         #endregion
 
         #region Public method
@@ -85,15 +87,16 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model?.SetMode(GameMode.Paused);
 
-            if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+            if (WantsToExit())
             {
-                if (Model is not null && !Model.IsGameOver)
-                {
-                    Model.SetMode(GameMode.Run);
-                }
-                return false;
+                return true;
             }
-            return true;
+
+            if (Model is not null && !Model.IsGameOver)
+            {
+                Model.SetMode(GameMode.Run);
+            }
+            return false;
         }
         #endregion
     }
