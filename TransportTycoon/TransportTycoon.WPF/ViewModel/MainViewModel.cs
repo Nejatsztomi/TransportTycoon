@@ -21,12 +21,12 @@ namespace TransportTycoon.WPF.ViewModel
         #region Constructors
         public MainViewModel()
         {
-            CurrentView = GetStartMenu();
+            CurrentView = GetNewStartMenu();
         }
         #endregion
 
         #region Private Methods
-        private StartMenuViewModel GetStartMenu()
+        private StartMenuViewModel GetNewStartMenu()
         {
             StartMenuViewModel startMenuViewModel = new();
 
@@ -75,7 +75,7 @@ namespace TransportTycoon.WPF.ViewModel
             if (result == MessageBoxResult.Yes)
             {
                 //Model = null;
-                CurrentView = GetStartMenu();
+                CurrentView = GetNewStartMenu();
             }
         }
         #endregion
