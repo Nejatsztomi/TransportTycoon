@@ -15,7 +15,7 @@ namespace TransportTycoon.WPF
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class GameView : Window
+    public partial class GameView : UserControl
     {
         #region Properties
         private Point? DragStartPoint { get; set; } = null;
