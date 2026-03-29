@@ -13,10 +13,10 @@ namespace TransportTycoon.WPF
     {
         #region Fields
         private GameModel? _model;
-        private GameViewModel? _mainViewModel;
-        private MainWindow? _mainView;
-        private StartWindow? _startView;
-        private StartMenuViewModel? _startViewModel;
+        private GameViewModel? _gameViewModel;
+        private GameView? _gameView;
+        private StartMenuView? _startMenuView;
+        private StartMenuViewModel? _startMenuViewModel;
         #endregion
 
         #region Properties
@@ -25,25 +25,25 @@ namespace TransportTycoon.WPF
             get => _model ?? throw new InvalidOperationException("Model is not initialized.");
             set => _model = value;
         }
-        private GameViewModel MainViewModel
+        private GameViewModel GameViewModel
         {
-            get => _mainViewModel ?? throw new InvalidOperationException("MainViewModel is not initialized.");
-            set => _mainViewModel = value;
+            get => _gameViewModel ?? throw new InvalidOperationException("GameViewModel is not initialized.");
+            set => _gameViewModel = value;
         }
-        private MainWindow MainView
+        private GameView GameView
         {
-            get => _mainView ?? throw new InvalidOperationException("MainView is not initialized.");
-            set => _mainView = value;
+            get => _gameView ?? throw new InvalidOperationException("GameView is not initialized.");
+            set => _gameView = value;
         }
-        private StartWindow StartView
+        private StartMenuView StartMenuView
         {
-            get => _startView ?? throw new InvalidOperationException("StartView is not initialized.");
-            set => _startView = value;
+            get => _startMenuView ?? throw new InvalidOperationException("StartMenuView is not initialized.");
+            set => _startMenuView = value;
         }
-        private StartMenuViewModel StartViewModel
+        private StartMenuViewModel StartMenuViewModel
         {
-            get => _startViewModel ?? throw new InvalidOperationException("StartViewModel is not initialized.");
-            set => _startViewModel = value;
+            get => _startMenuViewModel ?? throw new InvalidOperationException("StartMenuViewModel is not initialized.");
+            set => _startMenuViewModel = value;
         }
 
         private Window? CurrentView { get; set; } // Vagy event argumentként átadni a view-t a ViewModel-nek
@@ -69,47 +69,47 @@ namespace TransportTycoon.WPF
             Model.NewGame();
 
             //ViewModel
-            MainViewModel = new(Model);
-            MainViewModel.Exit += new EventHandler(GameView_Close);
+            GameViewModel = new(Model);
+            GameViewModel.Exit += new EventHandler(GameView_Close);
 
             //View
-            MainView = new()
+            GameView = new()
             {
-                DataContext = MainViewModel,
+                DataContext = GameViewModel,
             };
-            MainView.Closing += new CancelEventHandler(View_Close);
-            MainView.Show();
+            GameView.Closing += new CancelEventHandler(View_Close);
+            GameView.Show();
 
             // Close the start view
             // Must be called after .Show(), otherwise the app exists, because ShutdownMode = OnLastWindowClose by default
-            StartView.Hide();
+            StartMenuView.Hide();
         }
         #endregion
 
         #region Private event Methods
         private void ShowStartMenu(object? sender, StartupEventArgs e)
         {
-            StartViewModel = new();
+            StartMenuViewModel = new();
 
-            StartViewModel.StartNewGame += (sender, selectedDifficulty) =>
+            StartMenuViewModel.StartNewGame += (sender, selectedDifficulty) =>
             {
                 StartGame(selectedDifficulty);
             };
 
-            StartViewModel.LoadGame += (sender, e) =>
+            StartMenuViewModel.LoadGame += (sender, e) =>
             {
                 throw new NotImplementedException("Load game functionality is not implemented yet!");
             };
 
-            StartViewModel.ExitGame += new EventHandler(StartView_Close);
+            StartMenuViewModel.ExitGame += new EventHandler(StartView_Close);
 
-            StartView = new StartWindow
+            StartMenuView = new StartMenuView
             {
-                DataContext = StartViewModel,
+                DataContext = StartMenuViewModel,
             };
-            StartView.Closing += new CancelEventHandler(StartView_Close);
-            CurrentView = StartView;
-            StartView.Show();
+            StartMenuView.Closing += new CancelEventHandler(StartView_Close);
+            CurrentView = StartMenuView;
+            StartMenuView.Show();
         }
 
 
@@ -139,7 +139,7 @@ namespace TransportTycoon.WPF
             }
             else
             {
-                StartView.Closing -= StartView_Close;
+                StartMenuView.Closing -= StartView_Close;
                 Application.Current.Shutdown();
             }
         }
@@ -158,17 +158,17 @@ namespace TransportTycoon.WPF
             if (result == MessageBoxResult.Yes)
             {
                 //TODO:We need a method that will open the main menu
-                MainView.Closing -= View_Close;
+                GameView.Closing -= View_Close;
 
-                MainView.Close();
+                GameView.Close();
 
-                StartView.Show();
+                StartMenuView.Show();
             }
         }
 
         private void StartView_Close(object? sender, EventArgs e)
         {
-            StartView.Close();
+            StartMenuView.Close();
         }
 
         private void GameView_Close(object? sender, EventArgs e)
