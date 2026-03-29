@@ -40,11 +40,6 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
         #endregion
 
-        #region Events
-        public event EventHandler? NewGame;
-        public event EventHandler? Exit;
-        #endregion
-
         #region Constructors
         public GameViewModel(GameModel model)
         {
@@ -101,15 +96,6 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Relay command methods
-        private void OnNewGame()
-        {
-            NewGame?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnExit()
-        {
-            Exit?.Invoke(this, EventArgs.Empty);
-        }
 
         private void OnNormalSpeed()
         {
