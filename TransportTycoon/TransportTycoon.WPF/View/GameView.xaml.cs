@@ -10,7 +10,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TransportTycoon.WPF.ViewModel;
 
-namespace TransportTycoon.WPF
+namespace TransportTycoon.WPF.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

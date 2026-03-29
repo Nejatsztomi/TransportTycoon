@@ -13,6 +13,21 @@
         Width="800"
         MinWidth="800"
         >
+    
+    <Window.DataContext>
+        <viewmodels:MainViewModel />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewmodels:StartMenuViewModel}">
+            <views:StartMenuView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type viewmodels:GameViewModel}">
+            <views:GameView/>
+        </DataTemplate>
+    </Window.Resources>
+
     <Grid>
         
     </Grid>
