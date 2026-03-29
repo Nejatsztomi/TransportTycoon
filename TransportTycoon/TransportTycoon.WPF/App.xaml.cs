@@ -81,11 +81,11 @@ namespace TransportTycoon.WPF
                 DataContext = MainViewModel,
             };
 
-            //MainView.Closing += new CancelEventHandler(StartView_Close);
+            MainView.Closing += new CancelEventHandler(MainView_Close);
             MainView.Show();
         }
 
-        private void StartView_Close(object? sender, CancelEventArgs e)
+        private void MainView_Close(object? sender, CancelEventArgs e)
         {
             if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
             {
