@@ -15,9 +15,9 @@ namespace TransportTycoon.WPF.View
     /// <summary>
     /// Interaction logic for StartWindow.xaml
     /// </summary>
-    public partial class StartWindow : Window
+    public partial class StartMenuView : Window
     {
-        public StartWindow()
+        public StartMenuView()
         {
             InitializeComponent();
         }
