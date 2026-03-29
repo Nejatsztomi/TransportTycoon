@@ -1,7 +1,14 @@
 ﻿namespace TransportTycoon.Model
 {
-    public class TransportTycoonEventArgs(int gameTime, int numberOfVehicles, int maintance, int balance) : EventArgs
+    public class TransportTycoonEventArgs : EventArgs
     {
+        #region Fields
+        private int gameTime;
+        private int maintance;
+        private int balance;
+        private int numberOfVehicles;
+        #endregion
+
         #region Properties
         public int GameTime => gameTime;
 
@@ -10,6 +17,20 @@
         public int Balance => balance;
 
         public int NumberOfVehicles => numberOfVehicles;
+        #endregion
+
+        #region Constructors
+        public TransportTycoonEventArgs(int gameTime, int numberOfVehicles, int maintance) 
+        {
+            this.gameTime = gameTime;
+            this.numberOfVehicles = numberOfVehicles;
+            this.maintance = maintance;
+        }
+        public TransportTycoonEventArgs(int balance)
+        {
+            this.balance = balance;
+        }
+
         #endregion
     }
 }

@@ -40,6 +40,7 @@ namespace TransportTycoon.Model
 
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
+        public int Maintance { get; private set; }
 
         public GameMode Mode { get; private set; }
         public TimeSpeed TimeSpeed { get; private set; }
@@ -64,6 +65,7 @@ namespace TransportTycoon.Model
         public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
         public event EventHandler<TransportTycoonFieldEventArgs>? FieldChanged;
+        public event EventHandler<TransportTycoonEventArgs>? BalanceChanged;
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         #endregion
@@ -167,6 +169,7 @@ namespace TransportTycoon.Model
                     Balance -= 100;
                     terrain.DecreaseHeight();
                     FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
+                    BalanceChanged?.Invoke(this, new TransportTycoonEventArgs(GameTime,num));
                     return true;
                 }
             }
@@ -240,7 +243,7 @@ namespace TransportTycoon.Model
         private void OnGameOver()
         {
             _timer.Stop();
-            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles));
+            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles ,Maintance, Balance));
         }
         #endregion
 
@@ -254,6 +257,8 @@ namespace TransportTycoon.Model
                 GameAdvanced?.Invoke(this, grownTrees);
             }
             GameTicked?.Invoke(this, EventArgs.Empty);
+
+
         }
         #endregion
 
