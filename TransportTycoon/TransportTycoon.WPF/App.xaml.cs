@@ -55,37 +55,7 @@ namespace TransportTycoon.WPF
                 DataContext = MainViewModel,
             };
 
-            MainView.Closing += new CancelEventHandler(MainView_Close);
             MainView.Show();
-        }
-
-        private void MainView_Close(object? sender, CancelEventArgs e)
-        {
-            if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-            {
-                e.Cancel = true;
-                return;
-            }
-            Application.Current.Shutdown();
-        }
-
-        private void View_Close(object? sender, CancelEventArgs e)
-        {
-            bool isGameOver = Model.IsGameOver;
-            Model.SetMode(GameMode.Paused);
-
-            if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
-            {
-                e.Cancel = true;
-
-                if (!isGameOver)
-                    Model.SetMode(GameMode.Run);
-            }
-            else
-            {
-                //StartMenuView.Closing -= StartView_Close;
-                Application.Current.Shutdown();
-            }
         }
         #endregion
 

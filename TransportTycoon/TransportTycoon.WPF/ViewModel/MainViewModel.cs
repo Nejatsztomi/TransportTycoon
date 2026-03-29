@@ -14,6 +14,10 @@ namespace TransportTycoon.WPF.ViewModel
         private object _currentView;
         #endregion
 
+        #region Properties
+        private GameModel? Model { get; set; }
+        #endregion
+
         #region Constructors
         public MainViewModel()
         {
@@ -37,14 +41,11 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private Methods
         private void StartGame(Difficulty difficulty)
         {
-            // model
-            GameModel model = new(difficulty, new WpfDispatcherTimer());
-            model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
-            model.NewGame();
+            Model = new(difficulty, new WpfDispatcherTimer());
+            Model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
+            Model.NewGame();
 
-            //ViewModel
-            GameViewModel gameViewModel = new(model);
-            gameViewModel.Exit += new EventHandler(GameView_Close);
+            GameViewModel gameViewModel = new(Model);
 
             CurrentView = gameViewModel;
         }
@@ -72,10 +73,22 @@ namespace TransportTycoon.WPF.ViewModel
                 //StartMenuView.Show();
             }
         }
+        #endregion
 
-        private void GameView_Close(object? sender, EventArgs e)
+        #region Public method
+        public bool CanClose()
         {
+            Model?.SetMode(GameMode.Paused);
 
+            if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+            {
+                if (Model is not null && !Model.IsGameOver)
+                {
+                    Model.SetMode(GameMode.Run);
+                }
+                return false;
+            }
+            return true;
         }
         #endregion
     }
