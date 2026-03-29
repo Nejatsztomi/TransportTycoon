@@ -128,52 +128,60 @@ namespace TransportTycoon.Model
 
         public bool IncreaseHeight(int x, int y)
         {
-            Field field = Map[x, y];
-
-            if (field is Terrain terrain)
+            if (Mode == GameMode.Editor) 
             {
-                int nextHeight = terrain.Height + 1;
+                Field field = Map[x, y];
 
-                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
+                if (field is Terrain terrain)
                 {
-                    if (field.Height == 4) return false;
-                    if (terrain.Trees > 0)
+                    int nextHeight = terrain.Height + 1;
+
+                    if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                     {
-                        Balance -= 50;
+                        if (field.Height == 4) return false;
+                        if (terrain.Trees > 0)
+                        {
+                            Balance -= 50;
+                        }
+                        Balance -= 100;
+                        terrain.IncreaseHeight();
+                        FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
+                        BalanceChanged?.Invoke(this, EventArgs.Empty);
+                        return true;
                     }
-                    Balance -= 100;
-                    terrain.IncreaseHeight();
-                    FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
-                    BalanceChanged?.Invoke(this, EventArgs.Empty);
-                    return true;
                 }
             }
+            
 
             return false;
         }
 
         public bool DecreaseHeight(int x, int y)
         {
-            Field field = Map[x, y];
-
-            if (field is Terrain terrain)
+            if (Mode == GameMode.Editor)
             {
-                int nextHeight = terrain.Height - 1;
+                Field field = Map[x, y];
 
-                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
+                if (field is Terrain terrain)
                 {
-                    if (field.Height == 1) return false;
-                    if (terrain.Trees > 0)
+                    int nextHeight = terrain.Height - 1;
+
+                    if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
                     {
-                        Balance -= 50;
+                        if (field.Height == 1) return false;
+                        if (terrain.Trees > 0)
+                        {
+                            Balance -= 50;
+                        }
+                        Balance -= 100;
+                        terrain.DecreaseHeight();
+                        FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
+                        BalanceChanged?.Invoke(this, EventArgs.Empty);
+                        return true;
                     }
-                    Balance -= 100;
-                    terrain.DecreaseHeight();
-                    FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
-                    BalanceChanged?.Invoke(this, EventArgs.Empty);
-                    return true;
                 }
             }
+            
 
             return false;
         }
