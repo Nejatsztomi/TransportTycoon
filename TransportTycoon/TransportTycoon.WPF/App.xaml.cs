@@ -64,11 +64,9 @@ namespace TransportTycoon.WPF
             if (MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
             {
                 e.Cancel = true;
+                return;
             }
-            else
-            {
-                Application.Current.Shutdown();
-            }
+            Application.Current.Shutdown();
         }
 
         private void View_Close(object? sender, CancelEventArgs e)
