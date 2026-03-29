@@ -13,14 +13,14 @@
         public int GameTime => gameTime;
 
         public int Maintance => maintance;
-        
+
         public int Balance => balance;
 
         public int NumberOfVehicles => numberOfVehicles;
         #endregion
 
         #region Constructors
-        public TransportTycoonEventArgs(int gameTime, int numberOfVehicles, int maintance) 
+        public TransportTycoonEventArgs(int gameTime, int numberOfVehicles, int maintance)
         {
             this.gameTime = gameTime;
             this.numberOfVehicles = numberOfVehicles;

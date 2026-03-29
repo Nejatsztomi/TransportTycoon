@@ -244,7 +244,7 @@ namespace TransportTycoon.Model
         private void OnGameOver()
         {
             _timer.Stop();
-            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles ,Maintance));
+            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
         #endregion
 
