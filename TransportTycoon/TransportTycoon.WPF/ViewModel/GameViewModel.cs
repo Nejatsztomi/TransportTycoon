@@ -6,7 +6,7 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class GameViewModel : ViewModelBase
+    public partial class GameViewModel : ViewModelBase, IDisposable
     {
         #region Properties
         #region Relay commands
@@ -147,6 +147,16 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_GameTicked(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(GameTime));
+        }
+        #endregion
+
+        #region Dispose
+        // Unsubscribe from events to prevent memory leaks
+        public void Dispose()
+        {
+            Model.NewGameCreated -= Model_NewGameCreated;
+            Model.GameTicked -= Model_GameTicked;
+            Model.GameAdvanced -= Model_GameAdvanced;
         }
         #endregion
     }
