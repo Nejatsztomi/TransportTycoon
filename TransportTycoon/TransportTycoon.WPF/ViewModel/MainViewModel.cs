@@ -76,7 +76,7 @@ namespace TransportTycoon.WPF.ViewModel
             RefreshTable();
         }
 
-        private void Model_BalanceChanged(object? sender, TransportTycoonEventArgs e)
+        private void Model_BalanceChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(Balance));
         }

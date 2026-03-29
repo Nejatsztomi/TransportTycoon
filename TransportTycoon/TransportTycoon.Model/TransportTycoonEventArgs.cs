@@ -26,11 +26,6 @@
             this.numberOfVehicles = numberOfVehicles;
             this.maintance = maintance;
         }
-        public TransportTycoonEventArgs(int balance)
-        {
-            this.balance = balance;
-        }
-
         #endregion
     }
 }

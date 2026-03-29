@@ -65,7 +65,7 @@ namespace TransportTycoon.Model
         public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
         public event EventHandler<TransportTycoonFieldEventArgs>? FieldChanged;
-        public event EventHandler<TransportTycoonEventArgs>? BalanceChanged;
+        public event EventHandler? BalanceChanged;
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         #endregion
@@ -144,7 +144,7 @@ namespace TransportTycoon.Model
                     Balance -= 100;
                     terrain.IncreaseHeight();
                     FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
-                    BalanceChanged?.Invoke(this, new TransportTycoonEventArgs(Balance));
+                    BalanceChanged?.Invoke(this, EventArgs.Empty);
                     return true;
                 }
             }
@@ -170,7 +170,7 @@ namespace TransportTycoon.Model
                     Balance -= 100;
                     terrain.DecreaseHeight();
                     FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
-                    BalanceChanged?.Invoke(this, new TransportTycoonEventArgs(Balance));
+                    BalanceChanged?.Invoke(this, EventArgs.Empty);
                     return true;
                 }
             }
