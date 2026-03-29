@@ -29,6 +29,6 @@
     </Window.Resources>
 
     <Grid>
-        
+        <ContentControl Content="{Binding CurrentView}" />
     </Grid>
 </Window>
