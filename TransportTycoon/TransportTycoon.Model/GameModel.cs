@@ -144,6 +144,7 @@ namespace TransportTycoon.Model
                     Balance -= 100;
                     terrain.IncreaseHeight();
                     FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
+                    BalanceChanged?.Invoke(this, new TransportTycoonEventArgs(Balance));
                     return true;
                 }
             }
@@ -169,7 +170,7 @@ namespace TransportTycoon.Model
                     Balance -= 100;
                     terrain.DecreaseHeight();
                     FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
-                    BalanceChanged?.Invoke(this, new TransportTycoonEventArgs(GameTime,num));
+                    BalanceChanged?.Invoke(this, new TransportTycoonEventArgs(Balance));
                     return true;
                 }
             }
