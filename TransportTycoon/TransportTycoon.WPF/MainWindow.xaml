@@ -9,9 +9,9 @@
         mc:Ignorable="d"
         Title="TransportTycoon"
         Height="450"
-        MinHeight="450"
+        MinHeight="{Binding CurrentView.MinimumHeight, FallbackValue=450}"
         Width="800"
-        MinWidth="800"
+        MinWidth="{Binding CurrentView.MinimumWidth, FallbackValue=800}"
         
         Closing="Window_Closing"
         >

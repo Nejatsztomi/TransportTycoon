@@ -6,9 +6,14 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class GameViewModel : ViewModelBase, IDisposable
+    public partial class GameViewModel : ViewModelBase, IDisposable, IViewConstraints
     {
         #region Properties
+        #region IViewConstraints
+        public double MinimumWidth => 800;
+        public double MinimumHeight => 450;
+        #endregion
+
         #region Relay commands
         public RelayCommand NormalSpeedCommand { get; init; }
         public RelayCommand FastSpeedCommand { get; init; }

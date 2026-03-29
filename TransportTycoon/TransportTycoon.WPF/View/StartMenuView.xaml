@@ -6,10 +6,6 @@
         xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel"
         xmlns:local="clr-namespace:TransportTycoon.WPF.View" d:DataContext="{d:DesignInstance Type=vm:StartMenuViewModel}"
         mc:Ignorable="d"
-        Height="450"
-        Width="600"
-        MinHeight="450"
-        MinWidth="600"
         >
     
     <Grid>
