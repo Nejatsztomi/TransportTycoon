@@ -67,7 +67,6 @@ namespace TransportTycoon.WPF
         #region Constructor
         public App()
         {
-            this.ShutdownMode = ShutdownMode.OnExplicitShutdown;
             Startup += new StartupEventHandler(ShowStartMenu);
         }
         #endregion
