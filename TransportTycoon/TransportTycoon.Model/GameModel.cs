@@ -170,7 +170,7 @@ namespace TransportTycoon.Model
                     else if (neighbourCountAndWhere[4] == 1 && neighbourCountAndWhere[1] == 1) type = RoadType.UpperLeftTurn;
                     break;
                 case 3:
-                    int noNeighbour = neighbourCountAndWhere.First(x => x == 0);
+                    int noNeighbour = neighbourCountAndWhere.FindIndex(x => x == 0);
                     switch (noNeighbour)
                     {
                         case 1:
@@ -215,7 +215,7 @@ namespace TransportTycoon.Model
                         else if (neighbourCountAndWhere[4] == 1 && neighbourCountAndWhere[1] == 1) ntype = RoadType.UpperLeftTurn;
                         break;
                     case 3:
-                        int noNeighbour = neighbourCountAndWhere.First(x => x == 0);
+                        int noNeighbour = neighbourCountAndWhere.FindIndex(x => x == 0);
                         switch (noNeighbour)
                         {
                             case 1:
