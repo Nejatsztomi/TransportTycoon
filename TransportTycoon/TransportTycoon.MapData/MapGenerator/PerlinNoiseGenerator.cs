@@ -10,14 +10,6 @@
 
     internal class PerlinNoiseGenerator : INoiseGenerator
     {
-        #region Private constants
-        private const int Water = 0;
-        private const int Plain = 1;
-        private const int Hills = 2;
-        private const int Mountains = 3;
-        private const int HighMountains = 4;
-        #endregion
-
         #region Properties
         private Random Random { get; }
         private int Height { get; }
@@ -29,7 +21,7 @@
         {
             Width = width;
             Height = height;
-            Random = new Random(seed);
+            Random = new(seed);
         }
         #endregion
 
