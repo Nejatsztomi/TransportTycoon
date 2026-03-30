@@ -10,12 +10,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TransportTycoon.WPF.ViewModel;
 
-namespace TransportTycoon.WPF
+namespace TransportTycoon.WPF.View
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class GameView : UserControl
     {
         #region Properties
         private Point? DragStartPoint { get; set; } = null;
@@ -23,7 +23,7 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Constructors
-        public MainWindow()
+        public GameView()
         {
             InitializeComponent();
         }
@@ -38,7 +38,7 @@ namespace TransportTycoon.WPF
             {
                 e.Handled = true;
 
-                if (DataContext is MainViewModel vm)
+                if (DataContext is GameViewModel vm)
                 {
                     if (e.Delta > 0 && vm.ZoomLevel < 3.0)
                     {
