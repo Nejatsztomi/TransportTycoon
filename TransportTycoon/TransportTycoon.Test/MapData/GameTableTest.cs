@@ -8,10 +8,32 @@ public class GameTableTest
     public class ConstructorTest
     {
         [TestMethod]
-        public void Constructor_WithAllParameters() { }
+        public void Constructor_WithAllParameters()
+        {
+            int width = 50;
+            int height = 75;
+
+            GameTable gameTable = new(width, height);
+
+            Assert.AreEqual(width, gameTable.Width, "GameTable should have the specified Width");
+            Assert.AreEqual(height, gameTable.Height, "GameTable should have the specified Height");
+
+            Assert.IsEmpty(gameTable.Pointers, "GameTable should initialize Pointers as an empty list");
+            Assert.IsEmpty(gameTable.BuildingIDs, "GameTable should initialize BuildingIDs as an empty list");
+
+            Assert.IsNotNull(gameTable.Table, "GameTable should initialize the Table array");
+            Assert.AreEqual(width, gameTable.Table.GetLength(0), "GameTable's Table should have the correct width");
+            Assert.AreEqual(height, gameTable.Table.GetLength(1), "GameTable's Table should have the correct height")
+        }
 
         [TestMethod]
-        public void Constructor_Default() { }
+        public void Constructor_Default()
+        {
+            GameTable gameTable = new();
+
+            Assert.AreEqual(GameTable.DefaultWidth, gameTable.Width, "GameTable should DefaultWidth as Width");
+            Assert.AreEqual(GameTable.DefaultHeight, gameTable.Height, "GameTable should DefaultHeight as Height");
+        }
     }
 
     [TestClass]
