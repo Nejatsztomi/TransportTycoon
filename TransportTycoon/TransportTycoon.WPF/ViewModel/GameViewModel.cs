@@ -27,8 +27,7 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand IncreaseHeightCommand { get; init; }
         public RelayCommand DecreaseHeightCommand { get; init; }
 
-        public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
-        public RelayCommand<FieldViewModel> BuildInfrastructureCommand { get; init; }
+        public RelayCommand<FieldViewModel> TileLeftClickCommand { get; init; }
         #endregion
 
         public GameModel Model { get; init; }
@@ -47,9 +46,9 @@ namespace TransportTycoon.WPF.ViewModel
         private double _zoomLevel = 1.0;
         [ObservableProperty]
         private string _selectedTile = "Click a tile!";
+        #endregion
         [ObservableProperty]
         private int _selectedButton = 0;
-        #endregion
         #endregion
 
         #region Events
@@ -80,14 +79,14 @@ namespace TransportTycoon.WPF.ViewModel
             IncreaseHeightCommand = new(OnIncreaseHeight);
             DecreaseHeightCommand = new(OnDecreaseHeight);
 
-            TileClickCommand = new(OnTileClick);
             SetSelectedButtonCommand = new RelayCommand<object>(x =>
             {
                 if (x == null) return;
                 _selectedButton = Convert.ToInt32(x);
             });
-            BuildInfrastructureCommand = new RelayCommand<FieldViewModel>(tile =>
+            TileLeftClickCommand = new RelayCommand<FieldViewModel>(tile =>
             {
+                if (tile == null) return;
                 switch (_selectedButton)
                 {
                     case 1:
@@ -127,13 +126,11 @@ namespace TransportTycoon.WPF.ViewModel
                 FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
                 if (tile != null)
                 {
-                    string oldPath = tile.ImagePath;
                     int index = Tiles.IndexOf(tile);
                     Tiles[index] = new(Model.Map[x, y]);
                     tile.RefreshInfrastructure();
                 }
             }
-            //RefreshTable();
         }
 
         private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
@@ -194,14 +191,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.SetMode(GameMode.Editor);
         }
-        private void OnTileClick(object? param)
-        {
-            if (param is FieldViewModel tile)
-            {
-                SelectedTile = $"Clicked tile at ({tile.X}, {tile.Y})";
-                Model.SetSelectedField(tile.X, tile.Y);
-            }
-        }
+
 
         private void OnIncreaseHeight()
         {
