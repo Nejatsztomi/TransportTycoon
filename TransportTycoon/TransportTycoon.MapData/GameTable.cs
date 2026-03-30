@@ -158,7 +158,7 @@ namespace TransportTycoon.MapData
             if (x - 1 >= 0 && Table[x - 1, y] is Road) result.Add((Table[x - 1, y].X, Table[x - 1, y].Y));
             if (y + 1 <= Width - 1 && Table[x, y + 1] is Road) result.Add((Table[x, y + 1].X, Table[x, y + 1].Y));
             if (x + 1 <= Height - 1 && Table[x + 1, y] is Road) result.Add((Table[x + 1, y].X, Table[x + 1, y].Y));
-            if (y - 1 >= 0 && Table[x, y - 1] is Road) result.Add((Table[x , y-1].X, Table[x, y-1].Y));
+            if (y - 1 >= 0 && Table[x, y - 1] is Road) result.Add((Table[x, y - 1].X, Table[x, y - 1].Y));
             return result;
         }
         #endregion
