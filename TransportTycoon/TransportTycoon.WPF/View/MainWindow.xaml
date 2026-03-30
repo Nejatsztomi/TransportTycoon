@@ -238,7 +238,7 @@
                                                />-->
                                             <MouseBinding 
                                                MouseAction="LeftClick" 
-                                               Command="{Binding DataContext.BuildRoadCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                               Command="{Binding DataContext.BuildInfrastructureCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                CommandParameter="{Binding}"
                                                />
                                         </Grid.InputBindings>

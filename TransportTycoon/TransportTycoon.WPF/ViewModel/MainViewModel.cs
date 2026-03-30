@@ -20,7 +20,7 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand EditorModeCommand { get; init; }
 
         public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
-        public RelayCommand<FieldViewModel> BuildRoadCommand { get; init; }
+        public RelayCommand<FieldViewModel> BuildInfrastructureCommand { get; init; }
         #endregion
 
         public GameModel Model { get; init; }
@@ -66,7 +66,21 @@ namespace TransportTycoon.WPF.ViewModel
             EditorModeCommand = new(OnEditorMode);
 
             TileClickCommand = new(OnTileClick);
-            BuildRoadCommand = new RelayCommand<FieldViewModel>(tile => Model.BuildRoad(tile.X, tile.Y));
+            BuildInfrastructureCommand = new RelayCommand<FieldViewModel>(tile =>
+            {
+                switch (SelectedButton)
+                {
+                    case 1:
+                        Model.BuildRoad(tile.X, tile.Y);
+                        break;
+                    case 2:
+                        Model.BuildBridge(tile.X, tile.Y);
+                        break;
+                    default:
+                        break;
+                }    
+            });
+
 
             Tiles = [];
             RefreshTable();
