@@ -19,4 +19,12 @@
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MapData\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TransportTycoon.Model\TransportTycoon.Model.csproj" />
+  </ItemGroup>
+
 </Project>
