@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData
+﻿using System.Reflection;
+
+namespace TransportTycoon.MapData
 {
     public enum BridgeType
     {
@@ -8,18 +10,24 @@
     public abstract class Bridge : Infrastructure
     {
         #region Fields
-        public int SpeedLimit { get; private set; }
-        public int Range { get; private set; }
-        public BridgeType Type { get; private set; }
+        public int SpeedLimit { get; protected set; }
+        public int Range { get; protected set; }
+        public BridgeType BridgeType { get; protected set; }
         #endregion
     }
 
     public class YellowBridge : Bridge
     {
         #region Constructor
-        public YellowBridge()
+        public YellowBridge(int x, int y,BridgeType type,int height)
         {
-            //...
+            SpeedLimit = 100;
+            Range = 1;
+            X = x;
+            Y = y;
+            FieldType = FieldType.Bridge;
+            BridgeType = type;
+            Height = height;
         }
         #endregion
     }
