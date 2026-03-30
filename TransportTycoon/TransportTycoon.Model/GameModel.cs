@@ -23,11 +23,11 @@ namespace TransportTycoon.Model
 
     public class GameModel
     {
-        #region Private constants
-        private const int InitialInterval = 1_000;
+        #region Constants
+        public const int InitialInterval = 1_000;
 
-        private const int InitialBalance = 1_000;
-        private const Difficulty InitialDifficulty = Difficulty.Easy;
+        public const int InitialBalance = 1_000;
+        public const Difficulty InitialDifficulty = Difficulty.Easy;
         #endregion
 
         #region Private fields
