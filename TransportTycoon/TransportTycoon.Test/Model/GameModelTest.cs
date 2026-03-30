@@ -237,13 +237,14 @@ public class GameModelTest
             public void Initialize()
             {
                 _mockTimer = Substitute.For<ITimer>();
-                _gameModel = new GameModel(Difficulty.Medium, 1000, _mockTimer);
+                _gameModel = new(Difficulty.Medium, 1000, _mockTimer);
             }
 
             [TestMethod]
             [DynamicData(nameof(GetAllGameModes))]
             public void GameModeChanged_EventArgumentIsCorrect(GameMode expectedGameMode)
             {
+                GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
                 GameMode actualGameMode = GameMode.Run;
 
                 EventHandler<GameMode> handler = (_, e) =>
@@ -253,13 +254,13 @@ public class GameModelTest
 
                 try
                 {
-                    _gameModel.GameModeChanged += handler;
-                    _gameModel.SetMode(expectedGameMode);
+                    gameModel.GameModeChanged += handler;
+                    gameModel.SetMode(expectedGameMode);
                     Assert.AreEqual(expectedGameMode, actualGameMode, "GameModeChanged event should have correct argument");
                 }
                 finally
                 {
-                    _gameModel.GameModeChanged -= handler;
+                    gameModel.GameModeChanged -= handler;
                 }
             }
 
@@ -267,6 +268,7 @@ public class GameModelTest
             [DynamicData(nameof(GetAllTimeSpeeds))]
             public void TimeSpeedChanged_EventArgumentIsCorrect(TimeSpeed expectedTimeSpeed)
             {
+                GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
                 TimeSpeed actualTimeSpeed = TimeSpeed.Normal;
 
                 EventHandler<TimeSpeed> handler = (_, e) =>
@@ -276,13 +278,13 @@ public class GameModelTest
 
                 try
                 {
-                    _gameModel.TimeSpeedChanged += handler;
-                    _gameModel.SetTimeSpeed(expectedTimeSpeed);
+                    gameModel.TimeSpeedChanged += handler;
+                    gameModel.SetTimeSpeed(expectedTimeSpeed);
                     Assert.AreEqual(expectedTimeSpeed, actualTimeSpeed, "TimeSpeedChanged event should have correct argument");
                 }
                 finally
                 {
-                    _gameModel.TimeSpeedChanged -= handler;
+                    gameModel.TimeSpeedChanged -= handler;
                 }
             }
 
@@ -292,6 +294,7 @@ public class GameModelTest
             [TestMethod]
             public void GameAdvanced_EventArgumentIsCorrect()
             {
+                GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
                 List<Tuple<int, int>> actualTrees = [];
 
                 EventHandler<List<Tuple<int, int>>> handler = (_, e) =>
@@ -301,9 +304,9 @@ public class GameModelTest
 
                 try
                 {
-                    _gameModel.GameAdvanced += handler;
+                    gameModel.GameAdvanced += handler;
                     // Indítsunk egy új játékot, hogy biztosan legyen mapunk és fáink
-                    _gameModel.NewGame();
+                    gameModel.NewGame();
                     // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
                     for (int i = 0; i < 10; i++)
                     {
@@ -313,7 +316,7 @@ public class GameModelTest
                 }
                 finally
                 {
-                    _gameModel.GameAdvanced -= handler;
+                    gameModel.GameAdvanced -= handler;
                 }
             }
 
