@@ -1,21 +1,34 @@
 ﻿namespace TransportTycoon.MapData
 {
-    public abstract class Terrain : Field
+    public class Terrain : Field
     {
         #region Fields
         public int Trees { set; get; }
         public override bool Modifiable { get; protected set; }
         #endregion
 
+        public Terrain(int x, int y, int height)
+        {
+            X = x;
+            Y = y;
+            Height = height;
+            Trees = 0;
+            SetFieldType();
+            Modifiable = true;
+        }
+
+
         #region Public methods
         public void IncreaseHeight()
         {
             Height++;
+            SetFieldType();
         }
 
         public void DecreaseHeight()
         {
             Height--;
+            SetFieldType();
         }
 
         public bool Grow()
@@ -34,61 +47,17 @@
 
         public override int GetTrees() => Trees;
         #endregion
-    }
 
-    public class Plain : Terrain
-    {
-        #region Constructors
-        public Plain(int x, int y)
+        #region Private methods
+        private void SetFieldType()
         {
-            X = x;
-            Y = y;
-            Height = 1;
-            Trees = 0;
-            FieldType = FieldType.Plain;
+            if (Height == 1) FieldType = FieldType.Plain;
+            else if (Height == 2) FieldType = FieldType.Hill;
+            else if (Height == 3) FieldType = FieldType.Mountain;
+            else FieldType = FieldType.HighMountain;
         }
         #endregion
     }
 
-    public class Hill : Terrain
-    {
-        #region Constructors
-        public Hill(int x, int y)
-        {
-            X = x;
-            Y = y;
-            Height = 2;
-            Trees = 0;
-            FieldType = FieldType.Hill;
-        }
-        #endregion
-    }
 
-    public class Mountain : Terrain
-    {
-        #region Constructors
-        public Mountain(int x, int y)
-        {
-            X = x;
-            Y = y;
-            Height = 3;
-            Trees = 0;
-            FieldType = FieldType.Mountain;
-        }
-        #endregion
-    }
-
-    public class HighMountain : Terrain
-    {
-        #region Constructors
-        public HighMountain(int x, int y)
-        {
-            X = x;
-            Y = y;
-            Height = 4;
-            Trees = 0;
-            FieldType = FieldType.HighMountain;
-        }
-        #endregion
-    }
 }

@@ -19,6 +19,9 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand ResumeGameCommand { get; init; }
         public RelayCommand EditorModeCommand { get; init; }
 
+        public RelayCommand IncreaseHeightCommand { get; init; }
+        public RelayCommand DecreaseHeightCommand { get; init; }
+
         public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
         public RelayCommand<FieldViewModel> BuildRoadCommand { get; init; }
         #endregion
@@ -56,6 +59,8 @@ namespace TransportTycoon.WPF.ViewModel
             model.GameTicked += Model_GameTicked;
             model.GameAdvanced += Model_GameAdvanced;
             model.InfrastructureBuilt += Model_InfrastructureBuilt;
+            model.FieldChanged += Model_FieldChanged;
+            model.BalanceChanged += Model_BalanceChanged;
 
             NormalSpeedCommand = new(OnNormalSpeed);
             FastSpeedCommand = new(OnFastSpeed);
@@ -65,11 +70,29 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
+            IncreaseHeightCommand = new(OnIncreaseHeight);
+            DecreaseHeightCommand = new(OnDecreaseHeight);
+
             TileClickCommand = new(OnTileClick);
             BuildRoadCommand = new RelayCommand<FieldViewModel>(tile => Model.BuildRoad(tile.X, tile.Y));
 
             Tiles = [];
             RefreshTable();
+        }
+
+        private void Model_BalanceChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Balance));
+        }
+
+        private void Model_FieldChanged(object? sender, TransportTycoonFieldEventArgs e)
+        {
+            var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
+
+            if (tile != null)
+            {
+                tile.RefreshTerrain(Model.Map[e.X, e.Y]);
+            }
         }
 
         private void Model_InfrastructureBuilt(object? sender, List<(int, int)> changedFields)
@@ -106,14 +129,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
-                    string path = Model.Map[x, y] switch
-                    {
-                        Plain _ => "Assets/Images/Terrain/field.png",
-                        Hill _ => "Assets/Images/Terrain/hill.png",
-                        Water _ => "Assets/Images/Terrain/water2.png",
-                        _ => "Assets/Images/Terrain/field.png"
-                    };
-                    tempList.Add(new(Model.Map[x, y], path));
+                    tempList.Add(new(Model.Map[x, y]));
                 }
             }
             Tiles = new(tempList);
@@ -168,6 +184,23 @@ namespace TransportTycoon.WPF.ViewModel
             if (param is FieldViewModel tile)
             {
                 SelectedTile = $"Clicked tile at ({tile.X}, {tile.Y})";
+                Model.SetSelectedField(tile.X, tile.Y);
+            }
+        }
+
+        private void OnIncreaseHeight()
+        {
+            if (Model.SelectedField != null)
+            {
+                Model.IncreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
+            }
+        }
+
+        private void OnDecreaseHeight()
+        {
+            if (Model.SelectedField != null)
+            {
+                Model.DecreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
             }
         }
         #endregion

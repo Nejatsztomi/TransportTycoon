@@ -8,9 +8,9 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Properties
-        public string ImagePath { get; init; }
+        public string ImagePath { get; set; }
 
-        private Field Field { get; init; }
+        private Field Field { get; set; }
         public int X => Field.X;
         public int Y => Field.Y;
         public int Height => Field.Height;
@@ -91,10 +91,10 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Constructor
-        public FieldViewModel(Field field, string imagePath)
+        public FieldViewModel(Field field)
         {
             Field = field;
-            ImagePath = imagePath;
+            ImagePath = DetermineImagePath();
         }
         #endregion
 
@@ -104,6 +104,13 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(TreeCounter));
             OnPropertyChanged(nameof(TreeImagePath));
         }
+
+        public void RefreshTerrain(Field field)
+        {
+            Field = field;
+            ImagePath = DetermineImagePath();
+            OnPropertyChanged(nameof(ImagePath));
+        }
         public void RefreshInfrastructure()
         {
             OnPropertyChanged(nameof(InfrastructureRotation));
@@ -112,6 +119,18 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private Methods
+        private string DetermineImagePath()
+        {
+            return Field.FieldType switch
+            {
+                FieldType.Plain => "Assets/Images/Terrain/field.png",
+                FieldType.Hill => "Assets/Images/Terrain/hill.png",
+                FieldType.Water => "Assets/Images/Terrain/water2.png",
+                FieldType.Mountain => "Assets/Images/Terrain/mountain3.png",
+                FieldType.HighMountain => "Assets/Images/Terrain/highmountain3.png",
+                _ => "Assets/Images/Terrain/field.png"
+            };
+        }
         #endregion
 
         #region Private event Methods
