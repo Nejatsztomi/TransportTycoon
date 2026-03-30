@@ -134,7 +134,7 @@ namespace TransportTycoon.WPF.ViewModel
                 {
                     string oldPath = tile.ImagePath;
                     int index = Tiles.IndexOf(tile);
-                    Tiles[index] = new(Model.Map[x, y],oldPath);
+                    Tiles[index] = new(Model.Map[x, y], oldPath);
                     tile.RefreshInfrastructure();
                 }
             }
