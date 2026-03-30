@@ -60,7 +60,7 @@ namespace TransportTycoon.WPF.ViewModel
 
                 if (Field is Road road)
                 {
-                    if(road.RoadType==RoadType.RightTurn || road.RoadType==RoadType.LeftTurn || road.RoadType == RoadType.UpperRightTurn || road.RoadType==RoadType.UpperLeftTurn)
+                    if (road.RoadType == RoadType.RightTurn || road.RoadType == RoadType.LeftTurn || road.RoadType == RoadType.UpperRightTurn || road.RoadType == RoadType.UpperLeftTurn)
                         return $"/Assets/Images/Road/turn.png";
                     else if (road.RoadType == RoadType.UpperTRoad || road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad || road.RoadType == RoadType.LeftTRoad)
                         return $"/Assets/Images/Road/crossT.png";
@@ -79,7 +79,7 @@ namespace TransportTycoon.WPF.ViewModel
                 {
                     return road.RoadType switch
                     {
-                        RoadType.Horizontal or RoadType.LeftTRoad or RoadType.LeftTurn=> 90,
+                        RoadType.Horizontal or RoadType.LeftTRoad or RoadType.LeftTurn => 90,
                         RoadType.UpperTRoad or RoadType.UpperLeftTurn => 180,
                         RoadType.RightTRoad or RoadType.UpperRightTurn => 270,
                         _ => 0

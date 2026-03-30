@@ -158,7 +158,7 @@ namespace TransportTycoon.Model
             RoadType type = CalculateRoadType(x, y);
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
             changedFields.Add((x, y));
-            
+
             List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
             foreach (var e in neighbourRoads)
             {
