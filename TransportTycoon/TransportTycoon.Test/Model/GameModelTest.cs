@@ -301,7 +301,6 @@ public class GameModelTest
 
                 try
                 {
-
                     _gameModel.GameAdvanced += handler;
                     // Indítsunk egy új játékot, hogy biztosan legyen mapunk és fáink
                     _gameModel.NewGame();
