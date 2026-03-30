@@ -76,8 +76,8 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
-            IncreaseHeightCommand = new(OnIncreaseHeight);
-            DecreaseHeightCommand = new(OnDecreaseHeight);
+            //IncreaseHeightCommand = new(OnIncreaseHeight);
+            //DecreaseHeightCommand = new(OnDecreaseHeight);
 
             SetSelectedButtonCommand = new RelayCommand<object>(x =>
             {
@@ -90,8 +90,10 @@ namespace TransportTycoon.WPF.ViewModel
                 switch (_selectedButton)
                 {
                     case 1:
+                        Model.IncreaseHeight(tile.X, tile.Y);
                         break;
                     case 2:
+                        Model.DecreaseHeight(tile.X, tile.Y);
                         break;
                     case 11:
                         Model.BuildRoad(tile.X, tile.Y);
