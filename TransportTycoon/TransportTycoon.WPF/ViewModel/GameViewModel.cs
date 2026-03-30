@@ -90,9 +90,13 @@ namespace TransportTycoon.WPF.ViewModel
                 switch (_selectedButton)
                 {
                     case 1:
-                        Model.BuildRoad(tile.X, tile.Y);
                         break;
                     case 2:
+                        break;
+                    case 11:
+                        Model.BuildRoad(tile.X, tile.Y);
+                        break;
+                    case 22:
                         Model.BuildBridge(tile.X, tile.Y);
                         break;
                     default:
