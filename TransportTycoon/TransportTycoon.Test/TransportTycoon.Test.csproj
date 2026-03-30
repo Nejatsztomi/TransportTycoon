@@ -20,10 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="MapData\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\TransportTycoon.MapData\TransportTycoon.MapData.csproj" />
     <ProjectReference Include="..\TransportTycoon.Model\TransportTycoon.Model.csproj" />
   </ItemGroup>
 
