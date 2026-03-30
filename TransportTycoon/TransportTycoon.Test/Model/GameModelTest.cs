@@ -1,4 +1,6 @@
+using NSubstitute;
 using TransportTycoon.Model;
+using ITimer = TransportTycoon.Model.ITimer;
 
 namespace TransportTycoon.Test.Model;
 
@@ -27,7 +29,8 @@ public class GameModelTest
             [ClassInitialize]
             public static void Initialize(TestContext _)
             {
-                _gameModel = new GameModel(Difficulty.Medium, 1000, null!);
+                var mockTimer = Substitute.For<ITimer>();
+                _gameModel = new GameModel(Difficulty.Medium, 1000, mockTimer);
             }
 
             [TestMethod]
@@ -60,7 +63,8 @@ public class GameModelTest
             [ClassInitialize]
             public static void Initialize(TestContext _)
             {
-                _gameModel = new GameModel(Difficulty.Medium, 1000, null!);
+                var mockTimer = Substitute.For<ITimer>();
+                _gameModel = new GameModel(Difficulty.Medium, 1000, mockTimer);
             }
 
             [TestMethod]
