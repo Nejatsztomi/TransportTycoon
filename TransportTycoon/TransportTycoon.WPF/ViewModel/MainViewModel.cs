@@ -94,7 +94,7 @@ namespace TransportTycoon.WPF.ViewModel
                         break;
                     default:
                         break;
-                }    
+                }
             }, (_) => IsEditorMode);
 
             Tiles = [];

@@ -19,7 +19,7 @@ namespace TransportTycoon.MapData
     public class YellowBridge : Bridge
     {
         #region Constructor
-        public YellowBridge(int x, int y,BridgeType type,int height)
+        public YellowBridge(int x, int y, BridgeType type, int height)
         {
             SpeedLimit = 100;
             Range = 1;
