@@ -90,15 +90,15 @@ namespace TransportTycoon.WPF.ViewModel
                 switch (_selectedButton)
                 {
                     case 1:
-                        Model.IncreaseHeight(tile.X, tile.Y);
+                        Model.DecreaseHeight(tile.X, tile.Y);
                         break;
                     case 2:
-                        Model.DecreaseHeight(tile.X, tile.Y);
+                        Model.IncreaseHeight(tile.X, tile.Y);
                         break;
                     case 11:
                         Model.BuildRoad(tile.X, tile.Y);
                         break;
-                    case 22:
+                    case 12:
                         Model.BuildBridge(tile.X, tile.Y);
                         break;
                     default:
