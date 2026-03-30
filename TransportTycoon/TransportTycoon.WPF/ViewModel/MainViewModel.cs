@@ -18,6 +18,7 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand PauseGameCommand { get; init; }
         public RelayCommand ResumeGameCommand { get; init; }
         public RelayCommand EditorModeCommand { get; init; }
+        public RelayCommand<int> SetSelectedButtonCommand { get; init; }
 
         public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
         public RelayCommand<FieldViewModel> BuildInfrastructureCommand { get; init; }
@@ -39,6 +40,8 @@ namespace TransportTycoon.WPF.ViewModel
         private double _zoomLevel = 1.0;
         [ObservableProperty]
         private string _selectedTile = "Click a tile!";
+        [ObservableProperty]
+        private int _selectedButton;
         #endregion
         #endregion
 
@@ -66,9 +69,10 @@ namespace TransportTycoon.WPF.ViewModel
             EditorModeCommand = new(OnEditorMode);
 
             TileClickCommand = new(OnTileClick);
+            SetSelectedButtonCommand = new RelayCommand<int>(x => _selectedButton = x);
             BuildInfrastructureCommand = new RelayCommand<FieldViewModel>(tile =>
             {
-                switch (SelectedButton)
+                switch (_selectedButton)
                 {
                     case 1:
                         Model.BuildRoad(tile.X, tile.Y);
