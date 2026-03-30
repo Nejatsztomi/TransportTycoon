@@ -5,7 +5,6 @@
         #region Fields
         private int gameTime;
         private int maintance;
-        private int balance;
         private int numberOfVehicles;
         #endregion
 
@@ -13,8 +12,6 @@
         public int GameTime => gameTime;
 
         public int Maintance => maintance;
-
-        public int Balance => balance;
 
         public int NumberOfVehicles => numberOfVehicles;
         #endregion
