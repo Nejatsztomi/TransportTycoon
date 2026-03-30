@@ -9,14 +9,50 @@ public class GameModelTest
     [TestClass]
     public class ConstructorTest
     {
-        [TestMethod]
-        public void Constructor_WithAllParameters() { }
+        private ITimer _mockTimer = null!;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            _mockTimer = Substitute.For<ITimer>();
+        }
 
         [TestMethod]
-        public void Constructor_WithBalance() { }
+        public void Constructor_WithAllParameters()
+        {
+            GameModel gameModel = new(Difficulty.Easy, 1_000, _mockTimer);
+
+            Assert.AreEqual(Difficulty.Easy, gameModel.Difficulty, "Difficulty should match");
+            Assert.AreEqual(1_000, gameModel.Balance, "Balance should match");
+
+            Assert.AreEqual(GameMode.Run, gameModel.Mode, "GameMode should be Run");
+            Assert.AreEqual(0, gameModel.GameTime, "GameTime should be 0");
+
+            // Lehet érdemes a Map-ot is átadni, mint paraméter
+            Assert.IsNotNull(gameModel.Map, "Map should be generated and not null");
+
+            // Timer mock tesztek
+            // Feliratkoztak az Elapsed eseményre
+            _mockTimer.Received().Elapsed += Arg.Any<EventHandler>();
+        }
 
         [TestMethod]
-        public void Constructor_WithDifficulty() { }
+        public void Constructor_WithBalance()
+        {
+            GameModel gameModel = new(Difficulty.Easy, _mockTimer);
+
+            Assert.AreEqual(Difficulty.Easy, gameModel.Difficulty, "Difficulty should match");
+            Assert.AreEqual(GameModel.InitialBalance, gameModel.Balance, "Balance should be InitialBalance");
+        }
+
+        [TestMethod]
+        public void Constructor_WithDifficulty()
+        {
+            GameModel gameModel = new(1_000, _mockTimer);
+
+            Assert.AreEqual(GameModel.InitialDifficulty, gameModel.Difficulty, "Difficulty should be InitialDifficulty");
+            Assert.AreEqual(1_000, gameModel.Balance, "Balance should match");
+        }
     }
 
     public class EventTest
