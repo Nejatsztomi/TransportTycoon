@@ -4,9 +4,9 @@ namespace TransportTycoon.MapData
 {
     public class GameTable
     {
-        #region Private constants
-        private const int DefaultWidth = 100;
-        private const int DefaultHeight = 100;
+        #region Constants
+        public const int DefaultWidth = 100;
+        public const int DefaultHeight = 100;
         #endregion
 
         #region Properties
