@@ -22,12 +22,12 @@ public class GameModelTest
         [TestClass]
         public class EventRaisedTest
         {
-            private static GameModel _gameModel;
+            private static GameModel _gameModel = null!;
 
             [ClassInitialize]
             public static void Initialize(TestContext context)
             {
-                _gameModel = new GameModel(Difficulty.Medium, 1000, null);
+                _gameModel = new GameModel(Difficulty.Medium, 1000, null!);
             }
 
             [TestMethod]
@@ -55,12 +55,12 @@ public class GameModelTest
         [TestClass]
         public class EventArgumentTest
         {
-            private static GameModel _gameModel;
+            private static GameModel _gameModel = null!;
 
             [ClassInitialize]
             public static void Initialize(TestContext context)
             {
-                _gameModel = new GameModel(Difficulty.Medium, 1000, null);
+                _gameModel = new GameModel(Difficulty.Medium, 1000, null!);
             }
 
             [TestMethod]
