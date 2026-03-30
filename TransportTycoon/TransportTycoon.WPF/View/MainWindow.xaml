@@ -148,10 +148,20 @@
                             <ImageBrush ImageSource="/Assets/Images/Road/road.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"/>
-                            <Button Width="50" Height="50" Margin="8"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="1">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Assets/Images/Road/road.png"/>
+                                </Button.Background>
+                            </Button>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="2">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Assets/Images/Bridge/yellowBridge.png"/>
+                                </Button.Background>
+                            </Button>
                         </WrapPanel>
                     </TabItem>
 
@@ -229,7 +239,7 @@
                                                />-->
                                             <MouseBinding 
                                                MouseAction="LeftClick" 
-                                               Command="{Binding DataContext.BuildRoadCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                               Command="{Binding DataContext.BuildInfrastructureCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                CommandParameter="{Binding}"
                                                />
                                         </Grid.InputBindings>

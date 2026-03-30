@@ -198,7 +198,14 @@ namespace TransportTycoon.Model
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
-
+        public void BuildBridge(int x, int y)
+        {
+            if (Map[x, y] is not Water) return;
+            List<(int, int)> changedFields = new List<(int, int)>();
+            Map[x, y] = new YellowBridge(x, y, BridgeType.VerticalYellowBridge, Map[x, y].Height);
+            changedFields.Add((x, y));
+            InfrastructureBuilt?.Invoke(this, changedFields);
+        }
         #endregion
 
         #region Private Methods

@@ -68,6 +68,14 @@ namespace TransportTycoon.WPF.ViewModel
                         return $"/Assets/Images/Road/crossX.png";
                     else return $"/Assets/Images/Road/road.png";
                 }
+                else if (Field is Bridge bridge)
+                {
+                    return bridge.BridgeType switch
+                    {
+                        BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => $"/Assets/Images/Bridge/yellowBridge.png",
+                        _ => null
+                    };
+                }
                 return null;
             }
         }

@@ -18,12 +18,13 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand PauseGameCommand { get; init; }
         public RelayCommand ResumeGameCommand { get; init; }
         public RelayCommand EditorModeCommand { get; init; }
+        public RelayCommand<object> SetSelectedButtonCommand { get; init; }
 
         public RelayCommand IncreaseHeightCommand { get; init; }
         public RelayCommand DecreaseHeightCommand { get; init; }
 
         public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
-        public RelayCommand<FieldViewModel> BuildRoadCommand { get; init; }
+        public RelayCommand<FieldViewModel> BuildInfrastructureCommand { get; init; }
         #endregion
 
         public GameModel Model { get; init; }
@@ -42,6 +43,8 @@ namespace TransportTycoon.WPF.ViewModel
         private double _zoomLevel = 1.0;
         [ObservableProperty]
         private string _selectedTile = "Click a tile!";
+        [ObservableProperty]
+        private int _selectedButton = 0;
         #endregion
         #endregion
 
@@ -74,7 +77,25 @@ namespace TransportTycoon.WPF.ViewModel
             DecreaseHeightCommand = new(OnDecreaseHeight);
 
             TileClickCommand = new(OnTileClick);
-            BuildRoadCommand = new RelayCommand<FieldViewModel>(tile => Model.BuildRoad(tile.X, tile.Y));
+            SetSelectedButtonCommand = new RelayCommand<object>(x =>
+            {
+                if (x == null) return;
+                _selectedButton = Convert.ToInt32(x);
+            });
+            BuildInfrastructureCommand = new RelayCommand<FieldViewModel>(tile =>
+            {
+                switch (_selectedButton)
+                {
+                    case 1:
+                        Model.BuildRoad(tile.X, tile.Y);
+                        break;
+                    case 2:
+                        Model.BuildBridge(tile.X, tile.Y);
+                        break;
+                    default:
+                        break;
+                }
+            }, (_) => IsEditorMode);
 
             Tiles = [];
             RefreshTable();
