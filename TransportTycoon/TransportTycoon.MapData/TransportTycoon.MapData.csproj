@@ -13,4 +13,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <!--Exposes the internal classes to the Test enviroment -->
+  <ItemGroup>
+	  <InternalsVisibleTo Include="TransportTycoon.Test" />
+  </ItemGroup>
+
 </Project>
