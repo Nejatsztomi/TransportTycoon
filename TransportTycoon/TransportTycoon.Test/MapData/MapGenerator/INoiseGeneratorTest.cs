@@ -19,7 +19,7 @@ public class INoiseGeneratorTest
             private static INoiseGenerator _generator = null!;
 
             [ClassInitialize]
-            public static void Initialize(TestContext testContext)
+            public static void Initialize(TestContext _)
             {
                 _generator = PerlinNoiseGeneratorFactory.Create(10, 10, 42);
             }

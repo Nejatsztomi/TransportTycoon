@@ -20,7 +20,7 @@ public class GameTableTest
         private static GameTable _gameTable = null!;
 
         [ClassInitialize]
-        public static void Initialize(TestContext context)
+        public static void Initialize(TestContext _)
         {
             _gameTable = new GameTable(10, 10);
         }

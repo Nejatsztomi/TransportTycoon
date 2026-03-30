@@ -25,7 +25,7 @@ public class GameModelTest
             private static GameModel _gameModel = null!;
 
             [ClassInitialize]
-            public static void Initialize(TestContext context)
+            public static void Initialize(TestContext _)
             {
                 _gameModel = new GameModel(Difficulty.Medium, 1000, null!);
             }
@@ -58,7 +58,7 @@ public class GameModelTest
             private static GameModel _gameModel = null!;
 
             [ClassInitialize]
-            public static void Initialize(TestContext context)
+            public static void Initialize(TestContext _)
             {
                 _gameModel = new GameModel(Difficulty.Medium, 1000, null!);
             }
