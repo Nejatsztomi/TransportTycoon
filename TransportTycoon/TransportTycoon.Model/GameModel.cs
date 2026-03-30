@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
@@ -62,6 +63,7 @@ namespace TransportTycoon.Model
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
+        public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         #endregion
 
         #region Constructor
@@ -148,6 +150,24 @@ namespace TransportTycoon.Model
 
             return false;
         }
+        public void BuildRoad(int x, int y)
+        {
+            if (Map[x, y] is not Terrain) return;
+            List<(int, int)> changedFields = new List<(int, int)>();
+
+            RoadType type = CalculateRoadType(x, y);
+            Map[x, y] = new Road(x, y, type, Map[x, y].Height);
+            changedFields.Add((x, y));
+            
+            List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
+            foreach (var e in neighbourRoads)
+            {
+                RoadType e_type = CalculateRoadType(e.Item1, e.Item2);
+                ((Road)Map[e.Item1, e.Item2]).ChangeType(e_type);//ChangeType method of Road
+                changedFields.Add((e.Item1, e.Item2));
+            }
+            InfrastructureBuilt?.Invoke(this, changedFields);
+        }
 
         #endregion
 
@@ -208,6 +228,50 @@ namespace TransportTycoon.Model
             }
 
             return grownTrees;
+        }
+        private RoadType CalculateRoadType(int x, int y)
+        {
+            List<int> neighbourCountAndWhere = Map.NeighbourRoadsCount(x, y);
+            RoadType type = RoadType.Vertical;
+            switch (neighbourCountAndWhere[0])
+            {
+                case 1:
+                    if (neighbourCountAndWhere[2] == 1 || neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
+                    break;
+                case 2:
+                    if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
+                    else if (neighbourCountAndWhere[1] == 1 && neighbourCountAndWhere[2] == 1) type = RoadType.UpperRightTurn;
+                    else if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[3] == 1) type = RoadType.RightTurn;
+                    else if (neighbourCountAndWhere[3] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.LeftTurn;
+                    else if (neighbourCountAndWhere[4] == 1 && neighbourCountAndWhere[1] == 1) type = RoadType.UpperLeftTurn;
+                    break;
+                case 3:
+                    int noNeighbour = neighbourCountAndWhere.FindIndex(x => x == 0);
+                    switch (noNeighbour)
+                    {
+                        case 1:
+                            type = RoadType.DownTRoad;
+                            break;
+                        case 2:
+                            type = RoadType.LeftTRoad;
+                            break;
+                        case 3:
+                            type = RoadType.UpperTRoad;
+                            break;
+                        case 4:
+                            type = RoadType.RightTRoad;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 4:
+                    type = RoadType.XRoad;
+                    break;
+                default:
+                    break;
+            }
+            return type;
         }
         #endregion
 

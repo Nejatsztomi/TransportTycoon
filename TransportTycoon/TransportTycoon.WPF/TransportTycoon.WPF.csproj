@@ -9,7 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\Road\crossT.png" />
+    <None Remove="Assets\Images\Road\crossX.png" />
     <None Remove="Assets\Images\Road\road.png" />
+    <None Remove="Assets\Images\Road\turn.png" />
     <None Remove="Assets\Images\Terrain\field.png" />
     <None Remove="Assets\Images\Terrain\hill.png" />
     <None Remove="Assets\Images\Terrain\water2.png" />
@@ -35,7 +38,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\Images\Road\crossT.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Road\crossX.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Images\Road\road.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Road\turn.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Terrain\field.png">
