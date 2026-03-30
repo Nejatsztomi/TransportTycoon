@@ -87,8 +87,7 @@ namespace TransportTycoon.WPF.ViewModel
                     default:
                         break;
                 }    
-            });
-
+            }, (_) => IsEditorMode);
 
             Tiles = [];
             RefreshTable();
