@@ -127,7 +127,7 @@ namespace TransportTycoon.Model
 
         public void IncreaseHeight(int x, int y)
         {
-            if (Mode == GameMode.Editor) 
+            if (Mode == GameMode.Editor)
             {
                 Field field = Map[x, y];
 
@@ -146,7 +146,7 @@ namespace TransportTycoon.Model
                         terrain.IncreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
-                        
+
                     }
                 }
             }
@@ -173,7 +173,7 @@ namespace TransportTycoon.Model
                         terrain.DecreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
-                        
+
                     }
                 }
             }

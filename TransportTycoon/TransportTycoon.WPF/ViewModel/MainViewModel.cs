@@ -170,7 +170,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void OnIncreaseHeight()
         {
-            if (Model.SelectedField != null) 
+            if (Model.SelectedField != null)
             {
                 Model.IncreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
             }
