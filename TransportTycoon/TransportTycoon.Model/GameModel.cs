@@ -168,7 +168,11 @@ namespace TransportTycoon.Model
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
-
+        public void BuildBridge(int x, int y)
+        {
+            if (Map[x, y] is not Water) return;
+            
+        }
         #endregion
 
         #region Private Methods
