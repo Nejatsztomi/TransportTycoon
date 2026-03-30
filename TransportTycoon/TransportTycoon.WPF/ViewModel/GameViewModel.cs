@@ -132,8 +132,9 @@ namespace TransportTycoon.WPF.ViewModel
                 FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
                 if (tile != null)
                 {
+                    string oldPath = tile.ImagePath;
                     int index = Tiles.IndexOf(tile);
-                    Tiles[index] = new(Model.Map[x, y]);
+                    Tiles[index] = new(Model.Map[x, y],oldPath);
                     tile.RefreshInfrastructure();
                 }
             }

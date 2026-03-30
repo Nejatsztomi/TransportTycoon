@@ -99,6 +99,11 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Constructor
+        public FieldViewModel(Field field, string path)
+        {
+            Field = field;
+            ImagePath = path;
+        }
         public FieldViewModel(Field field)
         {
             Field = field;
