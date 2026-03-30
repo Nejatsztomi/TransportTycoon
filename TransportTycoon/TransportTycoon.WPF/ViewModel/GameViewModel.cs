@@ -22,8 +22,13 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand PauseGameCommand { get; init; }
         public RelayCommand ResumeGameCommand { get; init; }
         public RelayCommand EditorModeCommand { get; init; }
+        public RelayCommand<object> SetSelectedButtonCommand { get; init; }
+
+        public RelayCommand IncreaseHeightCommand { get; init; }
+        public RelayCommand DecreaseHeightCommand { get; init; }
 
         public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
+        public RelayCommand<FieldViewModel> BuildInfrastructureCommand { get; init; }
         #endregion
 
         public GameModel Model { get; init; }
@@ -42,7 +47,14 @@ namespace TransportTycoon.WPF.ViewModel
         private double _zoomLevel = 1.0;
         [ObservableProperty]
         private string _selectedTile = "Click a tile!";
+        [ObservableProperty]
+        private int _selectedButton = 0;
         #endregion
+        #endregion
+
+        #region Events
+        public event EventHandler? NewGame;
+        public event EventHandler? Exit;
         #endregion
 
         #region Constructors
@@ -53,6 +65,9 @@ namespace TransportTycoon.WPF.ViewModel
             model.NewGameCreated += Model_NewGameCreated;
             model.GameTicked += Model_GameTicked;
             model.GameAdvanced += Model_GameAdvanced;
+            model.InfrastructureBuilt += Model_InfrastructureBuilt;
+            model.FieldChanged += Model_FieldChanged;
+            model.BalanceChanged += Model_BalanceChanged;
 
             NormalSpeedCommand = new(OnNormalSpeed);
             FastSpeedCommand = new(OnFastSpeed);
@@ -62,10 +77,63 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
+            IncreaseHeightCommand = new(OnIncreaseHeight);
+            DecreaseHeightCommand = new(OnDecreaseHeight);
+
             TileClickCommand = new(OnTileClick);
+            SetSelectedButtonCommand = new RelayCommand<object>(x =>
+            {
+                if (x == null) return;
+                _selectedButton = Convert.ToInt32(x);
+            });
+            BuildInfrastructureCommand = new RelayCommand<FieldViewModel>(tile =>
+            {
+                switch (_selectedButton)
+                {
+                    case 1:
+                        Model.BuildRoad(tile.X, tile.Y);
+                        break;
+                    case 2:
+                        Model.BuildBridge(tile.X, tile.Y);
+                        break;
+                    default:
+                        break;
+                }
+            }, (_) => IsEditorMode);
 
             Tiles = [];
             RefreshTable();
+        }
+
+        private void Model_BalanceChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Balance));
+        }
+
+        private void Model_FieldChanged(object? sender, TransportTycoonFieldEventArgs e)
+        {
+            var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
+
+            if (tile != null)
+            {
+                tile.RefreshTerrain(Model.Map[e.X, e.Y]);
+            }
+        }
+
+        private void Model_InfrastructureBuilt(object? sender, List<(int, int)> changedFields)
+        {
+            foreach (var (x, y) in changedFields)
+            {
+                FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
+                if (tile != null)
+                {
+                    string oldPath = tile.ImagePath;
+                    int index = Tiles.IndexOf(tile);
+                    Tiles[index] = new(Model.Map[x, y]);
+                    tile.RefreshInfrastructure();
+                }
+            }
+            //RefreshTable();
         }
 
         private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
@@ -86,14 +154,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int y = 0; y < Model.Map.Height; y++)
                 {
-                    string path = Model.Map[x, y] switch
-                    {
-                        Plain _ => "Assets/Images/Terrain/field.png",
-                        Hill _ => "Assets/Images/Terrain/hill.png",
-                        Water _ => "Assets/Images/Terrain/water2.png",
-                        _ => "Assets/Images/Terrain/field.png"
-                    };
-                    tempList.Add(new(Model.Map[x, y], path));
+                    tempList.Add(new(Model.Map[x, y]));
                 }
             }
             Tiles = new(tempList);
@@ -101,7 +162,6 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Relay command methods
-
         private void OnNormalSpeed()
         {
             Model.SetTimeSpeed(TimeSpeed.Normal);
@@ -139,6 +199,23 @@ namespace TransportTycoon.WPF.ViewModel
             if (param is FieldViewModel tile)
             {
                 SelectedTile = $"Clicked tile at ({tile.X}, {tile.Y})";
+                Model.SetSelectedField(tile.X, tile.Y);
+            }
+        }
+
+        private void OnIncreaseHeight()
+        {
+            if (Model.SelectedField != null)
+            {
+                Model.IncreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
+            }
+        }
+
+        private void OnDecreaseHeight()
+        {
+            if (Model.SelectedField != null)
+            {
+                Model.DecreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
             }
         }
         #endregion
@@ -156,12 +233,14 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Dispose
-        // Unsubscribe from events to prevent memory leaks
         public void Dispose()
         {
             Model.NewGameCreated -= Model_NewGameCreated;
             Model.GameTicked -= Model_GameTicked;
             Model.GameAdvanced -= Model_GameAdvanced;
+            Model.InfrastructureBuilt -= Model_InfrastructureBuilt;
+            Model.FieldChanged -= Model_FieldChanged;
+            Model.BalanceChanged -= Model_BalanceChanged;
         }
         #endregion
     }

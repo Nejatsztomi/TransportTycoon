@@ -8,9 +8,9 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Properties
-        public string ImagePath { get; init; }
+        public string ImagePath { get; set; }
 
-        private Field Field { get; init; }
+        private Field Field { get; set; }
         public int X => Field.X;
         public int Y => Field.Y;
         public int Height => Field.Height;
@@ -52,13 +52,57 @@ namespace TransportTycoon.WPF.ViewModel
                 return null;
             }
         }
+        public string? InfrastructureImagePath
+        {
+            get
+            {
+                if (Field is not Infrastructure) return null;
+
+                if (Field is Road road)
+                {
+                    if (road.RoadType == RoadType.RightTurn || road.RoadType == RoadType.LeftTurn || road.RoadType == RoadType.UpperRightTurn || road.RoadType == RoadType.UpperLeftTurn)
+                        return $"/Assets/Images/Road/turn.png";
+                    else if (road.RoadType == RoadType.UpperTRoad || road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad || road.RoadType == RoadType.LeftTRoad)
+                        return $"/Assets/Images/Road/crossT.png";
+                    else if (road.RoadType == RoadType.XRoad)
+                        return $"/Assets/Images/Road/crossX.png";
+                    else return $"/Assets/Images/Road/road.png";
+                }
+                else if (Field is Bridge bridge)
+                {
+                    return bridge.BridgeType switch
+                    {
+                        BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => $"/Assets/Images/Bridge/yellowBridge.png",
+                        _ => null
+                    };
+                }
+                return null;
+            }
+        }
+        public double InfrastructureRotation
+        {
+            get
+            {
+                if (Field is Road road)
+                {
+                    return road.RoadType switch
+                    {
+                        RoadType.Horizontal or RoadType.LeftTRoad or RoadType.LeftTurn => 90,
+                        RoadType.UpperTRoad or RoadType.UpperLeftTurn => 180,
+                        RoadType.RightTRoad or RoadType.UpperRightTurn => 270,
+                        _ => 0
+                    };
+                }
+                return 0;
+            }
+        }
         #endregion
 
         #region Constructor
-        public FieldViewModel(Field field, string imagePath)
+        public FieldViewModel(Field field)
         {
             Field = field;
-            ImagePath = imagePath;
+            ImagePath = DetermineImagePath();
         }
         #endregion
 
@@ -68,9 +112,33 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(TreeCounter));
             OnPropertyChanged(nameof(TreeImagePath));
         }
+
+        public void RefreshTerrain(Field field)
+        {
+            Field = field;
+            ImagePath = DetermineImagePath();
+            OnPropertyChanged(nameof(ImagePath));
+        }
+        public void RefreshInfrastructure()
+        {
+            OnPropertyChanged(nameof(InfrastructureRotation));
+            OnPropertyChanged(nameof(InfrastructureImagePath));
+        }
         #endregion
 
         #region Private Methods
+        private string DetermineImagePath()
+        {
+            return Field.FieldType switch
+            {
+                FieldType.Plain => "Assets/Images/Terrain/field.png",
+                FieldType.Hill => "Assets/Images/Terrain/hill.png",
+                FieldType.Water => "Assets/Images/Terrain/water2.png",
+                FieldType.Mountain => "Assets/Images/Terrain/mountain3.png",
+                FieldType.HighMountain => "Assets/Images/Terrain/highmountain3.png",
+                _ => "Assets/Images/Terrain/field.png"
+            };
+        }
         #endregion
 
         #region Private event Methods

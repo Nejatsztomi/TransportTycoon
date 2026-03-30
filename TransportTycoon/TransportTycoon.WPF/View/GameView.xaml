@@ -129,11 +129,12 @@
                             <ImageBrush ImageSource="/Assets/Images/Terrain/hill.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="6" Command="{Binding DecreaseHeightCommand}">
+                                <Image Source="/Assets/Images/Buttons/minus.png" Stretch="Uniform"/> 
+                            </Button>
+                            <Button Width="50" Height="50" Margin="6" Command="{Binding IncreaseHeightCommand}">
+                                <Image Source="/Assets/Images/Buttons/plus.png" Stretch="Uniform"/> 
+                            </Button>
                         </WrapPanel>
                     </TabItem>
 
@@ -142,10 +143,20 @@
                             <ImageBrush ImageSource="/Assets/Images/Road/road.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"/>
-                            <Button Width="50" Height="50" Margin="8"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="1">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Assets/Images/Road/road.png"/>
+                                </Button.Background>
+                            </Button>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="2">
+                                <Button.Background>
+                                    <ImageBrush ImageSource="/Assets/Images/Bridge/yellowBridge.png"/>
+                                </Button.Background>
+                            </Button>
                         </WrapPanel>
                     </TabItem>
 
@@ -170,7 +181,7 @@
             </Border>
 
             <!-- Right panel -->
-            
+
             <Border
                 Grid.Column="2"
                 Background="#2C2C2C"
@@ -216,9 +227,14 @@
                                          >
 
                                         <Grid.InputBindings>
-                                            <MouseBinding 
+                                            <!--<MouseBinding 
                                                MouseAction="LeftClick" 
                                                Command="{Binding DataContext.TileClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                               CommandParameter="{Binding}"
+                                               />-->
+                                            <MouseBinding 
+                                               MouseAction="LeftClick" 
+                                               Command="{Binding DataContext.BuildInfrastructureCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                CommandParameter="{Binding}"
                                                />
                                         </Grid.InputBindings>
@@ -239,6 +255,18 @@
                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                                IsHitTestVisible="False"
                                                Margin="2"/>
+
+                                        <Image Source="{Binding InfrastructureImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                               Stretch="Uniform"
+                                               RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                               IsHitTestVisible="False"
+                                               Margin="2"
+                                               RenderTransformOrigin="0.5,0.5">
+                                            <Image.RenderTransform>
+                                                <RotateTransform Angle="{Binding InfrastructureRotation}"/>
+                                            </Image.RenderTransform>
+                                        </Image>
+
 
                                         <Border x:Name="HoverOverlay" 
                                              Visibility="Hidden" 
@@ -290,14 +318,14 @@
                         </Viewbox>
 
                     </Border>
-                    
+
 
 
 
                 </Grid>
-                
-               
-                
+
+
+
 
             </Border>
 

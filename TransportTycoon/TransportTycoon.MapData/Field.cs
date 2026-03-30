@@ -38,10 +38,8 @@ namespace TransportTycoon.MapData
 
         #region Public Methods
         public virtual int GetTrees() => 0;
+        public void ChangeType(FieldType type) => FieldType = type;
         #endregion
-        #region Private Methods
-        #endregion
-
     }
 
     public class Water : Field
