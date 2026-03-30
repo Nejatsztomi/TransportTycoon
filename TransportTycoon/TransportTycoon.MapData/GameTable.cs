@@ -70,19 +70,19 @@ namespace TransportTycoon.MapData
                     }
                     else if (randomMap[i, j] < 0.55f)
                     {
-                        Table[i, j] = new Plain(i, j);          // Next 20% become plains
+                        Table[i, j] = new Terrain(i, j, 1);          // Next 20% become plains
                     }
                     else if (randomMap[i, j] < 0.75f)
                     {
-                        Table[i, j] = new Hill(i, j);          // Next 20% become hills
+                        Table[i, j] = new Terrain(i, j, 2);          // Next 20% become hills
                     }
                     else if (randomMap[i, j] < 0.90f)
                     {
-                        Table[i, j] = new Mountain(i, j);      // Next 15% become mountains
+                        Table[i, j] = new Terrain(i, j, 3);      // Next 15% become mountains
                     }
                     else
                     {
-                        Table[i, j] = new HighMountain(i, j);  // Top 10% become high mountains
+                        Table[i, j] = new Terrain(i, j, 4);  // Top 10% become high mountains
                     }
                 }
             }
@@ -98,7 +98,7 @@ namespace TransportTycoon.MapData
                 for (int j = 0; j < Height; j++)
                 {
                     if (Table[i, j] is not Terrain terrain) continue;
-                    if (terrain is HighMountain) continue;
+                    if (terrain.FieldType == FieldType.HighMountain) continue;
 
                     if (randomTreeMap[i, j] < 0.5f) continue;
 
@@ -122,6 +122,7 @@ namespace TransportTycoon.MapData
             }
         }
 
+        //Checks if the new field is possible
         public bool IsTileHeightPossible(int x, int y, int height)
         {
             if (x < 0 || x >= Height || y < 0 || y >= Width) return false;
@@ -157,7 +158,7 @@ namespace TransportTycoon.MapData
             if (x - 1 >= 0 && Table[x - 1, y] is Road) result.Add((Table[x - 1, y].X, Table[x - 1, y].Y));
             if (y + 1 <= Width - 1 && Table[x, y + 1] is Road) result.Add((Table[x, y + 1].X, Table[x, y + 1].Y));
             if (x + 1 <= Height - 1 && Table[x + 1, y] is Road) result.Add((Table[x + 1, y].X, Table[x + 1, y].Y));
-            if (y - 1 >= 0 && Table[x, y - 1] is Road) result.Add((Table[x , y-1].X, Table[x, y-1].Y));
+            if (y - 1 >= 0 && Table[x, y - 1] is Road) result.Add((Table[x, y - 1].X, Table[x, y - 1].Y));
             return result;
         }
         #endregion

@@ -36,8 +36,11 @@ namespace TransportTycoon.Model
 
         #region Properties
         public GameTable Map { get; private set; }
+        public Field SelectedField { get; private set; }
+
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
+        public int Maintance { get; private set; }
 
         public GameMode Mode { get; private set; }
         public TimeSpeed TimeSpeed { get; private set; }
@@ -61,6 +64,8 @@ namespace TransportTycoon.Model
         public event EventHandler<GameMode>? GameModeChanged;
         public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
+        public event EventHandler<TransportTycoonFieldEventArgs>? FieldChanged;
+        public event EventHandler? BalanceChanged;
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
@@ -77,6 +82,7 @@ namespace TransportTycoon.Model
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
+            SelectedField = null!;
             Map = new();
         }
 
@@ -115,40 +121,64 @@ namespace TransportTycoon.Model
             }
             GameModeChanged?.Invoke(this, mode);
         }
-        public bool IncreaseHeight(int x, int y)
+
+        public void SetSelectedField(int x, int y)
         {
-            Field field = Map[x, y];
-
-            if (field is Terrain terrain)
-            {
-                int nextHeight = terrain.Height + 1;
-
-                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees == 0)
-                {
-                    terrain.IncreaseHeight();
-                    return true;
-                }
-            }
-
-            return false;
+            SelectedField = Map[x, y];
         }
 
-        public bool DecreaseHeight(int x, int y)
+        public void IncreaseHeight(int x, int y)
         {
-            Field field = Map[x, y];
-
-            if (field is Terrain terrain)
+            if (Mode == GameMode.Editor)
             {
-                int nextHeight = terrain.Height - 1;
+                Field field = Map[x, y];
 
-                if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.Trees == 0)
+                if (field is Terrain terrain)
                 {
-                    terrain.DecreaseHeight();
-                    return true;
+                    int nextHeight = terrain.Height + 1;
+
+                    if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
+                    {
+                        if (field.Height == 4) return;
+                        if (terrain.Trees > 0)
+                        {
+                            Balance -= 50;
+                        }
+                        Balance -= 100;
+                        terrain.IncreaseHeight();
+                        FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
+                        BalanceChanged?.Invoke(this, EventArgs.Empty);
+
+                    }
                 }
             }
+        }
 
-            return false;
+        public void DecreaseHeight(int x, int y)
+        {
+            if (Mode == GameMode.Editor)
+            {
+                Field field = Map[x, y];
+
+                if (field is Terrain terrain)
+                {
+                    int nextHeight = terrain.Height - 1;
+
+                    if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
+                    {
+                        if (field.Height == 1) return;
+                        if (terrain.Trees > 0)
+                        {
+                            Balance -= 50;
+                        }
+                        Balance -= 100;
+                        terrain.DecreaseHeight();
+                        FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
+                        BalanceChanged?.Invoke(this, EventArgs.Empty);
+
+                    }
+                }
+            }
         }
         public void BuildRoad(int x, int y)
         {
@@ -158,7 +188,7 @@ namespace TransportTycoon.Model
             RoadType type = CalculateRoadType(x, y);
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
             changedFields.Add((x, y));
-            
+
             List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
             foreach (var e in neighbourRoads)
             {
@@ -286,7 +316,7 @@ namespace TransportTycoon.Model
         private void OnGameOver()
         {
             _timer.Stop();
-            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles));
+            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
         #endregion
 
@@ -300,6 +330,8 @@ namespace TransportTycoon.Model
                 GameAdvanced?.Invoke(this, grownTrees);
             }
             GameTicked?.Invoke(this, EventArgs.Empty);
+
+
         }
         #endregion
 
