@@ -1,4 +1,5 @@
 using NSubstitute;
+using NSubstitute.ClearExtensions;
 using TransportTycoon.Model;
 using ITimer = TransportTycoon.Model.ITimer;
 
@@ -60,29 +61,148 @@ public class GameModelTest
         [TestClass]
         public class EventRaisedTest
         {
-            private static GameModel _gameModel = null!;
-
-            [ClassInitialize]
-            public static void Initialize(TestContext _)
+            private static IEnumerable<object[]> GetAllGameModes()
             {
-                var mockTimer = Substitute.For<ITimer>();
-                _gameModel = new GameModel(Difficulty.Medium, 1000, mockTimer);
+                foreach (var role in Enum.GetValues<GameMode>())
+                {
+                    yield return new object[] { role };
+                }
+            }
+
+            private static IEnumerable<object[]> GetAllTimeSpeeds()
+            {
+                foreach (var role in Enum.GetValues<TimeSpeed>())
+                {
+                    yield return new object[] { role };
+                }
+            }
+
+            private GameModel _gameModel = null!;
+            private ITimer _mockTimer = null!;
+
+            [TestInitialize]
+            public void Initialize()
+            {
+                _mockTimer = Substitute.For<ITimer>();
+                _gameModel = new(Difficulty.Medium, 1000, _mockTimer);
             }
 
             [TestMethod]
-            public void NewGameCreated_EventIsRaised() { }
+            public void NewGameCreated_EventIsRaised()
+            {
+                bool raised = false;
+
+                EventHandler handler = (sender, args) =>
+                {
+                    raised = true;
+                };
+
+                try
+                {
+                    _gameModel.NewGameCreated += handler;
+                    _gameModel.NewGame();
+                    Assert.IsTrue(raised, "NewGameCreated should be raised after creating a new game");
+                }
+                finally
+                {
+                    _gameModel.NewGameCreated -= handler;
+                }
+            }
 
             [TestMethod]
-            public void GameModeChanged_EventIsRaised() { }
+            [DynamicData(nameof(GetAllGameModes))]
+            public void GameModeChanged_EventIsRaised(GameMode gameMode)
+            {
+                bool raised = false;
+
+                EventHandler<GameMode> handler = (_, _) =>
+                {
+                    raised = true;
+                };
+
+                try
+                {
+                    _gameModel.GameModeChanged += handler;
+                    _gameModel.SetMode(gameMode);
+                    Assert.IsTrue(raised, "GameModeChanged should be raised after changing the game mode");
+                }
+                finally
+                {
+                    _gameModel.GameModeChanged -= handler;
+                }
+            }
 
             [TestMethod]
-            public void TimeSpeedChanged_EventIsRaised() { }
+            [DynamicData(nameof(GetAllTimeSpeeds))]
+            public void TimeSpeedChanged_EventIsRaised(TimeSpeed timeSpeed)
+            {
+                bool raised = false;
+
+                EventHandler<TimeSpeed> handler = (_, _) =>
+                {
+                    raised = true;
+                };
+
+                try
+                {
+                    _gameModel.TimeSpeedChanged += handler;
+                    _gameModel.SetTimeSpeed(timeSpeed);
+                    Assert.IsTrue(raised, "TimeSpeedChanged should be raised after changing the game speed");
+                }
+                finally
+                {
+                    _gameModel.TimeSpeedChanged -= handler;
+                }
+            }
 
             [TestMethod]
-            public void GameOver_EventIsRaised() { }
+            public void GameOver_EventIsRaised()
+            {
+                bool raised = false;
+
+                EventHandler<List<Tuple<int, int>>> handler = (_, _) =>
+                {
+                    raised = true;
+                };
+
+                try
+                {
+                    _gameModel.GameAdvanced += handler;
+                    // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
+                    for (int i = 0; i < 10; i++)
+                    {
+                        _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                    }
+                    Assert.IsTrue(raised, "GameAdvanced event should be raised after 10 timer ticks");
+                }
+                finally
+                {
+                    _gameModel.GameAdvanced -= handler;
+                }
+            }
 
             [TestMethod]
-            public void GameTicked_EventIsRaised() { }
+            public void GameTicked_EventIsRaised()
+            {
+                bool raised = false;
+
+                EventHandler handler = (_, _) =>
+                {
+                    raised = true;
+                };
+
+                try
+                {
+                    _gameModel.GameTicked += handler;
+                    // Szimuláljuk a timer tick eseményét
+                    _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                    Assert.IsTrue(raised, "GameTicked should be raised after 1 timer tick");
+                }
+                finally
+                {
+                    _gameModel.GameTicked -= handler;
+                }
+            }
 
             [TestMethod]
             public void GameAdvanced_EventIsRaised() { }
