@@ -129,10 +129,14 @@
                             <ImageBrush ImageSource="/Assets/Images/Terrain/hill.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="6" Command="{Binding DecreaseHeightCommand}">
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="1">
                                 <Image Source="/Assets/Images/Buttons/minus.png" Stretch="Uniform"/> 
                             </Button>
-                            <Button Width="50" Height="50" Margin="6" Command="{Binding IncreaseHeightCommand}">
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="2">
                                 <Image Source="/Assets/Images/Buttons/plus.png" Stretch="Uniform"/> 
                             </Button>
                         </WrapPanel>
@@ -145,17 +149,13 @@
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
                             <Button Width="50" Height="50" Margin="8"
                                     Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="1">
-                                <Button.Background>
-                                    <ImageBrush ImageSource="/Assets/Images/Road/road.png"/>
-                                </Button.Background>
+                                    CommandParameter="11">
+                                <Image Source="/Assets/Images/Road/road.png" Stretch="Uniform"/>
                             </Button>
                             <Button Width="50" Height="50" Margin="8"
                                     Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="2">
-                                <Button.Background>
-                                    <ImageBrush ImageSource="/Assets/Images/Bridge/yellowBridge.png"/>
-                                </Button.Background>
+                                    CommandParameter="12">
+                                <Image Source="/Assets/Images/Bridge/yellowBridge.png" Stretch="Uniform"/>
                             </Button>
                         </WrapPanel>
                     </TabItem>
@@ -234,7 +234,7 @@
                                                />-->
                                             <MouseBinding 
                                                MouseAction="LeftClick" 
-                                               Command="{Binding DataContext.BuildInfrastructureCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                               Command="{Binding DataContext.TileLeftClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                CommandParameter="{Binding}"
                                                />
                                         </Grid.InputBindings>
@@ -251,7 +251,7 @@
                                         </Border>
 
                                         <Image Source="{Binding TreeImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
-                                               Stretch="Uniform" 
+                                               Stretch="UniformToFill" 
                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                                IsHitTestVisible="False"
                                                Margin="2"/>
