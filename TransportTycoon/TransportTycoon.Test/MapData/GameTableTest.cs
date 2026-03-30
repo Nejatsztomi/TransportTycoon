@@ -53,22 +53,48 @@ public class GameTableTest
             _gameTable.GenerateMap();
             Assert.IsNotEmpty(_gameTable.Table, "GameTable should generate a non-empty map");
 
+            bool hasInvalidField = false;
             foreach (var field in _gameTable.Table)
             {
-                Assert.IsNotNull(field, "Each field in the map should be initialized");
-                Assert.IsTrue(field is Water || field is Terrain);
+                if (field is null)
+                {
+                    Assert.Fail("Each field in the map should be initialized");
+                }
+
+                if (!(field is Water || field is Terrain))
+                {
+                    hasInvalidField = true;
+                    break;
+                }
             }
+
+            Assert.IsFalse(hasInvalidField, "All fields in the map should be either Water or Terrain");
         }
 
         [TestMethod]
         public void GenerateMap_MapHasValidFields()
         {
             _gameTable.GenerateMap();
+
+            bool hasFieldNotInRange = false;
+            bool hasInvalidField = false;
             foreach (var field in _gameTable.Table)
             {
-                Assert.IsTrue(0 <= field.Height && field.Height <= 4, "Each field should have a height between 0 and 4");
-                Assert.IsTrue(_gameTable.IsTileHeightPossible(field.X, field.Y, field.Height), "Each field should have a possible height");
+                if (!(0 <= field.Height && field.Height <= 4))
+                {
+                    hasFieldNotInRange = true;
+                    break;
+                }
+
+                if (!_gameTable.IsTileHeightPossible(field.X, field.Y, field.Height))
+                {
+                    hasInvalidField = true;
+                    break;
+                }
             }
+
+            Assert.IsFalse(hasFieldNotInRange, "Each field should have height between 0 and 4");
+            Assert.IsFalse(hasInvalidField, "Each field should have a possible height respecting neighbouring tiles");
         }
 
         [TestMethod]
@@ -90,10 +116,17 @@ public class GameTableTest
         {
             _gameTable.GenerateMap();
 
+            bool hasFieldWithInvalidTrees = false;
             foreach (var field in _gameTable.Table)
             {
-                Assert.IsTrue(0 <= field.GetTrees() && field.GetTrees() <= 4, "Each field should have a trees between 0 and 4");
+                if (!(0 <= field.GetTrees() && field.GetTrees() <= 4))
+                {
+                    hasFieldWithInvalidTrees = true;
+                    break;
+                }
             }
+
+            Assert.IsFalse(hasFieldWithInvalidTrees, "Each field should have a valid number of trees between 0 and 4");
         }
     }
 }
