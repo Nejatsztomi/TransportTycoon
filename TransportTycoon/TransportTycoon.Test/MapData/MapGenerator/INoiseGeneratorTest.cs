@@ -8,7 +8,12 @@ public class INoiseGeneratorTest
     public class FactoryCreateTest
     {
         [TestMethod]
-        public void PerlinNoiseFactoryCreate_WithAllParameters() { }
+        public void PerlinNoiseFactoryCreate_WithAllParameters()
+        {
+            INoiseGenerator result = PerlinNoiseGeneratorFactory.Create(10, 10, 42);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType<PerlinNoiseGenerator>(result);
+        }
     }
 
     public class NoiseGenerationTest
