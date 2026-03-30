@@ -1,186 +1,103 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
-using System.IO;
-using TransportTycoon.MapData;
+using System.ComponentModel;
+using System.Windows;
 using TransportTycoon.Model;
+using TransportTycoon.WPF.View;
 
 namespace TransportTycoon.WPF.ViewModel
 {
     public partial class MainViewModel : ViewModelBase
     {
+        #region Private fields
+        [ObservableProperty]
+        private object _currentView;
+        #endregion
+
         #region Properties
-        #region Relay commands
-        public RelayCommand NormalSpeedCommand { get; init; }
-        public RelayCommand FastSpeedCommand { get; init; }
-        public RelayCommand SuperFastSpeedCommand { get; init; }
-
-        public RelayCommand PauseGameCommand { get; init; }
-        public RelayCommand ResumeGameCommand { get; init; }
-        public RelayCommand EditorModeCommand { get; init; }
-
-        public RelayCommand<FieldViewModel> TileClickCommand { get; init; }
-        public RelayCommand<FieldViewModel> BuildRoadCommand { get; init; }
-        #endregion
-
-        public GameModel Model { get; init; }
-
-        public ObservableCollection<FieldViewModel> Tiles { get; private set; }
-
-        public int Balance => Model.Balance;
-        public int GameTime => Model.GameTime;
-        public bool IsPaused => Model.Mode == GameMode.Paused;
-        public bool IsEditorMode => Model.Mode == GameMode.Editor;
-
-        #region Map
-        public int MapColumns => Model.Map.Width;
-        public int MapRows => Model.Map.Height;
-        [ObservableProperty]
-        private double _zoomLevel = 1.0;
-        [ObservableProperty]
-        private string _selectedTile = "Click a tile!";
-        #endregion
-        #endregion
-
-        #region Events
-        public event EventHandler? NewGame;
-        public event EventHandler? Exit;
+        private GameModel? Model { get; set; }
         #endregion
 
         #region Constructors
-        public MainViewModel(GameModel model)
+        public MainViewModel()
         {
-            Model = model;
-
-            model.NewGameCreated += Model_NewGameCreated;
-            model.GameTicked += Model_GameTicked;
-            model.GameAdvanced += Model_GameAdvanced;
-            model.InfrastructureBuilt += Model_InfrastructureBuilt;
-
-            NormalSpeedCommand = new(OnNormalSpeed);
-            FastSpeedCommand = new(OnFastSpeed);
-            SuperFastSpeedCommand = new(OnSuperFastSpeed);
-
-            PauseGameCommand = new(OnPauseGame);
-            ResumeGameCommand = new(OnResumeGame);
-            EditorModeCommand = new(OnEditorMode);
-
-            TileClickCommand = new(OnTileClick);
-            BuildRoadCommand = new RelayCommand<FieldViewModel>(tile => Model.BuildRoad(tile.X, tile.Y));
-
-            Tiles = [];
-            RefreshTable();
-        }
-
-        private void Model_InfrastructureBuilt(object? sender, List<(int, int)> changedFields)
-        {
-            foreach (var (x, y) in changedFields)
-            {
-                FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
-                if (tile != null)
-                {
-                    string oldPath = tile.ImagePath;
-                    int index = Tiles.IndexOf(tile);
-                    Tiles[index] = new(Model.Map[x, y], oldPath);
-                    tile.RefreshInfrastructure();
-                }
-            }
-            //RefreshTable();
-        }
-
-        private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
-        {
-            // O(n * m + m)
-            Tiles.Where(tile => grownTrees.Any(tuple => tuple.Item1 == tile.X && tuple.Item2 == tile.Y))
-                .ToList()
-                .ForEach(tile => tile.RefreshTreeCount());
+            CurrentView = GetNewStartMenu();
         }
         #endregion
 
-        #region Private methods
-        private void RefreshTable()
+        #region Private Methods
+        private StartMenuViewModel GetNewStartMenu()
         {
-            //Tiles.Clear();
-            List<FieldViewModel> tempList = new(Model.Map.Width * Model.Map.Height + 1);
-            for (int x = 0; x < Model.Map.Width; x++)
+            StartMenuViewModel startMenuViewModel = new();
+
+            startMenuViewModel.StartNewGame += (sender, selectedDifficulty) =>
             {
-                for (int y = 0; y < Model.Map.Height; y++)
-                {
-                    string path = Model.Map[x, y] switch
-                    {
-                        Plain _ => "Assets/Images/Terrain/field.png",
-                        Hill _ => "Assets/Images/Terrain/hill.png",
-                        Water _ => "Assets/Images/Terrain/water2.png",
-                        _ => "Assets/Images/Terrain/field.png"
-                    };
-                    tempList.Add(new(Model.Map[x, y], path));
-                }
-            }
-            Tiles = new(tempList);
+                StartGame(selectedDifficulty);
+            };
+
+            startMenuViewModel.LoadGame += (sender, e) =>
+            {
+                throw new NotImplementedException("Load game functionality is not implemented yet!");
+            };
+
+            startMenuViewModel.ExitGame += (sender, e) =>
+            {
+                // Calls the MainWindows close method, which is basically the same as pressing the X
+                Application.Current.MainWindow?.Close();
+            };
+
+            return startMenuViewModel;
+        }
+
+        private void StartGame(Difficulty difficulty)
+        {
+            Model = new(difficulty, new WpfDispatcherTimer());
+            Model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
+            Model.NewGame();
+
+            GameViewModel gameViewModel = new(Model);
+
+            CurrentView = gameViewModel;
         }
         #endregion
 
-        #region Relay command methods
-        private void OnNewGame()
+        #region Private event methods
+        private void Model_GameOver(object? sender, TransportTycoonEventArgs e)
         {
-            NewGame?.Invoke(this, EventArgs.Empty);
-        }
+            MessageBoxResult result = MessageBox.Show("Unfortunately, you lost!" + Environment.NewLine +
+                                                        "Fate has a cruel sense of humor." + Environment.NewLine +
+                                                        "Survived Time: " + e.GameTime + Environment.NewLine +
+                                                        "Owned Vehicles: " + e.NumberOfVehicles + Environment.NewLine +
+                                                        "Would you like to return to the Main menu?",
+                                                        "TransportTycoon",
+                                                        MessageBoxButton.YesNo,
+                                                        MessageBoxImage.Question);
 
-        private void OnExit()
-        {
-            Exit?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void OnNormalSpeed()
-        {
-            Model.SetTimeSpeed(TimeSpeed.Normal);
-            OnResumeGame();
-        }
-
-        private void OnFastSpeed()
-        {
-            Model.SetTimeSpeed(TimeSpeed.Fast);
-            OnResumeGame();
-        }
-
-        private void OnSuperFastSpeed()
-        {
-            Model.SetTimeSpeed(TimeSpeed.SuperFast);
-            OnResumeGame();
-        }
-
-        private void OnPauseGame()
-        {
-            Model.SetMode(GameMode.Paused);
-        }
-
-        private void OnResumeGame()
-        {
-            Model.SetMode(GameMode.Run);
-        }
-
-        private void OnEditorMode()
-        {
-            Model.SetMode(GameMode.Editor);
-        }
-        private void OnTileClick(object? param)
-        {
-            if (param is FieldViewModel tile)
+            if (result == MessageBoxResult.Yes)
             {
-                SelectedTile = $"Clicked tile at ({tile.X}, {tile.Y})";
+                //Model = null;
+                CurrentView = GetNewStartMenu();
             }
         }
+
+        private bool WantsToExit() => MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
         #endregion
 
-        #region Event methods
-        private void Model_NewGameCreated(object? sender, EventArgs e)
+        #region Public method
+        public bool CanClose()
         {
-            RefreshTable();
-        }
+            Model?.SetMode(GameMode.Paused);
 
-        private void Model_GameTicked(object? sender, EventArgs e)
-        {
-            OnPropertyChanged(nameof(GameTime));
+            if (WantsToExit())
+            {
+                return true;
+            }
+
+            if (Model is not null && !Model.IsGameOver)
+            {
+                Model.SetMode(GameMode.Run);
+            }
+            return false;
         }
         #endregion
     }

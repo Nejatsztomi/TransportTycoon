@@ -1,15 +1,10 @@
-﻿<Window x:Class="TransportTycoon.WPF.MainWindow"
+﻿<UserControl x:Class="TransportTycoon.WPF.View.GameView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TransportTycoon.WPF" xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
+        xmlns:local="clr-namespace:TransportTycoon.WPF" xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:GameViewModel}"
         mc:Ignorable="d"
-        Title="Transport Tycoon - Game"
-        Height="450"
-        Width="800"
-        MinHeight="450"
-        MinWidth="800"
         >
 
     <DockPanel>
@@ -134,11 +129,16 @@
                             <ImageBrush ImageSource="/Assets/Images/Terrain/hill.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="1">
+                                <Image Source="/Assets/Images/Buttons/minus.png" Stretch="Uniform"/> 
+                            </Button>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="2">
+                                <Image Source="/Assets/Images/Buttons/plus.png" Stretch="Uniform"/> 
+                            </Button>
                         </WrapPanel>
                     </TabItem>
 
@@ -147,10 +147,16 @@
                             <ImageBrush ImageSource="/Assets/Images/Road/road.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"/>
-                            <Button Width="50" Height="50" Margin="8"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                            <Button Width="50" Height="50" Margin="6"/>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="11">
+                                <Image Source="/Assets/Images/Road/road.png" Stretch="Uniform"/>
+                            </Button>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="12">
+                                <Image Source="/Assets/Images/Bridge/yellowBridge.png" Stretch="Uniform"/>
+                            </Button>
                         </WrapPanel>
                     </TabItem>
 
@@ -228,7 +234,7 @@
                                                />-->
                                             <MouseBinding 
                                                MouseAction="LeftClick" 
-                                               Command="{Binding DataContext.BuildRoadCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                               Command="{Binding DataContext.TileLeftClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
                                                CommandParameter="{Binding}"
                                                />
                                         </Grid.InputBindings>
@@ -245,7 +251,7 @@
                                         </Border>
 
                                         <Image Source="{Binding TreeImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
-                                               Stretch="Uniform" 
+                                               Stretch="UniformToFill" 
                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                                IsHitTestVisible="False"
                                                Margin="2"/>
@@ -326,4 +332,4 @@
         </Grid>
 
     </DockPanel>
-</Window>
+</UserControl>
