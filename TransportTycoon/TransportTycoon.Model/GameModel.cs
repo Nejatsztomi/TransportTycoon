@@ -203,13 +203,21 @@ namespace TransportTycoon.Model
         }
         public void BuildBridge(int x, int y)
         {
-            
-            if (Map[x, y] is not Water) return;
+
+            if (Map[x, y] is not Water)
+            {
+                SetSelectedField(-1, -1);
+                return;
+            }
             if (SelectedField == null) SetSelectedField(x, y);
             else
             {
                 List<(int, int)> changedFields = new List<(int, int)>();
-                if (SelectedField.X != x && SelectedField.Y != y) return;
+                if (SelectedField.X != x && SelectedField.Y != y)
+                {
+                    SetSelectedField(-1, -1);
+                    return;
+                }
                 else if (SelectedField.X == x)
                 {
                     if (Math.Min(SelectedField.Y, y) - 1 < 0 || (Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Plain &&
@@ -232,7 +240,11 @@ namespace TransportTycoon.Model
                     }
                     for (int i = Math.Min(SelectedField.Y, y) + 1; i < Math.Max(SelectedField.Y, y); i++)
                     {
-                        if (Map[x, i] is not Water) return;
+                        if (Map[x, i] is not Water)
+                        {
+                            SetSelectedField(-1, -1);
+                            return;
+                        }
                     }
                     for (int i = Math.Min(SelectedField.Y, y); i <= Math.Max(SelectedField.Y, y); i++)
                     {
@@ -251,7 +263,7 @@ namespace TransportTycoon.Model
                         changedFields.Add((x, i));
                         Balance -= ((Bridge)Map[x, i]).Price;
                     }
-                    if(Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1) road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
+                    if (Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1) road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
                     changedFields.Add((x, Math.Min(SelectedField.Y, y) - 1));
                     if (Map[x, Math.Max(SelectedField.Y, y) - 1] is Road road2) road2.ChangeType(CalculateRoadType(x, Math.Max(SelectedField.Y, y) - 1));
                     changedFields.Add((x, Math.Max(SelectedField.Y, y) - 1));
@@ -278,7 +290,11 @@ namespace TransportTycoon.Model
                     }
                     for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
                     {
-                        if (Map[i, y] is not Water) return;
+                        if (Map[i, y] is not Water)
+                        {
+                            SetSelectedField(-1, -1);
+                            return;
+                        }
                     }
                     for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
                     {
@@ -297,7 +313,7 @@ namespace TransportTycoon.Model
                                 break;
                         }
                         changedFields.Add((i, y));
-                        Balance -= ((Bridge)Map[i,y]).Price;
+                        Balance -= ((Bridge)Map[i, y]).Price;
                     }
                     if (Map[Math.Min(SelectedField.X, x), y] is Road road1) road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x), y));
                     changedFields.Add((Math.Min(SelectedField.X, x), y));
