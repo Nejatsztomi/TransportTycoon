@@ -221,9 +221,9 @@ namespace TransportTycoon.Model
                 else if (SelectedField.X == x)
                 {
                     if (Math.Min(SelectedField.Y, y) - 1 < 0 || (Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Plain &&
-                        Map[x, Math.Min(SelectedField.Y, y) - 1] is not Infrastructure) ||
+                        Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType!=FieldType.Road && Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Stop) ||
                         Math.Max(SelectedField.Y, y) + 1 >= Map.Width || (Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Plain &&
-                        Map[x, Math.Max(SelectedField.Y, y) + 1] is not Infrastructure))
+                        Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Road && Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Stop))
                     {
                         SetSelectedField(-1, -1);
                         return;
@@ -271,9 +271,9 @@ namespace TransportTycoon.Model
                 else if (SelectedField.Y == y)
                 {
                     if (Math.Min(SelectedField.X, x) - 1 < 0 || (Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Plain &&
-                        Map[Math.Min(SelectedField.X, x) - 1, y] is not Infrastructure) ||
+                        Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Road && Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Stop) ||
                         Math.Max(SelectedField.X, x) + 1 >= Map.Height || (Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Plain &&
-                        Map[Math.Max(SelectedField.X, x) + 1, y] is not Infrastructure))
+                        Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Road && Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Stop))
                     {
                         SetSelectedField(-1, -1);
                         return;
