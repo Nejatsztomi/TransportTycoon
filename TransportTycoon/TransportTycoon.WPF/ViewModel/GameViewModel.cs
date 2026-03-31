@@ -63,6 +63,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.InfrastructureBuilt += Model_InfrastructureBuilt;
             model.FieldChanged += Model_FieldChanged;
             model.BalanceChanged += Model_BalanceChanged;
+            model.SelectedFieldChanged += Model_SelectedFieldChanged;
 
             NormalSpeedCommand = new(OnNormalSpeed);
             FastSpeedCommand = new(OnFastSpeed);
@@ -104,6 +105,20 @@ namespace TransportTycoon.WPF.ViewModel
             RefreshTable();
         }
 
+        private void Model_SelectedFieldChanged(object? sender, (int, int) e)
+        {
+            if(Model.SelectedField==null)
+            {
+                var tile = Tiles.FirstOrDefault(t => t.IsSelected);
+                if (tile != null) tile.IsSelected = false;
+            }
+            else
+            {
+                var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
+                if (tile != null) tile.IsSelected = true;
+            }
+        }
+
         private void Model_BalanceChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(Balance));
@@ -126,11 +141,6 @@ namespace TransportTycoon.WPF.ViewModel
                 FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
                 if (tile != null)
                 {
-                    if(Model.SelectedField!=null && tile.X==Model.SelectedField.X && tile.Y == Model.SelectedField.Y)
-                    {
-                        tile.IsSelected = true;
-                        return;
-                    }
                     string oldPath = tile.ImagePath;
                     int index = Tiles.IndexOf(tile);
                     Tiles[index] = new(Model.Map[x, y], oldPath);

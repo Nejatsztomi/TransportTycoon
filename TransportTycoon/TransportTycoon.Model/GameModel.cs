@@ -69,6 +69,7 @@ namespace TransportTycoon.Model
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
+        public event EventHandler<(int, int)>? SelectedFieldChanged;
         #endregion
 
         #region Constructor
@@ -126,6 +127,7 @@ namespace TransportTycoon.Model
         {
             if (x == -1 && y == -1) SelectedField = null;
             else SelectedField = Map[x, y];
+            SelectedFieldChanged?.Invoke(this, (x, y));
         }
 
         public void IncreaseHeight(int x, int y)
@@ -201,16 +203,12 @@ namespace TransportTycoon.Model
         }
         public void BuildBridge(int x, int y)
         {
-            List<(int, int)> changedFields = new List<(int, int)>();
+            
             if (Map[x, y] is not Water) return;
-            if (SelectedField == null)
-            {
-                SetSelectedField(x, y);
-                changedFields.Add((x, y));
-                InfrastructureBuilt?.Invoke(this, changedFields);
-            }
+            if (SelectedField == null) SetSelectedField(x, y);
             else
             {
+                List<(int, int)> changedFields = new List<(int, int)>();
                 if (SelectedField.X != x && SelectedField.Y != y) return;
                 else if (SelectedField.X == x)
                 {
