@@ -148,7 +148,11 @@ namespace TransportTycoon.Model
                         terrain.IncreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
-
+                        if (IsGameOver)
+                        {
+                            OnGameOver();
+                            return;
+                        }
                     }
                 }
             }
@@ -175,6 +179,11 @@ namespace TransportTycoon.Model
                         terrain.DecreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
+                        if (IsGameOver)
+                        {
+                            OnGameOver();
+                            return;
+                        }
 
                     }
                 }
@@ -316,6 +325,7 @@ namespace TransportTycoon.Model
         private void OnGameOver()
         {
             _timer.Stop();
+            GameModeChanged?.Invoke(this, GameMode.Paused);
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
         #endregion
