@@ -1,5 +1,6 @@
 using NSubstitute;
 using NSubstitute.ClearExtensions;
+using TransportTycoon.MapData;
 using TransportTycoon.Model;
 using ITimer = TransportTycoon.Model.ITimer;
 
@@ -322,6 +323,186 @@ public class GameModelTest
 
             [TestMethod]
             public void InfrastructureBuilt_EventArgumentIsCorrect() { }
+
+            //Public methods
+
+            [TestClass]
+            public class GameModelHeightTests
+            {
+                // Segédmetódus a tesztkörnyezet felállításához
+                private GameModel CreateEditorModelWithMap()
+                {
+                    var model = new GameModel(Difficulty.Medium, _mockTimer);
+                    model.SetMode(GameMode.Editor);
+
+                    // Feltöltjük a pályát magasság=2 síkságokkal, hogy az IsTileHeightPossible ne szálljon el null reference miatt
+                    for (int i = 0; i < model.Map.Width; i++)
+                    {
+                        for (int j = 0; j < model.Map.Height; j++)
+                        {
+                            model.Map[i, j] = new Terrain(i, j, 2);
+                        }
+                    }
+                    return model;
+                }
+
+                [TestMethod]
+                public void IncreaseHeight_DoesNothing_IfNotInEditorMode()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    model.SetMode(GameMode.Run); // Átváltjuk Run módba
+                    int initialBalance = model.Balance;
+
+                    // Act
+                    model.IncreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(2, model.Map[5, 5].Height);
+                    Assert.AreEqual(initialBalance, model.Balance);
+                }
+
+                [TestMethod]
+                public void IncreaseHeight_DoesNothing_IfHeightIsAlready4()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    var terrain = (Terrain)model.Map[5, 5];
+                    terrain.IncreaseHeight();
+                    terrain.IncreaseHeight(); // Magasság most már 4 (max)
+                    int initialBalance = model.Balance;
+
+                    // Act
+                    model.IncreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(4, model.Map[5, 5].Height);
+                    Assert.AreEqual(initialBalance, model.Balance); // A pénz nem vonódhat le
+                }
+
+                [TestMethod]
+                public void IncreaseHeight_Costs100Balance_WhenNoTrees()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    int initialBalance = model.Balance;
+                    bool eventFired = false;
+                    model.FieldChanged += (s, e) => eventFired = true;
+
+                    // Act
+                    model.IncreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(3, model.Map[5, 5].Height);
+                    Assert.AreEqual(initialBalance - 100, model.Balance);
+                    Assert.IsTrue(eventFired);
+                }
+
+                [TestMethod]
+                public void IncreaseHeight_Costs150Balance_WhenTreesExist()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    var terrain = (Terrain)model.Map[5, 5];
+                    terrain.Grow(); // Van már 1 fa (amit ki kell vágni, plusz 50 pénz)
+                    int initialBalance = model.Balance;
+
+                    // Act
+                    model.IncreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(initialBalance - 150, model.Balance);
+                }
+
+                [TestMethod]
+                public void DecreaseHeight_DoesNothing_IfNotInEditorMode()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    model.SetMode(GameMode.Run);
+                    int initialBalance = model.Balance;
+
+                    // Act
+                    model.DecreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(2, model.Map[5, 5].Height);
+                    Assert.AreEqual(initialBalance, model.Balance);
+                }
+
+                [TestMethod]
+                public void DecreaseHeight_DoesNothing_IfHeightIsAlready1()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    var terrain = (Terrain)model.Map[5, 5];
+                    terrain.DecreaseHeight(); // Magasság most már 1 (min)
+                    int initialBalance = model.Balance;
+
+                    // Act
+                    model.DecreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(1, model.Map[5, 5].Height);
+                    Assert.AreEqual(initialBalance, model.Balance);
+                }
+
+                [TestMethod]
+                public void DecreaseHeight_Costs100Balance_WhenNoTrees()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    int initialBalance = model.Balance;
+
+                    // Act
+                    model.DecreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(1, model.Map[5, 5].Height);
+                    Assert.AreEqual(initialBalance - 100, model.Balance);
+                }
+
+                [TestMethod]
+                public void DecreaseHeight_Costs150Balance_WhenTreesExist()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    var terrain = (Terrain)model.Map[5, 5];
+                    terrain.Grow(); // Van 1 fa
+                    int initialBalance = model.Balance;
+
+                    // Act
+                    model.DecreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(1, model.Map[5, 5].Height);
+                    Assert.AreEqual(initialBalance - 150, model.Balance);
+                }
+
+                [TestMethod]
+                public void DecreaseHeight_DoesNothing_IfTileHeightDifferenceWouldBeTooHigh()
+                {
+                    // Arrange
+                    var model = CreateEditorModelWithMap();
+                    // Teszt csempe magassága 2. A felső szomszéd legyen 4.
+                    var neighbor = (Terrain)model.Map[4, 5];
+                    neighbor.IncreaseHeight();
+                    neighbor.IncreaseHeight(); // Felső szomszéd most 4-es
+
+                    int initialBalance = model.Balance;
+
+                    // Act
+                    // Megpróbáljuk 1-re vinni a teszt csempét. 
+                    // A különbség 4 és 1 között 3 lenne, ami illegális.
+                    model.DecreaseHeight(5, 5);
+
+                    // Assert
+                    Assert.AreEqual(2, model.Map[5, 5].Height); // Nem csökkent a magasság
+                    Assert.AreEqual(initialBalance, model.Balance); // Nem vett le pénzt
+                }
+
+                //Forest methods
+            }
         }
     }
 }
