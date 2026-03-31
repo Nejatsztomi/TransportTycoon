@@ -323,6 +323,11 @@ namespace TransportTycoon.Model
         #region Timer event handlers
         private void Timer_Tick(object? sender, EventArgs e)
         {
+            if(IsGameOver)
+            {
+                OnGameOver();
+                return;
+            }
             GameTime++;
             if (GameTime > 0 && GameTime % 10 == 0)
             {
@@ -331,6 +336,7 @@ namespace TransportTycoon.Model
             }
             GameTicked?.Invoke(this, EventArgs.Empty);
 
+            
 
         }
         #endregion
