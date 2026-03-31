@@ -249,6 +249,7 @@ namespace TransportTycoon.Model
                                 break;
                         }
                         changedFields.Add((x, i));
+                        Balance -= ((Bridge)Map[x, i]).Price;
                     }
                     if(Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1) road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
                     changedFields.Add((x, Math.Min(SelectedField.Y, y) - 1));
@@ -296,6 +297,7 @@ namespace TransportTycoon.Model
                                 break;
                         }
                         changedFields.Add((i, y));
+                        Balance -= ((Bridge)Map[i,y]).Price;
                     }
                     if (Map[Math.Min(SelectedField.X, x), y] is Road road1) road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x), y));
                     changedFields.Add((Math.Min(SelectedField.X, x), y));
@@ -304,6 +306,7 @@ namespace TransportTycoon.Model
                 }
                 SetSelectedField(-1, -1);
                 InfrastructureBuilt?.Invoke(this, changedFields);
+                BalanceChanged?.Invoke(this, EventArgs.Empty);
             }
         }
         #endregion
