@@ -212,8 +212,10 @@ namespace TransportTycoon.Model
                 if (SelectedField.X != x && SelectedField.Y != y) return;
                 else if (SelectedField.X == x)
                 {
-                    if (Math.Min(SelectedField.Y, y) - 1 < 0 || Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Plain ||
-                        Math.Max(SelectedField.Y, y) + 1 >= Map.Width || Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Plain)
+                    if (Math.Min(SelectedField.Y, y) - 1 < 0 || (Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Plain &&
+                        Map[x, Math.Min(SelectedField.Y, y) - 1] is not Infrastructure) ||
+                        Math.Max(SelectedField.Y, y) + 1 >= Map.Width || (Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Plain &&
+                        Map[x, Math.Max(SelectedField.Y, y) + 1] is not Infrastructure))
                     {
                         SetSelectedField(-1, -1);
                         return;
@@ -248,13 +250,17 @@ namespace TransportTycoon.Model
                         }
                         changedFields.Add((x, i));
                     }
-                    SetSelectedField(-1, -1);
-                    InfrastructureBuilt?.Invoke(this, changedFields);
+                    if(Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1) road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
+                    changedFields.Add((x, Math.Min(SelectedField.Y, y) - 1));
+                    if (Map[x, Math.Max(SelectedField.Y, y) - 1] is Road road2) road2.ChangeType(CalculateRoadType(x, Math.Max(SelectedField.Y, y) - 1));
+                    changedFields.Add((x, Math.Max(SelectedField.Y, y) - 1));
                 }
                 else if (SelectedField.Y == y)
                 {
-                    if (Math.Min(SelectedField.X, x) - 1 < 0 || Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Plain ||
-                        Math.Max(SelectedField.X, x) + 1 >= Map.Height || Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Plain)
+                    if (Math.Min(SelectedField.X, x) - 1 < 0 || (Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Plain &&
+                        Map[Math.Min(SelectedField.X, x) - 1, y] is not Infrastructure) ||
+                        Math.Max(SelectedField.X, x) + 1 >= Map.Height || (Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Plain &&
+                        Map[Math.Max(SelectedField.X, x) + 1, y] is not Infrastructure))
                     {
                         SetSelectedField(-1, -1);
                         return;
@@ -291,9 +297,13 @@ namespace TransportTycoon.Model
                         }
                         changedFields.Add((i, y));
                     }
-                    SetSelectedField(-1, -1);
-                    InfrastructureBuilt?.Invoke(this, changedFields);
+                    if (Map[Math.Min(SelectedField.X, x), y] is Road road1) road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x), y));
+                    changedFields.Add((Math.Min(SelectedField.X, x), y));
+                    if (Map[Math.Max(SelectedField.X, x), y] is Road road2) road2.ChangeType(CalculateRoadType(Math.Max(SelectedField.X, x), y));
+                    changedFields.Add((Math.Max(SelectedField.X, x), y));
                 }
+                SetSelectedField(-1, -1);
+                InfrastructureBuilt?.Invoke(this, changedFields);
             }
         }
         #endregion
