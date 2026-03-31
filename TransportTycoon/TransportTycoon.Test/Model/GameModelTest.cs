@@ -507,7 +507,7 @@ public class GameModelTest
                     Assert.AreEqual(2, model.Map[5, 5].Height); // Nem csökkent a magasság
                     Assert.AreEqual(initialBalance, model.Balance); // Nem vett le pénzt
                 }
-                
+
 
                 private GameModel CreateEditorModelWithMap(int startingBalance = 1000)
                 {
