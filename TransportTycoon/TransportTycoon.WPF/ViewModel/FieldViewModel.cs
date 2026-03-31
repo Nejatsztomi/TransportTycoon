@@ -73,6 +73,8 @@ namespace TransportTycoon.WPF.ViewModel
                     return bridge.BridgeType switch
                     {
                         BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => $"/Assets/Images/Bridge/yellowBridge.png",
+                        BridgeType.VerticalBlueBridge or BridgeType.HorizontalBlueBridge => $"/Assets/Images/Bridge/blueBridge.png",
+                        BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => $"/Assets/Images/Bridge/redBridge.png",
                         _ => null
                     };
                 }
@@ -90,6 +92,14 @@ namespace TransportTycoon.WPF.ViewModel
                         RoadType.Horizontal or RoadType.LeftTRoad or RoadType.LeftTurn => 90,
                         RoadType.UpperTRoad or RoadType.UpperLeftTurn => 180,
                         RoadType.RightTRoad or RoadType.UpperRightTurn => 270,
+                        _ => 0
+                    };
+                }
+                else if(Field is Bridge bridge)
+                {
+                    return bridge.BridgeType switch
+                    {
+                        BridgeType.VerticalYellowBridge or BridgeType.VerticalBlueBridge or BridgeType.VerticalRedBridge => 90,
                         _ => 0
                     };
                 }
