@@ -83,6 +83,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 if (x == null) return;
                 _selectedButton = Convert.ToInt32(x);
+                Model.SetSelectedField(-1, -1);
             });
             TileLeftClickCommand = new RelayCommand<FieldViewModel>(tile =>
             {

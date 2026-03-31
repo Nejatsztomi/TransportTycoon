@@ -36,7 +36,7 @@ namespace TransportTycoon.Model
 
         #region Properties
         public GameTable Map { get; private set; }
-        public Field SelectedField { get; private set; }
+        public Field? SelectedField { get; private set; }
 
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
@@ -124,7 +124,8 @@ namespace TransportTycoon.Model
 
         public void SetSelectedField(int x, int y)
         {
-            SelectedField = Map[x, y];
+            if (x == -1 && y == -1) SelectedField = null;
+            else SelectedField = Map[x, y];
         }
 
         public void IncreaseHeight(int x, int y)
@@ -213,7 +214,11 @@ namespace TransportTycoon.Model
                     if (dif <= 13) b_type = BridgeType.HorizontalYellowBridge;
                     else if (dif <= 15) b_type = BridgeType.HorizontalBlueBridge;
                     else if (dif <= 17) b_type = BridgeType.HorizontalRedBridge;
-                    else return;
+                    else
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
                     for (int i = Math.Min(SelectedField.Y, y); i <= Math.Max(SelectedField.Y, y); i++)
                     {
                         switch (b_type)
@@ -230,6 +235,7 @@ namespace TransportTycoon.Model
                         }
                         changedFields.Add((x, i));
                     }
+                    SetSelectedField(-1, -1);
                     InfrastructureBuilt?.Invoke(this, changedFields);
                 }
                 else if (SelectedField.Y == y)
@@ -239,7 +245,11 @@ namespace TransportTycoon.Model
                     if (dif <= 13) b_type = BridgeType.VerticalYellowBridge;
                     else if (dif <= 15) b_type = BridgeType.VerticalBlueBridge;
                     else if (dif <= 17) b_type = BridgeType.VerticalRedBridge;
-                    else return;
+                    else
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
                     for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
                     {
                         switch (b_type)
@@ -258,6 +268,7 @@ namespace TransportTycoon.Model
                         }
                         changedFields.Add((i, y));
                     }
+                    SetSelectedField(-1, -1);
                     InfrastructureBuilt?.Invoke(this, changedFields);
                 }
             }         
