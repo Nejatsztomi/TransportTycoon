@@ -201,10 +201,66 @@ namespace TransportTycoon.Model
         public void BuildBridge(int x, int y)
         {
             if (Map[x, y] is not Water) return;
-            List<(int, int)> changedFields = new List<(int, int)>();
-            Map[x, y] = new YellowBridge(x, y, BridgeType.VerticalYellowBridge, Map[x, y].Height);
-            changedFields.Add((x, y));
-            InfrastructureBuilt?.Invoke(this, changedFields);
+            if (SelectedField == null) SetSelectedField(x, y);
+            else
+            {
+                List<(int, int)> changedFields = new List<(int, int)>();
+                if (SelectedField.X != x && SelectedField.Y != y) return;
+                else if (SelectedField.X == x)
+                {
+                    BridgeType b_type;
+                    int dif = Math.Abs(SelectedField.Y - y);
+                    if (dif <= 13) b_type = BridgeType.HorizontalYellowBridge;
+                    else if (dif <= 15) b_type = BridgeType.HorizontalBlueBridge;
+                    else if (dif <= 17) b_type = BridgeType.HorizontalRedBridge;
+                    else return;
+                    for (int i = Math.Min(SelectedField.Y, y); i <= Math.Max(SelectedField.Y, y); i++)
+                    {
+                        switch (b_type)
+                        {
+                            case BridgeType.HorizontalYellowBridge:
+                                Map[x, i] = new YellowBridge(x, i, b_type, Map[x, i].Height);
+                                break;
+                            case BridgeType.HorizontalBlueBridge:
+                                Map[x, i] = new BlueBridge(x, i, b_type, Map[x, i].Height);
+                                break;
+                            case BridgeType.HorizontalRedBridge:
+                                Map[x, i] = new RedBridge(x, i, b_type, Map[x, i].Height);
+                                break;
+                        }
+                        changedFields.Add((x, i));
+                    }
+                    InfrastructureBuilt?.Invoke(this, changedFields);
+                }
+                else if (SelectedField.Y == y)
+                {
+                    BridgeType b_type;
+                    int dif = Math.Abs(SelectedField.X - x);
+                    if (dif <= 13) b_type = BridgeType.VerticalYellowBridge;
+                    else if (dif <= 15) b_type = BridgeType.VerticalBlueBridge;
+                    else if (dif <= 17) b_type = BridgeType.VerticalRedBridge;
+                    else return;
+                    for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
+                    {
+                        switch (b_type)
+                        {
+                            case BridgeType.VerticalYellowBridge:
+                                Map[i, y] = new YellowBridge(i, y, b_type, Map[i, y].Height);
+                                break;
+                            case BridgeType.VerticalBlueBridge:
+                                Map[i, y] = new BlueBridge(i, y, b_type, Map[i, y].Height);
+                                break;
+                            case BridgeType.VerticalRedBridge:
+                                Map[i, y] = new RedBridge(i, y, b_type, Map[i, y].Height);
+                                break;
+                            default:
+                                break;
+                        }
+                        changedFields.Add((i, y));
+                    }
+                    InfrastructureBuilt?.Invoke(this, changedFields);
+                }
+            }         
         }
         #endregion
 
