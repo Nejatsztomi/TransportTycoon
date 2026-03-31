@@ -225,6 +225,10 @@ namespace TransportTycoon.Model
                         SetSelectedField(-1, -1);
                         return;
                     }
+                    for (int i = Math.Min(SelectedField.Y, y)+1; i < Math.Max(SelectedField.Y, y); i++)
+                    {
+                        if (Map[x, i] is not Water) return;
+                    }
                     for (int i = Math.Min(SelectedField.Y, y); i <= Math.Max(SelectedField.Y, y); i++)
                     {
                         switch (b_type)
@@ -247,7 +251,7 @@ namespace TransportTycoon.Model
                 else if (SelectedField.Y == y)
                 {
                     if ((Math.Min(SelectedField.X, x) - 1 >= 0 && Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Plain) ||
-                        (Math.Max(SelectedField.X, x) + 1 <= Map.Height && Map[Math.Min(SelectedField.X, x) + 1, y].FieldType != FieldType.Plain))
+                        (Math.Max(SelectedField.X, x) + 1 <= Map.Height && Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Plain))
                     {
                         SetSelectedField(-1, -1);
                         return;
@@ -261,6 +265,10 @@ namespace TransportTycoon.Model
                     {
                         SetSelectedField(-1, -1);
                         return;
+                    }
+                    for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
+                    {
+                        if (Map[i, y] is not Water) return;
                     }
                     for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
                     {
