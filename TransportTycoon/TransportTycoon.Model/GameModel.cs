@@ -201,11 +201,16 @@ namespace TransportTycoon.Model
         }
         public void BuildBridge(int x, int y)
         {
+            List<(int, int)> changedFields = new List<(int, int)>();
             if (Map[x, y] is not Water) return;
-            if (SelectedField == null) SetSelectedField(x, y);
+            if (SelectedField == null)
+            {
+                SetSelectedField(x, y);
+                changedFields.Add((x, y));
+                InfrastructureBuilt?.Invoke(this, changedFields);
+            }
             else
             {
-                List<(int, int)> changedFields = new List<(int, int)>();
                 if (SelectedField.X != x && SelectedField.Y != y) return;
                 else if (SelectedField.X == x)
                 {
@@ -225,7 +230,7 @@ namespace TransportTycoon.Model
                         SetSelectedField(-1, -1);
                         return;
                     }
-                    for (int i = Math.Min(SelectedField.Y, y)+1; i < Math.Max(SelectedField.Y, y); i++)
+                    for (int i = Math.Min(SelectedField.Y, y) + 1; i < Math.Max(SelectedField.Y, y); i++)
                     {
                         if (Map[x, i] is not Water) return;
                     }

@@ -23,10 +23,6 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand ResumeGameCommand { get; init; }
         public RelayCommand EditorModeCommand { get; init; }
         public RelayCommand<object> SetSelectedButtonCommand { get; init; }
-
-        public RelayCommand IncreaseHeightCommand { get; init; }
-        public RelayCommand DecreaseHeightCommand { get; init; }
-
         public RelayCommand<FieldViewModel> TileLeftClickCommand { get; init; }
         #endregion
 
@@ -75,9 +71,6 @@ namespace TransportTycoon.WPF.ViewModel
             PauseGameCommand = new(OnPauseGame);
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
-
-            //IncreaseHeightCommand = new(OnIncreaseHeight);
-            //DecreaseHeightCommand = new(OnDecreaseHeight);
 
             SetSelectedButtonCommand = new RelayCommand<object>(x =>
             {
@@ -133,6 +126,11 @@ namespace TransportTycoon.WPF.ViewModel
                 FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
                 if (tile != null)
                 {
+                    if(Model.SelectedField!=null && tile.X==Model.SelectedField.X && tile.Y == Model.SelectedField.Y)
+                    {
+                        tile.IsSelected = true;
+                        return;
+                    }
                     string oldPath = tile.ImagePath;
                     int index = Tiles.IndexOf(tile);
                     Tiles[index] = new(Model.Map[x, y], oldPath);

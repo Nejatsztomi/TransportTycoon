@@ -1,8 +1,9 @@
-﻿using TransportTycoon.MapData;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using TransportTycoon.MapData;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public class FieldViewModel : ViewModelBase
+    public partial class FieldViewModel : ViewModelBase
     {
         #region Fields
         #endregion
@@ -15,6 +16,8 @@ namespace TransportTycoon.WPF.ViewModel
         public int Y => Field.Y;
         public int Height => Field.Height;
         public int TreeCounter => Field.GetTrees();
+        [ObservableProperty]
+        private bool _isSelected;
         public string MinimapColor
         {
             get
