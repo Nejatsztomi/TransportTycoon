@@ -209,6 +209,12 @@ namespace TransportTycoon.Model
                 if (SelectedField.X != x && SelectedField.Y != y) return;
                 else if (SelectedField.X == x)
                 {
+                    if ((Math.Min(SelectedField.Y, y) - 1 >= 0 && Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Plain) ||
+                        (Math.Max(SelectedField.Y, y) + 1 <= Map.Width && Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Plain))
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
                     BridgeType b_type;
                     int dif = Math.Abs(SelectedField.Y - y);
                     if (dif <= 13) b_type = BridgeType.HorizontalYellowBridge;
@@ -240,6 +246,12 @@ namespace TransportTycoon.Model
                 }
                 else if (SelectedField.Y == y)
                 {
+                    if ((Math.Min(SelectedField.X, x) - 1 >= 0 && Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Plain) ||
+                        (Math.Max(SelectedField.X, x) + 1 <= Map.Height && Map[Math.Min(SelectedField.X, x) + 1, y].FieldType != FieldType.Plain))
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
                     BridgeType b_type;
                     int dif = Math.Abs(SelectedField.X - x);
                     if (dif <= 13) b_type = BridgeType.VerticalYellowBridge;
@@ -271,7 +283,7 @@ namespace TransportTycoon.Model
                     SetSelectedField(-1, -1);
                     InfrastructureBuilt?.Invoke(this, changedFields);
                 }
-            }         
+            }
         }
         #endregion
 
