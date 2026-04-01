@@ -20,7 +20,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         {
             NoiseGenerator = noiseGenerator;
             NoiseScale = noiseScale;
-            ForestPercentage = forestPercentage;
+            ForestPercentage = 1 - forestPercentage;
         }
         #endregion
 
