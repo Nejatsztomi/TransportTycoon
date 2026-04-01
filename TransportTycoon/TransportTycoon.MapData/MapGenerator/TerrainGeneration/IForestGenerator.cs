@@ -2,6 +2,6 @@
 {
     public interface IForestGenerator
     {
-        public int[,] GenerateForests(MapGenerationContext context);
+        public int[,] GenerateForests(int[,] heightMap, MapGenerationContext context);
     }
 }
