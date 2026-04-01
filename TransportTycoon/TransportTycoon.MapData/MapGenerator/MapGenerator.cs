@@ -8,7 +8,7 @@ namespace TransportTycoon.MapData.MapGenerator
         public static IMapGenerator CreateMapGenerator(MapGenerationSettings settings)
         {
             INoiseGenerator noiseGenerator = new PerlinNoiseGenerator();
-            ITerrainGenerator terrainGenerator = new TerrainGenerator(noiseGenerator);
+            ITerrainGenerator terrainGenerator = new TerrainGenerator(noiseGenerator, settings.TerrainNoiseScale);
             IForestGenerator forestGenerator = new ForestGenerator(noiseGenerator);
             IWaterGenerator waterGenerator = new WaterGenerator(noiseGenerator);
             return new MapGenerator(settings, terrainGenerator, forestGenerator, waterGenerator);

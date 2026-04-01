@@ -4,19 +4,21 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
     public static class TerraingGeneratorFactory
     {
-        public static ITerrainGenerator Create(INoiseGenerator noiseGenerator) => new TerrainGenerator(noiseGenerator);
+        public static ITerrainGenerator Create(INoiseGenerator noiseGenerator, float noiseScale) => new TerrainGenerator(noiseGenerator, noiseScale);
     }
 
     internal class TerrainGenerator : ITerrainGenerator
     {
         #region Properties
         private INoiseGenerator NoiseGenerator { get; }
+        private float NoiseScale { get; }
         #endregion
 
         #region Constructors
-        public TerrainGenerator(INoiseGenerator noiseGenerator)
+        public TerrainGenerator(INoiseGenerator noiseGenerator, float noiseScale)
         {
             NoiseGenerator = noiseGenerator;
+            NoiseScale = noiseScale;
         }
         #endregion
 
@@ -25,7 +27,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         {
             int[,] heightMap = new int[context.Width, context.Height];
 
-            float[,] randomNoiseMap = NoiseGenerator.GenerateNoise(0.1f, context);
+            float[,] randomNoiseMap = NoiseGenerator.GenerateNoise(NoiseScale, context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
