@@ -96,6 +96,9 @@ namespace TransportTycoon.WPF.ViewModel
                     case 12:
                         Model.BuildBridge(tile.X, tile.Y);
                         break;
+                    case 13:
+                        Model.BuildStop(tile.X, tile.Y);
+                        break;
                     default:
                         break;
                 }

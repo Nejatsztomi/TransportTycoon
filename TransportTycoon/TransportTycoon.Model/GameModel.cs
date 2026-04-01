@@ -265,8 +265,8 @@ namespace TransportTycoon.Model
                     }
                     if (Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1) road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
                     changedFields.Add((x, Math.Min(SelectedField.Y, y) - 1));
-                    if (Map[x, Math.Max(SelectedField.Y, y) - 1] is Road road2) road2.ChangeType(CalculateRoadType(x, Math.Max(SelectedField.Y, y) - 1));
-                    changedFields.Add((x, Math.Max(SelectedField.Y, y) - 1));
+                    if (Map[x, Math.Max(SelectedField.Y, y) + 1] is Road road2) road2.ChangeType(CalculateRoadType(x, Math.Max(SelectedField.Y, y) + 1));
+                    changedFields.Add((x, Math.Max(SelectedField.Y, y) + 1));
                 }
                 else if (SelectedField.Y == y)
                 {
@@ -315,16 +315,29 @@ namespace TransportTycoon.Model
                         changedFields.Add((i, y));
                         Balance -= ((Bridge)Map[i, y]).Price;
                     }
-                    if (Map[Math.Min(SelectedField.X, x), y] is Road road1) road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x), y));
-                    changedFields.Add((Math.Min(SelectedField.X, x), y));
-                    if (Map[Math.Max(SelectedField.X, x), y] is Road road2) road2.ChangeType(CalculateRoadType(Math.Max(SelectedField.X, x), y));
-                    changedFields.Add((Math.Max(SelectedField.X, x), y));
+                    if (Map[Math.Min(SelectedField.X, x) - 1, y] is Road road1) road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x) - 1, y));
+                    changedFields.Add((Math.Min(SelectedField.X, x) - 1, y));
+                    if (Map[Math.Max(SelectedField.X, x) + 1, y] is Road road2) road2.ChangeType(CalculateRoadType(Math.Max(SelectedField.X, x) + 1, y));
+                    changedFields.Add((Math.Max(SelectedField.X, x) + 1, y));
                 }
                 if (IsGameOver) OnGameOver();
                 SetSelectedField(-1, -1);
                 InfrastructureBuilt?.Invoke(this, changedFields);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
             }
+        }
+        public void BuildStop(int x, int y)
+        {
+            if (Map[x, y] is not Terrain) return;
+            List<(int, int)> changedFields = new List<(int, int)>();
+            Map[x, y] = new Stop(x, y, Map[x, y].Height);
+            changedFields.Add((x, y));
+            foreach (var e in Map.StopEnvironment(x, y))
+            {
+                ((Road)Map[e.Item1, e.Item2]).ChangeType(CalculateRoadType(e.Item1, e.Item2));
+                changedFields.Add((e.Item1, e.Item2));
+            }
+            InfrastructureBuilt?.Invoke(this, changedFields);
         }
         #endregion
 

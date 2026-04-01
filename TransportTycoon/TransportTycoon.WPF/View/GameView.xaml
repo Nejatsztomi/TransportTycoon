@@ -157,6 +157,15 @@
                                     CommandParameter="12">
                                 <Image Source="/Assets/Images/Bridge/yellowBridge.png" Stretch="Uniform"/>
                             </Button>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="13">
+                                <Image Source="/Assets/Images/Stop/stop.png" Stretch="Uniform"/>
+                            </Button>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="14">
+                            </Button>
                         </WrapPanel>
                     </TabItem>
 
