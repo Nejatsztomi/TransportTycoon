@@ -1,14 +1,31 @@
-﻿using System.Diagnostics.Metrics;
+﻿using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.MapData.MapGenerator
 {
+    public static class MapGenerationSettingsDefaults
+    {
+        public const int RiverCount = 3;
+        public const float ForestPercentage = 0.3f;
+        public const int StructureRange = 0;
+        public const int MinCities = 2;
+        public const int MaxCities = 2;
+        public const int MinStructure = 1;
+        public const int MaxStructure = 3;
+        public const float TerrainNoiseScale = 0.1f;
+        public const float ForestNoiseScale = 0.1f;
+        public const float WaterNoiseScale = 0.1f;
+
+        public static readonly IBiome = Biomes.Default;
+    }
+
     public class MapGenerationSettings
     {
         #region Properties
+        #region Water generation
         public int RiverCount
         {
             get;
-            private set
+            init
             {
                 if (!(value >= 0))
                 {
@@ -16,24 +33,42 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        }
-        public IBiome Biome { get; private set; }
-        public int ForestCount
+        } = MapGenerationSettingsDefaults.RiverCount;
+        public float WaterNoiseScale
         {
             get;
-            private set
+            init
             {
-                if (!(value >= 0))
+                if (!(0f <= value && value <= 1f))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(ForestCount), "ForestCount must be a non-negative integer.");
+                    throw new ArgumentOutOfRangeException(nameof(WaterNoiseScale), "WaterNoiseScale a float between 0 and 1 (inclusive)");
                 }
                 field = value;
             }
-        }
+        } = MapGenerationSettingsDefaults.WaterNoiseScale;
+        #endregion
+
+        #region Terrain generation
+        public IBiome Biome { get; init; } = MapGenerationSettingsDefaults.Biome;
+        public float TerrainNoiseScale
+        {
+            get;
+            init
+            {
+                if (!(0f <= value && value <= 1f))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(TerrainNoiseScale), "TerrainNoiseScale a float between 0 and 1 (inclusive)");
+                }
+                field = value;
+            }
+        } = MapGenerationSettingsDefaults.TerrainNoiseScale;
+        #endregion
+
+        #region Structure generation
         public int StructureRange
         {
             get;
-            private set
+            init
             {
                 if (!(value >= 0))
                 {
@@ -41,11 +76,11 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        }
+        } = MapGenerationSettingsDefaults.StructureRange;
         public int MinCities
         {
             get;
-            private set
+            init
             {
                 if (!(value >= 2))
                 {
@@ -53,11 +88,11 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        }
+        } = MapGenerationSettingsDefaults.MinCities;
         public int MaxCities
         {
             get;
-            private set
+            init
             {
                 if (!(value >= MinCities))
                 {
@@ -65,11 +100,11 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        }
+        } = MapGenerationSettingsDefaults.MaxCities;
         public int MinStructure
         {
             get;
-            private set
+            init
             {
                 if (!(value > 0))
                 {
@@ -77,11 +112,11 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        }
+        } = MapGenerationSettingsDefaults.MinStructure;
         public int MaxStructure
         {
             get;
-            private set
+            init
             {
                 if (!(value >= MinStructure))
                 {
@@ -89,21 +124,36 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        }
+        } = MapGenerationSettingsDefaults.MaxStructure;
         #endregion
 
-        #region Constructors
-        public MapGenerationSettings(int riverCount, IBiome biome, int forestCount, int structureRange, int minCities, int maxCities, int minStructure, int maxStructure)
+        #region Forest generation
+        public float ForestPercentage
         {
-            RiverCount = riverCount;
-            Biome = biome;
-            ForestCount = forestCount;
-            StructureRange = structureRange;
-            MinCities = minCities;
-            MaxCities = maxCities;
-            MinStructure = minStructure;
-            MaxStructure = maxStructure;
-        }
+            get;
+            init
+            {
+                if (!(0f <= value && value <= 1f))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(ForestPercentage), "ForestCount a float between 0 and 1 (inclusive)");
+                }
+                field = value;
+            }
+        } = MapGenerationSettingsDefaults.ForestPercentage;
+
+        public float ForestNoiseScale
+        {
+            get;
+            init
+            {
+                if (!(0f <= value && value <= 1f))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(ForestPercentage), "ForestCount a float between 0 and 1 (inclusive)");
+                }
+                field = value;
+            }
+        } = MapGenerationSettingsDefaults.ForestNoiseScale;
+        #endregion
         #endregion
     }
 }
