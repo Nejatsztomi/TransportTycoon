@@ -2,6 +2,6 @@
 {
     public interface INoiseGenerator
     {
-        public float[,] GenerateNoise(float noiseScale);
+        public float[,] GenerateNoise(float noiseScale, MapGenerationContext context);
     }
 }
