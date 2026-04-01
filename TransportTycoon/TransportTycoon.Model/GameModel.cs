@@ -329,7 +329,10 @@ namespace TransportTycoon.Model
         public void BuildStop(int x, int y)
         {
             if (Map[x, y] is not Terrain) return;
-
+            List<(int, int)> changedFields = new List<(int, int)>();
+            Map[x, y] = new Stop(x, y, Map[x, y].Height);
+            changedFields.Add((x, y));
+            InfrastructureBuilt?.Invoke(this, changedFields);
         }
         #endregion
 
