@@ -25,7 +25,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         {
             int[,] heightMap = new int[context.Width, context.Height];
 
-            float[,] randomNoiseMap = NoiseGenerator.GenerateNoise(0.1f);
+            float[,] randomNoiseMap = NoiseGenerator.GenerateNoise(0.1f, context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
