@@ -221,7 +221,7 @@ namespace TransportTycoon.Model
                 else if (SelectedField.X == x)
                 {
                     if (Math.Min(SelectedField.Y, y) - 1 < 0 || (Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Plain &&
-                        Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType!=FieldType.Road && Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Stop) ||
+                        Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Road && Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Stop) ||
                         Math.Max(SelectedField.Y, y) + 1 >= Map.Width || (Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Plain &&
                         Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Road && Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Stop))
                     {

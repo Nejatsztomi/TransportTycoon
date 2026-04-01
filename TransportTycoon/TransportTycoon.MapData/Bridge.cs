@@ -45,7 +45,7 @@ namespace TransportTycoon.MapData
             FieldType = FieldType.Bridge;
             BridgeType = type;
             Height = height;
-            Price=100;
+            Price = 100;
         }
         #endregion
     }
@@ -62,7 +62,7 @@ namespace TransportTycoon.MapData
             FieldType = FieldType.Bridge;
             BridgeType = type;
             Height = height;
-            Price=150;
+            Price = 150;
         }
         #endregion
     }

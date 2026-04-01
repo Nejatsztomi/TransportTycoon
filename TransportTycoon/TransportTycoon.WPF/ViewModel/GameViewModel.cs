@@ -107,7 +107,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_SelectedFieldChanged(object? sender, (int, int) e)
         {
-            if(Model.SelectedField==null)
+            if (Model.SelectedField == null)
             {
                 var tile = Tiles.FirstOrDefault(t => t.IsSelected);
                 if (tile != null) tile.IsSelected = false;

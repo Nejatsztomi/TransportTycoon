@@ -98,7 +98,7 @@ namespace TransportTycoon.WPF.ViewModel
                         _ => 0
                     };
                 }
-                else if(Field is Bridge bridge)
+                else if (Field is Bridge bridge)
                 {
                     return bridge.BridgeType switch
                     {
