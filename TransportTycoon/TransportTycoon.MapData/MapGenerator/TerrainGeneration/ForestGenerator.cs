@@ -4,19 +4,23 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
     public static class ForestGeneratorFactory
     {
-        public static IForestGenerator Create(INoiseGenerator noiseGenerator) => new ForestGenerator(noiseGenerator);
+        public static IForestGenerator Create(INoiseGenerator noiseGenerator, float noiseScale, float forestPercentage) => new ForestGenerator(noiseGenerator, noiseScale, forestPercentage);
     }
 
     internal class ForestGenerator : IForestGenerator
     {
         #region Properties
         private INoiseGenerator NoiseGenerator { get; }
+        private float NoiseScale { get; }
+        private float ForestPercentage { get; }
         #endregion
 
         #region Constructors
-        public ForestGenerator(INoiseGenerator noiseGenerator)
+        public ForestGenerator(INoiseGenerator noiseGenerator, float noiseScale, float forestPercentage)
         {
             NoiseGenerator = noiseGenerator;
+            NoiseScale = noiseScale;
+            ForestPercentage = forestPercentage;
         }
         #endregion
 
@@ -25,7 +29,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         {
             int[,] forestMap = new int[context.Width, context.Height];
 
-            float[,] randomTreeNoiseMap = NoiseGenerator.GenerateNoise(0.1f, context);
+            float[,] randomTreeNoiseMap = NoiseGenerator.GenerateNoise(NoiseScale, context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
@@ -33,17 +37,17 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
                     // TODO: Don't use magic number, later on there will a TerrainHeight enum
                     if (heightMap[i, j] >= 4) continue;
 
-                    if (randomTreeNoiseMap[i, j] < 0.5f) continue;
+                    if (randomTreeNoiseMap[i, j] < ForestPercentage) continue;
 
-                    if (randomTreeNoiseMap[i, j] < 0.75f)
+                    if (randomTreeNoiseMap[i, j] < ForestPercentage + ForestPercentage / 4)
                     {
                         forestMap[i, j] = 1;
                     }
-                    else if (randomTreeNoiseMap[i, j] < 0.85f)
+                    else if (randomTreeNoiseMap[i, j] < ForestPercentage + 2 * ForestPercentage / 4)
                     {
                         forestMap[i, j] = 2;
                     }
-                    else if (randomTreeNoiseMap[i, j] < 0.95f)
+                    else if (randomTreeNoiseMap[i, j] < ForestPercentage + 3 * ForestPercentage / 4)
                     {
                         forestMap[i, j] = 3;
                     }
