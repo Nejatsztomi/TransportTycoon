@@ -161,7 +161,7 @@ namespace TransportTycoon.MapData
             if (y - 1 >= 0 && Table[x, y - 1] is Road) result.Add((Table[x, y - 1].X, Table[x, y - 1].Y));
             return result;
         }
-        public List<(int, int)> StopEnvironment(int x,int y)
+        public List<(int, int)> StopEnvironment(int x, int y)
         {
             List<(int, int)> result = NeighbourRoadsCoord(x, y);
             return result;

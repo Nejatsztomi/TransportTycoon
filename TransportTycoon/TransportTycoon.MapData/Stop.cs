@@ -7,9 +7,9 @@
         #endregion
 
         #region Constructors
-        public Stop(int x,int y,int height) 
+        public Stop(int x, int y, int height)
         {
-            X= x; Y = y; Height = height;
+            X = x; Y = y; Height = height;
             FieldType = FieldType.Stop;
             Price = 200;
         }
