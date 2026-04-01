@@ -22,12 +22,13 @@ namespace TransportTycoon.MapData
         public YellowBridge(int x, int y, BridgeType type, int height)
         {
             SpeedLimit = 100;
-            Range = 1;
+            Range = 13;
             X = x;
             Y = y;
             FieldType = FieldType.Bridge;
             BridgeType = type;
             Height = height;
+            Price = 50;
         }
         #endregion
     }
@@ -35,9 +36,16 @@ namespace TransportTycoon.MapData
     public class BlueBridge : Bridge
     {
         #region Constructor
-        public BlueBridge()
+        public BlueBridge(int x, int y, BridgeType type, int height)
         {
-            //...
+            SpeedLimit = 100;
+            Range = 15;
+            X = x;
+            Y = y;
+            FieldType = FieldType.Bridge;
+            BridgeType = type;
+            Height = height;
+            Price = 100;
         }
         #endregion
     }
@@ -45,9 +53,16 @@ namespace TransportTycoon.MapData
     public class RedBridge : Bridge
     {
         #region Constructor
-        public RedBridge()
+        public RedBridge(int x, int y, BridgeType type, int height)
         {
-            //...
+            SpeedLimit = 100;
+            Range = 17;
+            X = x;
+            Y = y;
+            FieldType = FieldType.Bridge;
+            BridgeType = type;
+            Height = height;
+            Price = 150;
         }
         #endregion
     }
