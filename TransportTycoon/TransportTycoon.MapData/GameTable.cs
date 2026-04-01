@@ -57,37 +57,6 @@ namespace TransportTycoon.MapData
             return acceptedNeighbours;
         }
 
-        public void GenerateMap()
-        {
-            float[,] randomMap = NoiseGenerator.GenerateNoise(0.1f);
-            for (int i = 0; i < Width; i++)
-            {
-                for (int j = 0; j < Height; j++)
-                {
-                    if (randomMap[i, j] < 0.35f)
-                    {
-                        Table[i, j] = new Water(i, j);          // Bottom 35% of heights become water
-                    }
-                    else if (randomMap[i, j] < 0.55f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 1);          // Next 20% become plains
-                    }
-                    else if (randomMap[i, j] < 0.75f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 2);          // Next 20% become hills
-                    }
-                    else if (randomMap[i, j] < 0.90f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 3);      // Next 15% become mountains
-                    }
-                    else
-                    {
-                        Table[i, j] = new Terrain(i, j, 4);  // Top 10% become high mountains
-                    }
-                }
-            }
-        }
-
         //Checks if the new field is possible
         public bool IsTileHeightPossible(int x, int y, int height)
         {
