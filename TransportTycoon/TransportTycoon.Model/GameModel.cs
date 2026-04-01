@@ -332,6 +332,11 @@ namespace TransportTycoon.Model
             List<(int, int)> changedFields = new List<(int, int)>();
             Map[x, y] = new Stop(x, y, Map[x, y].Height);
             changedFields.Add((x, y));
+            foreach (var e in Map.StopEnvironment(x, y))
+            {
+                ((Road)Map[e.Item1, e.Item2]).ChangeType(CalculateRoadType(e.Item1, e.Item2));
+                changedFields.Add((e.Item1, e.Item2));
+            }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
         #endregion
