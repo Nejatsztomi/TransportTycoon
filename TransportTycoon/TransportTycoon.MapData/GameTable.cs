@@ -1,4 +1,6 @@
-﻿using TransportTycoon.MapData.MapGenerator.NoiseGenerator;
+﻿using TransportTycoon.MapData.MapGenerator;
+using TransportTycoon.MapData.MapGenerator.NoiseGenerator;
+using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.MapData
 {
@@ -10,7 +12,7 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Properties
-        public Field[,] Table { get; }
+        public Field[,] Table { get; private set; }
         public int Width { get; }
         public int Height { get; }
 
@@ -23,7 +25,9 @@ namespace TransportTycoon.MapData
             set => Table[x, y] = value;
         }
 
-        private INoiseGenerator NoiseGenerator { get; }
+        private IMapGenerator MapGenerator { get; }
+        private MapGenerationSettings GenerationSettings { get; }
+        private MapGenerationContext GenerationContext { get; }
         #endregion
 
         #region Constructors
@@ -36,12 +40,25 @@ namespace TransportTycoon.MapData
             Pointers = [];
             BuildingIDs = [];
 
-            NoiseGenerator = PerlinNoiseGeneratorFactory.Create(width, height, 0);
+            GenerationContext = new(width, height, 0);
+            GenerationSettings = new()
+            {
+                ForestPercentage = 0.3f,
+                ForestNoiseScale = 0.2f,
+                TerrainNoiseScale = 0.875f,
+                WaterNoiseScale = 0.42f,
+            };
+            MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationSettings);
         }
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
 
         #region Public methods
+        public void GenerateMap()
+        {
+            Table = MapGenerator.GenerateMap(GenerationContext);
+        }
+
         public List<Field> CheckNeighboringTrees(int x, int y)
         {
             List<Field> neighbours = new List<Field>();
