@@ -73,7 +73,7 @@ namespace TransportTycoon.MapData.MapGenerator
             {
                 if (!(value > 0))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(MinStructure), "MinStructure must be an integer greater than 0.");
+                    throw new ArgumentOutOfRangeException(nameof(MinStructure), "MinStructure must be a positive integer.");
                 }
                 field = value;
             }
