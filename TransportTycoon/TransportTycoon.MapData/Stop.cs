@@ -7,7 +7,12 @@
         #endregion
 
         #region Constructors
-        public Stop() { }
+        public Stop(int x,int y,int height) 
+        {
+            X= x; Y = y; Height = height;
+            FieldType = FieldType.Stop;
+            Price = 200;
+        }
         #endregion
 
         #region Public Methods
