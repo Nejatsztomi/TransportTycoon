@@ -81,6 +81,7 @@ namespace TransportTycoon.WPF.ViewModel
                         _ => null
                     };
                 }
+                else if (Field is Stop) return $"/Assets/Images/Stop/stop.png";
                 return null;
             }
         }
