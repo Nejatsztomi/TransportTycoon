@@ -15,7 +15,7 @@ namespace TransportTycoon.MapData.MapGenerator
         public const float ForestNoiseScale = 0.1f;
         public const float WaterNoiseScale = 0.1f;
 
-        public static readonly IBiome = Biomes.Default;
+        public static readonly IBiome Biome = Biomes.Default;
     }
 
     public class MapGenerationSettings
