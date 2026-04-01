@@ -21,7 +21,26 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         #endregion
 
         #region Public methods
-        public bool[,] GenerateWaterMap(int riverCount, int[,] heightMap, MapGenerationContext context) { }
+        public bool[,] GenerateWaterMap(int _, int[,] heightMap, MapGenerationContext context)
+        {
+            bool[,] waterMap = new bool[context.Height, context.Width];
+
+            float[,] noiseMap = NoiseGenerator.GenerateNoise(0.1f, context);
+            for (int i = 0; i < context.Width; i++)
+            {
+                for (int j = 0; j < context.Height; j++)
+                {
+                    if (heightMap[i, j] > 1) continue;
+
+                    if (noiseMap[i, j] < 0.5f)
+                    {
+                        waterMap[i, j] = true;
+                    }
+                }
+            }
+
+            return waterMap;
+        }
         #endregion
     }
 }
