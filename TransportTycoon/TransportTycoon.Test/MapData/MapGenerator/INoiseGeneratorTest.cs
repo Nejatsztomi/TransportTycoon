@@ -1,4 +1,4 @@
-using TransportTycoon.MapData.MapGenerator;
+using TransportTycoon.MapData.MapGenerator.NoiseGeneration;
 
 namespace TransportTycoon.Test.MapData.MapGenerator;
 
