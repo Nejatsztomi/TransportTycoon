@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\Bridge\blueBridge.png" />
+    <None Remove="Assets\Images\Bridge\redBridge.png" />
     <None Remove="Assets\Images\Buttons\minus.png" />
     <None Remove="Assets\Images\Buttons\plus.png" />
     <None Remove="Assets\Images\Bridge\yellowBridge.png" />
@@ -16,6 +18,7 @@
     <None Remove="Assets\Images\Road\crossX.png" />
     <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Road\turn.png" />
+    <None Remove="Assets\Images\Stop\stop.png" />
     <None Remove="Assets\Images\Terrain\field.png" />
     <None Remove="Assets\Images\Terrain\highmountain.png" />
     <None Remove="Assets\Images\Terrain\highmountain2.png" />
@@ -53,6 +56,12 @@
     <Resource Include="Assets\Images\Buttons\minus3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Content Include="Assets\Images\Bridge\blueBridge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Bridge\redBridge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\Images\Bridge\yellowBridge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -66,6 +75,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Road\turn.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Stop\stop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Terrain\field.png">

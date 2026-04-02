@@ -36,7 +36,7 @@ namespace TransportTycoon.Model
 
         #region Properties
         public GameTable Map { get; private set; }
-        public Field SelectedField { get; private set; }
+        public Field? SelectedField { get; private set; }
 
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
@@ -69,6 +69,7 @@ namespace TransportTycoon.Model
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
+        public event EventHandler<(int, int)>? SelectedFieldChanged;
         #endregion
 
         #region Constructor
@@ -124,7 +125,9 @@ namespace TransportTycoon.Model
 
         public void SetSelectedField(int x, int y)
         {
-            SelectedField = Map[x, y];
+            if (x == -1 && y == -1) SelectedField = null;
+            else SelectedField = Map[x, y];
+            SelectedFieldChanged?.Invoke(this, (x, y));
         }
 
         public void IncreaseHeight(int x, int y)
@@ -200,10 +203,140 @@ namespace TransportTycoon.Model
         }
         public void BuildBridge(int x, int y)
         {
-            if (Map[x, y] is not Water) return;
+
+            if (Map[x, y] is not Water)
+            {
+                SetSelectedField(-1, -1);
+                return;
+            }
+            if (SelectedField == null) SetSelectedField(x, y);
+            else
+            {
+                List<(int, int)> changedFields = new List<(int, int)>();
+                if (SelectedField.X != x && SelectedField.Y != y)
+                {
+                    SetSelectedField(-1, -1);
+                    return;
+                }
+                else if (SelectedField.X == x)
+                {
+                    if (Math.Min(SelectedField.Y, y) - 1 < 0 || (Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Plain &&
+                        Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Road && Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Stop) ||
+                        Math.Max(SelectedField.Y, y) + 1 >= Map.Width || (Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Plain &&
+                        Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Road && Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Stop))
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
+                    BridgeType b_type;
+                    int dif = Math.Abs(SelectedField.Y - y);
+                    if (dif <= 13) b_type = BridgeType.HorizontalYellowBridge;
+                    else if (dif <= 15) b_type = BridgeType.HorizontalBlueBridge;
+                    else if (dif <= 17) b_type = BridgeType.HorizontalRedBridge;
+                    else
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
+                    for (int i = Math.Min(SelectedField.Y, y) + 1; i < Math.Max(SelectedField.Y, y); i++)
+                    {
+                        if (Map[x, i] is not Water)
+                        {
+                            SetSelectedField(-1, -1);
+                            return;
+                        }
+                    }
+                    for (int i = Math.Min(SelectedField.Y, y); i <= Math.Max(SelectedField.Y, y); i++)
+                    {
+                        switch (b_type)
+                        {
+                            case BridgeType.HorizontalYellowBridge:
+                                Map[x, i] = new YellowBridge(x, i, b_type, Map[x, i].Height);
+                                break;
+                            case BridgeType.HorizontalBlueBridge:
+                                Map[x, i] = new BlueBridge(x, i, b_type, Map[x, i].Height);
+                                break;
+                            case BridgeType.HorizontalRedBridge:
+                                Map[x, i] = new RedBridge(x, i, b_type, Map[x, i].Height);
+                                break;
+                        }
+                        changedFields.Add((x, i));
+                        Balance -= ((Bridge)Map[x, i]).Price;
+                    }
+                    if (Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1) road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
+                    changedFields.Add((x, Math.Min(SelectedField.Y, y) - 1));
+                    if (Map[x, Math.Max(SelectedField.Y, y) + 1] is Road road2) road2.ChangeType(CalculateRoadType(x, Math.Max(SelectedField.Y, y) + 1));
+                    changedFields.Add((x, Math.Max(SelectedField.Y, y) + 1));
+                }
+                else if (SelectedField.Y == y)
+                {
+                    if (Math.Min(SelectedField.X, x) - 1 < 0 || (Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Plain &&
+                        Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Road && Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Stop) ||
+                        Math.Max(SelectedField.X, x) + 1 >= Map.Height || (Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Plain &&
+                        Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Road && Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Stop))
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
+                    BridgeType b_type;
+                    int dif = Math.Abs(SelectedField.X - x);
+                    if (dif <= 13) b_type = BridgeType.VerticalYellowBridge;
+                    else if (dif <= 15) b_type = BridgeType.VerticalBlueBridge;
+                    else if (dif <= 17) b_type = BridgeType.VerticalRedBridge;
+                    else
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
+                    for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
+                    {
+                        if (Map[i, y] is not Water)
+                        {
+                            SetSelectedField(-1, -1);
+                            return;
+                        }
+                    }
+                    for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
+                    {
+                        switch (b_type)
+                        {
+                            case BridgeType.VerticalYellowBridge:
+                                Map[i, y] = new YellowBridge(i, y, b_type, Map[i, y].Height);
+                                break;
+                            case BridgeType.VerticalBlueBridge:
+                                Map[i, y] = new BlueBridge(i, y, b_type, Map[i, y].Height);
+                                break;
+                            case BridgeType.VerticalRedBridge:
+                                Map[i, y] = new RedBridge(i, y, b_type, Map[i, y].Height);
+                                break;
+                            default:
+                                break;
+                        }
+                        changedFields.Add((i, y));
+                        Balance -= ((Bridge)Map[i, y]).Price;
+                    }
+                    if (Map[Math.Min(SelectedField.X, x) - 1, y] is Road road1) road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x) - 1, y));
+                    changedFields.Add((Math.Min(SelectedField.X, x) - 1, y));
+                    if (Map[Math.Max(SelectedField.X, x) + 1, y] is Road road2) road2.ChangeType(CalculateRoadType(Math.Max(SelectedField.X, x) + 1, y));
+                    changedFields.Add((Math.Max(SelectedField.X, x) + 1, y));
+                }
+                if (IsGameOver) OnGameOver();
+                SetSelectedField(-1, -1);
+                InfrastructureBuilt?.Invoke(this, changedFields);
+                BalanceChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public void BuildStop(int x, int y)
+        {
+            if (Map[x, y] is not Terrain) return;
             List<(int, int)> changedFields = new List<(int, int)>();
-            Map[x, y] = new YellowBridge(x, y, BridgeType.VerticalYellowBridge, Map[x, y].Height);
+            Map[x, y] = new Stop(x, y, Map[x, y].Height);
             changedFields.Add((x, y));
+            foreach (var e in Map.StopEnvironment(x, y))
+            {
+                ((Road)Map[e.Item1, e.Item2]).ChangeType(CalculateRoadType(e.Item1, e.Item2));
+                changedFields.Add((e.Item1, e.Item2));
+            }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
         #endregion

@@ -157,6 +157,15 @@
                                     CommandParameter="12">
                                 <Image Source="/Assets/Images/Bridge/yellowBridge.png" Stretch="Uniform"/>
                             </Button>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="13">
+                                <Image Source="/Assets/Images/Stop/stop.png" Stretch="Uniform"/>
+                            </Button>
+                            <Button Width="50" Height="50" Margin="8"
+                                    Command="{Binding SetSelectedButtonCommand}"
+                                    CommandParameter="14">
+                            </Button>
                         </WrapPanel>
                     </TabItem>
 
@@ -275,6 +284,21 @@
                                              Background="#33FFFFFF" 
                                              IsHitTestVisible="False"
                                              Panel.ZIndex="5"/>
+
+                                        <Border BorderBrush="Red" 
+                                                BorderThickness="3" 
+                                                Background="#33FFFFFF">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                        </Border>
                                     </Grid>
 
                                     <DataTemplate.Triggers>
