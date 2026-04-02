@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData.Buildings;
+﻿using System.Security.Cryptography;
+using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
@@ -21,11 +22,11 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         #endregion
 
         #region Public methods
-        public bool TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int x = -1, int y = -1, int radius = -1)
+        public bool TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY, int radius)
         {
-            if (x >= 0 && y >= 0 && radius > 0)
+            if (centerX >= 0 && centerY >= 0 && radius > 0)
             {
-                return TryPlaceNear(heightMap, waterMap, structureMap, buildingEntity, context, x, y, radius);
+                return TryPlaceNear(heightMap, waterMap, structureMap, buildingEntity, context, centerX, centerY, radius);
             }
 
             Random rng = new(context.Seed);
@@ -36,7 +37,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 int startX = rng.Next(0, buildingEntity.Width - context.Width);
                 int startY = rng.Next(0, buildingEntity.Height - context.Height);
 
-                if (IsValidPlacement(startX, startY, buildingEntity.Width, buildingEntity.Height, heightMap, waterMap, structureMap))
+                if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
                 {
                     buildingEntity.GenerateBuildingPoints(startX, startY);
 
@@ -49,9 +50,24 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             return false;
         }
 
-        public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, int x, int y, int radius, MapGenerationContext context)
+        public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY, int radius)
         {
-            throw new NotImplementedException();
+            if (centerX >= 0 && centerY >= 0 && radius > 0)
+            {
+                ForcePlaceNear(buildingEntity, heightMap, waterMap, structureMap, centerX, centerY, radius, context);
+            }
+
+            Random rng = new(context.Seed);
+            while (true)
+            {
+                int startX = rng.Next(0, buildingEntity.Width - context.Width);
+                int startY = rng.Next(0, buildingEntity.Height - context.Height);
+
+                if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
+                {
+                    return;
+                }
+            }
         }
         #endregion
 
@@ -63,6 +79,64 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 for (int j = 0; j < buildingEntity.Height; j++)
                 {
                     structureMap[startX + i, startY + j] = true;
+                }
+            }
+        }
+
+        private bool TryTerraformAndPlace(int startX, int startY, BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap)
+        {
+            // Valid tile check (no water, no structures)
+            for (int i = 0; i < buildingEntity.Width; i++)
+            {
+                for (int j = 0; j < buildingEntity.Height; j++)
+                {
+                    if (waterMap[startX + i, startY + j] || structureMap[startX + i, startY + j])
+                        return false;
+                }
+            }
+
+            // TERRAFORM: Flatten to map to the avarage height
+            int sumHeight = 0;
+            for (int i = 0; i < buildingEntity.Width; i++)
+            {
+                for (int j = 0; j < buildingEntity.Height; j++)
+                {
+                    sumHeight = heightMap[startX + i, startY + j];
+                }
+            }
+
+            // TODO: check for invalid terrain and fix it
+            int targetHeight = (int)Math.Round((double)sumHeight / (buildingEntity.Width * buildingEntity.Height));
+            for (int i = 0; i < buildingEntity.Width; i++)
+            {
+                for (int j = 0; j < buildingEntity.Height; j++)
+                {
+                    heightMap[startX + i, startY + j] = targetHeight;
+                }
+            }
+            buildingEntity.GenerateBuildingPoints(startX, startY);
+            FillStructureMap(structureMap, startX, startY, buildingEntity);
+
+            return true;
+        }
+
+        private void ForcePlaceNear(BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap, int centerX, int centerY, int radius, MapGenerationContext context)
+        {
+            Random rng = new(context.Seed);
+
+            for (int attempt = 0; attempt < 500; attempt++)
+            {
+                // Pick a spot within the radius
+                int startX = centerX + rng.Next(-radius, radius);
+                int startY = centerY + rng.Next(-radius, radius);
+
+                // Clamp to map bounds
+                startX = Math.Clamp(startX, 0, context.Width - buildingEntity.Width);
+                startY = Math.Clamp(startY, 0, context.Height - buildingEntity.Height);
+
+                if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
+                {
+                    return;
                 }
             }
         }
@@ -82,7 +156,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 startX = Math.Clamp(startX, 0, context.Width - buildingEntity.Width);
                 startY = Math.Clamp(startY, 0, context.Height - buildingEntity.Height);
 
-                if (IsValidPlacement(startX, startY, buildingEntity.Width, buildingEntity.Height, heightMap, waterMap, structureMap))
+                if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
                 {
                     buildingEntity.GenerateBuildingPoints(startX, startY);
                     FillStructureMap(structureMap, startX, startY, buildingEntity);
@@ -93,7 +167,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             return false;
         }
 
-        private bool IsValidPlacement(int startX, int startY, int width, int height, int[,] heightMap, bool[,] waterMap, bool[,] occupiedMap)
+        private bool IsValidPlacement(int startX, int startY, BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] occupiedMap)
         {
             // Top-left anchor
             int targetHeight = heightMap[startX, startY];
@@ -102,9 +176,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             // Higher than mountain tiles shouldn't have structures
             if (targetHeight >= 4) return false;
 
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < buildingEntity.Width; i++)
             {
-                for (int j = 0; j < height; j++)
+                for (int j = 0; j < buildingEntity.Height; j++)
                 {
                     int currentX = startX + i;
                     int currentY = startY + j;
