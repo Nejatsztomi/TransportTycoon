@@ -18,6 +18,7 @@ namespace TransportTycoon.MapData
         LumberCamp,
         Mill,
         Factory,
+        Plant,
         Road,
         Bridge,
         Stop,
