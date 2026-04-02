@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
+﻿using TransportTycoon.MapData.Buildings;
+
+namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
     public static class CityGeneratorFactory
     {
@@ -12,7 +14,7 @@
         #endregion
 
         #region Public methods
-        public SavedEntity GenerateCity(SavedEntity city, MapGenerationContext context)
+        public BuildingEntity GenerateCity(BuildingEntity city, MapGenerationContext context)
         {
             return city;
         }

@@ -1,7 +1,9 @@
-﻿namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
+﻿using TransportTycoon.MapData.Buildings;
+
+namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
     public interface ICityGenerator
     {
-        public SavedEntity GenerateCity(SavedEntity city, MapGenerationContext context);
+        public BuildingEntity GenerateCity(BuildingEntity city, MapGenerationContext context);
     }
 }
