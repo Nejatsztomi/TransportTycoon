@@ -27,7 +27,7 @@
         /// <summary>
         /// Stores the coordinates of the building on map
         /// </summary>
-        public Dictionary<(int, int), Field> MapPoints { protected set; get; } = [];
+        public Dictionary<(int X, int Y), Field> MapPoints { protected set; get; } = [];
 
         public int Width { get; }
         public int Height { get; }
@@ -95,10 +95,10 @@
         #endregion
     }
 
-    public class HouseEntity : BuildingEntity
+    public class CityEntity : BuildingEntity
     {
         #region Constructors
-        public HouseEntity(int width, int height) : base(width, height)
+        public CityEntity(int width, int height) : base(width, height)
         {
             Offset = 10;
             Scaler = 1;
