@@ -43,10 +43,10 @@ namespace TransportTycoon.MapData
             GenerationContext = new(width, height, 0);
             GenerationSettings = new()
             {
-                ForestPercentage = 0.3f,
-                ForestNoiseScale = 0.2f,
-                TerrainNoiseScale = 0.875f,
-                WaterNoiseScale = 0.42f,
+                ForestPercentage = 0.4f,
+                ForestNoiseScale = 0.1f,
+                TerrainNoiseScale = 0.072f,
+                WaterNoiseScale = 0.059f,
             };
             MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationSettings);
         }
