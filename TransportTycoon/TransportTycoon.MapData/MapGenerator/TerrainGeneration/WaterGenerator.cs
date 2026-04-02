@@ -25,23 +25,35 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         #region Public methods
         public bool[,] GenerateWaterMap(int _, int[,] heightMap, MapGenerationContext context)
         {
-            bool[,] waterMap = new bool[context.Height, context.Width];
+            bool[,] waterMap = new bool[context.Width, context.Height];
 
             float[,] noiseMap = NoiseGenerator.GenerateNoise(NoiseScale, context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
                 {
-                    if (heightMap[i, j] > 1) continue;
+                    if (heightMap[i, j] >= 2) continue;
 
-                    if (noiseMap[i, j] < 0.4f)
+                    if (noiseMap[i, j] < 0.5f)
                     {
-                        waterMap[i, j] = true;
+                        waterMap[i, j] = IsValidNeighbouringHeights(i, j, heightMap, context);
                     }
                 }
             }
 
             return waterMap;
+        }
+        #endregion
+
+        #region Private methods
+        private bool IsValidNeighbouringHeights(int x, int y, int[,] heightMap, MapGenerationContext context)
+        {
+            // TODO: Replace magic number with TerrainHeight enum
+            if (!(x + 1 < context.Width && heightMap[x + 1, y] <= 2)) return false;
+            if (!(0 <= x - 1 && heightMap[x - 1, y] <= 2)) return false;
+            if (!(y + 1 < context.Height && heightMap[x, y + 1] <= 2)) return false;
+            if (!(0 <= y - 1 && heightMap[x, y - 1] <= 2)) return false;
+            return true;
         }
         #endregion
     }
