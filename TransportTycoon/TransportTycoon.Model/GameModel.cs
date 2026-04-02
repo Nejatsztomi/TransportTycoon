@@ -320,7 +320,7 @@ namespace TransportTycoon.Model
                     if (Map[Math.Max(SelectedField.X, x) + 1, y] is Road road2) road2.ChangeType(CalculateRoadType(Math.Max(SelectedField.X, x) + 1, y));
                     changedFields.Add((Math.Max(SelectedField.X, x) + 1, y));
                 }
-                if (IsGameOver) OnGameOver();
+                //if (IsGameOver) OnGameOver();
                 SetSelectedField(-1, -1);
                 InfrastructureBuilt?.Invoke(this, changedFields);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
