@@ -221,17 +221,15 @@ namespace TransportTycoon.Model
                 }
                 else if (SelectedField.X == x)
                 {
-                    if (Math.Min(SelectedField.Y, y) - 1 < 0 || (Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Plain &&
-                        Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Road && Map[x, Math.Min(SelectedField.Y, y) - 1].FieldType != FieldType.Stop) ||
-                        Math.Max(SelectedField.Y, y) + 1 >= Map.Width || (Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Plain &&
-                        Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Road && Map[x, Math.Max(SelectedField.Y, y) + 1].FieldType != FieldType.Stop))
+                    if (Math.Min(SelectedField.Y, y) - 1 < 0 || Map[x, Math.Min(SelectedField.Y, y) - 1].Height > 1 ||
+                        Math.Max(SelectedField.Y, y) + 1 >= Map.Width || Map[x, Math.Max(SelectedField.Y, y) + 1].Height > 1)
                     {
                         SetSelectedField(-1, -1);
                         return;
-                    }    
+                    }
                     int dif = Math.Abs(SelectedField.Y - y);
                     BridgeType b_type = Map.CalculateBridgeType(dif, "horizontal");
-                    if(b_type==BridgeType.Null)
+                    if (b_type == BridgeType.Null)
                     {
                         SetSelectedField(-1, -1);
                         return;
@@ -274,10 +272,8 @@ namespace TransportTycoon.Model
                 }
                 else if (SelectedField.Y == y)
                 {
-                    if (Math.Min(SelectedField.X, x) - 1 < 0 || (Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Plain &&
-                        Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Road && Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Stop) ||
-                        Math.Max(SelectedField.X, x) + 1 >= Map.Height || (Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Plain &&
-                        Map[Math.Max(SelectedField.X, x) + 1, y].FieldType != FieldType.Road && Map[Math.Min(SelectedField.X, x) - 1, y].FieldType != FieldType.Stop))
+                    if (Math.Min(SelectedField.X, x) - 1 < 0 || Map[Math.Min(SelectedField.X, x) - 1, y].Height > 1 ||
+                        Math.Max(SelectedField.X, x) + 1 >= Map.Height || Map[Math.Max(SelectedField.X, x) + 1, y].Height > 1)
                     {
                         SetSelectedField(-1, -1);
                         return;
