@@ -43,6 +43,11 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
                     FillStructureMap(structureMap, startX, startY, buildingEntity);
 
+                    if (buildingEntity is CityEntity city)
+                    {
+                        CityGenerator.GenerateCity(3, 10, city, context);
+                    }
+
                     return true;
                 }
             }
@@ -55,6 +60,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             if (centerX >= 0 && centerY >= 0 && radius > 0)
             {
                 ForcePlaceNear(buildingEntity, heightMap, waterMap, structureMap, centerX, centerY, radius, context);
+                return;
             }
 
             Random rng = new(context.Seed);
@@ -63,7 +69,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 int startX = rng.Next(0, context.Width - buildingEntity.Width);
                 int startY = rng.Next(0, context.Height - buildingEntity.Height);
 
-                if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
+                if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap, context))
                 {
                     return;
                 }
@@ -83,7 +89,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             }
         }
 
-        private bool TryTerraformAndPlace(int startX, int startY, BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap)
+        private bool TryTerraformAndPlace(int startX, int startY, BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap, MapGenerationContext context)
         {
             // Valid tile check (no water, no structures)
             for (int i = 0; i < buildingEntity.Width; i++)
@@ -117,6 +123,8 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             buildingEntity.GenerateBuildingPoints(startX, startY);
             FillStructureMap(structureMap, startX, startY, buildingEntity);
 
+            CityGenerator.GenerateCity(3, 10, buildingEntity, context);
+
             return true;
         }
 
@@ -134,11 +142,13 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 startX = Math.Clamp(startX, 0, context.Width - buildingEntity.Width);
                 startY = Math.Clamp(startY, 0, context.Height - buildingEntity.Height);
 
-                if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
+                if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap, context))
                 {
                     return;
                 }
             }
+
+            ForcePlace(heightMap, waterMap, structureMap, buildingEntity, context, -1, -1, -1);
         }
 
         private bool TryPlaceNear(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY, int radius)
