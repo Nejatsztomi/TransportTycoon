@@ -4,7 +4,7 @@ namespace TransportTycoon.MapData
 {
     public enum BridgeType
     {
-        HorizontalBlueBridge = 0, VerticalBlueBridge = 1, HorizontalYellowBridge = 2, VerticalYellowBridge = 3, HorizontalRedBridge = 4, VerticalRedBridge = 5
+        HorizontalGreenBridge = 0, VerticalGreenBridge = 1, HorizontalYellowBridge = 2, VerticalYellowBridge = 3, HorizontalRedBridge = 4, VerticalRedBridge = 5
     }
 
     public abstract class Bridge : Infrastructure
@@ -33,10 +33,10 @@ namespace TransportTycoon.MapData
         #endregion
     }
 
-    public class BlueBridge : Bridge
+    public class GreenBridge : Bridge
     {
         #region Constructor
-        public BlueBridge(int x, int y, BridgeType type, int height)
+        public GreenBridge(int x, int y, BridgeType type, int height)
         {
             SpeedLimit = 100;
             Range = 15;

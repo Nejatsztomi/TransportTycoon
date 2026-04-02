@@ -76,7 +76,7 @@ namespace TransportTycoon.WPF.ViewModel
                     return bridge.BridgeType switch
                     {
                         BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => $"/Assets/Images/Bridge/yellowBridge.png",
-                        BridgeType.VerticalBlueBridge or BridgeType.HorizontalBlueBridge => $"/Assets/Images/Bridge/greenBridge.png",
+                        BridgeType.VerticalGreenBridge or BridgeType.HorizontalGreenBridge => $"/Assets/Images/Bridge/greenBridge.png",
                         BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => $"/Assets/Images/Bridge/redBridge.png",
                         _ => null
                     };
@@ -103,7 +103,7 @@ namespace TransportTycoon.WPF.ViewModel
                 {
                     return bridge.BridgeType switch
                     {
-                        BridgeType.HorizontalYellowBridge or BridgeType.HorizontalBlueBridge or BridgeType.HorizontalRedBridge => 90,
+                        BridgeType.HorizontalYellowBridge or BridgeType.HorizontalGreenBridge or BridgeType.HorizontalRedBridge => 90,
                         _ => 0
                     };
                 }
