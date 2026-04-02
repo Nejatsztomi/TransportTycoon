@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
+﻿using TransportTycoon.MapData.Buildings;
+
+namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
     public interface IStructureGenerator
     {
@@ -11,13 +13,13 @@
         /// <param name="heightMap"></param>
         /// <param name="waterMap"></param>
         /// <param name="structureMap"></param>
-        /// <param name="type">What structure to place</param>
+        /// <param name="buildingEntity">What structure to place</param>
         /// <param name="x">If non-negative, it tries to place structure in a certain radius</param>
         /// <param name="y">If non-negative, it tries to place structure in a certain radius</param>
         /// <param name="radius">If positive, it tries to place structure in a certain radius</param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public SavedEntity? TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, string type, int x, int y, int radius, MapGenerationContext context);
+        public bool TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int x, int y, int radius);
 
         /// <summary>
         /// Forces the placement of a structure of the given type on the map.
@@ -26,12 +28,12 @@
         /// <param name="heightMap"></param>
         /// <param name="waterMap"></param>
         /// <param name="structureMap"></param>
-        /// <param name="type"></param>
+        /// <param name="buildingEntity"></param>
         /// <param name="x">If non-negative, it places structure in a certain radius</param>
         /// <param name="y">If non-negative, it places structure in a certain radius</param>
         /// <param name="radius">If positive, it place structure in a certain radius</param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public SavedEntity ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, string type, int x, int y, int radius, MapGenerationContext context);
+        public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int x, int y, int radius);
     }
 }
