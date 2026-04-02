@@ -31,7 +31,7 @@
 
         public bool InCity()
         {
-            return Pointer != null;
+            return Pointer is not null;
         }
         #endregion
     }
