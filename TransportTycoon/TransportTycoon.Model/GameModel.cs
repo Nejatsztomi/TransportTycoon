@@ -246,18 +246,23 @@ namespace TransportTycoon.Model
                             return;
                         }
                     }
+                    List<Field> bridgeHeads = new()
+                    {
+                         Map[x, Math.Min(SelectedField.Y, y) - 1],
+                         Map[x, Math.Max(SelectedField.Y, y) + 1]
+                    };
                     for (int i = Math.Min(SelectedField.Y, y); i <= Math.Max(SelectedField.Y, y); i++)
                     {
                         switch (b_type)
                         {
                             case BridgeType.HorizontalYellowBridge:
-                                Map[x, i] = new YellowBridge(x, i, b_type, Map[x, i].Height);
+                                Map[x, i] = new YellowBridge(x, i, b_type, Map[x, i].Height, bridgeHeads);
                                 break;
                             case BridgeType.HorizontalGreenBridge:
-                                Map[x, i] = new GreenBridge(x, i, b_type, Map[x, i].Height);
+                                Map[x, i] = new GreenBridge(x, i, b_type, Map[x, i].Height, bridgeHeads);
                                 break;
                             case BridgeType.HorizontalRedBridge:
-                                Map[x, i] = new RedBridge(x, i, b_type, Map[x, i].Height);
+                                Map[x, i] = new RedBridge(x, i, b_type, Map[x, i].Height, bridgeHeads);
                                 break;
                         }
                         changedFields.Add((x, i));
@@ -296,18 +301,23 @@ namespace TransportTycoon.Model
                             return;
                         }
                     }
+                    List<Field> bridgeHeads = new()
+                    {
+                         Map[Math.Min(SelectedField.X, x)-1, y],
+                         Map[Math.Max(SelectedField.X, x)+1, y]
+                    };
                     for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
                     {
                         switch (b_type)
                         {
                             case BridgeType.VerticalYellowBridge:
-                                Map[i, y] = new YellowBridge(i, y, b_type, Map[i, y].Height);
+                                Map[i, y] = new YellowBridge(i, y, b_type, Map[i, y].Height, bridgeHeads);
                                 break;
                             case BridgeType.VerticalGreenBridge:
-                                Map[i, y] = new GreenBridge(i, y, b_type, Map[i, y].Height);
+                                Map[i, y] = new GreenBridge(i, y, b_type, Map[i, y].Height, bridgeHeads);
                                 break;
                             case BridgeType.VerticalRedBridge:
-                                Map[i, y] = new RedBridge(i, y, b_type, Map[i, y].Height);
+                                Map[i, y] = new RedBridge(i, y, b_type, Map[i, y].Height, bridgeHeads);
                                 break;
                             default:
                                 break;

@@ -13,13 +13,14 @@ namespace TransportTycoon.MapData
         public int SpeedLimit { get; protected set; }
         public int Range { get; protected set; }
         public BridgeType BridgeType { get; protected set; }
+        public List<Field> BridgeHeads { get; protected set; }
         #endregion
     }
 
     public class YellowBridge : Bridge
     {
         #region Constructor
-        public YellowBridge(int x, int y, BridgeType type, int height)
+        public YellowBridge(int x, int y, BridgeType type, int height, List<Field> bridgeHeads)
         {
             SpeedLimit = 100;
             Range = 13;
@@ -29,6 +30,7 @@ namespace TransportTycoon.MapData
             BridgeType = type;
             Height = height;
             Price = 50;
+            BridgeHeads = bridgeHeads;
         }
         #endregion
     }
@@ -36,7 +38,7 @@ namespace TransportTycoon.MapData
     public class GreenBridge : Bridge
     {
         #region Constructor
-        public GreenBridge(int x, int y, BridgeType type, int height)
+        public GreenBridge(int x, int y, BridgeType type, int height, List<Field> bridgeHeads)
         {
             SpeedLimit = 100;
             Range = 15;
@@ -46,6 +48,7 @@ namespace TransportTycoon.MapData
             BridgeType = type;
             Height = height;
             Price = 100;
+            BridgeHeads = bridgeHeads;
         }
         #endregion
     }
@@ -53,7 +56,7 @@ namespace TransportTycoon.MapData
     public class RedBridge : Bridge
     {
         #region Constructor
-        public RedBridge(int x, int y, BridgeType type, int height)
+        public RedBridge(int x, int y, BridgeType type, int height, List<Field> bridgeHeads)
         {
             SpeedLimit = 100;
             Range = 17;
@@ -63,6 +66,7 @@ namespace TransportTycoon.MapData
             BridgeType = type;
             Height = height;
             Price = 150;
+            BridgeHeads = bridgeHeads;
         }
         #endregion
     }
