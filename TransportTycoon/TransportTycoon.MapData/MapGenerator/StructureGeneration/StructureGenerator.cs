@@ -34,8 +34,8 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             int maxAttempts = 50;
             for (int attempt = 0; attempt < maxAttempts; attempt++)
             {
-                int startX = rng.Next(0, buildingEntity.Width - context.Width);
-                int startY = rng.Next(0, buildingEntity.Height - context.Height);
+                int startX = rng.Next(0, context.Width - buildingEntity.Width);
+                int startY = rng.Next(0, context.Height - buildingEntity.Height);
 
                 if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
                 {
@@ -60,8 +60,8 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             Random rng = new(context.Seed);
             while (true)
             {
-                int startX = rng.Next(0, buildingEntity.Width - context.Width);
-                int startY = rng.Next(0, buildingEntity.Height - context.Height);
+                int startX = rng.Next(0, context.Width - buildingEntity.Width);
+                int startY = rng.Next(0, context.Height - buildingEntity.Height);
 
                 if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
                 {
