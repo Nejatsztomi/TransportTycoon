@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData.MapGenerator;
+﻿using System.Diagnostics;
+using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
@@ -141,29 +142,34 @@ namespace TransportTycoon.MapData
 
             return true;
         }
-        public List<int> NeighbourRoadsCount(int x, int y)
+        public List<Field?> NeighboursOfRoads(int x, int y)
         {
-            List<int> result = new List<int> { 0, 0, 0, 0, 0 };//neighbour count,up,right,down,left
-            if (x - 1 >= 0 && Table[x - 1, y] is Infrastructure) result[1] = 1;
-            if (y + 1 <= Width - 1 && Table[x, y + 1] is Infrastructure) result[2] = 1;
-            if (x + 1 <= Height - 1 && Table[x + 1, y] is Infrastructure) result[3] = 1;
-            if (y - 1 >= 0 && Table[x, y - 1] is Infrastructure) result[4] = 1;
-
-            result[0] = result.Count(x => x != 0);
+            List<Field?> result = new() { null, null, null, null };
+            if (x - 1 >= 0)
+            {
+                if (Table[x, y].IsBridgeHead && Table[x-1, y] is Infrastructure) result[0] = Table[x - 1, y];
+                else if (!Table[x, y].IsBridgeHead && (Table[x-1, y] is Road || Table[x - 1, y] is Stop)) result[0] = Table[x - 1, y];
+            }
+            if (y + 1 <= Width - 1)
+            {
+                if (Table[x, y].IsBridgeHead && Table[x, y + 1] is Infrastructure) result[1] = Table[x, y + 1];
+                else if (!Table[x, y].IsBridgeHead && (Table[x, y + 1] is Road || Table[x, y + 1] is Stop)) result[1] = Table[x, y + 1];
+            }
+            if (x + 1 <= Height - 1)
+            {
+                if (Table[x, y].IsBridgeHead && Table[x + 1, y] is Infrastructure) result[2] = Table[x + 1, y];
+                else if (!Table[x, y].IsBridgeHead && (Table[x + 1, y] is Road || Table[x + 1, y] is Stop)) result[2] = Table[x + 1, y];
+            }
+            if (y - 1 >= 0)
+            {
+                if (Table[x, y].IsBridgeHead && Table[x, y - 1] is Infrastructure) result[3] = Table[x, y - 1];
+                else if (!Table[x, y].IsBridgeHead && (Table[x, y - 1] is Road || Table[x, y - 1] is Stop)) result[3] = Table[x, y - 1];
+            }
             return result;
         }
-        public List<(int, int)> NeighbourRoadsCoord(int x, int y)
+        public List<Field?> StopEnvironment(int x, int y)
         {
-            List<(int, int)> result = new List<(int, int)>();
-            if (x - 1 >= 0 && Table[x - 1, y] is Road) result.Add((Table[x - 1, y].X, Table[x - 1, y].Y));
-            if (y + 1 <= Width - 1 && Table[x, y + 1] is Road) result.Add((Table[x, y + 1].X, Table[x, y + 1].Y));
-            if (x + 1 <= Height - 1 && Table[x + 1, y] is Road) result.Add((Table[x + 1, y].X, Table[x + 1, y].Y));
-            if (y - 1 >= 0 && Table[x, y - 1] is Road) result.Add((Table[x, y - 1].X, Table[x, y - 1].Y));
-            return result;
-        }
-        public List<(int, int)> StopEnvironment(int x, int y)
-        {
-            List<(int, int)> result = NeighbourRoadsCoord(x, y);
+            List<Field?> result = NeighboursOfRoads(x, y);
             return result;
         }
         #endregion

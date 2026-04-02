@@ -33,7 +33,7 @@ namespace TransportTycoon.MapData
         public FieldType FieldType { protected set; get; }
 
         public virtual bool Modifiable { protected set; get; } = true;
-
+        public bool IsBridgeHead { set; get; } = false;
         #endregion
 
         #region Public Methods

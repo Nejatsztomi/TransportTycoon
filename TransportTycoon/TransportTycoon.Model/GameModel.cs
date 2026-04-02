@@ -189,15 +189,21 @@ namespace TransportTycoon.Model
             List<(int, int)> changedFields = new List<(int, int)>();
 
             RoadType type = CalculateRoadType(x, y);
+            bool old = Map[x, y].IsBridgeHead;
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
+            Map[x, y].IsBridgeHead = old;
+            Debug.WriteLine(Map[x, y].IsBridgeHead);
             changedFields.Add((x, y));
 
-            List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
+            List<Field?> neighbourRoads = Map.NeighboursOfRoads(x, y);
             foreach (var e in neighbourRoads)
             {
-                RoadType e_type = CalculateRoadType(e.Item1, e.Item2);
-                ((Road)Map[e.Item1, e.Item2]).ChangeType(e_type);//ChangeType method of Road
-                changedFields.Add((e.Item1, e.Item2));
+                if (e != null && e is Road)
+                {
+                    RoadType e_type = CalculateRoadType(e.X, e.Y);
+                    ((Road)Map[e.X, e.Y]).ChangeType(e_type);//ChangeType method of Road
+                    changedFields.Add((e.X, e.Y));
+                }
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
@@ -246,32 +252,35 @@ namespace TransportTycoon.Model
                             return;
                         }
                     }
-                    List<Field> bridgeHeads = new()
-                    {
-                         Map[x, Math.Min(SelectedField.Y, y) - 1],
-                         Map[x, Math.Max(SelectedField.Y, y) + 1]
-                    };
                     for (int i = Math.Min(SelectedField.Y, y); i <= Math.Max(SelectedField.Y, y); i++)
                     {
                         switch (b_type)
                         {
                             case BridgeType.HorizontalYellowBridge:
-                                Map[x, i] = new YellowBridge(x, i, b_type, Map[x, i].Height, bridgeHeads);
+                                Map[x, i] = new YellowBridge(x, i, b_type, Map[x, i].Height);
                                 break;
                             case BridgeType.HorizontalGreenBridge:
-                                Map[x, i] = new GreenBridge(x, i, b_type, Map[x, i].Height, bridgeHeads);
+                                Map[x, i] = new GreenBridge(x, i, b_type, Map[x, i].Height);
                                 break;
                             case BridgeType.HorizontalRedBridge:
-                                Map[x, i] = new RedBridge(x, i, b_type, Map[x, i].Height, bridgeHeads);
+                                Map[x, i] = new RedBridge(x, i, b_type, Map[x, i].Height);
                                 break;
                         }
                         changedFields.Add((x, i));
                         Balance -= ((Bridge)Map[x, i]).Price;
                     }
-                    if (Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1) road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
-                    changedFields.Add((x, Math.Min(SelectedField.Y, y) - 1));
-                    if (Map[x, Math.Max(SelectedField.Y, y) + 1] is Road road2) road2.ChangeType(CalculateRoadType(x, Math.Max(SelectedField.Y, y) + 1));
-                    changedFields.Add((x, Math.Max(SelectedField.Y, y) + 1));
+                    Map[x, Math.Min(SelectedField.Y, y) - 1].IsBridgeHead = true;
+                    if (Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1)
+                    {
+                        road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
+                        changedFields.Add((x, Math.Min(SelectedField.Y, y) - 1));
+                    }
+                    Map[x, Math.Max(SelectedField.Y, y) + 1].IsBridgeHead = true;
+                    if (Map[x, Math.Max(SelectedField.Y, y) + 1] is Road road2)
+                    {
+                        road2.ChangeType(CalculateRoadType(x, Math.Max(SelectedField.Y, y) + 1));
+                        changedFields.Add((x, Math.Max(SelectedField.Y, y) + 1));
+                    }
                 }
                 else if (SelectedField.Y == y)
                 {
@@ -301,23 +310,18 @@ namespace TransportTycoon.Model
                             return;
                         }
                     }
-                    List<Field> bridgeHeads = new()
-                    {
-                         Map[Math.Min(SelectedField.X, x)-1, y],
-                         Map[Math.Max(SelectedField.X, x)+1, y]
-                    };
                     for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
                     {
                         switch (b_type)
                         {
                             case BridgeType.VerticalYellowBridge:
-                                Map[i, y] = new YellowBridge(i, y, b_type, Map[i, y].Height, bridgeHeads);
+                                Map[i, y] = new YellowBridge(i, y, b_type, Map[i, y].Height);
                                 break;
                             case BridgeType.VerticalGreenBridge:
-                                Map[i, y] = new GreenBridge(i, y, b_type, Map[i, y].Height, bridgeHeads);
+                                Map[i, y] = new GreenBridge(i, y, b_type, Map[i, y].Height);
                                 break;
                             case BridgeType.VerticalRedBridge:
-                                Map[i, y] = new RedBridge(i, y, b_type, Map[i, y].Height, bridgeHeads);
+                                Map[i, y] = new RedBridge(i, y, b_type, Map[i, y].Height);
                                 break;
                             default:
                                 break;
@@ -325,10 +329,18 @@ namespace TransportTycoon.Model
                         changedFields.Add((i, y));
                         Balance -= ((Bridge)Map[i, y]).Price;
                     }
-                    if (Map[Math.Min(SelectedField.X, x) - 1, y] is Road road1) road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x) - 1, y));
-                    changedFields.Add((Math.Min(SelectedField.X, x) - 1, y));
-                    if (Map[Math.Max(SelectedField.X, x) + 1, y] is Road road2) road2.ChangeType(CalculateRoadType(Math.Max(SelectedField.X, x) + 1, y));
-                    changedFields.Add((Math.Max(SelectedField.X, x) + 1, y));
+                    Map[Math.Min(SelectedField.X, x) - 1, y].IsBridgeHead = true;
+                    if (Map[Math.Min(SelectedField.X, x) - 1, y] is Road road1)
+                    {
+                        road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x) - 1, y));
+                        changedFields.Add((Math.Min(SelectedField.X, x) - 1, y));
+                    }
+                    Map[Math.Max(SelectedField.X, x) + 1, y].IsBridgeHead = true;
+                    if (Map[Math.Max(SelectedField.X, x) + 1, y] is Road road2)
+                    {
+                        road2.ChangeType(CalculateRoadType(Math.Max(SelectedField.X, x) + 1, y));
+                        changedFields.Add((Math.Max(SelectedField.X, x) + 1, y));
+                    }
                 }
                 //if (IsGameOver) OnGameOver();
                 SetSelectedField(-1, -1);
@@ -340,12 +352,17 @@ namespace TransportTycoon.Model
         {
             if (Map[x, y] is not Terrain) return;
             List<(int, int)> changedFields = new List<(int, int)>();
+            bool old = Map[x, y].IsBridgeHead;
             Map[x, y] = new Stop(x, y, Map[x, y].Height);
+            Map[x, y].IsBridgeHead = old;
             changedFields.Add((x, y));
             foreach (var e in Map.StopEnvironment(x, y))
             {
-                ((Road)Map[e.Item1, e.Item2]).ChangeType(CalculateRoadType(e.Item1, e.Item2));
-                changedFields.Add((e.Item1, e.Item2));
+                if (e != null && e is Road)
+                {
+                    ((Road)Map[e.X, e.Y]).ChangeType(CalculateRoadType(e.X, e.Y));
+                    changedFields.Add((e.X, e.Y));
+                }
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
@@ -411,34 +428,34 @@ namespace TransportTycoon.Model
         }
         private RoadType CalculateRoadType(int x, int y)
         {
-            List<int> neighbourCountAndWhere = Map.NeighbourRoadsCount(x, y);
+            List<Field?> neighbourRoads = Map.NeighboursOfRoads(x, y);
             RoadType type = RoadType.Vertical;
-            switch (neighbourCountAndWhere[0])
+            switch (neighbourRoads.Count(x => x != null))
             {
                 case 1:
-                    if (neighbourCountAndWhere[2] == 1 || neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
+                    if (neighbourRoads[1] != null || neighbourRoads[3] != null) type = RoadType.Horizontal;
                     break;
                 case 2:
-                    if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
-                    else if (neighbourCountAndWhere[1] == 1 && neighbourCountAndWhere[2] == 1) type = RoadType.UpperRightTurn;
-                    else if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[3] == 1) type = RoadType.RightTurn;
-                    else if (neighbourCountAndWhere[3] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.LeftTurn;
-                    else if (neighbourCountAndWhere[4] == 1 && neighbourCountAndWhere[1] == 1) type = RoadType.UpperLeftTurn;
+                    if (neighbourRoads[1] != null && neighbourRoads[3] != null) type = RoadType.Horizontal;
+                    else if (neighbourRoads[0] != null && neighbourRoads[1] != null) type = RoadType.UpperRightTurn;
+                    else if (neighbourRoads[1] != null && neighbourRoads[2] != null) type = RoadType.RightTurn;
+                    else if (neighbourRoads[2] != null && neighbourRoads[3] != null) type = RoadType.LeftTurn;
+                    else if (neighbourRoads[3] != null && neighbourRoads[0] != null) type = RoadType.UpperLeftTurn;
                     break;
                 case 3:
-                    int noNeighbour = neighbourCountAndWhere.FindIndex(x => x == 0);
+                    int noNeighbour = neighbourRoads.FindIndex(x => x == null);
                     switch (noNeighbour)
                     {
-                        case 1:
+                        case 0:
                             type = RoadType.DownTRoad;
                             break;
-                        case 2:
+                        case 1:
                             type = RoadType.LeftTRoad;
                             break;
-                        case 3:
+                        case 2:
                             type = RoadType.UpperTRoad;
                             break;
-                        case 4:
+                        case 3:
                             type = RoadType.RightTRoad;
                             break;
                         default:
