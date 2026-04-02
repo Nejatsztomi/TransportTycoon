@@ -17,8 +17,5 @@
   <ItemGroup>
 	  <InternalsVisibleTo Include="TransportTycoon.Test" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="MapGenerator\StructureGeneration\" />
-  </ItemGroup>
 
 </Project>
