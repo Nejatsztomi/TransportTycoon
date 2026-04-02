@@ -192,6 +192,9 @@ namespace TransportTycoon.Model
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
             changedFields.Add((x, y));
 
+            if (Map[x, y].GetTrees() == 0) Balance -= ((Road)Map[x, y]).Price;
+            else Balance-= ((Road)Map[x, y]).Price * 2;
+
             foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
             {
                 if (e != null && e is Road road)
@@ -201,6 +204,7 @@ namespace TransportTycoon.Model
                 }
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
+            BalanceChanged?.Invoke(this, EventArgs.Empty);
         }
         public void BuildBridge(int x, int y)
         {
@@ -337,6 +341,9 @@ namespace TransportTycoon.Model
             Map[x, y] = new Stop(x, y, Map[x, y].Height);
             changedFields.Add((x, y));
 
+            if (Map[x, y].GetTrees() == 0) Balance -= ((Stop)Map[x, y]).Price;
+            else Balance -= ((Stop)Map[x, y]).Price * 2;
+
             foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
             {
                 if (e != null && e is Road road)
@@ -346,6 +353,7 @@ namespace TransportTycoon.Model
                 }
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
+            BalanceChanged?.Invoke(this, EventArgs.Empty );
         }
         #endregion
 
