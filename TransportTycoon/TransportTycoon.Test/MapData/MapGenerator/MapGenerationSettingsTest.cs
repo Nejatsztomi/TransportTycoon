@@ -213,7 +213,7 @@ public class MapGenerationSettingsTest
             public void MinStructure_MustBePositive(int min)
             {
                 // Act & Assert
-                Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { StructureRange = min }; }, "ArgumentOutOfRangeException should be thrown for non-positve values");
+                Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructure = min }; }, "ArgumentOutOfRangeException should be thrown for non-positve values");
             }
 
             [TestMethod]
@@ -225,8 +225,8 @@ public class MapGenerationSettingsTest
                 MapGenerationSettings settings = new() { MinStructure = min, MaxStructure = max };
 
                 // Assert
-                Assert.AreEqual(max, settings.MaxCities);
-                Assert.AreEqual(min, settings.MinCities);
+                Assert.AreEqual(max, settings.MaxStructure);
+                Assert.AreEqual(min, settings.MinStructure);
             }
 
             [TestMethod]
