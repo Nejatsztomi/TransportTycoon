@@ -110,6 +110,18 @@ namespace TransportTycoon.WPF.ViewModel
                 return 0;
             }
         }
+
+        public string? StructureImage
+        {
+            get
+            {
+                return Field.FieldType switch
+                {
+                    FieldType.House => $"/Assets/Images/Structures/house.jpg",
+                    _ => null
+                };
+            }
+        }
         #endregion
 
         #region Constructor
