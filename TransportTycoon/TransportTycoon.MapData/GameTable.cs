@@ -1,6 +1,5 @@
-﻿using TransportTycoon.MapData.MapGenerator;
-using TransportTycoon.MapData.MapGenerator.NoiseGenerator;
-using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
+﻿using TransportTycoon.MapData.Buildings;
+using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
@@ -16,8 +15,7 @@ namespace TransportTycoon.MapData
         public int Width { get; }
         public int Height { get; }
 
-        public List<(int, int)> Pointers { get; }
-        public List<(int, int)> BuildingIDs { get; }
+        public List<BuildingEntity> BuildingEntities { get; }
 
         public Field this[int x, int y]
         {
@@ -37,8 +35,7 @@ namespace TransportTycoon.MapData
             Height = height;
             Table = new Field[width, height];
 
-            Pointers = [];
-            BuildingIDs = [];
+            BuildingEntities = [];
 
             GenerationContext = new(width, height, 0);
             GenerationSettings = new()
