@@ -204,12 +204,12 @@ namespace TransportTycoon.Model
                     changedFields.Add((e.X, e.Y));
                 }
             }
+            //if (IsGameOver) OnGameOver();
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
         }
         public void BuildBridge(int x, int y)
         {
-
             if (Map[x, y] is not Water)
             {
                 SetSelectedField(-1, -1);
@@ -354,6 +354,7 @@ namespace TransportTycoon.Model
                     changedFields.Add((e.X, e.Y));
                 }
             }
+            //if (IsGameOver) OnGameOver();
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty );
         }
