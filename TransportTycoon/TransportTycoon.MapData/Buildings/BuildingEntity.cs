@@ -27,7 +27,18 @@
         /// <summary>
         /// Stores the coordinates of the building on map
         /// </summary>
-        public Dictionary<Field, (int, int)> MapPoints { protected set; get; } = [];
+        public Dictionary<(int, int), Field> MapPoints { protected set; get; } = [];
+
+        public int Width { get; }
+        public int Height { get; }
+        #endregion
+
+        #region Constructors
+        protected BuildingEntity(int width = 2, int height = 2)
+        {
+            Width = width;
+            Height = height;
+        }
         #endregion
 
         #region Abstract methods
@@ -41,6 +52,7 @@
         /// </summary>
         /// <returns>The load type</returns>
         public abstract LoadType GetProvideLoad();
+        public abstract void GenerateBuildingPoints(int startX, int startY);
         #endregion
 
         #region Virtual methods
@@ -86,7 +98,7 @@
     public class HouseEntity : BuildingEntity
     {
         #region Constructors
-        public HouseEntity()
+        public HouseEntity(int width, int height) : base(width, height)
         {
             Offset = 10;
             Scaler = 1;
@@ -94,8 +106,20 @@
         #endregion
 
         #region Public methods
+        #region Overrides
         public override LoadType GetConsumeLoad() => LoadType.None;
         public override LoadType GetProvideLoad() => LoadType.People;
+        public override void GenerateBuildingPoints(int startX, int startY)
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    MapPoints.Add((startX + i, startY + j), new House(startX + i, startY + j, this));
+                }
+            }
+        }
+        #endregion
         #endregion
     }
 
@@ -121,6 +145,16 @@
         #region Public methods
         public override LoadType GetConsumeLoad() => LoadType.None;
         public override LoadType GetProvideLoad() => LoadType.Wood;
+        public override void GenerateBuildingPoints(int startX, int startY)
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    MapPoints.Add((startX + i, startY + j), new LumberCamp(startX + i, startY + j, this));
+                }
+            }
+        }
         #endregion
     }
 
@@ -136,6 +170,16 @@
         #region Public methods
         public override LoadType GetConsumeLoad() => LoadType.None;
         public override LoadType GetProvideLoad() => LoadType.Oil;
+        public override void GenerateBuildingPoints(int startX, int startY)
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    MapPoints.Add((startX + i, startY + j), new Mine(startX + i, startY + j, this));
+                }
+            }
+        }
         #endregion
     }
 
@@ -151,6 +195,16 @@
         #region Public methods
         public override LoadType GetConsumeLoad() => LoadType.None;
         public override LoadType GetProvideLoad() => LoadType.Wheat;
+        public override void GenerateBuildingPoints(int startX, int startY)
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    MapPoints.Add((startX + i, startY + j), new Farm(startX + i, startY + j, this));
+                }
+            }
+        }
         #endregion
     }
 
@@ -198,6 +252,16 @@
         #region Public methods
         public override LoadType GetConsumeLoad() => LoadType.Wheat;
         public override LoadType GetProvideLoad() => LoadType.Flour;
+        public override void GenerateBuildingPoints(int startX, int startY)
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    MapPoints.Add((startX + i, startY + j), new Mill(startX + i, startY + j, this));
+                }
+            }
+        }
         #endregion
     }
 
@@ -213,6 +277,16 @@
         #region Public methods
         public override LoadType GetConsumeLoad() => LoadType.Wood;
         public override LoadType GetProvideLoad() => LoadType.Paper;
+        public override void GenerateBuildingPoints(int startX, int startY)
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    MapPoints.Add((startX + i, startY + j), new Plant(startX + i, startY + j, this));
+                }
+            }
+        }
         #endregion
     }
 
@@ -228,6 +302,16 @@
         #region Public methods
         public override LoadType GetConsumeLoad() => LoadType.Oil;
         public override LoadType GetProvideLoad() => LoadType.Rubber;
+        public override void GenerateBuildingPoints(int startX, int startY)
+        {
+            for (int i = 0; i < Width; i++)
+            {
+                for (int j = 0; j < Height; j++)
+                {
+                    MapPoints.Add((startX + i, startY + j), new Factory(startX + i, startY + j, this));
+                }
+            }
+        }
         #endregion
     }
 }
