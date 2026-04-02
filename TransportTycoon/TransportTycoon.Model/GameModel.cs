@@ -189,10 +189,11 @@ namespace TransportTycoon.Model
             List<(int, int)> changedFields = new List<(int, int)>();
 
             RoadType type = CalculateRoadType(x, y);
+            int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
             changedFields.Add((x, y));
 
-            if (Map[x, y].GetTrees() == 0) Balance -= ((Road)Map[x, y]).Price;
+            if (oldTrees == 0) Balance -= ((Road)Map[x, y]).Price;
             else Balance-= ((Road)Map[x, y]).Price * 2;
 
             foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
@@ -338,10 +339,11 @@ namespace TransportTycoon.Model
             if (Map[x, y] is not Terrain) return;
             List<(int, int)> changedFields = new List<(int, int)>();
 
+            int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Stop(x, y, Map[x, y].Height);
             changedFields.Add((x, y));
 
-            if (Map[x, y].GetTrees() == 0) Balance -= ((Stop)Map[x, y]).Price;
+            if (oldTrees == 0) Balance -= ((Stop)Map[x, y]).Price;
             else Balance -= ((Stop)Map[x, y]).Price * 2;
 
             foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
