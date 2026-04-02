@@ -172,6 +172,50 @@ namespace TransportTycoon.MapData
         {
             return Math.Abs(a.Height - b.Height) <= 1;
         }
+        public RoadType CalculateRoadType(int x, int y)
+        {
+            List<Field?> neighbourRoads = NeighboursOfRoadsAndStops(x, y);
+            RoadType type = RoadType.Vertical;
+            switch (neighbourRoads.Count(x => x != null))
+            {
+                case 1:
+                    if (neighbourRoads[1] != null || neighbourRoads[3] != null) type = RoadType.Horizontal;
+                    break;
+                case 2:
+                    if (neighbourRoads[1] != null && neighbourRoads[3] != null) type = RoadType.Horizontal;
+                    else if (neighbourRoads[0] != null && neighbourRoads[1] != null) type = RoadType.UpperRightTurn;
+                    else if (neighbourRoads[1] != null && neighbourRoads[2] != null) type = RoadType.RightTurn;
+                    else if (neighbourRoads[2] != null && neighbourRoads[3] != null) type = RoadType.LeftTurn;
+                    else if (neighbourRoads[3] != null && neighbourRoads[0] != null) type = RoadType.UpperLeftTurn;
+                    break;
+                case 3:
+                    int noNeighbour = neighbourRoads.FindIndex(x => x == null);
+                    switch (noNeighbour)
+                    {
+                        case 0:
+                            type = RoadType.DownTRoad;
+                            break;
+                        case 1:
+                            type = RoadType.LeftTRoad;
+                            break;
+                        case 2:
+                            type = RoadType.UpperTRoad;
+                            break;
+                        case 3:
+                            type = RoadType.RightTRoad;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 4:
+                    type = RoadType.XRoad;
+                    break;
+                default:
+                    break;
+            }
+            return type;
+        }
         public BridgeType CalculateBridgeType(int dif, string dir)
         {
             if (dir == "horizontal")

@@ -188,7 +188,7 @@ namespace TransportTycoon.Model
             if (Map[x, y] is not Terrain) return;
             List<(int, int)> changedFields = new List<(int, int)>();
 
-            RoadType type = CalculateRoadType(x, y);
+            RoadType type = Map.CalculateRoadType(x, y);
             int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Road(x, y, type, Map[x, y].Height);
             changedFields.Add((x, y));
@@ -200,7 +200,7 @@ namespace TransportTycoon.Model
             {
                 if (e != null && e is Road road)
                 {
-                    road.ChangeType(CalculateRoadType(e.X, e.Y));
+                    road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
                     changedFields.Add((e.X, e.Y));
                 }
             }
@@ -266,12 +266,12 @@ namespace TransportTycoon.Model
                     }
                     if (Map[x, Math.Min(SelectedField.Y, y) - 1] is Road road1)
                     {
-                        road1.ChangeType(CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
+                        road1.ChangeType(Map.CalculateRoadType(x, Math.Min(SelectedField.Y, y) - 1));
                         changedFields.Add((x, Math.Min(SelectedField.Y, y) - 1));
                     }
                     if (Map[x, Math.Max(SelectedField.Y, y) + 1] is Road road2)
                     {
-                        road2.ChangeType(CalculateRoadType(x, Math.Max(SelectedField.Y, y) + 1));
+                        road2.ChangeType(Map.CalculateRoadType(x, Math.Max(SelectedField.Y, y) + 1));
                         changedFields.Add((x, Math.Max(SelectedField.Y, y) + 1));
                     }
                 }
@@ -319,12 +319,12 @@ namespace TransportTycoon.Model
                     }
                     if (Map[Math.Min(SelectedField.X, x) - 1, y] is Road road1)
                     {
-                        road1.ChangeType(CalculateRoadType(Math.Min(SelectedField.X, x) - 1, y));
+                        road1.ChangeType(Map.CalculateRoadType(Math.Min(SelectedField.X, x) - 1, y));
                         changedFields.Add((Math.Min(SelectedField.X, x) - 1, y));
                     }
                     if (Map[Math.Max(SelectedField.X, x) + 1, y] is Road road2)
                     {
-                        road2.ChangeType(CalculateRoadType(Math.Max(SelectedField.X, x) + 1, y));
+                        road2.ChangeType(Map.CalculateRoadType(Math.Max(SelectedField.X, x) + 1, y));
                         changedFields.Add((Math.Max(SelectedField.X, x) + 1, y));
                     }
                 }
@@ -350,7 +350,7 @@ namespace TransportTycoon.Model
             {
                 if (e != null && e is Road road)
                 {
-                    road.ChangeType(CalculateRoadType(e.X, e.Y));
+                    road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
                     changedFields.Add((e.X, e.Y));
                 }
             }
@@ -416,50 +416,6 @@ namespace TransportTycoon.Model
             }
 
             return grownTrees;
-        }
-        private RoadType CalculateRoadType(int x, int y)
-        {
-            List<Field?> neighbourRoads = Map.NeighboursOfRoadsAndStops(x, y);
-            RoadType type = RoadType.Vertical;
-            switch (neighbourRoads.Count(x => x != null))
-            {
-                case 1:
-                    if (neighbourRoads[1] != null || neighbourRoads[3] != null) type = RoadType.Horizontal;
-                    break;
-                case 2:
-                    if (neighbourRoads[1] != null && neighbourRoads[3] != null) type = RoadType.Horizontal;
-                    else if (neighbourRoads[0] != null && neighbourRoads[1] != null) type = RoadType.UpperRightTurn;
-                    else if (neighbourRoads[1] != null && neighbourRoads[2] != null) type = RoadType.RightTurn;
-                    else if (neighbourRoads[2] != null && neighbourRoads[3] != null) type = RoadType.LeftTurn;
-                    else if (neighbourRoads[3] != null && neighbourRoads[0] != null) type = RoadType.UpperLeftTurn;
-                    break;
-                case 3:
-                    int noNeighbour = neighbourRoads.FindIndex(x => x == null);
-                    switch (noNeighbour)
-                    {
-                        case 0:
-                            type = RoadType.DownTRoad;
-                            break;
-                        case 1:
-                            type = RoadType.LeftTRoad;
-                            break;
-                        case 2:
-                            type = RoadType.UpperTRoad;
-                            break;
-                        case 3:
-                            type = RoadType.RightTRoad;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 4:
-                    type = RoadType.XRoad;
-                    break;
-                default:
-                    break;
-            }
-            return type;
         }
         #endregion
 
