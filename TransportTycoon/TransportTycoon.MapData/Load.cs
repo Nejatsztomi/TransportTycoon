@@ -2,6 +2,7 @@
 {
     public enum LoadType
     {
+        None,
         Wheat,
         Oil,
         Wood,
