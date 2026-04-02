@@ -228,13 +228,10 @@ namespace TransportTycoon.Model
                     {
                         SetSelectedField(-1, -1);
                         return;
-                    }
-                    BridgeType b_type;
+                    }    
                     int dif = Math.Abs(SelectedField.Y - y);
-                    if (dif <= 13) b_type = BridgeType.HorizontalYellowBridge;
-                    else if (dif <= 15) b_type = BridgeType.HorizontalGreenBridge;
-                    else if (dif <= 17) b_type = BridgeType.HorizontalRedBridge;
-                    else
+                    BridgeType b_type = Map.CalculateBridgeType(dif, "horizontal");
+                    if(b_type==BridgeType.Null)
                     {
                         SetSelectedField(-1, -1);
                         return;
@@ -285,12 +282,9 @@ namespace TransportTycoon.Model
                         SetSelectedField(-1, -1);
                         return;
                     }
-                    BridgeType b_type;
                     int dif = Math.Abs(SelectedField.X - x);
-                    if (dif <= 13) b_type = BridgeType.VerticalYellowBridge;
-                    else if (dif <= 15) b_type = BridgeType.VerticalGreenBridge;
-                    else if (dif <= 17) b_type = BridgeType.VerticalRedBridge;
-                    else
+                    BridgeType b_type = Map.CalculateBridgeType(dif, "vertical");
+                    if (b_type == BridgeType.Null)
                     {
                         SetSelectedField(-1, -1);
                         return;

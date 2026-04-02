@@ -4,7 +4,7 @@ namespace TransportTycoon.MapData
 {
     public enum BridgeType
     {
-        HorizontalGreenBridge = 0, VerticalGreenBridge = 1, HorizontalYellowBridge = 2, VerticalYellowBridge = 3, HorizontalRedBridge = 4, VerticalRedBridge = 5
+        HorizontalGreenBridge = 0, VerticalGreenBridge = 1, HorizontalYellowBridge = 2, VerticalYellowBridge = 3, HorizontalRedBridge = 4, VerticalRedBridge = 5, Null=6
     }
 
     public abstract class Bridge : Infrastructure

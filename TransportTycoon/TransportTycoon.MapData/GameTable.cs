@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel.Design;
+using System.Diagnostics;
 using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
@@ -166,6 +167,23 @@ namespace TransportTycoon.MapData
                 else if (Table[x, y - 1] is Road || Table[x, y - 1] is Stop) result[3] = Table[x, y - 1];
             }
             return result;
+        }
+        public BridgeType CalculateBridgeType(int dif, string dir)
+        {
+            if (dir == "horizontal")
+            {
+                if (dif <= 13) return BridgeType.HorizontalYellowBridge;
+                else if (dif <= 15) return BridgeType.HorizontalGreenBridge;
+                else if (dif <= 17) return BridgeType.HorizontalRedBridge;
+                else return BridgeType.Null;
+            }
+            else
+            {
+                if (dif <= 13) return BridgeType.VerticalYellowBridge;
+                else if (dif <= 15) return BridgeType.VerticalGreenBridge;
+                else if (dif <= 17) return BridgeType.VerticalRedBridge;
+                else return BridgeType.Null;
+            }
         }
         #endregion
 
