@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -119,13 +120,13 @@ namespace TransportTycoon.WPF.ViewModel
                 {
                     FieldType.House => $"/Assets/Images/Structures/house.jpg",
 
-                    FieldType.Farm => null,
+                    FieldType.Farm => $"/Assets/Images/Structures/farm.png",
                     FieldType.Mine => $"/Assets/Images/Structures/oil.jpg",
-                    FieldType.LumberCamp => null,
+                    FieldType.LumberCamp => $"/Assets/Images/Structures/lumbercamp.png",
 
-                    FieldType.Mill => null,
+                    FieldType.Mill => $"/Assets/Images/Structures/mill.png",
                     FieldType.Plant => $"/Assets/Images/Structures/rubber.jpg",
-                    FieldType.Factory => null,
+                    FieldType.Factory => $"/Assets/Images/Structures/factory.png",
 
                     _ => null
                 };
