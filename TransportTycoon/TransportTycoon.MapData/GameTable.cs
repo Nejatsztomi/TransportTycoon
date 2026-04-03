@@ -233,6 +233,72 @@ namespace TransportTycoon.MapData
                 else return BridgeType.Null;
             }
         }
+        public int CreateHorizontalBridge(int x, int a, int b, BridgeType b_type, ref List<(int, int)> changedFields)
+        {
+            int cost = 0;
+            for (int i = a; i <= b; i++)
+            {
+                switch (b_type)
+                {
+                    case BridgeType.HorizontalYellowBridge:
+                        Table[x, i] = new YellowBridge(x, i, b_type, Table[x, i].Height);
+                        break;
+                    case BridgeType.HorizontalGreenBridge:
+                        Table[x, i] = new GreenBridge(x, i, b_type, Table[x, i].Height);
+                        break;
+                    case BridgeType.HorizontalRedBridge:
+                        Table[x, i] = new RedBridge(x, i, b_type, Table[x, i].Height);
+                        break;
+                }
+                changedFields.Add((x, i));
+                cost += ((Bridge)Table[x, i]).Price;
+            }
+            if (Table[x, a - 1] is Road road1)
+            {
+                road1.ChangeType(CalculateRoadType(x, a - 1));
+                changedFields.Add((x, a - 1));
+            }
+            if (Table[x, b + 1] is Road road2)
+            {
+                road2.ChangeType(CalculateRoadType(x, b + 1));
+                changedFields.Add((x, b + 1));
+            }
+            return cost;
+        }
+        public int CreateVerticalBridge(int y, int a, int b, BridgeType b_type, ref List<(int, int)> changedFields)
+        {
+            int cost = 0;
+            for (int i = a; i <= b; i++)
+            {
+                switch (b_type)
+                {
+                    case BridgeType.VerticalYellowBridge:
+                        Table[i, y] = new YellowBridge(i, y, b_type, Table[i, y].Height);
+                        break;
+                    case BridgeType.VerticalGreenBridge:
+                        Table[i, y] = new GreenBridge(i, y, b_type, Table[i, y].Height);
+                        break;
+                    case BridgeType.VerticalRedBridge:
+                        Table[i, y] = new RedBridge(i, y, b_type, Table[i, y].Height);
+                        break;
+                    default:
+                        break;
+                }
+                changedFields.Add((i, y));
+                cost += ((Bridge)Table[i, y]).Price;
+            }
+            if (Table[a - 1, y] is Road road1)
+            {
+                road1.ChangeType(CalculateRoadType(a - 1, y));
+                changedFields.Add((a - 1, y));
+            }
+            if (Table[b + 1, y] is Road road2)
+            {
+                road2.ChangeType(CalculateRoadType(b + 1, y));
+                changedFields.Add((b + 1, y));
+            }
+            return cost;
+        }
         #endregion
 
         #region Private methods
