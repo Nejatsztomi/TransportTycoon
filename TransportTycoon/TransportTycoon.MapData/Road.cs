@@ -14,6 +14,7 @@
         #region Constructors
         public Road(int x, int y, RoadType type, int height)
         {
+            Price = 100;
             X = x;
             Y = y;
             FieldType = FieldType.Road;
@@ -31,7 +32,7 @@
 
         public bool InCity()
         {
-            return Pointer != null;
+            return Pointer is not null;
         }
         #endregion
     }
