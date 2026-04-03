@@ -26,11 +26,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// Implementaion of the Drunken Builder algorithm.
         /// It spawns a number of random walkers (branchCount) that carve roads in the city for a certain number of steps (maxRoadCount).
         /// </summary>
-        /// <param name="branchCount"></param>
-        /// <param name="maxRoadCount"></param>
         /// <param name="city"></param>
         /// <param name="context"></param>
-        public void GenerateCity(int branchCount, int maxRoadCount, BuildingEntity city, MapGenerationContext context)
+        public void GenerateCity(BuildingEntity city, MapGenerationContext context)
         {
             if (city is not CityEntity) return;
             (int topLeftX, int topLeftY) = city.MapPoints.First().Key;
@@ -42,9 +40,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             CarveExit(city, centerX, centerY);
 
             // 3. Spawn Random Walkers to build the internal streets
-            for (int i = 0; i < branchCount; i++)
+            for (int i = 0; i < context.Settings.BranchCount; i++)
             {
-                CarveRoad(city, centerX, centerY, maxRoadCount);
+                CarveRoad(city, centerX, centerY, context.Settings.RoadLength);
             }
         }
         #endregion

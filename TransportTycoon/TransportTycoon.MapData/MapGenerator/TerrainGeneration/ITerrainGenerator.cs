@@ -2,6 +2,6 @@
 {
     public interface ITerrainGenerator
     {
-        public int[,] GenerateTerrain(IBiome biome, MapGenerationContext context);
+        public int[,] GenerateTerrain(MapGenerationContext context);
     }
 }

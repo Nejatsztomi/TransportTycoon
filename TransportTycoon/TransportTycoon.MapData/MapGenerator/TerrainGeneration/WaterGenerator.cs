@@ -4,32 +4,30 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
     public static class WaterGeneratorFactory
     {
-        public static IWaterGenerator Create(INoiseGenerator noiseGenerator, float noiseScale, IRandomProvider randomProvider, MapGenerationContext context) => new WaterGenerator(noiseGenerator, noiseScale, randomProvider, context);
+        public static IWaterGenerator Create(INoiseGenerator noiseGenerator, IRandomProvider randomProvider, MapGenerationContext context) => new WaterGenerator(noiseGenerator, randomProvider, context);
     }
 
     internal class WaterGenerator : IWaterGenerator
     {
         #region Private fields
         private readonly INoiseGenerator _noiseGenerator;
-        private readonly float _noiseScale;
         private readonly IRandom _random;
         #endregion
 
         #region Constructors
-        public WaterGenerator(INoiseGenerator noiseGenerator, float noiseScale, IRandomProvider randomProvider, MapGenerationContext context)
+        public WaterGenerator(INoiseGenerator noiseGenerator, IRandomProvider randomProvider, MapGenerationContext context)
         {
             _noiseGenerator = noiseGenerator;
-            _noiseScale = noiseScale;
             _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Rivers);
         }
         #endregion
 
         #region Public methods
-        public bool[,] GenerateWaterMap(int _, int[,] heightMap, MapGenerationContext context)
+        public bool[,] GenerateWaterMap(int[,] heightMap, MapGenerationContext context)
         {
             bool[,] waterMap = new bool[context.Width, context.Height];
 
-            float[,] noiseMap = _noiseGenerator.GenerateNoise(_noiseScale, context);
+            float[,] noiseMap = _noiseGenerator.GenerateNoise(context.Settings.WaterNoiseScale, context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)

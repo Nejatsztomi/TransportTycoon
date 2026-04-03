@@ -22,6 +22,8 @@ namespace TransportTycoon.MapData.MapGenerator
         public const int MaxCityRange = 0;
         public const int CityWidth = 5;
         public const int CityHeight = 5;
+        public const int RoadLength = 10;
+        public const int BranchCount = 3;
 
         // Structure generation
         public const int MinStructure = 1;
@@ -255,6 +257,30 @@ namespace TransportTycoon.MapData.MapGenerator
                 field = value;
             }
         } = MapGenerationSettingsDefaults.CityHeight;
+        public int RoadLength
+        {
+            get;
+            init
+            {
+                if (!(value > 0))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(RoadLength), "RoadCount must be a positive integer.");
+                }
+                field = value;
+            }
+        } = MapGenerationSettingsDefaults.RoadLength;
+        public int BranchCount
+        {
+            get;
+            init
+            {
+                if (!(value > 0))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(BranchCount), "BranchCount must be a positive integer.");
+                }
+                field = value;
+            }
+        } = MapGenerationSettingsDefaults.BranchCount;
         #endregion
 
         #region Forest generation

@@ -8,46 +8,46 @@ namespace TransportTycoon.MapData.MapGenerator
 {
     public static class MapGeneratorFactory
     {
-        public static IMapGenerator CreateMapGenerator(MapGenerationSettings settings)
+        public static IMapGenerator CreateMapGenerator(MapGenerationContext context)
         {
-            INoiseGenerator noiseGenerator = PerlinNoiseGeneratorFactory.Create();
-            ICityGenerator cityGenerator = CityGeneratorFactory.Create();
+            IRandomProvider randomProvider = new RandomProvider();
 
-            ITerrainGenerator terrainGenerator = TerraingGeneratorFactory.Create(noiseGenerator, settings.TerrainNoiseScale);
-            IForestGenerator forestGenerator = ForestGeneratorFactory.Create(noiseGenerator, settings.ForestNoiseScale, settings.ForestPercentage);
-            IWaterGenerator waterGenerator = WaterGeneratorFactory.Create(noiseGenerator, settings.WaterNoiseScale);
-            IStructureGenerator structureGenerator = StructureGeneratorFactory.Create(cityGenerator);
-            return new MapGenerator(settings, terrainGenerator, forestGenerator, waterGenerator, structureGenerator);
+            INoiseGenerator noiseGenerator = PerlinNoiseGeneratorFactory.Create(randomProvider, context);
+            ICityGenerator cityGenerator = CityGeneratorFactory.Create(randomProvider, context);
+
+            ITerrainGenerator terrainGenerator = TerraingGeneratorFactory.Create(noiseGenerator, randomProvider, context);
+            IForestGenerator forestGenerator = ForestGeneratorFactory.Create(noiseGenerator, randomProvider, context);
+            IWaterGenerator waterGenerator = WaterGeneratorFactory.Create(noiseGenerator, randomProvider, context);
+            IStructureGenerator structureGenerator = StructureGeneratorFactory.Create(cityGenerator, randomProvider, context);
+            return new MapGenerator(terrainGenerator, forestGenerator, waterGenerator, structureGenerator);
         }
     }
 
     internal class MapGenerator : IMapGenerator
     {
-        #region Properties
-        private MapGenerationSettings Settings { get; }
-        private ITerrainGenerator TerrainGenerator { get; }
-        private IForestGenerator ForestGenerator { get; }
-        private IWaterGenerator WaterGenerator { get; }
-        private IStructureGenerator StructureGenerator { get; }
+        #region Private fields
+        private readonly ITerrainGenerator _terrainGenerator;
+        private readonly IForestGenerator _forestGenerator;
+        private readonly IWaterGenerator _waterGenerator;
+        private readonly IStructureGenerator _structureGenerator;
         #endregion
 
         #region Constructors
-        public MapGenerator(MapGenerationSettings settings, ITerrainGenerator terrainGenerator, IForestGenerator forestGenerator, IWaterGenerator waterGenerator, IStructureGenerator structureGenerator)
+        public MapGenerator(ITerrainGenerator terrainGenerator, IForestGenerator forestGenerator, IWaterGenerator waterGenerator, IStructureGenerator structureGenerator)
         {
-            Settings = settings;
-            TerrainGenerator = terrainGenerator;
-            ForestGenerator = forestGenerator;
-            WaterGenerator = waterGenerator;
-            StructureGenerator = structureGenerator;
+            _terrainGenerator = terrainGenerator;
+            _forestGenerator = forestGenerator;
+            _waterGenerator = waterGenerator;
+            _structureGenerator = structureGenerator;
         }
         #endregion
 
         #region Public methods
         public Field[,] GenerateMap(MapGenerationContext context)
         {
-            int[,] heightMap = TerrainGenerator.GenerateTerrain(Settings.Biome, context);
-            int[,] forestMap = ForestGenerator.GenerateForests(heightMap, context);
-            bool[,] waterMap = WaterGenerator.GenerateWaterMap(Settings.RiverCount, heightMap, context);
+            int[,] heightMap = _terrainGenerator.GenerateTerrain(context);
+            int[,] forestMap = _forestGenerator.GenerateForests(heightMap, context);
+            bool[,] waterMap = _waterGenerator.GenerateWaterMap(heightMap, context);
             bool[,] structureMap = GenerateEmptyStructureMap(context.Width, context.Height);
 
             List<BuildingEntity> structures = [];
@@ -56,7 +56,7 @@ namespace TransportTycoon.MapData.MapGenerator
             for (int i = 0; i < 2; i++)
             {
                 CityEntity city = new(5, 5);
-                StructureGenerator.ForcePlace(heightMap, waterMap, structureMap, city, context, -1, -1, 0);
+                _structureGenerator.ForcePlace(heightMap, waterMap, structureMap, city, context, -1, -1);
                 structures.Add(city);
             }
 

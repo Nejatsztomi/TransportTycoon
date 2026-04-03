@@ -14,12 +14,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// <param name="waterMap"></param>
         /// <param name="structureMap"></param>
         /// <param name="buildingEntity">What structure to place</param>
-        /// <param name="x">If non-negative, it tries to place structure in a certain radius</param>
-        /// <param name="y">If non-negative, it tries to place structure in a certain radius</param>
-        /// <param name="radius">If positive, it tries to place structure in a certain radius</param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public bool TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int x, int y, int radius);
+        public bool TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY);
 
         /// <summary>
         /// Forces the placement of a structure of the given type on the map.
@@ -29,11 +26,8 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// <param name="waterMap"></param>
         /// <param name="structureMap"></param>
         /// <param name="buildingEntity"></param>
-        /// <param name="x">If non-negative, it places structure in a certain radius</param>
-        /// <param name="y">If non-negative, it places structure in a certain radius</param>
-        /// <param name="radius">If positive, it place structure in a certain radius</param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int x, int y, int radius);
+        public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY);
     }
 }

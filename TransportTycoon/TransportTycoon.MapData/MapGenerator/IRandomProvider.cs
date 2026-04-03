@@ -6,7 +6,8 @@
         Forests = 2,
         Rivers = 3,
         Cities = 4,
-        Structures = 5
+        Structures = 5,
+        Noise = 6,
     }
 
     public interface IRandomProvider

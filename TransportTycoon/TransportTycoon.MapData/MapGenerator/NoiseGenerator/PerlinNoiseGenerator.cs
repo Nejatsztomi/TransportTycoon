@@ -2,23 +2,29 @@
 {
     public static class PerlinNoiseGeneratorFactory
     {
-        public static INoiseGenerator Create() => new PerlinNoiseGenerator();
+        public static INoiseGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new PerlinNoiseGenerator(randomProvider, context);
     }
 
     internal class PerlinNoiseGenerator : INoiseGenerator
     {
+        #region Private fields
+        private readonly IRandom _random;
+        #endregion
+
         #region Constructors
-        public PerlinNoiseGenerator() { }
+        public PerlinNoiseGenerator(IRandomProvider randomProvider, MapGenerationContext context)
+        {
+            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Noise);
+        }
         #endregion
 
         #region Public methods
         public float[,] GenerateNoise(float noiseScale, MapGenerationContext context)
         {
             float[,] map = new float[context.Width, context.Height];
-            Random rng = new(context.Seed);
 
-            float offsetX = rng.Next(-10000, 10000);
-            float offsetY = rng.Next(-10000, 10000);
+            float offsetX = _random.Next(-10000, 10000);
+            float offsetY = _random.Next(-10000, 10000);
 
             for (int x = 0; x < context.Width; x++)
             {

@@ -37,7 +37,6 @@ namespace TransportTycoon.MapData
 
             BuildingEntities = [];
 
-            GenerationContext = new(width, height, 0);
             GenerationSettings = new()
             {
                 ForestPercentage = 0.4f,
@@ -45,7 +44,9 @@ namespace TransportTycoon.MapData
                 TerrainNoiseScale = 0.072f,
                 WaterNoiseScale = 0.059f,
             };
-            MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationSettings);
+            GenerationContext = new(width, height, 0, GenerationSettings);
+
+            MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationContext);
         }
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
