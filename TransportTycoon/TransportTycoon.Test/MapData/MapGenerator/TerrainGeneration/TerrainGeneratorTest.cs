@@ -15,9 +15,10 @@ public class TerrainGeneratorTest
         {
             // Arrange
             INoiseGenerator noiseGenerator_mock = Substitute.For<INoiseGenerator>();
+            MapGenerationContext context = new(10, 10, 42, new MapGenerationSettings());
 
             // Act
-            ITerrainGenerator result = TerraingGeneratorFactory.Create(noiseGenerator_mock, 0.1f);
+            ITerrainGenerator result = TerraingGeneratorFactory.Create(noiseGenerator_mock, new RandomProvider(), context);
 
             // Assert
             Assert.IsNotNull(result);
@@ -30,7 +31,7 @@ public class TerrainGeneratorTest
     {
         private ITerrainGenerator _terrainGenerator = null!;
         private IBiome _biome = null!;
-        private MapGenerationContext _context;
+        private MapGenerationContext _context = default;
 
         private INoiseGenerator GetMockedNoiseGenerator()
         {
@@ -71,16 +72,15 @@ public class TerrainGeneratorTest
         {
             INoiseGenerator noiseGenerator_mock = GetMockedNoiseGenerator();
 
-            _terrainGenerator = TerraingGeneratorFactory.Create(noiseGenerator_mock, 0.1f);
-            _biome = GetMockedBiome();
-            _context = new(20, 20, 42);
+            _context = new(20, 20, 42, new MapGenerationSettings { Biome = GetMockedBiome() });
+            _terrainGenerator = TerraingGeneratorFactory.Create(noiseGenerator_mock, new RandomProvider(), _context);
         }
 
         [TestMethod]
         public void GenerateTerrain_ReturnsCorrectDimensions()
         {
             // Act
-            int[,] terrain = _terrainGenerator.GenerateTerrain(_biome, _context);
+            int[,] terrain = _terrainGenerator.GenerateTerrain(_context);
 
             // Assert
             Assert.AreEqual(_context.Width, terrain.GetLength(0), "Terrain width should match context");
@@ -95,7 +95,7 @@ public class TerrainGeneratorTest
             int maxTerrainHeight = 4;
 
             // Act
-            int[,] terrain = _terrainGenerator.GenerateTerrain(_biome, _context);
+            int[,] terrain = _terrainGenerator.GenerateTerrain(_context);
 
             // Assert
             bool hasValidHeights = true;
@@ -118,16 +118,16 @@ public class TerrainGeneratorTest
         public void GenerateTerrain_SameSeedProducesSameResult()
         {
             // Arrange
-            IBiome biome = GetMockedBiome();
-            MapGenerationContext context1 = new(15, 15, 12345);
-            MapGenerationContext context2 = new(15, 15, 12345);
+            MapGenerationSettings settings = new() { Biome = GetMockedBiome() };
+            MapGenerationContext context1 = new(15, 15, 12345, settings);
+            MapGenerationContext context2 = new(15, 15, 12345, settings);
 
             INoiseGenerator noiseGen_mock = GetMockedNoiseGenerator();
-            ITerrainGenerator terrainGen = TerraingGeneratorFactory.Create(noiseGen_mock, 0.1f);
+            ITerrainGenerator terrainGen = TerraingGeneratorFactory.Create(noiseGen_mock, new RandomProvider(), context1);
 
             // Act
-            int[,] terrain1 = terrainGen.GenerateTerrain(biome, context1);
-            int[,] terrain2 = terrainGen.GenerateTerrain(biome, context2);
+            int[,] terrain1 = terrainGen.GenerateTerrain(context1);
+            int[,] terrain2 = terrainGen.GenerateTerrain(context2);
 
             // Assert
             bool differentTerrains = false;
@@ -149,16 +149,16 @@ public class TerrainGeneratorTest
         public void GenerateTerrain_DifferentSeedProducesDifferentResult()
         {
             // Arrange
-            IBiome biome = GetMockedBiome();
-            MapGenerationContext context1 = new(15, 15, 111);
-            MapGenerationContext context2 = new(15, 15, 222);
+            MapGenerationSettings settings = new() { Biome = GetMockedBiome() };
+            MapGenerationContext context1 = new(15, 15, 111, settings);
+            MapGenerationContext context2 = new(15, 15, 222, settings);
 
             INoiseGenerator noiseGen = GetMockedNoiseGenerator();
-            ITerrainGenerator terrainGen = TerraingGeneratorFactory.Create(noiseGen, 0.1f);
+            ITerrainGenerator terrainGen = TerraingGeneratorFactory.Create(noiseGen, new RandomProvider(), context1);
 
             // Act
-            int[,] terrain1 = terrainGen.GenerateTerrain(biome, context1);
-            int[,] terrain2 = terrainGen.GenerateTerrain(biome, context2);
+            int[,] terrain1 = terrainGen.GenerateTerrain(context1);
+            int[,] terrain2 = terrainGen.GenerateTerrain(context2);
 
             // Assert - At least some cells should differ
             bool hasDifferentTerrains = false;

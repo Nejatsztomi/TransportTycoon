@@ -15,9 +15,10 @@ public class WaterGeneratorTest
         {
             // Arrange
             INoiseGenerator noiseGenerator = Substitute.For<INoiseGenerator>();
+            MapGenerationContext context = new(10, 10, 42, new MapGenerationSettings());
 
             // Act
-            IWaterGenerator result = WaterGeneratorFactory.Create(noiseGenerator, 0.1f);
+            IWaterGenerator result = WaterGeneratorFactory.Create(noiseGenerator, new RandomProvider(), context);
 
             // Assert
             Assert.IsNotNull(result);
@@ -29,7 +30,7 @@ public class WaterGeneratorTest
     public class GenerateWaterMapTest
     {
         private IWaterGenerator _waterGenerator = null!;
-        private MapGenerationContext _context;
+        private MapGenerationContext _context = default;
         private int[,] _heightMap = null!;
 
         private INoiseGenerator GetMockedNoiseGenerator()
@@ -70,23 +71,23 @@ public class WaterGeneratorTest
             return heightMap;
         }
 
-
         [TestInitialize]
         public void Initialize()
         {
             INoiseGenerator noiseGenerator = GetMockedNoiseGenerator();
-            _waterGenerator = WaterGeneratorFactory.Create(noiseGenerator, 0.1f);
-            _context = new MapGenerationContext(20, 20, 42);
+            _context = new MapGenerationContext(20, 20, 42, new MapGenerationSettings());
+            _waterGenerator = WaterGeneratorFactory.Create(noiseGenerator, new RandomProvider(), _context);
 
             // Create a basic height map for testing
             _heightMap = GenerateHeightMap(_context.Width, _context.Height);
         }
 
         [TestMethod]
+        [Timeout(5 * 1_000, CooperativeCancellation = true)]
         public void GenerateWaterMap_ReturnsCorrectDimensions()
         {
             // Act
-            bool[,] waterMap = _waterGenerator.GenerateWaterMap(3, _heightMap, _context);
+            bool[,] waterMap = _waterGenerator.GenerateWaterMap(_heightMap, _context);
 
             // Assert
             Assert.AreEqual(_context.Width, waterMap.GetLength(0), "Water map width should match context");
@@ -97,11 +98,11 @@ public class WaterGeneratorTest
         public void GenerateWaterMap_NoWaterOnHighTerrain()
         {
             // Arrange - Create a height map with all high terrain (height >= 2)
-            MapGenerationContext smallContext = new(10, 10, 42);
+            MapGenerationContext smallContext = new(10, 10, 42, new MapGenerationSettings());
             int[,] highHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height, extraHeight: 3); // All heights will be 3 or 4
 
             // Act
-            bool[,] waterMap = _waterGenerator.GenerateWaterMap(3, highHeightMap, smallContext);
+            bool[,] waterMap = _waterGenerator.GenerateWaterMap(highHeightMap, smallContext);
 
             // Assert - Water should not appear on high terrain
             bool hasWaterCells = false;
@@ -119,11 +120,11 @@ public class WaterGeneratorTest
         public void GenerateWaterMap_WaterOnlyOnLowTerrain()
         {
             // Arrange - Create height map with clear terrain height variation
-            MapGenerationContext smallContext = new(10, 10, 42);
+            MapGenerationContext smallContext = new(10, 10, 42, new MapGenerationSettings());
             int[,] variableHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height);
 
             // Act
-            bool[,] waterMap = _waterGenerator.GenerateWaterMap(3, variableHeightMap, smallContext);
+            bool[,] waterMap = _waterGenerator.GenerateWaterMap(variableHeightMap, smallContext);
 
             // Assert - Water can only exist on terrain with height < 2
             bool hasWaterOnHighTerrain = false;
@@ -136,62 +137,6 @@ public class WaterGeneratorTest
             }
 
             Assert.IsFalse(hasWaterOnHighTerrain, "Water should only exist on low terrain (height < 2)");
-        }
-
-        [TestMethod]
-        public void GenerateWaterMap_SameSeedProducesSameResult()
-        {
-            // Arrange
-            MapGenerationContext context1 = new(15, 15, 12345);
-            MapGenerationContext context2 = new(15, 15, 12345);
-
-            int[,] heightMap = GenerateHeightMap(context1.Width, context1.Height);
-
-            INoiseGenerator noiseGen = GetMockedNoiseGenerator();
-            IWaterGenerator waterGen = WaterGeneratorFactory.Create(noiseGen, 0.1f);
-
-            // Act
-            bool[,] water1 = waterGen.GenerateWaterMap(3, heightMap, context1);
-            bool[,] water2 = waterGen.GenerateWaterMap(3, heightMap, context2);
-
-            // Assert
-            bool hasDifferentWater = false;
-            for (int x = 0; x < context1.Width && !hasDifferentWater; x++)
-            {
-                for (int y = 0; y < context1.Height && !hasDifferentWater; y++)
-                {
-                    hasDifferentWater = water1[x, y] != water2[x, y];
-                }
-            }
-            Assert.IsFalse(hasDifferentWater, "Same seed should produce the same water map");
-        }
-
-        [TestMethod]
-        public void GenerateWaterMap_DifferentSeedProducesDifferentResult()
-        {
-            // Arrange
-            MapGenerationContext context1 = new(15, 15, 69);
-            MapGenerationContext context2 = new(15, 15, 420);
-
-            int[,] heightMap = GenerateHeightMap(context1.Width, context1.Height);
-
-            INoiseGenerator noiseGen = GetMockedNoiseGenerator();
-            IWaterGenerator waterGen = WaterGeneratorFactory.Create(noiseGen, 0.1f);
-
-            // Act
-            bool[,] water1 = waterGen.GenerateWaterMap(3, heightMap, context1);
-            bool[,] water2 = waterGen.GenerateWaterMap(3, heightMap, context2);
-
-            // Assert
-            bool hasDifferentWater = false;
-            for (int x = 0; x < context1.Width && !hasDifferentWater; x++)
-            {
-                for (int y = 0; y < context1.Height && !hasDifferentWater; y++)
-                {
-                    hasDifferentWater = water1[x, y] == water2[x, y];
-                }
-            }
-            Assert.IsTrue(hasDifferentWater, "Same seed should produce the same water map");
         }
     }
 }

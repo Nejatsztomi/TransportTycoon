@@ -11,24 +11,26 @@ public class INoiseGeneratorTest
         [TestMethod]
         public void PerlinNoiseFactoryCreate_WithAllParameters()
         {
-            INoiseGenerator result = PerlinNoiseGeneratorFactory.Create();
+            MapGenerationContext context = new(10, 15, 0, new MapGenerationSettings());
+            INoiseGenerator result = PerlinNoiseGeneratorFactory.Create(new RandomProvider(), context);
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType<PerlinNoiseGenerator>(result);
         }
     }
 
+    [TestClass]
     public class NoiseGenerationTest
     {
         [TestClass]
         public class PerlinNoiseGeneratorTest
         {
-            private static readonly MapGenerationContext _context = new(10, 15, 0);
+            private static readonly MapGenerationContext _context = new(10, 15, 0, new MapGenerationSettings());
             private static INoiseGenerator _generator = null!;
 
             [ClassInitialize]
             public static void Initialize(TestContext _)
             {
-                _generator = PerlinNoiseGeneratorFactory.Create();
+                _generator = PerlinNoiseGeneratorFactory.Create(new RandomProvider(), _context);
             }
 
             [TestMethod]
