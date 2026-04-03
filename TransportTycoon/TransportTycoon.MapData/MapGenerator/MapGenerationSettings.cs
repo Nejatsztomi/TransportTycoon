@@ -36,7 +36,7 @@ namespace TransportTycoon.MapData.MapGenerator
         public const float TerrainNoiseScale = 0.1f;
     }
 
-    public class MapGenerationSettings
+    public record MapGenerationSettings
     {
         #region Properties
         #region Water generation
