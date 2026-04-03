@@ -9,32 +9,25 @@
     {
         #region Private fields
         private readonly IRandom _random;
+        private readonly float _offsetX;
+        private readonly float _offsetY;
+        private readonly float _noiseScale = 0.05f;
         #endregion
 
         #region Constructors
         public PerlinNoiseGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {
             _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Noise);
+            _offsetX = _random.Next(-10000, 10000);
+            _offsetY = _random.Next(-10000, 10000);
         }
         #endregion
 
         #region Public methods
-        public float[,] GenerateNoise(float noiseScale, MapGenerationContext context)
+        public float GenerateNoise(float x, float y, int _)
         {
-            float[,] map = new float[context.Width, context.Height];
-
-            float offsetX = _random.Next(-10000, 10000);
-            float offsetY = _random.Next(-10000, 10000);
-
-            for (int x = 0; x < context.Width; x++)
-            {
-                for (int y = 0; y < context.Height; y++)
-                {
-                    // Calculate normalized noise (0.0 to 1.0)
-                    map[x, y] = CalculateNoise((x + offsetX) * noiseScale, (y + offsetY) * noiseScale);
-                }
-            }
-            return map;
+            // Calculate normalized noise (0.0 to 1.0)
+            return CalculateNoise((x + _offsetX) * _noiseScale, (y + _offsetY) * _noiseScale);
         }
         #endregion
 
