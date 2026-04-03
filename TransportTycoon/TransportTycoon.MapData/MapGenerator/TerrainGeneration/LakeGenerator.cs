@@ -2,23 +2,21 @@
 
 namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
-    public static class WaterGeneratorFactory
+    public static class LakeGeneratorFactory
     {
-        public static IWaterGenerator Create(INoiseGenerator noiseGenerator, IRandomProvider randomProvider, MapGenerationContext context) => new WaterGenerator(noiseGenerator, randomProvider, context);
+        public static IWaterGenerator Create(INoiseGenerator noiseGenerator) => new LakeGenerator(noiseGenerator);
     }
 
-    internal class WaterGenerator : IWaterGenerator
+    internal class LakeGenerator : IWaterGenerator
     {
         #region Private fields
         private readonly INoiseGenerator _noiseGenerator;
-        private readonly IRandom _random;
         #endregion
 
         #region Constructors
-        public WaterGenerator(INoiseGenerator noiseGenerator, IRandomProvider randomProvider, MapGenerationContext context)
+        public LakeGenerator(INoiseGenerator noiseGenerator)
         {
             _noiseGenerator = noiseGenerator;
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Rivers);
         }
         #endregion
 
@@ -27,14 +25,14 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         {
             bool[,] waterMap = new bool[context.Width, context.Height];
 
-            float[,] noiseMap = _noiseGenerator.GenerateNoise(context.Settings.WaterNoiseScale, context);
+            float[,] noiseMap = GenerateRandomNoiseMap(context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
                 {
                     if (heightMap[i, j] >= 2) continue;
 
-                    if (noiseMap[i, j] < 0.5f)
+                    if (noiseMap[i, j] < context.Settings.WaterBiome.WaterLevel)
                     {
                         waterMap[i, j] = IsValidNeighbouringHeights(i, j, heightMap, context);
                     }
@@ -55,6 +53,19 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
             if (y + 1 < context.Height) valid &= heightMap[x, y + 1] <= 2;
             if (0 <= y - 1) valid &= heightMap[x, y - 1] <= 2;
             return valid;
+        }
+
+        private float[,] GenerateRandomNoiseMap(MapGenerationContext context)
+        {
+            float[,] noiseMap = new float[context.Width, context.Height];
+            for (int i = 0; i < context.Width; i++)
+            {
+                for (int j = 0; j < context.Height; j++)
+                {
+                    noiseMap[i, j] = _noiseGenerator.GenerateNoise(i, j, context.Seed + 100);
+                }
+            }
+            return noiseMap;
         }
         #endregion
     }
