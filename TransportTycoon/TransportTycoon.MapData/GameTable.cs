@@ -43,8 +43,12 @@ namespace TransportTycoon.MapData
                 ForestNoiseScale = 0.1f,
                 TerrainNoiseScale = 0.072f,
                 WaterNoiseScale = 0.059f,
+                MinCities = 2,
+                MaxCities = 3,
+                MinStructure = 6,
+                MaxStructure = 8,
             };
-            GenerationContext = new(width, height, 0, GenerationSettings);
+            GenerationContext = new(width, height, 42, GenerationSettings);
 
             MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationContext);
         }

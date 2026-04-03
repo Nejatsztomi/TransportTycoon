@@ -31,6 +31,11 @@
 
         public int Width { get; }
         public int Height { get; }
+
+        /// <summary>
+        /// Gets the coordinates of the top-left point of the building
+        /// </summary>
+        public (int X, int Y) TopLeftPoints => MapPoints.Keys.OrderBy(p => p.X).ThenBy(p => p.Y).FirstOrDefault();
         #endregion
 
         #region Constructors
