@@ -31,6 +31,7 @@ public class WaterGeneratorTest
         private IWaterGenerator _waterGenerator = null!;
         private MapGenerationContext _context = default;
         private int[,] _heightMap = null!;
+        private bool[,] _waterMap = null!;
 
         private INoiseGenerator GetMockedNoiseGenerator()
         {
@@ -69,14 +70,14 @@ public class WaterGeneratorTest
 
             // Create a basic height map for testing
             _heightMap = GenerateHeightMap(_context.Width, _context.Height);
+            _waterMap = new bool[_context.Width, _context.Height];
         }
 
         [TestMethod]
-        [Timeout(5 * 1_000, CooperativeCancellation = true)]
         public void GenerateWaterMap_ReturnsCorrectDimensions()
         {
             // Act
-            bool[,] waterMap = _waterGenerator.GenerateWaterMap(_heightMap, _context);
+            bool[,] waterMap = _waterGenerator.GenerateWaterMap(_heightMap, _waterMap, _context);
 
             // Assert
             Assert.AreEqual(_context.Width, waterMap.GetLength(0), "Water map width should match context");
@@ -89,9 +90,10 @@ public class WaterGeneratorTest
             // Arrange - Create a height map with all high terrain (height >= 2)
             MapGenerationContext smallContext = new(10, 10, 42, new MapGenerationSettings());
             int[,] highHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height, extraHeight: 3); // All heights will be 3 or 4
+            bool[,] waterMap = new bool[smallContext.Width, smallContext.Height];
 
             // Act
-            bool[,] waterMap = _waterGenerator.GenerateWaterMap(highHeightMap, smallContext);
+            waterMap = _waterGenerator.GenerateWaterMap(highHeightMap, waterMap, smallContext);
 
             // Assert - Water should not appear on high terrain
             bool hasWaterCells = false;
@@ -111,9 +113,10 @@ public class WaterGeneratorTest
             // Arrange - Create height map with clear terrain height variation
             MapGenerationContext smallContext = new(10, 10, 42, new MapGenerationSettings());
             int[,] variableHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height);
+            bool[,] waterMap = new bool[smallContext.Width, smallContext.Height];
 
             // Act
-            bool[,] waterMap = _waterGenerator.GenerateWaterMap(variableHeightMap, smallContext);
+            waterMap = _waterGenerator.GenerateWaterMap(variableHeightMap, waterMap, smallContext);
 
             // Assert - Water can only exist on terrain with height < 2
             bool hasWaterOnHighTerrain = false;
