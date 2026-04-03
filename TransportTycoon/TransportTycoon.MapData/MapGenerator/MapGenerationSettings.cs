@@ -162,9 +162,9 @@ namespace TransportTycoon.MapData.MapGenerator
             get;
             init
             {
-                if (!(value > 0))
+                if (!(value >= 2))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(StructureWidth), "StructureWidth must be a positive integer.");
+                    throw new ArgumentOutOfRangeException(nameof(StructureWidth), "StructureWidth must be a greater than or equal to 2.");
                 }
                 field = value;
             }
@@ -174,9 +174,9 @@ namespace TransportTycoon.MapData.MapGenerator
             get;
             init
             {
-                if (!(value > 0))
+                if (!(value >= 2))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(StructureHeight), "StructureHeight must be a positive integer.");
+                    throw new ArgumentOutOfRangeException(nameof(StructureHeight), "StructureHeight must be a greater than or equal to 2.");
                 }
                 field = value;
             }
@@ -237,9 +237,9 @@ namespace TransportTycoon.MapData.MapGenerator
             get;
             init
             {
-                if (!(value > 0))
+                if (!(value >= 3))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(CityWidth), "CityWidth must be a positive integer.");
+                    throw new ArgumentOutOfRangeException(nameof(CityWidth), "CityWidth must be a greater than or equal to 3.");
                 }
                 field = value;
             }
@@ -249,9 +249,9 @@ namespace TransportTycoon.MapData.MapGenerator
             get;
             init
             {
-                if (!(value > 0))
+                if (!(value > 3))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(CityHeight), "CityHeight must be a positive integer.");
+                    throw new ArgumentOutOfRangeException(nameof(CityHeight), "CityHeight must be a greater than or equal to 3.");
                 }
                 field = value;
             }
