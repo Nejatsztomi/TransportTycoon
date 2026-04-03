@@ -1,8 +1,9 @@
-﻿using TransportTycoon.MapData;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using TransportTycoon.MapData;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public class FieldViewModel : ViewModelBase
+    public partial class FieldViewModel : ViewModelBase
     {
         #region Fields
         #endregion
@@ -15,6 +16,8 @@ namespace TransportTycoon.WPF.ViewModel
         public int Y => Field.Y;
         public int Height => Field.Height;
         public int TreeCounter => Field.GetTrees();
+        [ObservableProperty]
+        private bool _isSelected;
         public string MinimapColor
         {
             get
@@ -73,9 +76,12 @@ namespace TransportTycoon.WPF.ViewModel
                     return bridge.BridgeType switch
                     {
                         BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => $"/Assets/Images/Bridge/yellowBridge.png",
+                        BridgeType.VerticalBlueBridge or BridgeType.HorizontalBlueBridge => $"/Assets/Images/Bridge/blueBridge.png",
+                        BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => $"/Assets/Images/Bridge/redBridge.png",
                         _ => null
                     };
                 }
+                else if (Field is Stop) return $"/Assets/Images/Stop/stop.png";
                 return null;
             }
         }
@@ -93,7 +99,27 @@ namespace TransportTycoon.WPF.ViewModel
                         _ => 0
                     };
                 }
+                else if (Field is Bridge bridge)
+                {
+                    return bridge.BridgeType switch
+                    {
+                        BridgeType.VerticalYellowBridge or BridgeType.VerticalBlueBridge or BridgeType.VerticalRedBridge => 90,
+                        _ => 0
+                    };
+                }
                 return 0;
+            }
+        }
+
+        public string? StructureImage
+        {
+            get
+            {
+                return Field.FieldType switch
+                {
+                    FieldType.House => $"/Assets/Images/Structures/house.jpg",
+                    _ => null
+                };
             }
         }
         #endregion

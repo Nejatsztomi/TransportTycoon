@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData.MapGenerator;
+﻿using TransportTycoon.MapData.Buildings;
+using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
@@ -10,12 +11,11 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Properties
-        public Field[,] Table { get; }
+        public Field[,] Table { get; private set; }
         public int Width { get; }
         public int Height { get; }
 
-        public List<(int, int)> Pointers { get; }
-        public List<(int, int)> BuildingIDs { get; }
+        public List<BuildingEntity> BuildingEntities { get; }
 
         public Field this[int x, int y]
         {
@@ -23,7 +23,9 @@ namespace TransportTycoon.MapData
             set => Table[x, y] = value;
         }
 
-        private INoiseGenerator NoiseGenerator { get; }
+        private IMapGenerator MapGenerator { get; }
+        private MapGenerationSettings GenerationSettings { get; }
+        private MapGenerationContext GenerationContext { get; }
         #endregion
 
         #region Constructors
@@ -33,15 +35,28 @@ namespace TransportTycoon.MapData
             Height = height;
             Table = new Field[width, height];
 
-            Pointers = [];
-            BuildingIDs = [];
+            BuildingEntities = [];
 
-            NoiseGenerator = PerlinNoiseGeneratorFactory.Create(width, height, 0);
+            GenerationSettings = new()
+            {
+                ForestPercentage = 0.4f,
+                ForestNoiseScale = 0.1f,
+                TerrainNoiseScale = 0.072f,
+                WaterNoiseScale = 0.059f,
+            };
+            GenerationContext = new(width, height, 0, GenerationSettings);
+
+            MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationContext);
         }
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
 
         #region Public methods
+        public void GenerateMap()
+        {
+            Table = MapGenerator.GenerateMap(GenerationContext);
+        }
+
         public List<Field> CheckNeighboringTrees(int x, int y)
         {
             List<Field> neighbours = new List<Field>();
@@ -55,71 +70,6 @@ namespace TransportTycoon.MapData
                 if (neighbours[i] is Terrain terrain && terrain.Trees == 0) acceptedNeighbours.Add(neighbours[i]);
             }
             return acceptedNeighbours;
-        }
-
-        public void GenerateMap()
-        {
-            float[,] randomMap = NoiseGenerator.GenerateNoise(0.1f);
-            for (int i = 0; i < Width; i++)
-            {
-                for (int j = 0; j < Height; j++)
-                {
-                    if (randomMap[i, j] < 0.35f)
-                    {
-                        Table[i, j] = new Water(i, j);          // Bottom 35% of heights become water
-                    }
-                    else if (randomMap[i, j] < 0.55f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 1);          // Next 20% become plains
-                    }
-                    else if (randomMap[i, j] < 0.75f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 2);          // Next 20% become hills
-                    }
-                    else if (randomMap[i, j] < 0.90f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 3);      // Next 15% become mountains
-                    }
-                    else
-                    {
-                        Table[i, j] = new Terrain(i, j, 4);  // Top 10% become high mountains
-                    }
-                }
-            }
-
-            GenerateTrees();
-        }
-
-        public void GenerateTrees()
-        {
-            float[,] randomTreeMap = NoiseGenerator.GenerateNoise(0.1f);
-            for (int i = 0; i < Width; i++)
-            {
-                for (int j = 0; j < Height; j++)
-                {
-                    if (Table[i, j] is not Terrain terrain) continue;
-                    if (terrain.FieldType == FieldType.HighMountain) continue;
-
-                    if (randomTreeMap[i, j] < 0.5f) continue;
-
-                    if (randomTreeMap[i, j] < 0.75f)
-                    {
-                        terrain.Trees = 1;
-                    }
-                    else if (randomTreeMap[i, j] < 0.85f)
-                    {
-                        terrain.Trees = 2;
-                    }
-                    else if (randomTreeMap[i, j] < 0.95f)
-                    {
-                        terrain.Trees = 3;
-                    }
-                    else
-                    {
-                        terrain.Trees = 4;
-                    }
-                }
-            }
         }
 
         //Checks if the new field is possible
@@ -159,6 +109,11 @@ namespace TransportTycoon.MapData
             if (y + 1 <= Width - 1 && Table[x, y + 1] is Road) result.Add((Table[x, y + 1].X, Table[x, y + 1].Y));
             if (x + 1 <= Height - 1 && Table[x + 1, y] is Road) result.Add((Table[x + 1, y].X, Table[x + 1, y].Y));
             if (y - 1 >= 0 && Table[x, y - 1] is Road) result.Add((Table[x, y - 1].X, Table[x, y - 1].Y));
+            return result;
+        }
+        public List<(int, int)> StopEnvironment(int x, int y)
+        {
+            List<(int, int)> result = NeighbourRoadsCoord(x, y);
             return result;
         }
         #endregion

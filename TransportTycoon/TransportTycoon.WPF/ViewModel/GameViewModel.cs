@@ -23,10 +23,6 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand ResumeGameCommand { get; init; }
         public RelayCommand EditorModeCommand { get; init; }
         public RelayCommand<object> SetSelectedButtonCommand { get; init; }
-
-        public RelayCommand IncreaseHeightCommand { get; init; }
-        public RelayCommand DecreaseHeightCommand { get; init; }
-
         public RelayCommand<FieldViewModel> TileLeftClickCommand { get; init; }
         #endregion
 
@@ -67,6 +63,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.InfrastructureBuilt += Model_InfrastructureBuilt;
             model.FieldChanged += Model_FieldChanged;
             model.BalanceChanged += Model_BalanceChanged;
+            model.SelectedFieldChanged += Model_SelectedFieldChanged;
 
             NormalSpeedCommand = new(OnNormalSpeed);
             FastSpeedCommand = new(OnFastSpeed);
@@ -76,13 +73,11 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
-            //IncreaseHeightCommand = new(OnIncreaseHeight);
-            //DecreaseHeightCommand = new(OnDecreaseHeight);
-
             SetSelectedButtonCommand = new RelayCommand<object>(x =>
             {
                 if (x == null) return;
                 _selectedButton = Convert.ToInt32(x);
+                Model.SetSelectedField(-1, -1);
             });
             TileLeftClickCommand = new RelayCommand<FieldViewModel>(tile =>
             {
@@ -101,6 +96,9 @@ namespace TransportTycoon.WPF.ViewModel
                     case 12:
                         Model.BuildBridge(tile.X, tile.Y);
                         break;
+                    case 13:
+                        Model.BuildStop(tile.X, tile.Y);
+                        break;
                     default:
                         break;
                 }
@@ -108,6 +106,20 @@ namespace TransportTycoon.WPF.ViewModel
 
             Tiles = [];
             RefreshTable();
+        }
+
+        private void Model_SelectedFieldChanged(object? sender, (int, int) e)
+        {
+            if (Model.SelectedField == null)
+            {
+                var tile = Tiles.FirstOrDefault(t => t.IsSelected);
+                if (tile != null) tile.IsSelected = false;
+            }
+            else
+            {
+                var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
+                if (tile != null) tile.IsSelected = true;
+            }
         }
 
         private void Model_BalanceChanged(object? sender, EventArgs e)

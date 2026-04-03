@@ -1,4 +1,5 @@
 using TransportTycoon.MapData.MapGenerator;
+using TransportTycoon.MapData.MapGenerator.NoiseGenerator;
 
 namespace TransportTycoon.Test.MapData.MapGenerator;
 
@@ -10,34 +11,35 @@ public class INoiseGeneratorTest
         [TestMethod]
         public void PerlinNoiseFactoryCreate_WithAllParameters()
         {
-            INoiseGenerator result = PerlinNoiseGeneratorFactory.Create(10, 10, 42);
+            MapGenerationContext context = new(10, 15, 0, new MapGenerationSettings());
+            INoiseGenerator result = PerlinNoiseGeneratorFactory.Create(new RandomProvider(), context);
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType<PerlinNoiseGenerator>(result);
         }
     }
 
+    [TestClass]
     public class NoiseGenerationTest
     {
         [TestClass]
         public class PerlinNoiseGeneratorTest
         {
-            private static readonly int _width = 10;
-            private static readonly int _height = 15;
+            private static readonly MapGenerationContext _context = new(10, 15, 0, new MapGenerationSettings());
             private static INoiseGenerator _generator = null!;
 
             [ClassInitialize]
             public static void Initialize(TestContext _)
             {
-                _generator = PerlinNoiseGeneratorFactory.Create(_width, _height, 42);
+                _generator = PerlinNoiseGeneratorFactory.Create(new RandomProvider(), _context);
             }
 
             [TestMethod]
             public void PerlinNoiseGenerate_IsCorrectSize()
             {
-                float[,] noise = _generator.GenerateNoise(0.1f);
+                float[,] noise = _generator.GenerateNoise(0.1f, _context);
 
-                Assert.AreEqual(_width, noise.GetLength(0), "Generated noise width should be what is in the constructor");
-                Assert.AreEqual(_height, noise.GetLength(1), "Generated noise height should be what is in the constructor");
+                Assert.AreEqual(_context.Width, noise.GetLength(0), "Generated noise width should be what is in the constructor");
+                Assert.AreEqual(_context.Height, noise.GetLength(1), "Generated noise height should be what is in the constructor");
             }
 
             [TestMethod]
@@ -46,7 +48,7 @@ public class INoiseGeneratorTest
             [DataRow(0.9f)]
             public void PerlinNoiseGenerate_ValuesAreBetweenZeroAndOne(float noiseScale)
             {
-                float[,] noise = _generator.GenerateNoise(noiseScale);
+                float[,] noise = _generator.GenerateNoise(noiseScale, _context);
 
                 bool hasValuesOutsideRange = false;
                 foreach (var value in noise)
