@@ -28,6 +28,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
             int[,] forestMap = new int[context.Width, context.Height];
 
             float[,] randomTreeNoiseMap = _noiseGenerator.GenerateNoise(context.Settings.ForestNoiseScale, context);
+            float forestPercentage = 1 - context.Settings.ForestPercentage;
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
@@ -35,17 +36,17 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
                     // TODO: Don't use magic number, later on there will a TerrainHeight enum
                     if (heightMap[i, j] >= 4) continue;
 
-                    if (randomTreeNoiseMap[i, j] < context.Settings.ForestPercentage) continue;
+                    if (randomTreeNoiseMap[i, j] < forestPercentage) continue;
 
-                    if (randomTreeNoiseMap[i, j] < context.Settings.ForestPercentage + context.Settings.ForestPercentage / 4)
+                    if (randomTreeNoiseMap[i, j] < forestPercentage + forestPercentage / 4)
                     {
                         forestMap[i, j] = 1;
                     }
-                    else if (randomTreeNoiseMap[i, j] < context.Settings.ForestPercentage + 2 * context.Settings.ForestPercentage / 4)
+                    else if (randomTreeNoiseMap[i, j] < forestPercentage + 2 * forestPercentage / 4)
                     {
                         forestMap[i, j] = 2;
                     }
-                    else if (randomTreeNoiseMap[i, j] < context.Settings.ForestPercentage + 3 * context.Settings.ForestPercentage / 4)
+                    else if (randomTreeNoiseMap[i, j] < forestPercentage + 3 * forestPercentage / 4)
                     {
                         forestMap[i, j] = 3;
                     }
