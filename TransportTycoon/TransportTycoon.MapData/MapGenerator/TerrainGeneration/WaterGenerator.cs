@@ -49,11 +49,12 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         private bool IsValidNeighbouringHeights(int x, int y, int[,] heightMap, MapGenerationContext context)
         {
             // TODO: Replace magic number with TerrainHeight enum
-            if (!(x + 1 < context.Width && heightMap[x + 1, y] <= 2)) return false;
-            if (!(0 <= x - 1 && heightMap[x - 1, y] <= 2)) return false;
-            if (!(y + 1 < context.Height && heightMap[x, y + 1] <= 2)) return false;
-            if (!(0 <= y - 1 && heightMap[x, y - 1] <= 2)) return false;
-            return true;
+            bool valid = true;
+            if (x + 1 < context.Width) valid &= heightMap[x + 1, y] <= 2;
+            if (0 <= x - 1) valid &= heightMap[x - 1, y] <= 2;
+            if (y + 1 < context.Height) valid &= heightMap[x, y + 1] <= 2;
+            if (0 <= y - 1) valid &= heightMap[x, y - 1] <= 2;
+            return valid;
         }
         #endregion
     }
