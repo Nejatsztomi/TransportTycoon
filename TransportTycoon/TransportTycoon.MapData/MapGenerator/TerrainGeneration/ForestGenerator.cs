@@ -4,21 +4,19 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
     public static class ForestGeneratorFactory
     {
-        public static IForestGenerator Create(INoiseGenerator noiseGenerator, IRandomProvider randomProvider, MapGenerationContext context) => new ForestGenerator(noiseGenerator, randomProvider, context);
+        public static IForestGenerator Create(INoiseGenerator noiseGenerator) => new ForestGenerator(noiseGenerator);
     }
 
     internal class ForestGenerator : IForestGenerator
     {
         #region Private fields
         private readonly INoiseGenerator _noiseGenerator;
-        private readonly IRandom _random;
         #endregion
 
         #region Constructors
-        public ForestGenerator(INoiseGenerator noiseGenerator, IRandomProvider randomProvider, MapGenerationContext context)
+        public ForestGenerator(INoiseGenerator noiseGenerator)
         {
             _noiseGenerator = noiseGenerator;
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Forests);
         }
         #endregion
 
@@ -27,7 +25,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         {
             int[,] forestMap = new int[context.Width, context.Height];
 
-            float[,] randomTreeNoiseMap = _noiseGenerator.GenerateNoise(context.Settings.ForestNoiseScale, context);
+            float[,] randomTreeNoiseMap = GenerateRandomNoiseMap(context);
             float forestPercentage = 1 - context.Settings.ForestPercentage;
             for (int i = 0; i < context.Width; i++)
             {
@@ -58,6 +56,21 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
             }
 
             return forestMap;
+        }
+        #endregion
+
+        #region Private methods
+        private float[,] GenerateRandomNoiseMap(MapGenerationContext context)
+        {
+            float[,] noiseMap = new float[context.Width, context.Height];
+            for (int i = 0; i < context.Width; i++)
+            {
+                for (int j = 0; j < context.Height; j++)
+                {
+                    noiseMap[i, j] = _noiseGenerator.GenerateNoise(i, j, context.Seed + 50);
+                }
+            }
+            return noiseMap;
         }
         #endregion
     }

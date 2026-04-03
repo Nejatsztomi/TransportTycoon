@@ -4,21 +4,19 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
     public static class TerraingGeneratorFactory
     {
-        public static ITerrainGenerator Create(INoiseGenerator noiseGenerator, IRandomProvider randomProvider, MapGenerationContext context) => new TerrainGenerator(noiseGenerator, randomProvider, context);
+        public static ITerrainGenerator Create(INoiseGenerator noiseGenerator) => new TerrainGenerator(noiseGenerator);
     }
 
     internal class TerrainGenerator : ITerrainGenerator
     {
         #region Private fields
         private readonly INoiseGenerator _noiseGenerator;
-        private readonly IRandom _random;
         #endregion
 
         #region Constructors
-        public TerrainGenerator(INoiseGenerator noiseGenerator, IRandomProvider randomProvider, MapGenerationContext context)
+        public TerrainGenerator(INoiseGenerator noiseGenerator)
         {
             _noiseGenerator = noiseGenerator;
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Terrain);
         }
         #endregion
 
@@ -27,13 +25,17 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         {
             int[,] heightMap = new int[context.Width, context.Height];
 
-            float[,] randomNoiseMap = _noiseGenerator.GenerateNoise(context.Settings.TerrainNoiseScale, context);
+            float[,] randomNoiseMap = GenerateRandomNoiseMap(context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
                 {
                     // TODO: Replaces magic numbers with TerrainHight enum
-                    if (randomNoiseMap[i, j] < context.Settings.Biome.PlainRange)
+                    if (randomNoiseMap[i, j] < context.Settings.Biome.WaterRange)
+                    {
+                        heightMap[i, j] = 0;
+                    }
+                    else if (randomNoiseMap[i, j] < context.Settings.Biome.PlainRange)
                     {
                         heightMap[i, j] = 1;
                     }
@@ -53,6 +55,21 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
             }
 
             return heightMap;
+        }
+        #endregion
+
+        #region Private methods
+        private float[,] GenerateRandomNoiseMap(MapGenerationContext context)
+        {
+            float[,] noiseMap = new float[context.Width, context.Height];
+            for (int i = 0; i < context.Width; i++)
+            {
+                for (int j = 0; j < context.Height; j++)
+                {
+                    noiseMap[i, j] = _noiseGenerator.GenerateNoise(i, j, context.Seed + 10);
+                }
+            }
+            return noiseMap;
         }
         #endregion
     }
