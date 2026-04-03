@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData
+﻿using TransportTycoon.MapData.Buildings;
+
+namespace TransportTycoon.MapData
 {
     public class Stop : Infrastructure
     {

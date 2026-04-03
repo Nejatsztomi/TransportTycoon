@@ -2,6 +2,6 @@
 {
     public interface IWaterGenerator
     {
-        public bool[,] GenerateWaterMap(int riverCount, int[,] heightMap, MapGenerationContext context);
+        public bool[,] GenerateWaterMap(int[,] heightMap, MapGenerationContext context);
     }
 }

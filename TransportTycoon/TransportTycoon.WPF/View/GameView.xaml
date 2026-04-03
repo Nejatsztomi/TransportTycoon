@@ -277,6 +277,13 @@
                                         </Image>
 
 
+                                        <Image Source="{Binding StructureImage, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                               Stretch="UniformToFill"
+                                               RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                               IsHitTestVisible="False"
+                                               Margin="2"
+                                               />
+
                                         <Border x:Name="HoverOverlay" 
                                              Visibility="Hidden" 
                                              BorderBrush="Yellow" 

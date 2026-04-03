@@ -15,7 +15,7 @@ public class MapGenerationContextTest
         public void MapGenerationContext_CanBeCreatedWithParameters(int width, int height, int seed)
         {
             // Act
-            MapGenerationContext context = new(width, height, seed);
+            MapGenerationContext context = new(width, height, seed, new MapGenerationSettings());
 
             // Assert
             Assert.AreEqual(width, context.Width, "Width should be set");

@@ -1,5 +1,5 @@
-﻿using TransportTycoon.MapData.MapGenerator;
-using TransportTycoon.MapData.MapGenerator.NoiseGenerator;
+﻿using TransportTycoon.MapData.Buildings;
+using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.MapData
@@ -16,8 +16,7 @@ namespace TransportTycoon.MapData
         public int Width { get; }
         public int Height { get; }
 
-        public List<(int, int)> Pointers { get; }
-        public List<(int, int)> BuildingIDs { get; }
+        public List<BuildingEntity> BuildingEntities { get; }
 
         public Field this[int x, int y]
         {
@@ -37,18 +36,20 @@ namespace TransportTycoon.MapData
             Height = height;
             Table = new Field[width, height];
 
-            Pointers = [];
-            BuildingIDs = [];
+            BuildingEntities = [];
 
-            GenerationContext = new(width, height, 0);
             GenerationSettings = new()
             {
                 ForestPercentage = 0.4f,
-                ForestNoiseScale = 0.1f,
-                TerrainNoiseScale = 0.072f,
-                WaterNoiseScale = 0.059f,
+                WaterBiome = WaterBiomes.Dry,
+                MinCities = 2,
+                MaxCities = 3,
+                MinStructure = 6,
+                MaxStructure = 8,
             };
-            MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationSettings);
+            GenerationContext = new(width, height, 42, GenerationSettings);
+
+            MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationContext);
         }
         public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion

@@ -19,7 +19,8 @@ public class MapGenerationSettingsTest
             // Assert
             Assert.AreEqual(MapGenerationSettingsDefaults.RiverCount, settings.RiverCount);
             Assert.AreEqual(MapGenerationSettingsDefaults.ForestPercentage, settings.ForestPercentage);
-            Assert.AreEqual(MapGenerationSettingsDefaults.StructureRange, settings.StructureRange);
+            Assert.AreEqual(MapGenerationSettingsDefaults.MinStructureRange, settings.MinStructureRange);
+            Assert.AreEqual(MapGenerationSettingsDefaults.MaxStructureRange, settings.MaxStructureRange);
             Assert.AreEqual(MapGenerationSettingsDefaults.MinCities, settings.MinCities);
             Assert.AreEqual(MapGenerationSettingsDefaults.MaxCities, settings.MaxCities);
             Assert.AreEqual(MapGenerationSettingsDefaults.MinStructure, settings.MinStructure);
@@ -127,114 +128,124 @@ public class MapGenerationSettingsTest
     public class StructureGenerationTest
     {
         [TestMethod]
-        [DataRow(0, DisplayName = "Zero structure range")]
-        [DataRow(5, DisplayName = "Positive structure range")]
-        public void StructureRange_CanBeNonNegative(int range)
+        [DataRow(0, DisplayName = "Zero minimum structure range")]
+        [DataRow(5, DisplayName = "Positive minimum structure range")]
+        public void MinStructureRange_CanBeNonNegative(int range)
         {
             // Act
-            MapGenerationSettings settings = new() { StructureRange = range };
+            MapGenerationSettings settings = new() { MinStructureRange = range };
 
             // Assert
-            Assert.AreEqual(range, settings.StructureRange);
+            Assert.AreEqual(range, settings.MinStructureRange);
         }
 
         [TestMethod]
-        public void StructureRange_MustBeNonNegative()
+        public void MinStructureRange_MustBeNonNegative()
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { StructureRange = -1 }; }, "ArgumentOutOfRangeException should be thrown for negative values");
-
+            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructureRange = -1 }; }, "ArgumentOutOfRangeException should be thrown for negative values");
         }
 
-        [TestClass]
-        public class CityGenerationTest
+        [TestMethod]
+        [DataRow(0, DisplayName = "Zero maximum structure range")]
+        [DataRow(5, DisplayName = "Positive maximum structure range")]
+        public void MaxStructureRange_CanBeGreaterThanOrEqualMinStructureRange(int range)
         {
-            [TestMethod]
-            [DataRow(2, DisplayName = "Minimum cities")]
-            [DataRow(5, DisplayName = "More than minimum cities")]
-            public void MinCitites_CanBeAtLeastTwo(int min)
-            {
-                // Act
-                MapGenerationSettings settings = new() { MinCities = min };
+            // Act
+            MapGenerationSettings settings = new() { MinStructureRange = 0, MaxStructureRange = range };
 
-                // Assert
-                Assert.AreEqual(min, settings.MinCities);
-            }
-
-            [TestMethod]
-            [DataRow(1, DisplayName = "Less than minimum cities")]
-            [DataRow(0, DisplayName = "Zero cities")]
-            [DataRow(-1, DisplayName = "Negative cities")]
-            public void MinCities_MustBeAtLeastTwo(int min)
-            {
-                // Act & Assert
-                Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinCities = min }; }, "ArgumentOutOfRangeException should be thrown for values below 2");
-            }
-
-            [TestMethod]
-            [DataRow(2, 2, DisplayName = "Max cities equal to min cities")]
-            [DataRow(2, 5, DisplayName = "Max cities greater than min cities")]
-            public void MaxCities_CanBeGreaterThanOrEqualMinCities(int min, int max)
-            {
-                // Act
-                MapGenerationSettings settings = new() { MinCities = min, MaxCities = max };
-
-                // Assert
-                Assert.AreEqual(max, settings.MaxCities);
-                Assert.AreEqual(min, settings.MinCities);
-            }
-
-            [TestMethod]
-            public void MaxCities_MustBeGreaterThanOrEqualMinCities()
-            {
-                // Act & Assert
-                Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinCities = 2, MaxCities = 1 }; }, "ArgumentOutOfRangeException should be thrown if MaxCities is smaller then MinCities");
-            }
+            // Assert
+            Assert.AreEqual(range, settings.MaxStructureRange);
         }
 
-        [TestClass]
-        public class StructureCountTest
+        [TestMethod]
+        public void MaxStructureRange_MustBeGreaterThanOrEqualMinStructureRange()
         {
-            [TestMethod]
-            [DataRow(1, DisplayName = "Minimum structures")]
-            [DataRow(5, DisplayName = "More than minimum structures")]
-            public void MinStructure_CanBePositive(int min)
-            {
-                // Act
-                MapGenerationSettings settings = new() { MinStructure = min };
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructureRange = 1, MaxStructureRange = 0 }; }, "ArgumentOutOfRangeException should be thrown if MaxStructureRange is smaller then MinStructureRange");
+        }
 
-                // Assert
-                Assert.AreEqual(min, settings.MinStructure);
-            }
+        [TestMethod]
+        [DataRow(1, DisplayName = "Minimum structures")]
+        [DataRow(5, DisplayName = "More than minimum structures")]
+        public void MinStructure_CanBePositive(int min)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinStructure = min };
 
-            [TestMethod]
-            [DataRow(0, DisplayName = "Zero structure")]
-            [DataRow(-1, DisplayName = "Negative structures")]
-            public void MinStructure_MustBePositive(int min)
-            {
-                // Act & Assert
-                Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructure = min }; }, "ArgumentOutOfRangeException should be thrown for non-positve values");
-            }
+            // Assert
+            Assert.AreEqual(min, settings.MinStructure);
+        }
 
-            [TestMethod]
-            [DataRow(1, 1, DisplayName = "Max structures equal to min structures")]
-            [DataRow(1, 5, DisplayName = "Max structures greater than min structures")]
-            public void MaxStructure_CanBeGreaterThanOrEqualMinStructure(int min, int max)
-            {
-                // Act
-                MapGenerationSettings settings = new() { MinStructure = min, MaxStructure = max };
+        [TestMethod]
+        [DataRow(0, DisplayName = "Zero structure")]
+        [DataRow(-1, DisplayName = "Negative structures")]
+        public void MinStructure_MustBePositive(int min)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructure = min }; }, "ArgumentOutOfRangeException should be thrown for non-positve values");
+        }
 
-                // Assert
-                Assert.AreEqual(max, settings.MaxStructure);
-                Assert.AreEqual(min, settings.MinStructure);
-            }
+        [TestMethod]
+        [DataRow(1, 1, DisplayName = "Max structures equal to min structures")]
+        [DataRow(1, 5, DisplayName = "Max structures greater than min structures")]
+        public void MaxStructure_CanBeGreaterThanOrEqualMinStructure(int min, int max)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinStructure = min, MaxStructure = max };
 
-            [TestMethod]
-            public void MaxStructure_MustBeGreaterThanOrEqualMinStructure()
-            {
-                // Act & Assert
-                Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructure = 1, MaxStructure = 0 }; }, "ArgumentOutOfRangeException should be thrown if MaxStrucure is smaller then MinStructure");
-            }
+            // Assert
+            Assert.AreEqual(max, settings.MaxStructure);
+            Assert.AreEqual(min, settings.MinStructure);
+        }
+
+        [TestMethod]
+        public void MaxStructure_MustBeGreaterThanOrEqualMinStructure()
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructure = 1, MaxStructure = 0 }; }, "ArgumentOutOfRangeException should be thrown if MaxStrucure is smaller then MinStructure");
+        }
+
+        [TestMethod]
+        [DataRow(2, DisplayName = "Minimum cities")]
+        [DataRow(5, DisplayName = "More than minimum cities")]
+        public void MinCitites_CanBeAtLeastTwo(int min)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinCities = min };
+
+            // Assert
+            Assert.AreEqual(min, settings.MinCities);
+        }
+
+        [TestMethod]
+        [DataRow(1, DisplayName = "Less than minimum cities")]
+        [DataRow(0, DisplayName = "Zero cities")]
+        [DataRow(-1, DisplayName = "Negative cities")]
+        public void MinCities_MustBeAtLeastTwo(int min)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinCities = min }; }, "ArgumentOutOfRangeException should be thrown for values below 2");
+        }
+
+        [TestMethod]
+        [DataRow(2, 2, DisplayName = "Max cities equal to min cities")]
+        [DataRow(2, 5, DisplayName = "Max cities greater than min cities")]
+        public void MaxCities_CanBeGreaterThanOrEqualMinCities(int min, int max)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinCities = min, MaxCities = max };
+
+            // Assert
+            Assert.AreEqual(max, settings.MaxCities);
+            Assert.AreEqual(min, settings.MinCities);
+        }
+
+        [TestMethod]
+        public void MaxCities_MustBeGreaterThanOrEqualMinCities()
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinCities = 2, MaxCities = 1 }; }, "ArgumentOutOfRangeException should be thrown if MaxCities is smaller then MinCities");
         }
     }
 }

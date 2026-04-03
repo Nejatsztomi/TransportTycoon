@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -108,6 +109,27 @@ namespace TransportTycoon.WPF.ViewModel
                     };
                 }
                 return 0;
+            }
+        }
+
+        public string? StructureImage
+        {
+            get
+            {
+                return Field.FieldType switch
+                {
+                    FieldType.House => $"/Assets/Images/Structures/house.jpg",
+
+                    FieldType.Farm => $"/Assets/Images/Structures/farm.png",
+                    FieldType.Mine => $"/Assets/Images/Structures/oil.jpg",
+                    FieldType.LumberCamp => $"/Assets/Images/Structures/lumbercamp.png",
+
+                    FieldType.Mill => $"/Assets/Images/Structures/mill.png",
+                    FieldType.Plant => $"/Assets/Images/Structures/rubber.jpg",
+                    FieldType.Factory => $"/Assets/Images/Structures/factory.png",
+
+                    _ => null
+                };
             }
         }
         #endregion

@@ -17,7 +17,7 @@ public class TerrainGeneratorTest
             INoiseGenerator noiseGenerator_mock = Substitute.For<INoiseGenerator>();
 
             // Act
-            ITerrainGenerator result = TerraingGeneratorFactory.Create(noiseGenerator_mock, 0.1f);
+            ITerrainGenerator result = TerraingGeneratorFactory.Create(noiseGenerator_mock);
 
             // Assert
             Assert.IsNotNull(result);
@@ -30,28 +30,18 @@ public class TerrainGeneratorTest
     {
         private ITerrainGenerator _terrainGenerator = null!;
         private IBiome _biome = null!;
-        private MapGenerationContext _context;
+        private MapGenerationContext _context = default;
 
         private INoiseGenerator GetMockedNoiseGenerator()
         {
             INoiseGenerator noiseGenerator_mock = Substitute.For<INoiseGenerator>();
-            noiseGenerator_mock.GenerateNoise(Arg.Any<float>(), Arg.Any<MapGenerationContext>())
+            noiseGenerator_mock.GenerateNoise(Arg.Any<float>(), Arg.Any<float>(), Arg.Any<int>())
                 .Returns(x =>
                 {
-                    var context = (MapGenerationContext)x[1];
-                    var array = new float[context.Width, context.Height];
-
                     // Deterministic noise based only on seed and coordinates
-                    for (int i = 0; i < context.Width; i++)
-                    {
-                        for (int j = 0; j < context.Height; j++)
-                        {
-                            // Use hash function to generate deterministic values from seed + coordinates
-                            uint hash = (uint)((context.Seed ^ (i * 73856093) ^ (j * 19349663)) * 2654435761);
-                            array[i, j] = (float)(hash % 1000) / 1000f; // Values between 0.0f and 1.0f
-                        }
-                    }
-                    return array;
+                    // Use hash function to generate deterministic values from seed + coordinates
+                    uint hash = (uint)(((int)x[2] ^ ((int)(float)x[0] * 73856093) ^ ((int)(float)x[1] * 19349663)) * 2654435761);
+                    return (float)(hash % 1000) / 1000f; // Values between 0.0f and 1.0f
                 });
             return noiseGenerator_mock;
         }
@@ -71,16 +61,15 @@ public class TerrainGeneratorTest
         {
             INoiseGenerator noiseGenerator_mock = GetMockedNoiseGenerator();
 
-            _terrainGenerator = TerraingGeneratorFactory.Create(noiseGenerator_mock, 0.1f);
-            _biome = GetMockedBiome();
-            _context = new(20, 20, 42);
+            _context = new(20, 20, 42, new MapGenerationSettings { Biome = GetMockedBiome() });
+            _terrainGenerator = TerraingGeneratorFactory.Create(noiseGenerator_mock);
         }
 
         [TestMethod]
         public void GenerateTerrain_ReturnsCorrectDimensions()
         {
             // Act
-            int[,] terrain = _terrainGenerator.GenerateTerrain(_biome, _context);
+            int[,] terrain = _terrainGenerator.GenerateTerrain(_context);
 
             // Assert
             Assert.AreEqual(_context.Width, terrain.GetLength(0), "Terrain width should match context");
@@ -95,7 +84,7 @@ public class TerrainGeneratorTest
             int maxTerrainHeight = 4;
 
             // Act
-            int[,] terrain = _terrainGenerator.GenerateTerrain(_biome, _context);
+            int[,] terrain = _terrainGenerator.GenerateTerrain(_context);
 
             // Assert
             bool hasValidHeights = true;
@@ -118,16 +107,16 @@ public class TerrainGeneratorTest
         public void GenerateTerrain_SameSeedProducesSameResult()
         {
             // Arrange
-            IBiome biome = GetMockedBiome();
-            MapGenerationContext context1 = new(15, 15, 12345);
-            MapGenerationContext context2 = new(15, 15, 12345);
+            MapGenerationSettings settings = new() { Biome = GetMockedBiome() };
+            MapGenerationContext context1 = new(15, 15, 12345, settings);
+            MapGenerationContext context2 = new(15, 15, 12345, settings);
 
             INoiseGenerator noiseGen_mock = GetMockedNoiseGenerator();
-            ITerrainGenerator terrainGen = TerraingGeneratorFactory.Create(noiseGen_mock, 0.1f);
+            ITerrainGenerator terrainGen = TerraingGeneratorFactory.Create(noiseGen_mock);
 
             // Act
-            int[,] terrain1 = terrainGen.GenerateTerrain(biome, context1);
-            int[,] terrain2 = terrainGen.GenerateTerrain(biome, context2);
+            int[,] terrain1 = terrainGen.GenerateTerrain(context1);
+            int[,] terrain2 = terrainGen.GenerateTerrain(context2);
 
             // Assert
             bool differentTerrains = false;
@@ -149,16 +138,16 @@ public class TerrainGeneratorTest
         public void GenerateTerrain_DifferentSeedProducesDifferentResult()
         {
             // Arrange
-            IBiome biome = GetMockedBiome();
-            MapGenerationContext context1 = new(15, 15, 111);
-            MapGenerationContext context2 = new(15, 15, 222);
+            MapGenerationSettings settings = new() { Biome = GetMockedBiome() };
+            MapGenerationContext context1 = new(15, 15, 111, settings);
+            MapGenerationContext context2 = new(15, 15, 222, settings);
 
             INoiseGenerator noiseGen = GetMockedNoiseGenerator();
-            ITerrainGenerator terrainGen = TerraingGeneratorFactory.Create(noiseGen, 0.1f);
+            ITerrainGenerator terrainGen = TerraingGeneratorFactory.Create(noiseGen);
 
             // Act
-            int[,] terrain1 = terrainGen.GenerateTerrain(biome, context1);
-            int[,] terrain2 = terrainGen.GenerateTerrain(biome, context2);
+            int[,] terrain1 = terrainGen.GenerateTerrain(context1);
+            int[,] terrain2 = terrainGen.GenerateTerrain(context2);
 
             // Assert - At least some cells should differ
             bool hasDifferentTerrains = false;

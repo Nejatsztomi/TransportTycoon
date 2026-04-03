@@ -19,6 +19,13 @@
     <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Road\turn.png" />
     <None Remove="Assets\Images\Stop\stop.png" />
+    <None Remove="Assets\Images\Structures\factory.png" />
+    <None Remove="Assets\Images\Structures\farm.png" />
+    <None Remove="Assets\Images\Structures\house.jpg" />
+    <None Remove="Assets\Images\Structures\lumbercamp.png" />
+    <None Remove="Assets\Images\Structures\mill.png" />
+    <None Remove="Assets\Images\Structures\oil.jpg" />
+    <None Remove="Assets\Images\Structures\rubber.jpg" />
     <None Remove="Assets\Images\Terrain\field.png" />
     <None Remove="Assets\Images\Terrain\highmountain.png" />
     <None Remove="Assets\Images\Terrain\highmountain2.png" />
@@ -78,6 +85,27 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Stop\stop.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Structures\factory.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Structures\farm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Structures\house.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Structures\lumbercamp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Structures\mill.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Structures\oil.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Structures\rubber.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Terrain\field.png">
