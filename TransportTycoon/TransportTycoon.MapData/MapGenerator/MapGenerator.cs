@@ -17,9 +17,10 @@ namespace TransportTycoon.MapData.MapGenerator
 
             ITerrainGenerator terrainGenerator = TerraingGeneratorFactory.Create(noiseGenerator);
             IForestGenerator forestGenerator = ForestGeneratorFactory.Create(noiseGenerator);
-            IWaterGenerator waterGenerator = LakeGeneratorFactory.Create(noiseGenerator);
+            IWaterGenerator lakeGenerator = LakeGeneratorFactory.Create(noiseGenerator);
+            IWaterGenerator riverGenerator = RiverGeneratorFactory.Create(randomProvider, context);
             IStructureGenerator structureGenerator = StructureGeneratorFactory.Create(cityGenerator, randomProvider, context);
-            return new MapGenerator(randomProvider.GetRandom(context.Seed, GenerationDomain.Map), terrainGenerator, forestGenerator, waterGenerator, structureGenerator);
+            return new MapGenerator(randomProvider.GetRandom(context.Seed, GenerationDomain.Map), terrainGenerator, forestGenerator, lakeGenerator, riverGenerator, structureGenerator);
         }
     }
 
@@ -29,16 +30,18 @@ namespace TransportTycoon.MapData.MapGenerator
         private readonly ITerrainGenerator _terrainGenerator;
         private readonly IForestGenerator _forestGenerator;
         private readonly IWaterGenerator _lakeGenerator;
+        private readonly IWaterGenerator _riverGenerator;
         private readonly IStructureGenerator _structureGenerator;
         private readonly IRandom _random;
         #endregion
 
         #region Constructors
-        public MapGenerator(IRandom random, ITerrainGenerator terrainGenerator, IForestGenerator forestGenerator, IWaterGenerator waterGenerator, IStructureGenerator structureGenerator)
+        public MapGenerator(IRandom random, ITerrainGenerator terrainGenerator, IForestGenerator forestGenerator, IWaterGenerator lakeGenerator, IWaterGenerator riverGenerator, IStructureGenerator structureGenerator)
         {
             _terrainGenerator = terrainGenerator;
             _forestGenerator = forestGenerator;
-            _lakeGenerator = waterGenerator;
+            _lakeGenerator = lakeGenerator;
+            _riverGenerator = riverGenerator;
             _structureGenerator = structureGenerator;
             _random = random;
         }
@@ -48,16 +51,16 @@ namespace TransportTycoon.MapData.MapGenerator
         public Field[,] GenerateMap(MapGenerationContext context)
         {
             int[,] heightMap = _terrainGenerator.GenerateTerrain(context);
-            bool[,] lakeMap = _lakeGenerator.GenerateWaterMap(heightMap, context);
-
             bool[,] waterMap = new bool[context.Width, context.Height];
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
                 {
-                    waterMap[i, j] = lakeMap[i, j] || heightMap[i, j] == 0;
+                    waterMap[i, j] = heightMap[i, j] == 0;
                 }
             }
+            //waterMap = _lakeGenerator.GenerateWaterMap(heightMap, waterMap, context);
+            waterMap = _riverGenerator.GenerateWaterMap(heightMap, waterMap, context);
 
             int[,] forestMap = _forestGenerator.GenerateForests(heightMap, context);
             bool[,] structureMap = GenerateEmptyStructureMap(context.Width, context.Height);
