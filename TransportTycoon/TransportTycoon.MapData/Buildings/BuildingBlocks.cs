@@ -22,7 +22,7 @@
     public class House : BuildingBlocks
     {
         #region Constructors
-        public House(int x, int y, BuildingEntity buildingEntity) : base(x, y, buildingEntity)
+        public House(int x, int y, CityEntity buildingEntity) : base(x, y, buildingEntity)
         {
             FieldType = FieldType.House;
         }

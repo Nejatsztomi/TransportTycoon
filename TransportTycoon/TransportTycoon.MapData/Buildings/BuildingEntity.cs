@@ -221,7 +221,7 @@
         }
         #endregion
 
-        #region Public method
+        #region Protected methods
         protected override void Production()
         {
             double multiplier = GetMultiplier();
