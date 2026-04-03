@@ -8,6 +8,7 @@
         Cities = 4,
         Structures = 5,
         Noise = 6,
+        Map = 7
     }
 
     public interface IRandomProvider
