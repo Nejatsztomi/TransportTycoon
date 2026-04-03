@@ -176,7 +176,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             return false;
         }
 
-        private bool IsValidPlacement(int startX, int startY, BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] occupiedMap)
+        private bool IsValidPlacement(int startX, int startY, BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap)
         {
             // Top-left anchor
             int targetHeight = heightMap[startX, startY];
@@ -196,7 +196,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                     if (waterMap[currentX, currentY]) return false;
 
                     // Must not be already occupied
-                    if (occupiedMap[currentX, currentY]) return false;
+                    if (structureMap[currentX, currentY]) return false;
 
                     // The tiles must have the same height as the top-left anchor tile
                     if (heightMap[currentX, currentY] != targetHeight) return false;
