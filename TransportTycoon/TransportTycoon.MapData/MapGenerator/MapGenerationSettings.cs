@@ -31,7 +31,6 @@ namespace TransportTycoon.MapData.MapGenerator
         public const int StructureWidth = 2;
         public const int StructureHeight = 2;
 
-
         // Terrain generation
         public static readonly IBiome Biome = Biomes.Default;
         public const float TerrainNoiseScale = 0.1f;
