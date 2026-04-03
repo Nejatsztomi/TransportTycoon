@@ -21,15 +21,14 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         #endregion
 
         #region Public methods
-        public bool[,] GenerateWaterMap(int[,] heightMap, MapGenerationContext context)
+        public bool[,] GenerateWaterMap(int[,] heightMap, bool[,] waterMap, MapGenerationContext context)
         {
-            bool[,] waterMap = new bool[context.Width, context.Height];
-
             float[,] noiseMap = GenerateRandomNoiseMap(context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
                 {
+                    if (waterMap[i, j]) continue;
                     if (heightMap[i, j] >= 2) continue;
 
                     if (noiseMap[i, j] < context.Settings.WaterBiome.WaterLevel)

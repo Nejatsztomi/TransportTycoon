@@ -46,6 +46,9 @@ namespace TransportTycoon.MapData
                 MaxCities = 3,
                 MinStructure = 6,
                 MaxStructure = 8,
+                MinRiverWidth = 1,
+                MaxRiverWidth = 1,
+                RiverCount = 20,
             };
             GenerationContext = new(width, height, 42, GenerationSettings);
 
