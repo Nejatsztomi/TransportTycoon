@@ -1,5 +1,6 @@
 ﻿using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
+using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.MapData
 {
@@ -40,9 +41,7 @@ namespace TransportTycoon.MapData
             GenerationSettings = new()
             {
                 ForestPercentage = 0.4f,
-                ForestNoiseScale = 0.1f,
-                TerrainNoiseScale = 0.072f,
-                WaterNoiseScale = 0.059f,
+                WaterBiome = WaterBiomes.Dry,
                 MinCities = 2,
                 MaxCities = 3,
                 MinStructure = 6,
