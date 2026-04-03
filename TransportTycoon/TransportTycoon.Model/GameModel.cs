@@ -188,9 +188,8 @@ namespace TransportTycoon.Model
             if (Map[x, y] is not Terrain) return;
             List<(int, int)> changedFields = new List<(int, int)>();
 
-            RoadType type = Map.CalculateRoadType(x, y);
             int oldTrees = Map[x, y].GetTrees();
-            Map[x, y] = new Road(x, y, type, Map[x, y].Height);
+            Map[x, y] = new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height);
             changedFields.Add((x, y));
 
             if (oldTrees == 0) Balance -= ((Road)Map[x, y]).Price;
