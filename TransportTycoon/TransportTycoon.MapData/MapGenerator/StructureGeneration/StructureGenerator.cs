@@ -4,19 +4,21 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
     public static class StructureGeneratorFactory
     {
-        public static IStructureGenerator Create(ICityGenerator cityGenerator) => new StructureGenerator(cityGenerator);
+        public static IStructureGenerator Create(ICityGenerator cityGenerator, IRandomProvider randomProvider, MapGenerationContext context) => new StructureGenerator(cityGenerator, randomProvider, context);
     }
 
     internal class StructureGenerator : IStructureGenerator
     {
-        #region Properties
-        private ICityGenerator CityGenerator { get; }
+        #region Private fields
+        private readonly ICityGenerator _cityGenerator;
+        private readonly IRandom _random;
         #endregion
 
         #region Constructors
-        public StructureGenerator(ICityGenerator cityGenerator)
+        public StructureGenerator(ICityGenerator cityGenerator, IRandomProvider randomProvider, MapGenerationContext context)
         {
-            CityGenerator = cityGenerator;
+            _cityGenerator = cityGenerator;
+            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Structures);
         }
         #endregion
 
@@ -28,13 +30,11 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 return TryPlaceNear(heightMap, waterMap, structureMap, buildingEntity, context, centerX, centerY, radius);
             }
 
-            Random rng = new(context.Seed);
-
             int maxAttempts = 50;
             for (int attempt = 0; attempt < maxAttempts; attempt++)
             {
-                int startX = rng.Next(0, context.Width - buildingEntity.Width);
-                int startY = rng.Next(0, context.Height - buildingEntity.Height);
+                int startX = _random.Next(0, context.Width - buildingEntity.Width);
+                int startY = _random.Next(0, context.Height - buildingEntity.Height);
 
                 if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
                 {
@@ -44,7 +44,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
                     if (buildingEntity is CityEntity city)
                     {
-                        CityGenerator.GenerateCity(3, 10, city, context);
+                        _cityGenerator.GenerateCity(3, 10, city, context);
                     }
 
                     return true;
@@ -62,11 +62,10 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 return;
             }
 
-            Random rng = new(context.Seed);
             while (true)
             {
-                int startX = rng.Next(0, context.Width - buildingEntity.Width);
-                int startY = rng.Next(0, context.Height - buildingEntity.Height);
+                int startX = _random.Next(0, context.Width - buildingEntity.Width);
+                int startY = _random.Next(0, context.Height - buildingEntity.Height);
 
                 if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap, context))
                 {
@@ -122,20 +121,18 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             buildingEntity.GenerateBuildingPoints(startX, startY);
             FillStructureMap(structureMap, startX, startY, buildingEntity);
 
-            CityGenerator.GenerateCity(3, 10, buildingEntity, context);
+            _cityGenerator.GenerateCity(3, 10, buildingEntity, context);
 
             return true;
         }
 
         private void ForcePlaceNear(BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap, int centerX, int centerY, int radius, MapGenerationContext context)
         {
-            Random rng = new(context.Seed);
-
             for (int attempt = 0; attempt < 500; attempt++)
             {
                 // Pick a spot within the radius
-                int startX = centerX + rng.Next(-radius, radius);
-                int startY = centerY + rng.Next(-radius, radius);
+                int startX = centerX + _random.Next(-radius, radius);
+                int startY = centerY + _random.Next(-radius, radius);
 
                 // Clamp to map bounds
                 startX = Math.Clamp(startX, 0, context.Width - buildingEntity.Width);
@@ -152,14 +149,13 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
         private bool TryPlaceNear(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY, int radius)
         {
-            Random rng = new(context.Seed + 1);
             int maxAttempts = 100;
 
             for (int attempt = 0; attempt < maxAttempts; attempt++)
             {
                 // Circle
-                int startX = centerX + rng.Next(-radius, radius);
-                int startY = centerY + rng.Next(-radius, radius);
+                int startX = centerX + _random.Next(-radius, radius);
+                int startY = centerY + _random.Next(-radius, radius);
 
                 // Clamp to map boundaries
                 startX = Math.Clamp(startX, 0, context.Width - buildingEntity.Width);

@@ -4,13 +4,20 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
     public static class CityGeneratorFactory
     {
-        public static ICityGenerator Create() => new CityGenerator();
+        public static ICityGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new CityGenerator(randomProvider, context);
     }
 
     internal class CityGenerator : ICityGenerator
     {
+        #region Private fields
+        private readonly IRandom _random;
+        #endregion
+
         #region Constructor
-        public CityGenerator() { }
+        public CityGenerator(IRandomProvider randomProvider, MapGenerationContext context)
+        {
+            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Cities);
+        }
         #endregion
 
         #region Public methods
@@ -28,18 +35,16 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             if (city is not CityEntity) return;
             (int topLeftX, int topLeftY) = city.MapPoints.First().Key;
 
-            Random rng = new(context.Seed);
-
             int centerX = topLeftX + city.Width / 2;
             int centerY = topLeftY + city.Height / 2;
             city.MapPoints[(centerX, centerY)] = new Road(centerX, centerY, RoadType.XRoad, city.MapPoints[(centerX, centerY)].Height);
 
-            CarveExit(city, centerX, centerY, rng);
+            CarveExit(city, centerX, centerY);
 
             // 3. Spawn Random Walkers to build the internal streets
             for (int i = 0; i < branchCount; i++)
             {
-                CarveRoad(city, centerX, centerY, maxRoadCount, rng);
+                CarveRoad(city, centerX, centerY, maxRoadCount);
             }
         }
         #endregion
@@ -51,7 +56,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// <param name="city"></param>
         /// <param name="startX"></param>
         /// <param name="startY"></param>
-        private void CarveExit(BuildingEntity city, int startX, int startY, Random rng)
+        private void CarveExit(BuildingEntity city, int startX, int startY)
         {
             (int topLeftX, int topLeftY) = city.MapPoints.First().Key;
 
@@ -60,7 +65,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
             // North, East, South, West
             (int dx, int dy)[] directions = { (0, -1), (1, 0), (0, 1), (-1, 0) };
-            (int dx, int dy) = directions[rng.Next(4)];
+            (int dx, int dy) = directions[_random.Next(4)];
 
             while (x <= topLeftX && x < topLeftX + city.Width &&
                     topLeftY <= y && y < topLeftY + city.Height)
@@ -68,9 +73,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height);
 
                 // Random movement
-                if (rng.NextDouble() > 0.8)
+                if (_random.NextDouble() > 0.8)
                 {
-                    int sideStep = rng.NextDouble() > 0.5 ? 1 : -1;
+                    int sideStep = _random.NextDouble() > 0.5 ? 1 : -1;
                     // Tend to move in the other axis
                     if (dx == 0)
                     {
@@ -97,7 +102,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// <param name="startX"></param>
         /// <param name="startY"></param>
         /// <param name="maxRoadCount"></param>
-        private void CarveRoad(BuildingEntity city, int startX, int startY, int maxRoadCount, Random rng)
+        private void CarveRoad(BuildingEntity city, int startX, int startY, int maxRoadCount)
         {
             (int topLeftX, int topLeftY) = city.MapPoints.First().Key;
 
@@ -106,16 +111,16 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
             // North, East, South, West
             (int dx, int dy)[] directions = { (0, -1), (1, 0), (0, 1), (-1, 0) };
-            (int dx, int dy) currentDir = directions[rng.Next(4)];
+            (int dx, int dy) currentDir = directions[_random.Next(4)];
 
             for (int step = 0; step < maxRoadCount; step++)
             {
                 // Place road
                 city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height);
 
-                if (rng.NextDouble() < 0.3)
+                if (_random.NextDouble() < 0.3)
                 {
-                    currentDir = directions[rng.Next(4)];
+                    currentDir = directions[_random.Next(4)];
                 }
 
                 int nextX = x + currentDir.dx;

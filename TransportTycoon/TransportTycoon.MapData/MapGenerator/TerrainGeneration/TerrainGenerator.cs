@@ -4,21 +4,23 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
     public static class TerraingGeneratorFactory
     {
-        public static ITerrainGenerator Create(INoiseGenerator noiseGenerator, float noiseScale) => new TerrainGenerator(noiseGenerator, noiseScale);
+        public static ITerrainGenerator Create(INoiseGenerator noiseGenerator, float noiseScale, IRandomProvider randomProvider, MapGenerationContext context) => new TerrainGenerator(noiseGenerator, noiseScale, randomProvider, context);
     }
 
     internal class TerrainGenerator : ITerrainGenerator
     {
-        #region Properties
-        private INoiseGenerator NoiseGenerator { get; }
-        private float NoiseScale { get; }
+        #region Private fields
+        private readonly INoiseGenerator _noiseGenerator;
+        private readonly float _noiseScale;
+        private readonly IRandom _random;
         #endregion
 
         #region Constructors
-        public TerrainGenerator(INoiseGenerator noiseGenerator, float noiseScale)
+        public TerrainGenerator(INoiseGenerator noiseGenerator, float noiseScale, IRandomProvider randomProvider, MapGenerationContext context)
         {
-            NoiseGenerator = noiseGenerator;
-            NoiseScale = noiseScale;
+            _noiseGenerator = noiseGenerator;
+            _noiseScale = noiseScale;
+            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Terrain);
         }
         #endregion
 
@@ -27,7 +29,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         {
             int[,] heightMap = new int[context.Width, context.Height];
 
-            float[,] randomNoiseMap = NoiseGenerator.GenerateNoise(NoiseScale, context);
+            float[,] randomNoiseMap = _noiseGenerator.GenerateNoise(_noiseScale, context);
             for (int i = 0; i < context.Width; i++)
             {
                 for (int j = 0; j < context.Height; j++)
