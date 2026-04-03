@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using TransportTycoon.MapData.Buildings;
+﻿using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
