@@ -151,7 +151,11 @@ namespace TransportTycoon.Model
                         terrain.IncreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
-
+                        if (IsGameOver)
+                        {
+                            OnGameOver();
+                            return;
+                        }
                     }
                 }
             }
@@ -178,6 +182,11 @@ namespace TransportTycoon.Model
                         terrain.DecreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
+                        if (IsGameOver)
+                        {
+                            OnGameOver();
+                            return;
+                        }
 
                     }
                 }
@@ -449,6 +458,7 @@ namespace TransportTycoon.Model
         private void OnGameOver()
         {
             _timer.Stop();
+            GameModeChanged?.Invoke(this, GameMode.Paused);
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
         #endregion
@@ -456,6 +466,11 @@ namespace TransportTycoon.Model
         #region Timer event handlers
         private void Timer_Tick(object? sender, EventArgs e)
         {
+            if (IsGameOver)
+            {
+                OnGameOver();
+                return;
+            }
             GameTime++;
             if (GameTime > 0 && GameTime % 10 == 0)
             {
@@ -463,6 +478,7 @@ namespace TransportTycoon.Model
                 GameAdvanced?.Invoke(this, grownTrees);
             }
             GameTicked?.Invoke(this, EventArgs.Empty);
+
 
 
         }
