@@ -7,8 +7,12 @@
         {
             int domainOffset = (int)domain;
 
-            int combinedSeed = (baseSeed * 397) ^ domainOffset;
-            return new SystemRandomWrapper(combinedSeed);
+            // Needed not to throw OverflowException, since this is a hash
+            unchecked
+            {
+                int combinedSeed = (baseSeed * 397) ^ domainOffset;
+                return new SystemRandomWrapper(combinedSeed);
+            }
         }
         #endregion
     }
