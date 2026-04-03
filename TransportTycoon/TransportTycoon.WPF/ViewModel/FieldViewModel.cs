@@ -118,6 +118,15 @@ namespace TransportTycoon.WPF.ViewModel
                 return Field.FieldType switch
                 {
                     FieldType.House => $"/Assets/Images/Structures/house.jpg",
+
+                    FieldType.Farm => null,
+                    FieldType.Mine => $"/Assets/Images/Structures/oil.jpg",
+                    FieldType.LumberCamp => null,
+
+                    FieldType.Mill => null,
+                    FieldType.Plant => $"/Assets/Images/Structures/rubber.jpg",
+                    FieldType.Factory => null,
+
                     _ => null
                 };
             }
