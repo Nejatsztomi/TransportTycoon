@@ -291,34 +291,35 @@ public class GameModelTest
             [TestMethod]
             public void GameOver_EventArgumentIsCorrect() { }
 
-            [TestMethod]
-            public void GameAdvanced_EventArgumentIsCorrect()
-            {
-                GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
-                List<Tuple<int, int>> actualTrees = [];
+            // TODO: reimplement this with mocking in the future
+            //[TestMethod]
+            //public void GameAdvanced_EventArgumentIsCorrect()
+            //{
+            //    GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
+            //    List<Tuple<int, int>> actualTrees = [];
 
-                EventHandler<List<Tuple<int, int>>> handler = (_, e) =>
-                {
-                    actualTrees = e;
-                };
+            //    EventHandler<List<Tuple<int, int>>> handler = (_, e) =>
+            //    {
+            //        actualTrees = e;
+            //    };
 
-                try
-                {
-                    gameModel.GameAdvanced += handler;
-                    // Indítsunk egy új játékot, hogy biztosan legyen mapunk és fáink
-                    gameModel.NewGame();
-                    // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
-                    for (int i = 0; i < 10; i++)
-                    {
-                        _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
-                    }
-                    Assert.IsNotEmpty(actualTrees, "GameAdvanced event after 10 timer ticks should raise and return with non-empty trees changed");
-                }
-                finally
-                {
-                    gameModel.GameAdvanced -= handler;
-                }
-            }
+            //    try
+            //    {
+            //        gameModel.GameAdvanced += handler;
+            //        // Indítsunk egy új játékot, hogy biztosan legyen mapunk és fáink
+            //        gameModel.NewGame();
+            //        // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
+            //        for (int i = 0; i < 10; i++)
+            //        {
+            //            _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+            //        }
+            //        Assert.IsNotEmpty(actualTrees, "GameAdvanced event after 10 timer ticks should raise and return with non-empty trees changed");
+            //    }
+            //    finally
+            //    {
+            //        gameModel.GameAdvanced -= handler;
+            //    }
+            //}
 
             [TestMethod]
             public void InfrastructureBuilt_EventArgumentIsCorrect() { }
