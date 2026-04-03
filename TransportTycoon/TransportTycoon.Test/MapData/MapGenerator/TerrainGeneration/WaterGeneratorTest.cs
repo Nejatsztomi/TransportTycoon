@@ -15,14 +15,13 @@ public class WaterGeneratorTest
         {
             // Arrange
             INoiseGenerator noiseGenerator = Substitute.For<INoiseGenerator>();
-            MapGenerationContext context = new(10, 10, 42, new MapGenerationSettings());
 
             // Act
-            IWaterGenerator result = WaterGeneratorFactory.Create(noiseGenerator, new RandomProvider(), context);
+            IWaterGenerator result = LakeGeneratorFactory.Create(noiseGenerator);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<WaterGenerator>(result);
+            Assert.IsInstanceOfType<LakeGenerator>(result);
         }
     }
 
@@ -36,23 +35,13 @@ public class WaterGeneratorTest
         private INoiseGenerator GetMockedNoiseGenerator()
         {
             INoiseGenerator noiseGenerator_mock = Substitute.For<INoiseGenerator>();
-            noiseGenerator_mock.GenerateNoise(Arg.Any<float>(), Arg.Any<MapGenerationContext>())
+            noiseGenerator_mock.GenerateNoise(Arg.Any<float>(), Arg.Any<float>(), Arg.Any<int>())
                 .Returns(x =>
                 {
-                    var context = (MapGenerationContext)x[1];
-                    var array = new float[context.Width, context.Height];
-
                     // Deterministic noise based only on seed and coordinates
-                    for (int i = 0; i < context.Width; i++)
-                    {
-                        for (int j = 0; j < context.Height; j++)
-                        {
-                            // Use hash function to generate deterministic values from seed + coordinates
-                            uint hash = (uint)((context.Seed ^ (i * 73856093) ^ (j * 19349663)) * 2654435761);
-                            array[i, j] = (float)(hash % 1000) / 1000f; // Values between 0.0f and 1.0f
-                        }
-                    }
-                    return array;
+                    // Use hash function to generate deterministic values from seed + coordinates
+                    uint hash = (uint)(((int)x[2] ^ ((int)(float)x[0] * 73856093) ^ ((int)(float)x[1] * 19349663)) * 2654435761);
+                    return (float)(hash % 1000) / 1000f; // Values between 0.0f and 1.0f
                 });
             return noiseGenerator_mock;
         }
@@ -76,7 +65,7 @@ public class WaterGeneratorTest
         {
             INoiseGenerator noiseGenerator = GetMockedNoiseGenerator();
             _context = new MapGenerationContext(20, 20, 42, new MapGenerationSettings());
-            _waterGenerator = WaterGeneratorFactory.Create(noiseGenerator, new RandomProvider(), _context);
+            _waterGenerator = LakeGeneratorFactory.Create(noiseGenerator);
 
             // Create a basic height map for testing
             _heightMap = GenerateHeightMap(_context.Width, _context.Height);

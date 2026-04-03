@@ -32,36 +32,6 @@ public class INoiseGeneratorTest
             {
                 _generator = PerlinNoiseGeneratorFactory.Create(new RandomProvider(), _context);
             }
-
-            [TestMethod]
-            public void PerlinNoiseGenerate_IsCorrectSize()
-            {
-                float[,] noise = _generator.GenerateNoise(0.1f, _context);
-
-                Assert.AreEqual(_context.Width, noise.GetLength(0), "Generated noise width should be what is in the constructor");
-                Assert.AreEqual(_context.Height, noise.GetLength(1), "Generated noise height should be what is in the constructor");
-            }
-
-            [TestMethod]
-            [DataRow(0.1f)]
-            [DataRow(0.5f)]
-            [DataRow(0.9f)]
-            public void PerlinNoiseGenerate_ValuesAreBetweenZeroAndOne(float noiseScale)
-            {
-                float[,] noise = _generator.GenerateNoise(noiseScale, _context);
-
-                bool hasValuesOutsideRange = false;
-                foreach (var value in noise)
-                {
-                    if (value < 0.0f || value > 1.0f)
-                    {
-                        hasValuesOutsideRange = true;
-                        break;
-                    }
-                }
-
-                Assert.IsFalse(hasValuesOutsideRange);
-            }
         }
     }
 }

@@ -15,10 +15,9 @@ public class ForestGeneratorTest
         {
             // Arrange
             INoiseGenerator noiseGenerator = Substitute.For<INoiseGenerator>();
-            MapGenerationContext context = new(10, 10, 42, new MapGenerationSettings());
 
             // Act
-            IForestGenerator result = ForestGeneratorFactory.Create(noiseGenerator, new RandomProvider(), context);
+            IForestGenerator result = ForestGeneratorFactory.Create(noiseGenerator);
 
             // Assert
             Assert.IsNotNull(result);
@@ -36,23 +35,13 @@ public class ForestGeneratorTest
         private INoiseGenerator GetMockedNoiseGenerator()
         {
             INoiseGenerator noiseGenerator_mock = Substitute.For<INoiseGenerator>();
-            noiseGenerator_mock.GenerateNoise(Arg.Any<float>(), Arg.Any<MapGenerationContext>())
+            noiseGenerator_mock.GenerateNoise(Arg.Any<float>(), Arg.Any<float>(), Arg.Any<int>())
                 .Returns(x =>
                 {
-                    var context = (MapGenerationContext)x[1];
-                    var array = new float[context.Width, context.Height];
-
                     // Deterministic noise based only on seed and coordinates
-                    for (int i = 0; i < context.Width; i++)
-                    {
-                        for (int j = 0; j < context.Height; j++)
-                        {
-                            // Use hash function to generate deterministic values from seed + coordinates
-                            uint hash = (uint)((context.Seed ^ (i * 73856093) ^ (j * 19349663)) * 2654435761);
-                            array[i, j] = (float)(hash % 1000) / 1000f; // Values between 0.0f and 1.0f
-                        }
-                    }
-                    return array;
+                    // Use hash function to generate deterministic values from seed + coordinates
+                    uint hash = (uint)(((int)x[2] ^ ((int)(float)x[0] * 73856093) ^ ((int)(float)x[1] * 19349663)) * 2654435761);
+                    return (float)(hash % 1000) / 1000f; // Values between 0.0f and 1.0f
                 });
             return noiseGenerator_mock;
         }
@@ -76,7 +65,7 @@ public class ForestGeneratorTest
         {
             INoiseGenerator noiseGenerator_mock = GetMockedNoiseGenerator();
             _context = new MapGenerationContext(20, 20, 42, new MapGenerationSettings());
-            _forestGenerator = ForestGeneratorFactory.Create(noiseGenerator_mock, new RandomProvider(), _context);
+            _forestGenerator = ForestGeneratorFactory.Create(noiseGenerator_mock);
 
             // Create a basic height map for testing
             _heightMap = GenerateHeightMap(_context.Width, _context.Height);
@@ -149,8 +138,8 @@ public class ForestGeneratorTest
             int[,] heightMap = GenerateHeightMap(highContext.Width, highContext.Height);
 
             INoiseGenerator noiseGen = GetMockedNoiseGenerator();
-            IForestGenerator lowForestGen = ForestGeneratorFactory.Create(noiseGen, new RandomProvider(), lowContext);
-            IForestGenerator highForestGen = ForestGeneratorFactory.Create(noiseGen, new RandomProvider(), highContext);
+            IForestGenerator lowForestGen = ForestGeneratorFactory.Create(noiseGen);
+            IForestGenerator highForestGen = ForestGeneratorFactory.Create(noiseGen);
 
             // Act
             int[,] lowForestMap = lowForestGen.GenerateForests(heightMap, lowContext);
@@ -182,7 +171,7 @@ public class ForestGeneratorTest
             int[,] heightMap = GenerateHeightMap(context1.Width, context1.Height);
 
             INoiseGenerator noiseGen = GetMockedNoiseGenerator();
-            IForestGenerator forestGen = ForestGeneratorFactory.Create(noiseGen, new RandomProvider(), context1);
+            IForestGenerator forestGen = ForestGeneratorFactory.Create(noiseGen);
 
             // Act
             int[,] forest1 = forestGen.GenerateForests(heightMap, context1);
@@ -210,7 +199,7 @@ public class ForestGeneratorTest
             int[,] heightMap = GenerateHeightMap(context1.Width, context1.Height);
 
             INoiseGenerator noiseGen = GetMockedNoiseGenerator();
-            IForestGenerator forestGen = ForestGeneratorFactory.Create(noiseGen, new RandomProvider(), context1);
+            IForestGenerator forestGen = ForestGeneratorFactory.Create(noiseGen);
 
             // Act
             int[,] forest1 = forestGen.GenerateForests(heightMap, context1);
