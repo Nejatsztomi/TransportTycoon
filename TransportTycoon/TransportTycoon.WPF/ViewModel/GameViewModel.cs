@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -16,6 +17,7 @@ namespace TransportTycoon.WPF.ViewModel
         public GameModel Model { get; init; }
 
         public ObservableCollection<FieldViewModel> Tiles { get; private set; }
+        public Field[,] Tiles2 { get; }
 
         public int Balance => Model.Balance;
         public int GameTime => Model.GameTime;
@@ -46,7 +48,9 @@ namespace TransportTycoon.WPF.ViewModel
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
 
             Tiles = [];
-            RefreshTable();
+            //RefreshTable();
+
+            Tiles2 = model.Map.Table;
         }
         #endregion
 
