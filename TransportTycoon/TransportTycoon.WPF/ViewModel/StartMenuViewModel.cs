@@ -2,12 +2,12 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class StartMenuViewModel : ViewModelBase, IViewConstraints
+    public partial class StartMenuViewModel : ViewModelViewConstraintBase
     {
         #region Properties
         #region IViewConstraints
-        public double MinimumWidth => 800;
-        public double MinimumHeight => 450;
+        public override double? MinimumWidth => 800;
+        public override double? MinimumHeight => 450;
         #endregion
         #endregion
 

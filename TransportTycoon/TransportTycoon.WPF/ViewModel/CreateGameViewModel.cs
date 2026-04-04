@@ -3,7 +3,7 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class CreateGameViewModel : ViewModelBase
+    public partial class CreateGameViewModel : ViewModelViewConstraintBase
     {
         #region Private fields
         private Difficulty _selectedGameDifficulty;
@@ -16,6 +16,11 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Properties
+        #region IViewConstraint
+        public override double? MinimumWidth => 800;
+        public override double? MinimumHeight => 800;
+        #endregion
+
         public int SelectedDifficulty
         {
             get => _selectedDifficulty;

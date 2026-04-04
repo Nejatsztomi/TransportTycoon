@@ -5,16 +5,20 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class MainViewModel : ViewModelBase
+    public partial class MainViewModel : ViewModelViewConstraintBase
     {
         #region Private fields
         [ObservableProperty]
-        private object _currentView;
+        private ViewModelBase _currentView;
         private GameModel? _model;
-        private StartMenuViewModel _startMenuViewModel;
-        #endregion
 
+        private readonly StartMenuViewModel _startMenuViewModel;
+
+        #endregion
+        public override double? MinimumWidth => 800;
+        public override double? MinimumHeight => 450;
         #region Properties
+
         #endregion
 
         #region Constructors

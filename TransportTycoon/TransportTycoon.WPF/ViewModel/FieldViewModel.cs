@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Media;
 using TransportTycoon.MapData;
-using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.WPF.ViewModel
 {

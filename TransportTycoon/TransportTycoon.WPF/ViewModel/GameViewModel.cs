@@ -5,12 +5,12 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class GameViewModel : ViewModelBase, IDisposable, IViewConstraints
+    public partial class GameViewModel : ViewModelViewConstraintBase, IDisposable
     {
         #region Properties
         #region IViewConstraints
-        public double MinimumWidth => 800;
-        public double MinimumHeight => 450;
+        public override double? MinimumWidth => 800;
+        public override double? MinimumHeight => 450;
         #endregion
 
         public GameModel Model { get; init; }

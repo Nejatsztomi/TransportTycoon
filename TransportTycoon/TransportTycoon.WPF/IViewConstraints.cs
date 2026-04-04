@@ -5,7 +5,13 @@
     /// </summary>
     public interface IViewConstraints
     {
-        double MinimumWidth { get; }
-        double MinimumHeight { get; }
+        /// <summary>
+        /// Gets the minimum allowable width for the element.
+        /// </summary>
+        double? MinimumWidth { get; }
+        /// <summary>
+        /// Gets the maximum allowable width for the element.
+        /// </summary>
+        double? MinimumHeight { get; }
     }
 }
