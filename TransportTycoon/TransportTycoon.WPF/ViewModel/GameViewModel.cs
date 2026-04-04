@@ -5,12 +5,12 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class GameViewModel : ViewModelBase, IDisposable, IViewConstraints
+    public partial class GameViewModel : ViewModelViewConstraintBase, IDisposable
     {
         #region Properties
         #region IViewConstraints
-        public double MinimumWidth => 800;
-        public double MinimumHeight => 450;
+        public override double? MinimumWidth => 800;
+        public override double? MinimumHeight => 450;
         #endregion
 
         public GameModel Model { get; init; }
@@ -122,40 +122,40 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnNormalSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.Normal);
+            Model.TimeSpeed = TimeSpeed.Normal;
             OnResumeGame();
         }
 
         [RelayCommand]
         private void OnFastSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.Fast);
+            Model.TimeSpeed = TimeSpeed.Fast;
             OnResumeGame();
         }
 
         [RelayCommand]
         private void OnSuperFastSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.SuperFast);
+            Model.TimeSpeed = TimeSpeed.SuperFast;
             OnResumeGame();
         }
 
         [RelayCommand]
         private void OnPauseGame()
         {
-            Model.SetMode(GameMode.Paused);
+            Model.Mode = GameMode.Paused;
         }
 
         [RelayCommand]
         private void OnResumeGame()
         {
-            Model.SetMode(GameMode.Run);
+            Model.Mode = GameMode.Run;
         }
 
         [RelayCommand]
         private void OnEditorMode()
         {
-            Model.SetMode(GameMode.Editor);
+            Model.Mode = GameMode.Editor;
         }
 
         [RelayCommand]

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
@@ -24,10 +23,19 @@ namespace TransportTycoon.Model
     public class GameModel
     {
         #region Constants
-        public const int InitialInterval = 1_000;
+        /// <summary>
+        /// Represents the default interval value, in milliseconds, used for timing operations.
+        /// </summary>
+        public const int DefaultInterval = 1_000;
 
-        public const int InitialBalance = 1_000;
-        public const Difficulty InitialDifficulty = Difficulty.Easy;
+        /// <summary>
+        /// Default starting balance for new game.
+        /// </summary>
+        public const int DefaultBalance = 1_000_000;
+        /// <summary>
+        /// Default starting difficulty for new game.
+        /// </summary>
+        public const Difficulty DefaultDifficulty = Difficulty.Medium;
         #endregion
 
         #region Private fields
@@ -42,17 +50,36 @@ namespace TransportTycoon.Model
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
 
-        public GameMode Mode { get; private set; }
-        public TimeSpeed TimeSpeed { get; private set; }
-        public Difficulty Difficulty { get; private set; }
-
-        public bool IsGameOver
+        public GameMode Mode
         {
-            get
+            get;
+            set
             {
-                return Balance <= 0;
+                if (value == GameMode.Paused || value == GameMode.Editor)
+                {
+                    _timer.Stop();
+                }
+                else
+                {
+                    _timer.Start();
+                }
+                GameModeChanged?.Invoke(this, value);
+                field = value;
             }
         }
+        public TimeSpeed TimeSpeed
+        {
+            get;
+            set
+            {
+                _timer.Interval = DefaultInterval / (double)(value);
+                TimeSpeedChanged?.Invoke(this, value);
+                field = value;
+            }
+        }
+        public Difficulty Difficulty { get; }
+
+        public bool IsGameOver => Balance <= 0;
 
         public List<Vehicle> Vehicles { get; private set; } = [];
 
@@ -73,54 +100,28 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Constructor
-        public GameModel(Difficulty difficulty, int balance, ITimer timer)
+        public GameModel(GameTable map, ITimer timer, Difficulty difficulty = DefaultDifficulty, int balance = DefaultBalance)
         {
             Difficulty = difficulty;
             Balance = balance;
+            Map = map;
             _timer = timer;
             _timer.Elapsed += Timer_Tick;
 
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
-            SelectedField = null!;
-            Map = new();
         }
-
-        public GameModel(int balance, ITimer timer) : this(InitialDifficulty, balance, timer) { }
-
-        public GameModel(Difficulty difficulty, ITimer timer) : this(difficulty, InitialBalance, timer) { }
         #endregion
 
         #region Public Methods
         public void NewGame()
         {
-            Balance = InitialBalance;
+            Balance = DefaultBalance;
 
             Map.GenerateMap();
             _timer.Start();
             NewGameCreated?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void SetTimeSpeed(TimeSpeed timeSpeed)
-        {
-            TimeSpeed = timeSpeed;
-            _timer.Interval = InitialInterval / (double)(timeSpeed);
-            TimeSpeedChanged?.Invoke(this, timeSpeed);
-        }
-
-        public void SetMode(GameMode mode)
-        {
-            Mode = mode;
-            if (mode == GameMode.Paused || mode == GameMode.Editor)
-            {
-                _timer.Stop();
-            }
-            else
-            {
-                _timer.Start();
-            }
-            GameModeChanged?.Invoke(this, mode);
         }
 
         public void SetSelectedField(int x, int y)
@@ -195,7 +196,7 @@ namespace TransportTycoon.Model
         public void BuildRoad(int x, int y)
         {
             if (Map[x, y] is not Terrain) return;
-            List<(int, int)> changedFields = new List<(int, int)>();
+            List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height);
@@ -222,7 +223,7 @@ namespace TransportTycoon.Model
             if (SelectedField == null) SetSelectedField(x, y);
             else
             {
-                List<(int, int)> changedFields = new List<(int, int)>();
+                List<(int, int)> changedFields = [];
                 if (SelectedField.X != x && SelectedField.Y != y) { SetSelectedField(-1, -1); return; }
                 else if (SelectedField.X == x)
                 {
@@ -271,7 +272,7 @@ namespace TransportTycoon.Model
         public void BuildStop(int x, int y)
         {
             if (Map[x, y] is not Terrain) return;
-            List<(int, int)> changedFields = new List<(int, int)>();
+            List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Stop(x, y, Map[x, y].Height);
@@ -378,11 +379,7 @@ namespace TransportTycoon.Model
                 GameAdvanced?.Invoke(this, grownTrees);
             }
             GameTicked?.Invoke(this, EventArgs.Empty);
-
-
-
         }
         #endregion
-
     }
 }

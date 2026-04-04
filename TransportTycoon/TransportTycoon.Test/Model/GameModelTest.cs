@@ -1,5 +1,6 @@
 using NSubstitute;
-using NSubstitute.ClearExtensions;
+using TransportTycoon.MapData;
+using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
 using ITimer = TransportTycoon.Model.ITimer;
 
@@ -11,26 +12,30 @@ public class GameModelTest
     public class ConstructorTest
     {
         private ITimer _mockTimer = null!;
+        private GameTable _mockMap = null!;
 
         [TestInitialize]
         public void Initialize()
         {
+            var mockMapGenerator = Substitute.For<IMapGenerator>();
+            MapGenerationContext context = new();
+
             _mockTimer = Substitute.For<ITimer>();
+            _mockMap = Substitute.For<GameTable>(mockMapGenerator, context);
         }
 
         [TestMethod]
         public void Constructor_WithAllParameters()
         {
-            GameModel gameModel = new(Difficulty.Easy, 1_000, _mockTimer);
+            Difficulty difficulty = Difficulty.Hard;
+            int balance = 5_000;
+            GameModel gameModel = new(_mockMap, _mockTimer, difficulty, balance);
 
-            Assert.AreEqual(Difficulty.Easy, gameModel.Difficulty, "Difficulty should match");
-            Assert.AreEqual(1_000, gameModel.Balance, "Balance should match");
+            Assert.AreEqual(difficulty, gameModel.Difficulty, "Difficulty should match");
+            Assert.AreEqual(balance, gameModel.Balance, "Balance should match");
 
             Assert.AreEqual(GameMode.Run, gameModel.Mode, "GameMode should be Run");
             Assert.AreEqual(0, gameModel.GameTime, "GameTime should be 0");
-
-            // Lehet érdemes a Map-ot is átadni, mint paraméter
-            Assert.IsNotNull(gameModel.Map, "Map should be generated and not null");
 
             // Timer mock tesztek
             // Feliratkoztak az Elapsed eseményre
@@ -38,53 +43,48 @@ public class GameModelTest
         }
 
         [TestMethod]
-        public void Constructor_WithBalance()
+        public void Constructor_WithDefaultValues()
         {
-            GameModel gameModel = new(Difficulty.Easy, _mockTimer);
+            GameModel gameModel = new(_mockMap, _mockTimer);
 
-            Assert.AreEqual(Difficulty.Easy, gameModel.Difficulty, "Difficulty should match");
-            Assert.AreEqual(GameModel.InitialBalance, gameModel.Balance, "Balance should be InitialBalance");
-        }
-
-        [TestMethod]
-        public void Constructor_WithDifficulty()
-        {
-            GameModel gameModel = new(1_000, _mockTimer);
-
-            Assert.AreEqual(GameModel.InitialDifficulty, gameModel.Difficulty, "Difficulty should be InitialDifficulty");
-            Assert.AreEqual(1_000, gameModel.Balance, "Balance should match");
+            Assert.AreEqual(GameModel.DefaultDifficulty, gameModel.Difficulty, "Difficulty should be DefaultDifficulty");
+            Assert.AreEqual(GameModel.DefaultBalance, gameModel.Balance, "Balance should be DefaultBalance");
         }
     }
 
     public class EventTest
     {
+        private static IEnumerable<object[]> GetAllGameModes()
+        {
+            foreach (var role in Enum.GetValues<GameMode>())
+            {
+                yield return new object[] { role };
+            }
+        }
+
+        private static IEnumerable<object[]> GetAllTimeSpeeds()
+        {
+            foreach (var role in Enum.GetValues<TimeSpeed>())
+            {
+                yield return new object[] { role };
+            }
+        }
+
         [TestClass]
         public class EventRaisedTest
         {
-            private static IEnumerable<object[]> GetAllGameModes()
-            {
-                foreach (var role in Enum.GetValues<GameMode>())
-                {
-                    yield return new object[] { role };
-                }
-            }
-
-            private static IEnumerable<object[]> GetAllTimeSpeeds()
-            {
-                foreach (var role in Enum.GetValues<TimeSpeed>())
-                {
-                    yield return new object[] { role };
-                }
-            }
-
             private GameModel _gameModel = null!;
             private ITimer _mockTimer = null!;
 
             [TestInitialize]
             public void Initialize()
             {
+                var mockMapGenerator = Substitute.For<IMapGenerator>();
+                MapGenerationContext context = new();
+                var mockGameTable = Substitute.For<GameTable>(mockMapGenerator, context);
+
                 _mockTimer = Substitute.For<ITimer>();
-                _gameModel = new(Difficulty.Medium, 1000, _mockTimer);
+                _gameModel = new(mockGameTable, _mockTimer);
             }
 
             [TestMethod]
@@ -110,7 +110,7 @@ public class GameModelTest
             }
 
             [TestMethod]
-            [DynamicData(nameof(GetAllGameModes))]
+            [DynamicData(nameof(GetAllGameModes), typeof(EventTest))]
             public void GameModeChanged_EventIsRaised(GameMode gameMode)
             {
                 bool raised = false;
@@ -123,7 +123,7 @@ public class GameModelTest
                 try
                 {
                     _gameModel.GameModeChanged += handler;
-                    _gameModel.SetMode(gameMode);
+                    _gameModel.Mode = gameMode;
                     Assert.IsTrue(raised, "GameModeChanged should be raised after changing the game mode");
                 }
                 finally
@@ -133,7 +133,7 @@ public class GameModelTest
             }
 
             [TestMethod]
-            [DynamicData(nameof(GetAllTimeSpeeds))]
+            [DynamicData(nameof(GetAllTimeSpeeds), typeof(EventTest))]
             public void TimeSpeedChanged_EventIsRaised(TimeSpeed timeSpeed)
             {
                 bool raised = false;
@@ -146,7 +146,7 @@ public class GameModelTest
                 try
                 {
                     _gameModel.TimeSpeedChanged += handler;
-                    _gameModel.SetTimeSpeed(timeSpeed);
+                    _gameModel.TimeSpeed = timeSpeed;
                     Assert.IsTrue(raised, "TimeSpeedChanged should be raised after changing the game speed");
                 }
                 finally
@@ -214,37 +214,26 @@ public class GameModelTest
         [TestClass]
         public class EventArgumentTest
         {
-            private static IEnumerable<object[]> GetAllGameModes()
-            {
-                foreach (var role in Enum.GetValues<GameMode>())
-                {
-                    yield return new object[] { role };
-                }
-            }
-
-            private static IEnumerable<object[]> GetAllTimeSpeeds()
-            {
-                foreach (var role in Enum.GetValues<TimeSpeed>())
-                {
-                    yield return new object[] { role };
-                }
-            }
-
             private static GameModel _gameModel = null!;
             private static ITimer _mockTimer = null!;
+            private static GameTable _mockMap = null!;
 
             [TestInitialize]
             public void Initialize()
             {
+                IMapGenerator mockGenerator = Substitute.For<IMapGenerator>();
+                MapGenerationContext context = new();
+
+                _mockMap = Substitute.For<GameTable>(mockGenerator, context);
                 _mockTimer = Substitute.For<ITimer>();
-                _gameModel = new(Difficulty.Medium, 1000, _mockTimer);
+                _gameModel = new(_mockMap, _mockTimer);
             }
 
             [TestMethod]
-            [DynamicData(nameof(GetAllGameModes))]
+            [DynamicData(nameof(GetAllGameModes), typeof(EventTest))]
             public void GameModeChanged_EventArgumentIsCorrect(GameMode expectedGameMode)
             {
-                GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
+                GameModel gameModel = new(_mockMap, _mockTimer);
                 GameMode actualGameMode = GameMode.Run;
 
                 EventHandler<GameMode> handler = (_, e) =>
@@ -255,7 +244,7 @@ public class GameModelTest
                 try
                 {
                     gameModel.GameModeChanged += handler;
-                    gameModel.SetMode(expectedGameMode);
+                    gameModel.Mode = expectedGameMode;
                     Assert.AreEqual(expectedGameMode, actualGameMode, "GameModeChanged event should have correct argument");
                 }
                 finally
@@ -265,10 +254,10 @@ public class GameModelTest
             }
 
             [TestMethod]
-            [DynamicData(nameof(GetAllTimeSpeeds))]
+            [DynamicData(nameof(GetAllTimeSpeeds), typeof(EventTest))]
             public void TimeSpeedChanged_EventArgumentIsCorrect(TimeSpeed expectedTimeSpeed)
             {
-                GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
+                GameModel gameModel = new(_mockMap, _mockTimer);
                 TimeSpeed actualTimeSpeed = TimeSpeed.Normal;
 
                 EventHandler<TimeSpeed> handler = (_, e) =>
@@ -279,7 +268,7 @@ public class GameModelTest
                 try
                 {
                     gameModel.TimeSpeedChanged += handler;
-                    gameModel.SetTimeSpeed(expectedTimeSpeed);
+                    gameModel.TimeSpeed = expectedTimeSpeed;
                     Assert.AreEqual(expectedTimeSpeed, actualTimeSpeed, "TimeSpeedChanged event should have correct argument");
                 }
                 finally

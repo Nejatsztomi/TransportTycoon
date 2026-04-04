@@ -1,6 +1,5 @@
 ﻿using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
-using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.MapData
 {
@@ -13,8 +12,8 @@ namespace TransportTycoon.MapData
 
         #region Properties
         public Field[,] Table { get; private set; }
-        public int Width { get; }
-        public int Height { get; }
+        public int Width => Context.Width;
+        public int Height => Context.Height;
 
         public List<BuildingEntity> BuildingEntities { get; }
 
@@ -25,48 +24,31 @@ namespace TransportTycoon.MapData
         }
 
         private IMapGenerator MapGenerator { get; }
-        private MapGenerationSettings GenerationSettings { get; }
-        private MapGenerationContext GenerationContext { get; }
+        private MapGenerationContext Context { get; }
+        private MapGenerationSettings GenerationSettings => Context.Settings;
         #endregion
 
         #region Constructors
-        public GameTable(int width, int height)
+        public GameTable(IMapGenerator mapGenerator, MapGenerationContext context)
         {
-            Width = width;
-            Height = height;
-            Table = new Field[width, height];
-
+            Context = context;
             BuildingEntities = [];
 
-            GenerationSettings = new()
-            {
-                ForestPercentage = 0.4f,
-                WaterBiome = WaterBiomes.Dry,
-                MinCities = 2,
-                MaxCities = 3,
-                MinStructure = 6,
-                MaxStructure = 8,
-                MinRiverWidth = 1,
-                MaxRiverWidth = 1,
-                RiverCount = 20,
-            };
-            GenerationContext = new(width, height, 42, GenerationSettings);
-
-            MapGenerator = MapGeneratorFactory.CreateMapGenerator(GenerationContext);
+            Table = new Field[Width, Height];
+            MapGenerator = mapGenerator;
         }
-        public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
 
         #region Public methods
         public void GenerateMap()
         {
-            Table = MapGenerator.GenerateMap(GenerationContext);
+            Table = MapGenerator.GenerateMap(Context);
         }
 
         public List<Field> CheckNeighboringTrees(int x, int y)
         {
-            List<Field> neighbours = new List<Field>();
-            List<Field> acceptedNeighbours = new List<Field>();
+            List<Field> neighbours = [];
+            List<Field> acceptedNeighbours = [];
             if (x - 1 >= 0) neighbours.Add(Table[x - 1, y]);
             if (y + 1 <= Width - 1) neighbours.Add(Table[x, y + 1]);
             if (x + 1 <= Height - 1) neighbours.Add(Table[x + 1, y]);
@@ -99,7 +81,7 @@ namespace TransportTycoon.MapData
         }
         public List<Field?> NeighboursOfRoadsAndStops(int x, int y)
         {
-            List<Field?> result = new() { null, null, null, null };
+            List<Field?> result = [null, null, null, null];
             if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]))
             {
                 if (Table[x - 1, y] is Bridge bridge && bridge.BridgeType.ToString().Contains("Vertical")) result[0] = Table[x - 1, y];

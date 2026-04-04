@@ -8,19 +8,11 @@
         mc:Ignorable="d"
         >
     
-    <Grid>
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
-            <Button Content="Start new game" Command="{Binding NewGameCommand}"></Button>
-            <TextBlock Text="Select Difficulty" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-            <ComboBox SelectedIndex="{Binding SelectedDifficulty}">
-                <ComboBoxItem Content="Easy Mode"></ComboBoxItem>
-                <ComboBoxItem Content="Medium Mode"></ComboBoxItem>
-                <ComboBoxItem Content="Hard Mode"></ComboBoxItem>
-            </ComboBox>
-            <Button Content="Load game" Command="{Binding LoadGameCommand}"></Button>
-            <Button Content="Exit Game" Command="{Binding ExitGameCommand}"></Button>
-
-        </StackPanel>
-    </Grid>
+    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+        <TextBlock Text="TransportTycoon" FontSize="30"></TextBlock>
+        <Button Content="Create new game" Command="{Binding CreateNewGameCommand}"></Button>
+        <Button Content="Start new game" Command="{Binding NewGameCommand}"></Button>
+        <Button Content="Load game" Command="{Binding LoadGameCommand}"></Button>
+        <Button Content="Exit Game" Command="{Binding ExitGameCommand}"></Button>
+    </StackPanel>
 </UserControl>
