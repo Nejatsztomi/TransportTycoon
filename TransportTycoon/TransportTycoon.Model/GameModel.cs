@@ -196,7 +196,7 @@ namespace TransportTycoon.Model
         public void BuildRoad(int x, int y)
         {
             if (Map[x, y] is not Terrain) return;
-            List<(int, int)> changedFields = new List<(int, int)>();
+            List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height);
@@ -223,7 +223,7 @@ namespace TransportTycoon.Model
             if (SelectedField == null) SetSelectedField(x, y);
             else
             {
-                List<(int, int)> changedFields = new List<(int, int)>();
+                List<(int, int)> changedFields = [];
                 if (SelectedField.X != x && SelectedField.Y != y) { SetSelectedField(-1, -1); return; }
                 else if (SelectedField.X == x)
                 {
@@ -272,7 +272,7 @@ namespace TransportTycoon.Model
         public void BuildStop(int x, int y)
         {
             if (Map[x, y] is not Terrain) return;
-            List<(int, int)> changedFields = new List<(int, int)>();
+            List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Stop(x, y, Map[x, y].Height);
