@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
-using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -12,18 +11,6 @@ namespace TransportTycoon.WPF.ViewModel
         #region IViewConstraints
         public double MinimumWidth => 800;
         public double MinimumHeight => 450;
-        #endregion
-
-        #region Relay commands
-        public RelayCommand NormalSpeedCommand { get; init; }
-        public RelayCommand FastSpeedCommand { get; init; }
-        public RelayCommand SuperFastSpeedCommand { get; init; }
-
-        public RelayCommand PauseGameCommand { get; init; }
-        public RelayCommand ResumeGameCommand { get; init; }
-        public RelayCommand EditorModeCommand { get; init; }
-        public RelayCommand<object> SetSelectedButtonCommand { get; init; }
-        public RelayCommand<FieldViewModel> TileLeftClickCommand { get; init; }
         #endregion
 
         public GameModel Model { get; init; }
@@ -58,49 +45,12 @@ namespace TransportTycoon.WPF.ViewModel
             model.BalanceChanged += Model_BalanceChanged;
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
 
-            NormalSpeedCommand = new(OnNormalSpeed);
-            FastSpeedCommand = new(OnFastSpeed);
-            SuperFastSpeedCommand = new(OnSuperFastSpeed);
-
-            PauseGameCommand = new(OnPauseGame);
-            ResumeGameCommand = new(OnResumeGame);
-            EditorModeCommand = new(OnEditorMode);
-
-            SetSelectedButtonCommand = new RelayCommand<object>(x =>
-            {
-                if (x == null) return;
-                _selectedButton = Convert.ToInt32(x);
-                Model.SetSelectedField(-1, -1);
-            });
-            TileLeftClickCommand = new RelayCommand<FieldViewModel>(tile =>
-            {
-                if (tile == null) return;
-                switch (_selectedButton)
-                {
-                    case 1:
-                        Model.DecreaseHeight(tile.X, tile.Y);
-                        break;
-                    case 2:
-                        Model.IncreaseHeight(tile.X, tile.Y);
-                        break;
-                    case 11:
-                        Model.BuildRoad(tile.X, tile.Y);
-                        break;
-                    case 12:
-                        Model.BuildBridge(tile.X, tile.Y);
-                        break;
-                    case 13:
-                        Model.BuildStop(tile.X, tile.Y);
-                        break;
-                    default:
-                        break;
-                }
-            }, (_) => IsEditorMode);
-
             Tiles = [];
             RefreshTable();
         }
+        #endregion
 
+        #region Private methods
         private void Model_SelectedFieldChanged(object? sender, (int, int) e)
         {
             if (Model.SelectedField == null)
@@ -152,9 +102,7 @@ namespace TransportTycoon.WPF.ViewModel
                 .ToList()
                 .ForEach(tile => tile.RefreshTreeCount());
         }
-        #endregion
 
-        #region Private methods
         private void RefreshTable()
         {
             //Tiles.Clear();
@@ -170,41 +118,47 @@ namespace TransportTycoon.WPF.ViewModel
         }
         #endregion
 
-        #region Relay command methods
+        #region Relay commands
+        [RelayCommand]
         private void OnNormalSpeed()
         {
             Model.SetTimeSpeed(TimeSpeed.Normal);
             OnResumeGame();
         }
 
+        [RelayCommand]
         private void OnFastSpeed()
         {
             Model.SetTimeSpeed(TimeSpeed.Fast);
             OnResumeGame();
         }
 
+        [RelayCommand]
         private void OnSuperFastSpeed()
         {
             Model.SetTimeSpeed(TimeSpeed.SuperFast);
             OnResumeGame();
         }
 
+        [RelayCommand]
         private void OnPauseGame()
         {
             Model.SetMode(GameMode.Paused);
         }
 
+        [RelayCommand]
         private void OnResumeGame()
         {
             Model.SetMode(GameMode.Run);
         }
 
+        [RelayCommand]
         private void OnEditorMode()
         {
             Model.SetMode(GameMode.Editor);
         }
 
-
+        [RelayCommand]
         private void OnIncreaseHeight()
         {
             if (Model.SelectedField != null)
@@ -213,11 +167,46 @@ namespace TransportTycoon.WPF.ViewModel
             }
         }
 
+        [RelayCommand]
         private void OnDecreaseHeight()
         {
             if (Model.SelectedField != null)
             {
                 Model.DecreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
+            }
+        }
+
+        [RelayCommand]
+        private void OnSetSelectedButton(object x)
+        {
+            if (x == null) return;
+            SelectedButton = Convert.ToInt32(x);
+            Model.SetSelectedField(-1, -1);
+        }
+
+        [RelayCommand(CanExecute = nameof(IsEditorMode))]
+        private void OnTileLeftClick(FieldViewModel tile)
+        {
+            if (tile == null) return;
+            switch (SelectedButton)
+            {
+                case 1:
+                    Model.DecreaseHeight(tile.X, tile.Y);
+                    break;
+                case 2:
+                    Model.IncreaseHeight(tile.X, tile.Y);
+                    break;
+                case 11:
+                    Model.BuildRoad(tile.X, tile.Y);
+                    break;
+                case 12:
+                    Model.BuildBridge(tile.X, tile.Y);
+                    break;
+                case 13:
+                    Model.BuildStop(tile.X, tile.Y);
+                    break;
+                default:
+                    break;
             }
         }
         #endregion

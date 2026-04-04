@@ -7,9 +7,6 @@ namespace TransportTycoon.WPF.ViewModel
 {
     public partial class FieldViewModel : ViewModelBase
     {
-        #region Fields
-        #endregion
-
         #region Properties
         public string ImagePath { get; set; }
 
@@ -189,9 +186,6 @@ namespace TransportTycoon.WPF.ViewModel
                 _ => "Assets/Images/Terrain/field.png"
             };
         }
-        #endregion
-
-        #region Private event Methods
         #endregion
     }
 }

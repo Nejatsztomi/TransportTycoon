@@ -1,9 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System.ComponentModel;
 using System.Windows;
 using TransportTycoon.Model;
-using TransportTycoon.WPF.View;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -30,17 +27,17 @@ namespace TransportTycoon.WPF.ViewModel
         {
             StartMenuViewModel startMenuViewModel = new();
 
-            startMenuViewModel.StartNewGame += (sender, selectedDifficulty) =>
+            startMenuViewModel.StartingNewGame += (sender, selectedDifficulty) =>
             {
                 StartGame(selectedDifficulty);
             };
 
-            startMenuViewModel.LoadGame += (sender, e) =>
+            startMenuViewModel.LoadingGame += (sender, e) =>
             {
                 throw new NotImplementedException("Load game functionality is not implemented yet!");
             };
 
-            startMenuViewModel.ExitGame += (sender, e) =>
+            startMenuViewModel.ExitingGame += (sender, e) =>
             {
                 // Calls the MainWindows close method, which is basically the same as pressing the X
                 Application.Current.MainWindow?.Close();
