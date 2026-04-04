@@ -17,8 +17,8 @@
             <Grid>
                 <ScrollViewer
                      x:Name="MapScrollViewer"
-                     HorizontalScrollBarVisibility="Auto"
-                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Hidden"
+                     VerticalScrollBarVisibility="Hidden"
      
                      PreviewMouseWheel="MapScrollViewer_PreviewMouseWheel"
                      PreviewMouseRightButtonDown="MapScrollViewer_PreviewMouseRightButtonDown"
