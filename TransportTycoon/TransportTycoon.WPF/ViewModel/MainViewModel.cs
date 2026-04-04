@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows;
+using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -56,9 +57,15 @@ namespace TransportTycoon.WPF.ViewModel
             CurrentView = createGameViewModel;
         }
 
-        private void CreateGameViewModel_CreateGame(object? sender, MapData.MapGenerator.MapGenerationContext e)
+        private void CreateGameViewModel_CreateGame(object? _, MapGenerationContext context)
         {
-            throw new NotImplementedException();
+            _model = new(new(context), new WpfDispatcherTimer());
+            _model.GameOver += Model_GameOver;
+            _model.NewGame();
+
+            GameViewModel gameViewModel = new(_model);
+
+            CurrentView = gameViewModel;
         }
 
         private void StartMenuViewModel_LoadingGame(object? _1, string _2)

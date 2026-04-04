@@ -1,18 +1,13 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
+using System.Windows;
+using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
     public partial class CreateGameViewModel : ViewModelViewConstraintBase
     {
-        #region Private fields
-        #endregion
-
-        #region Events
-        public event EventHandler? BackToMainMenu;
-        #endregion
-
         #region Properties
         #region IViewConstraint
         public override double? MinimumWidth => 800;
@@ -40,37 +35,80 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
         #endregion
 
+        #region Events
+        public event EventHandler? BackToMainMenu;
+        public event EventHandler<MapGenerationContext>? CreateGame;
+        #endregion
+
         #region Constructors
-        public CreateGameViewModel()
-        { }
+        public CreateGameViewModel() { }
         #endregion
 
         #region Relay commands
         [RelayCommand]
         private void OnCreateNewGame()
         {
-            Debug.WriteLineIf(SaveName == String.Empty, "No save name provided.");
-            Debug.WriteLineIf(SaveName != String.Empty, $"Save name: {SaveName}");
-            Debug.WriteLine($"Game size: {GameWidth}x{GameHeight}");
-            Debug.WriteLine($"Game seed: {GameSeed}");
-            Debug.WriteLine($"Game starter balance: {GameStarterBalance}");
-            Debug.WriteLine($"Difficutly index: {SelectedDifficulty} which is {(Difficulty)SelectedDifficulty}");
+            try
+            {
+                Debug.WriteLineIf(SaveName == String.Empty, "No save name provided.");
+                Debug.WriteLineIf(SaveName != String.Empty, $"Save name: {SaveName}");
+                int width = int.Parse(GameWidth);
+                int height = int.Parse(GameHeight);
+                Debug.WriteLine($"Game size: {width}x{height}");
+                int seed = int.Parse(GameSeed);
+                Debug.WriteLine($"Game seed: {seed}");
+                int starterBalance = int.Parse(GameStarterBalance);
+                Debug.WriteLine($"Game starter balance: {starterBalance}");
+                Difficulty difficulty = (Difficulty)SelectedDifficulty;
+                Debug.WriteLine($"Difficutly index: {SelectedDifficulty} which is {difficulty}");
 
-            Debug.WriteLine($"Map generation settings:");
-            Debug.WriteLine($"Biome: {SettingsBiome}");
-            Debug.WriteLine($"Water biome: {SettingsWaterBiome}");
-            Debug.WriteLine($"Forest percentage: {SettingsForestPercentage}");
-            Debug.WriteLine($"River count: {SettingsRiverCount}");
-            Debug.WriteLine($"Min cities: {SettingsMinCities}");
-            Debug.WriteLine($"Max cities: {SettingsMaxCities}");
-            Debug.WriteLine($"Min structures: {SettingsMinStructures}");
-            Debug.WriteLine($"Max structures: {SettingsMaxStructures}");
+                Debug.WriteLine($"Map generation settings:");
+                Debug.WriteLine($"Biome: {SettingsBiome}");
+                Debug.WriteLine($"Water biome: {SettingsWaterBiome}");
+                float forestPercentage = SettingsForestPercentage / 100.0f;
+                Debug.WriteLine($"Forest percentage: {forestPercentage}");
+                int riverCount = int.Parse(SettingsRiverCount);
+                Debug.WriteLine($"River count: {riverCount}");
+                int minCities = int.Parse(SettingsMinCities);
+                Debug.WriteLine($"Min cities: {minCities}");
+                int maxCities = int.Parse(SettingsMaxCities);
+                Debug.WriteLine($"Max cities: {maxCities}");
+                int minStructures = int.Parse(SettingsMinStructures);
+                Debug.WriteLine($"Min structures: {minStructures}");
+                int maxStructures = int.Parse(SettingsMaxStructures);
+                Debug.WriteLine($"Max structures: {maxStructures}");
+
+                MapGenerationSettings settings = new()
+                {
+                    ForestPercentage = forestPercentage,
+                    RiverCount = riverCount,
+                    MinCities = minCities,
+                    MaxCities = maxCities,
+                    MinStructure = minStructures,
+                    MaxStructureRange = maxStructures,
+                };
+                MapGenerationContext context = new(width, height, seed, settings);
+
+                CreateGame?.Invoke(this, context);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error creating new game: {ex.Message}");
+                ShowErrorMsgBox(ex.Message);
+            }
         }
 
         [RelayCommand]
         private void OnBackToMainMenu()
         {
             BackToMainMenu?.Invoke(this, EventArgs.Empty);
+        }
+        #endregion
+
+        #region Private methods
+        public void ShowErrorMsgBox(string message)
+        {
+            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
         #endregion
     }
