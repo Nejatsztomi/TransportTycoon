@@ -50,17 +50,36 @@ namespace TransportTycoon.Model
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
 
-        public GameMode Mode { get; private set; }
-        public TimeSpeed TimeSpeed { get; private set; }
-        public Difficulty Difficulty { get; private set; }
-
-        public bool IsGameOver
+        public GameMode Mode
         {
-            get
+            get;
+            set
             {
-                return Balance <= 0;
+                if (value == GameMode.Paused || value == GameMode.Editor)
+                {
+                    _timer.Stop();
+                }
+                else
+                {
+                    _timer.Start();
+                }
+                GameModeChanged?.Invoke(this, value);
+                field = value;
             }
         }
+        public TimeSpeed TimeSpeed
+        {
+            get;
+            set
+            {
+                _timer.Interval = DefaultInterval / (double)(value);
+                TimeSpeedChanged?.Invoke(this, value);
+                field = value;
+            }
+        }
+        public Difficulty Difficulty { get; }
+
+        public bool IsGameOver => Balance <= 0;
 
         public List<Vehicle> Vehicles { get; private set; } = [];
 
@@ -103,27 +122,6 @@ namespace TransportTycoon.Model
             Map.GenerateMap();
             _timer.Start();
             NewGameCreated?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void SetTimeSpeed(TimeSpeed timeSpeed)
-        {
-            TimeSpeed = timeSpeed;
-            _timer.Interval = DefaultInterval / (double)(timeSpeed);
-            TimeSpeedChanged?.Invoke(this, timeSpeed);
-        }
-
-        public void SetMode(GameMode mode)
-        {
-            Mode = mode;
-            if (mode == GameMode.Paused || mode == GameMode.Editor)
-            {
-                _timer.Stop();
-            }
-            else
-            {
-                _timer.Start();
-            }
-            GameModeChanged?.Invoke(this, mode);
         }
 
         public void SetSelectedField(int x, int y)
@@ -381,11 +379,7 @@ namespace TransportTycoon.Model
                 GameAdvanced?.Invoke(this, grownTrees);
             }
             GameTicked?.Invoke(this, EventArgs.Empty);
-
-
-
         }
         #endregion
-
     }
 }

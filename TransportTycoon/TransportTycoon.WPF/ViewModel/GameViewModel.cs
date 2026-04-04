@@ -122,40 +122,40 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnNormalSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.Normal);
+            Model.TimeSpeed = TimeSpeed.Normal;
             OnResumeGame();
         }
 
         [RelayCommand]
         private void OnFastSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.Fast);
+            Model.TimeSpeed = TimeSpeed.Fast;
             OnResumeGame();
         }
 
         [RelayCommand]
         private void OnSuperFastSpeed()
         {
-            Model.SetTimeSpeed(TimeSpeed.SuperFast);
+            Model.TimeSpeed = TimeSpeed.SuperFast;
             OnResumeGame();
         }
 
         [RelayCommand]
         private void OnPauseGame()
         {
-            Model.SetMode(GameMode.Paused);
+            Model.Mode = GameMode.Paused;
         }
 
         [RelayCommand]
         private void OnResumeGame()
         {
-            Model.SetMode(GameMode.Run);
+            Model.Mode = GameMode.Run;
         }
 
         [RelayCommand]
         private void OnEditorMode()
         {
-            Model.SetMode(GameMode.Editor);
+            Model.Mode = GameMode.Editor;
         }
 
         [RelayCommand]

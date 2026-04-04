@@ -90,7 +90,7 @@ namespace TransportTycoon.WPF.ViewModel
         #region Public method
         public bool CanClose()
         {
-            Model?.SetMode(GameMode.Paused);
+            Model?.Mode = GameMode.Paused;
 
             if (WantsToExit())
             {
@@ -99,7 +99,7 @@ namespace TransportTycoon.WPF.ViewModel
 
             if (Model is not null && !Model.IsGameOver)
             {
-                Model.SetMode(GameMode.Run);
+                Model.Mode = GameMode.Run;
             }
             return false;
         }
