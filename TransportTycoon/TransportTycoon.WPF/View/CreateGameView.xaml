@@ -17,5 +17,6 @@
             <ComboBoxItem Content="Hard Mode"></ComboBoxItem>
         </ComboBox>
         <Button Content="Create new game" Command="{Binding CreateNewGame}"></Button>
+        <Button Content="Back to menu" Command="{Binding BackToMainMenuCommand}"></Button>
     </StackPanel>
 </UserControl>

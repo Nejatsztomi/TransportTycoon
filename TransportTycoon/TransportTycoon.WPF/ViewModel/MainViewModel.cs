@@ -10,39 +10,35 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private fields
         [ObservableProperty]
         private object _currentView;
+        private GameModel? _model;
+        private StartMenuViewModel _startMenuViewModel;
         #endregion
 
         #region Properties
-        private GameModel? Model { get; set; }
         #endregion
 
         #region Constructors
         public MainViewModel()
         {
-            CurrentView = GetNewStartMenu();
+            _startMenuViewModel = new();
+
+            _startMenuViewModel.StartingNewGame += new(StartGame);
+            _startMenuViewModel.CreateNewGame += new(CreateNewGame);
+            _startMenuViewModel.LoadingGame += new(LoadGame);
+            _startMenuViewModel.ExitingGame += new(ExitGame);
+
+            CurrentView = _startMenuViewModel;
         }
         #endregion
 
         #region Private Methods
-        private StartMenuViewModel GetNewStartMenu()
-        {
-            StartMenuViewModel startMenuViewModel = new();
-
-            startMenuViewModel.StartingNewGame += new(StartGame);
-            startMenuViewModel.CreateNewGame += new(CreateNewGame);
-            startMenuViewModel.LoadingGame += new(LoadGame);
-            startMenuViewModel.ExitingGame += new(ExitGame);
-
-            return startMenuViewModel;
-        }
-
         private void StartGame(object? _1, EventArgs _2)
         {
-            Model = new(new GameTable(), new WpfDispatcherTimer());
-            Model.GameOver += new(Model_GameOver);
-            Model.NewGame();
+            _model = new(new GameTable(), new WpfDispatcherTimer());
+            _model.GameOver += new(Model_GameOver);
+            _model.NewGame();
 
-            GameViewModel gameViewModel = new(Model);
+            GameViewModel gameViewModel = new(_model);
 
             CurrentView = gameViewModel;
         }
@@ -50,6 +46,9 @@ namespace TransportTycoon.WPF.ViewModel
         private void CreateNewGame(object? _1, EventArgs _2)
         {
             CreateGameViewModel createGameViewModel = new();
+
+            createGameViewModel.BackToMainMenu += new(BackToMainMenu);
+
             CurrentView = createGameViewModel;
         }
 
@@ -62,6 +61,11 @@ namespace TransportTycoon.WPF.ViewModel
         {
             // Calls the MainWindows close method, which is basically the same as pressing the 
             Application.Current.MainWindow?.Close();
+        }
+
+        private void BackToMainMenu(object? _1, EventArgs _2)
+        {
+            CurrentView = _startMenuViewModel;
         }
         #endregion
 
@@ -80,7 +84,7 @@ namespace TransportTycoon.WPF.ViewModel
             if (result == MessageBoxResult.Yes)
             {
                 //Model = null;
-                CurrentView = GetNewStartMenu();
+                CurrentView = _startMenuViewModel;
             }
         }
 
@@ -90,16 +94,16 @@ namespace TransportTycoon.WPF.ViewModel
         #region Public method
         public bool CanClose()
         {
-            Model?.Mode = GameMode.Paused;
+            _model?.Mode = GameMode.Paused;
 
             if (WantsToExit())
             {
                 return true;
             }
 
-            if (Model is not null && !Model.IsGameOver)
+            if (_model is not null && !_model.IsGameOver)
             {
-                Model.Mode = GameMode.Run;
+                _model.Mode = GameMode.Run;
             }
             return false;
         }

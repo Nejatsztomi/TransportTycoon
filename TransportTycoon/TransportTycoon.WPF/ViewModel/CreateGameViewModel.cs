@@ -11,6 +11,10 @@ namespace TransportTycoon.WPF.ViewModel
         private int _selectedDifficulty = 1;
         #endregion
 
+        #region Events
+        public event EventHandler? BackToMainMenu;
+        #endregion
+
         #region Properties
         public int SelectedDifficulty
         {
@@ -37,6 +41,12 @@ namespace TransportTycoon.WPF.ViewModel
         private void OnCreateNewGame()
         {
             throw new NotImplementedException();
+        }
+
+        [RelayCommand]
+        private void OnBackToMainMenu()
+        {
+            BackToMainMenu?.Invoke(this, EventArgs.Empty);
         }
         #endregion
     }
