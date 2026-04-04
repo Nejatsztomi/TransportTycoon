@@ -7,9 +7,11 @@ namespace TransportTycoon.WPF.View
     /// </summary>
     public partial class CreateGameView : UserControl
     {
+        #region Constructors
         public CreateGameView()
         {
             InitializeComponent();
         }
+        #endregion
     }
 }
