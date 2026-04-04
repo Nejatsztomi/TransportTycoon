@@ -34,6 +34,7 @@ namespace TransportTycoon.WPF.View.UserControls
         #region Private event methods
         private void MapScrollViewer_PreviewMouseWheel(object? sender, MouseWheelEventArgs e)
         {
+            e.Handled = true;
             // Zoom with touchpad: Pinch-to-zoom
             // Zoom with mouse: Ctrl+Scroll wheel
             if (Keyboard.Modifiers == ModifierKeys.Control)
