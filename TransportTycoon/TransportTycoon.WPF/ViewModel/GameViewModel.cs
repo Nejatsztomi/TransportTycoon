@@ -40,16 +40,9 @@ namespace TransportTycoon.WPF.ViewModel
         public int MapRows => Model.Map.Height;
         [ObservableProperty]
         private double _zoomLevel = 1.0;
-        [ObservableProperty]
-        private string _selectedTile = "Click a tile!";
         #endregion
         [ObservableProperty]
         private int _selectedButton = 0;
-        #endregion
-
-        #region Events
-        public event EventHandler? NewGame;
-        public event EventHandler? Exit;
         #endregion
 
         #region Constructors
