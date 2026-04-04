@@ -29,7 +29,6 @@ public class TerrainGeneratorTest
     public class GenerateTerrainTest
     {
         private ITerrainGenerator _terrainGenerator = null!;
-        private IBiome _biome = null!;
         private MapGenerationContext _context = default;
 
         private INoiseGenerator GetMockedNoiseGenerator()
