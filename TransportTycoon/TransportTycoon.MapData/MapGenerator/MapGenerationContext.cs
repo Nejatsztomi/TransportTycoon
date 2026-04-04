@@ -3,9 +3,9 @@
     public readonly record struct MapGenerationContext
     {
         #region Properties
-        public int Width { get; }
-        public int Height { get; }
-        public int Seed { get; }
+        public int Width { get; } = 100;
+        public int Height { get; } = 100;
+        public int Seed { get; } = 0;
         public MapGenerationSettings Settings { get; }
         #endregion
 
