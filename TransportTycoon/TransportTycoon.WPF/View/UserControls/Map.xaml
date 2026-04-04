@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TransportTycoon.WPF.View.UserControls"
              xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:GameViewModel}"
+             xmlns:usercontrols="clr-namespace:TransportTycoon.WPF.View.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              >
@@ -87,9 +88,9 @@
                                            Margin="2"
                                            RenderTransformOrigin="0.5,0.5"
                                            >
-                                            <Image.RenderTransform>
-                                                <RotateTransform Angle="{Binding InfrastructureRotation}"/>
-                                            </Image.RenderTransform>
+                                        <Image.RenderTransform>
+                                            <RotateTransform Angle="{Binding InfrastructureRotation}"/>
+                                        </Image.RenderTransform>
                                     </Image>
 
                                     <!-- Épületek -->
@@ -142,34 +143,7 @@
 
                     </ItemsControl>
                 </ScrollViewer>
-
-
-                <Border HorizontalAlignment="Right" 
-                    VerticalAlignment="Top" 
-                    Width="150" 
-                    Height="150" 
-                    Margin="20" 
-                    BorderBrush="#404040" 
-                    BorderThickness="2" 
-                    Background="Black"
-                    Opacity="0.9">
-                    <Viewbox Stretch="Uniform">
-                        <ItemsControl ItemsSource="{Binding Tiles}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid 
-                                    Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                    Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Rectangle Width="10" Height="10" Fill="{Binding MinimapColor}"/>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </Viewbox>
-                </Border>
+                <usercontrols:Minimap/>
             </Grid>
         </Border>
     </Grid>
