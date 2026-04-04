@@ -13,12 +13,12 @@
         {
             if (width < 0)
             {
-                throw new ArgumentException("");
+                throw new ArgumentException("Width must be a positive integer.");
             }
 
             if (height < 0)
             {
-                throw new ArgumentException("");
+                throw new ArgumentException("Height must be a positive integer.");
             }
 
             Width = width;
