@@ -164,7 +164,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Rectangle Width="10" Height="10" Fill="{Binding MinimapColor}" />
+                                    <Rectangle Width="10" Height="10" Fill="{Binding MinimapColor}"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
