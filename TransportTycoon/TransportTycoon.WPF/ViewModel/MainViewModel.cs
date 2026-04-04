@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows;
-using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -26,20 +25,20 @@ namespace TransportTycoon.WPF.ViewModel
         {
             _startMenuViewModel = new();
 
-            _startMenuViewModel.StartingNewGame += new(StartGame);
-            _startMenuViewModel.CreateNewGame += new(CreateNewGame);
-            _startMenuViewModel.LoadingGame += new(LoadGame);
-            _startMenuViewModel.ExitingGame += new(ExitGame);
+            _startMenuViewModel.StartingNewGame += StartMenuViewModel_StartingNewGame;
+            _startMenuViewModel.ShowGameCreationView += StartMenuViewModel_ShowGameCreationView;
+            _startMenuViewModel.LoadingGame += StartMenuViewModel_LoadingGame;
+            _startMenuViewModel.ExitingGame += StartMenuViewModel_ExitingGame;
 
             CurrentView = _startMenuViewModel;
         }
         #endregion
 
         #region Private Methods
-        private void StartGame(object? _1, EventArgs _2)
+        private void StartMenuViewModel_StartingNewGame(object? _1, EventArgs _2)
         {
-            _model = new(new GameTable(), new WpfDispatcherTimer());
-            _model.GameOver += new(Model_GameOver);
+            _model = new(new(new()), new WpfDispatcherTimer());
+            _model.GameOver += Model_GameOver;
             _model.NewGame();
 
             GameViewModel gameViewModel = new(_model);
@@ -47,27 +46,33 @@ namespace TransportTycoon.WPF.ViewModel
             CurrentView = gameViewModel;
         }
 
-        private void CreateNewGame(object? _1, EventArgs _2)
+        private void StartMenuViewModel_ShowGameCreationView(object? _1, EventArgs _2)
         {
             CreateGameViewModel createGameViewModel = new();
 
-            createGameViewModel.BackToMainMenu += new(BackToMainMenu);
+            createGameViewModel.BackToMainMenu += CreateGameViewModel_BackToMainMenu;
+            createGameViewModel.CreateGame += CreateGameViewModel_CreateGame;
 
             CurrentView = createGameViewModel;
         }
 
-        private void LoadGame(object? _1, string _2)
+        private void CreateGameViewModel_CreateGame(object? sender, MapData.MapGenerator.MapGenerationContext e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void StartMenuViewModel_LoadingGame(object? _1, string _2)
         {
             throw new NotImplementedException("Load game functionality is not implemented yet!");
         }
 
-        private void ExitGame(object? _1, EventArgs _2)
+        private void StartMenuViewModel_ExitingGame(object? _1, EventArgs _2)
         {
             // Calls the MainWindows close method, which is basically the same as pressing the 
             Application.Current.MainWindow?.Close();
         }
 
-        private void BackToMainMenu(object? _1, EventArgs _2)
+        private void CreateGameViewModel_BackToMainMenu(object? _1, EventArgs _2)
         {
             CurrentView = _startMenuViewModel;
         }

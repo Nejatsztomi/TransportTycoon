@@ -15,7 +15,7 @@ namespace TransportTycoon.WPF.ViewModel
         public event EventHandler? StartingNewGame;
         public event EventHandler<string>? LoadingGame;
         public event EventHandler? ExitingGame;
-        public event EventHandler? CreateNewGame;
+        public event EventHandler? ShowGameCreationView;
         #endregion
 
         #region Constructors
@@ -44,7 +44,7 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnCreateNewGame()
         {
-            CreateNewGame?.Invoke(this, EventArgs.Empty);
+            ShowGameCreationView?.Invoke(this, EventArgs.Empty);
         }
         #endregion
     }
