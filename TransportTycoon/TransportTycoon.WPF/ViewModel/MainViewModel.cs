@@ -38,7 +38,9 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private Methods
         private void StartMenuViewModel_StartingNewGame(object? _1, EventArgs _2)
         {
-            _model = new(new(new()), new WpfDispatcherTimer());
+            MapGenerationContext context = new();
+
+            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer());
             _model.GameOver += Model_GameOver;
             _model.NewGame();
 
@@ -59,7 +61,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void CreateGameViewModel_CreateGame(object? _, MapGenerationContext context)
         {
-            _model = new(new(context), new WpfDispatcherTimer());
+            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer());
             _model.GameOver += Model_GameOver;
             _model.NewGame();
 

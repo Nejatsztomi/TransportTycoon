@@ -29,14 +29,13 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Constructors
-        public GameTable(MapGenerationContext context)
+        public GameTable(IMapGenerator mapGenerator, MapGenerationContext context)
         {
             Context = context;
             BuildingEntities = [];
 
             Table = new Field[Width, Height];
-
-            MapGenerator = MapGeneratorFactory.CreateMapGenerator(Context);
+            MapGenerator = mapGenerator;
         }
         #endregion
 
