@@ -43,7 +43,7 @@ public class GameModelTest
             GameModel gameModel = new(Difficulty.Easy, _mockTimer);
 
             Assert.AreEqual(Difficulty.Easy, gameModel.Difficulty, "Difficulty should match");
-            Assert.AreEqual(GameModel.InitialBalance, gameModel.Balance, "Balance should be InitialBalance");
+            Assert.AreEqual(GameModel.DefaultBalance, gameModel.Balance, "Balance should be InitialBalance");
         }
 
         [TestMethod]
@@ -51,7 +51,7 @@ public class GameModelTest
         {
             GameModel gameModel = new(1_000, _mockTimer);
 
-            Assert.AreEqual(GameModel.InitialDifficulty, gameModel.Difficulty, "Difficulty should be InitialDifficulty");
+            Assert.AreEqual(GameModel.DefaultDifficulty, gameModel.Difficulty, "Difficulty should be InitialDifficulty");
             Assert.AreEqual(1_000, gameModel.Balance, "Balance should match");
         }
     }

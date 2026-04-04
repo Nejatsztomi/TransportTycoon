@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
@@ -24,10 +23,19 @@ namespace TransportTycoon.Model
     public class GameModel
     {
         #region Constants
-        public const int InitialInterval = 1_000;
+        /// <summary>
+        /// Represents the default interval value, in milliseconds, used for timing operations.
+        /// </summary>
+        public const int DefaultInterval = 1_000;
 
-        public const int InitialBalance = 1_000;
-        public const Difficulty InitialDifficulty = Difficulty.Easy;
+        /// <summary>
+        /// Default starting balance for new game.
+        /// </summary>
+        public const int DefaultBalance = 1_000_000;
+        /// <summary>
+        /// Default starting difficulty for new game.
+        /// </summary>
+        public const Difficulty DefaultDifficulty = Difficulty.Medium;
         #endregion
 
         #region Private fields
@@ -73,29 +81,24 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Constructor
-        public GameModel(Difficulty difficulty, int balance, ITimer timer)
+        public GameModel(GameTable map, ITimer timer, Difficulty difficulty = DefaultDifficulty, int balance = DefaultBalance)
         {
             Difficulty = difficulty;
             Balance = balance;
+            Map = map;
             _timer = timer;
             _timer.Elapsed += Timer_Tick;
 
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
-            SelectedField = null!;
-            Map = new();
         }
-
-        public GameModel(int balance, ITimer timer) : this(InitialDifficulty, balance, timer) { }
-
-        public GameModel(Difficulty difficulty, ITimer timer) : this(difficulty, InitialBalance, timer) { }
         #endregion
 
         #region Public Methods
         public void NewGame()
         {
-            Balance = InitialBalance;
+            Balance = DefaultBalance;
 
             Map.GenerateMap();
             _timer.Start();
@@ -105,7 +108,7 @@ namespace TransportTycoon.Model
         public void SetTimeSpeed(TimeSpeed timeSpeed)
         {
             TimeSpeed = timeSpeed;
-            _timer.Interval = InitialInterval / (double)(timeSpeed);
+            _timer.Interval = DefaultInterval / (double)(timeSpeed);
             TimeSpeedChanged?.Invoke(this, timeSpeed);
         }
 
