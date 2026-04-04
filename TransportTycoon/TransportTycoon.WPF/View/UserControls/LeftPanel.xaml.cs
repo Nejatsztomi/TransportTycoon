@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,20 +10,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TransportTycoon.WPF.ViewModel;
 
-namespace TransportTycoon.WPF.View
+namespace TransportTycoon.WPF.View.UserControls
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for LeftPanel.xaml
     /// </summary>
-    public partial class GameView : UserControl
+    public partial class LeftPanel : UserControl
     {
-        #region Constructors
-        public GameView()
+        public LeftPanel()
         {
             InitializeComponent();
         }
-        #endregion
     }
 }
