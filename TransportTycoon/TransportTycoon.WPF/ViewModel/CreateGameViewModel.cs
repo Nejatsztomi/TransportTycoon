@@ -50,8 +50,11 @@ namespace TransportTycoon.WPF.ViewModel
         {
             try
             {
-                Debug.WriteLineIf(SaveName == String.Empty, "No save name provided.");
-                Debug.WriteLineIf(SaveName != String.Empty, $"Save name: {SaveName}");
+                if (SaveName == String.Empty)
+                {
+                    throw new ArgumentException("Invalid save name.");
+                }
+                Debug.WriteLine($"Save name: {SaveName}");
                 int width = int.Parse(GameWidth);
                 int height = int.Parse(GameHeight);
                 Debug.WriteLine($"Game size: {width}x{height}");
