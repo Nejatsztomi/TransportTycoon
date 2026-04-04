@@ -1,5 +1,30 @@
 ﻿namespace TransportTycoon.MapData.MapGenerator
 {
-    // TODO: Add invarints to ensure width and height are positive, and seed can be any integer
-    public readonly record struct MapGenerationContext(int Width, int Height, int Seed, MapGenerationSettings Settings);
+    public readonly record struct MapGenerationContext
+    {
+        #region Properties
+        public int Width { get; }
+        public int Height { get; }
+        public int Seed { get; }
+        public MapGenerationSettings Settings { get; }
+        #endregion
+
+        public MapGenerationContext(int width, int height, int seed, MapGenerationSettings settings)
+        {
+            if (width < 0)
+            {
+                throw new ArgumentException("");
+            }
+
+            if (height < 0)
+            {
+                throw new ArgumentException("");
+            }
+
+            Width = width;
+            Height = height;
+            Seed = seed;
+            Settings = settings;
+        }
+    };
 }
