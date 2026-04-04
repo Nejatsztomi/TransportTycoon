@@ -29,19 +29,9 @@ namespace TransportTycoon.WPF.ViewModel
             StartMenuViewModel startMenuViewModel = new();
 
             startMenuViewModel.StartingNewGame += new(StartGame);
-
             startMenuViewModel.CreateNewGame += new(CreateNewGame);
-
-            startMenuViewModel.LoadingGame += (sender, _) =>
-            {
-                throw new NotImplementedException("Load game functionality is not implemented yet!");
-            };
-
-            startMenuViewModel.ExitingGame += (sender, _) =>
-            {
-                // Calls the MainWindows close method, which is basically the same as pressing the X
-                Application.Current.MainWindow?.Close();
-            };
+            startMenuViewModel.LoadingGame += new(LoadGame);
+            startMenuViewModel.ExitingGame += new(ExitGame);
 
             return startMenuViewModel;
         }
@@ -61,6 +51,17 @@ namespace TransportTycoon.WPF.ViewModel
         {
             CreateGameViewModel createGameViewModel = new();
             CurrentView = createGameViewModel;
+        }
+
+        private void LoadGame(object? _1, string _2)
+        {
+            throw new NotImplementedException("Load game functionality is not implemented yet!");
+        }
+
+        private void ExitGame(object? _1, EventArgs _2)
+        {
+            // Calls the MainWindows close method, which is basically the same as pressing the 
+            Application.Current.MainWindow?.Close();
         }
         #endregion
 
