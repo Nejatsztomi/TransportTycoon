@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows;
+using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -27,17 +28,16 @@ namespace TransportTycoon.WPF.ViewModel
         {
             StartMenuViewModel startMenuViewModel = new();
 
-            startMenuViewModel.StartingNewGame += (sender, selectedDifficulty) =>
-            {
-                StartGame(selectedDifficulty);
-            };
+            startMenuViewModel.StartingNewGame += new(StartGame);
 
-            startMenuViewModel.LoadingGame += (sender, e) =>
+            startMenuViewModel.CreateNewGame += new(CreateNewGame);
+
+            startMenuViewModel.LoadingGame += (sender, _) =>
             {
                 throw new NotImplementedException("Load game functionality is not implemented yet!");
             };
 
-            startMenuViewModel.ExitingGame += (sender, e) =>
+            startMenuViewModel.ExitingGame += (sender, _) =>
             {
                 // Calls the MainWindows close method, which is basically the same as pressing the X
                 Application.Current.MainWindow?.Close();
@@ -46,15 +46,21 @@ namespace TransportTycoon.WPF.ViewModel
             return startMenuViewModel;
         }
 
-        private void StartGame(Difficulty difficulty)
+        private void StartGame(object? _1, EventArgs _2)
         {
-            Model = new(difficulty, new WpfDispatcherTimer());
-            Model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
+            Model = new(new GameTable(), new WpfDispatcherTimer());
+            Model.GameOver += new(Model_GameOver);
             Model.NewGame();
 
             GameViewModel gameViewModel = new(Model);
 
             CurrentView = gameViewModel;
+        }
+
+        private void CreateNewGame(object? _1, EventArgs _2)
+        {
+            CreateGameViewModel createGameViewModel = new();
+            CurrentView = createGameViewModel;
         }
         #endregion
 
