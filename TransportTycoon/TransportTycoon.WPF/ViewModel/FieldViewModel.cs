@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows.Media;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 
@@ -6,9 +7,6 @@ namespace TransportTycoon.WPF.ViewModel
 {
     public partial class FieldViewModel : ViewModelBase
     {
-        #region Fields
-        #endregion
-
         #region Properties
         public string ImagePath { get; set; }
 
@@ -19,27 +17,35 @@ namespace TransportTycoon.WPF.ViewModel
         public int TreeCounter => Field.GetTrees();
         [ObservableProperty]
         private bool _isSelected;
-        public string MinimapColor
+        public SolidColorBrush MinimapColor
         {
             get
             {
                 return Field.FieldType switch
                 {
-                    FieldType.Water => "Blue",
-                    FieldType.Plain => "Green",
-                    FieldType.Hill => "DarkGreen",
-                    FieldType.Mountain => "Gray",
-                    FieldType.HighMountain => "DarkGray",
-                    FieldType.House => "Yellow",
-                    FieldType.Farm => "LightGreen",
-                    FieldType.Mine => "DarkYellow",
-                    FieldType.LumberCamp => "SaddleBrown",
-                    FieldType.Mill => "LightGray",
-                    FieldType.Factory => "DimGray",
-                    FieldType.Road => "Black",
-                    FieldType.Bridge => "Peru",
-                    FieldType.Stop => "Red",
-                    _ => throw new InvalidOperationException("Unknown field type.")
+                    // Terrain
+                    FieldType.Water => Brushes.Blue,
+                    FieldType.Plain => Brushes.Green,
+                    FieldType.Hill => Brushes.DarkGreen,
+                    FieldType.Mountain => Brushes.Gray,
+                    FieldType.HighMountain => Brushes.DarkGreen,
+
+                    // Structures
+                    FieldType.House => Brushes.Yellow,
+
+                    FieldType.Farm => Brushes.LightGreen,
+                    FieldType.Mine => Brushes.DarkOrange,
+                    FieldType.LumberCamp => Brushes.SaddleBrown,
+
+                    FieldType.Mill => Brushes.LightGray,
+                    FieldType.Factory => Brushes.DimGray,
+                    FieldType.Road => Brushes.Black,
+
+                    // Infrastructure
+                    FieldType.Bridge => Brushes.Peru,
+                    FieldType.Stop => Brushes.Red,
+                    //_ => throw new InvalidOperationException("Unknown field type.")
+                    _ => Brushes.Magenta,
                 };
             }
         }
@@ -180,9 +186,6 @@ namespace TransportTycoon.WPF.ViewModel
                 _ => "Assets/Images/Terrain/field.png"
             };
         }
-        #endregion
-
-        #region Private event Methods
         #endregion
     }
 }
