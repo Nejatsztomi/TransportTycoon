@@ -16,6 +16,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public GameModel Model { get; init; }
 
+        [Obsolete]
         public ObservableCollection<FieldViewModel> Tiles { get; private set; }
         public Field[,] Tiles2 { get; }
 
@@ -28,6 +29,7 @@ namespace TransportTycoon.WPF.ViewModel
         public int MapColumns => Model.Map.Width;
         public int MapRows => Model.Map.Height;
         [ObservableProperty]
+        [Obsolete]
         private double _zoomLevel = 1.0;
         #endregion
         [ObservableProperty]
@@ -62,6 +64,33 @@ namespace TransportTycoon.WPF.ViewModel
         }
         #endregion
 
+        #region Public methods
+        public void OnTileLeftClick(int x, int y)
+        {
+            switch (SelectedButton)
+            {
+                case 1:
+                    Model.DecreaseHeight(x, y);
+                    break;
+                case 2:
+                    Model.IncreaseHeight(x, y);
+                    break;
+                case 11:
+                    Model.BuildRoad(x, y);
+                    break;
+                case 12:
+                    Model.BuildBridge(x, y);
+                    break;
+                case 13:
+                    Model.BuildStop(x, y);
+                    break;
+                default:
+                    break;
+            }
+            MapUpdated?.Invoke();
+        }
+        #endregion
+
         #region Private methods
         private void Model_SelectedFieldChanged(object? sender, (int, int) e)
         {
@@ -82,6 +111,8 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(Balance));
         }
 
+        [Obsolete("We redraw the map each time, and get all the data directly from GameTable." +
+            "If performance becomes and issues this can be considerd.")]
         private void Model_FieldChanged(object? sender, TransportTycoonFieldEventArgs e)
         {
             var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
@@ -92,6 +123,8 @@ namespace TransportTycoon.WPF.ViewModel
             }
         }
 
+        [Obsolete("We redraw the map each time, and get all the data directly from GameTable." +
+            "If performance becomes and issues this can be considerd.")]
         private void Model_InfrastructureBuilt(object? sender, List<(int, int)> changedFields)
         {
             foreach (var (x, y) in changedFields)
@@ -116,6 +149,7 @@ namespace TransportTycoon.WPF.ViewModel
             MapUpdated?.Invoke();
         }
 
+        [Obsolete]
         private void RefreshTable()
         {
             //Tiles.Clear();
@@ -196,35 +230,11 @@ namespace TransportTycoon.WPF.ViewModel
             SelectedButton = Convert.ToInt32(x);
             Model.SetSelectedField(-1, -1);
         }
-
-        [RelayCommand(CanExecute = nameof(IsEditorMode))]
-        private void OnTileLeftClick(FieldViewModel tile)
-        {
-            if (tile == null) return;
-            switch (SelectedButton)
-            {
-                case 1:
-                    Model.DecreaseHeight(tile.X, tile.Y);
-                    break;
-                case 2:
-                    Model.IncreaseHeight(tile.X, tile.Y);
-                    break;
-                case 11:
-                    Model.BuildRoad(tile.X, tile.Y);
-                    break;
-                case 12:
-                    Model.BuildBridge(tile.X, tile.Y);
-                    break;
-                case 13:
-                    Model.BuildStop(tile.X, tile.Y);
-                    break;
-                default:
-                    break;
-            }
-        }
         #endregion
 
         #region Event methods
+        [Obsolete("If map generation takes to long, maybe we can subscribe to it." +
+            "But our renderer takes the tiles directly from GameTable")]
         private void Model_NewGameCreated(object? sender, EventArgs e)
         {
             RefreshTable();
@@ -245,6 +255,7 @@ namespace TransportTycoon.WPF.ViewModel
             Model.InfrastructureBuilt -= Model_InfrastructureBuilt;
             Model.FieldChanged -= Model_FieldChanged;
             Model.BalanceChanged -= Model_BalanceChanged;
+            Model.SelectedFieldChanged -= Model_SelectedFieldChanged;
         }
         #endregion
     }

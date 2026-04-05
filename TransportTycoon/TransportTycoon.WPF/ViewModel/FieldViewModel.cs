@@ -7,13 +7,16 @@ namespace TransportTycoon.WPF.ViewModel
     public partial class FieldViewModel : ViewModelBase
     {
         #region Properties
+        [Obsolete]
         public string ImagePath { get; set; }
 
         private Field Field { get; set; }
         public int X => Field.X;
         public int Y => Field.Y;
         public int Height => Field.Height;
+        [Obsolete]
         public int TreeCounter => Field.GetTrees();
+        [Obsolete]
         [ObservableProperty]
         private bool _isSelected;
         public SolidColorBrush MinimapColor
@@ -48,6 +51,7 @@ namespace TransportTycoon.WPF.ViewModel
                 };
             }
         }
+        [Obsolete]
         public string? TreeImagePath
         {
             get
@@ -61,6 +65,7 @@ namespace TransportTycoon.WPF.ViewModel
                 return null;
             }
         }
+        [Obsolete]
         public string? InfrastructureImagePath
         {
             get
@@ -116,7 +121,7 @@ namespace TransportTycoon.WPF.ViewModel
                 return 0;
             }
         }
-
+        [Obsolete]
         public string? StructureImage
         {
             get
@@ -153,18 +158,22 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Public Methods
+        [Obsolete]
         public void RefreshTreeCount()
         {
             OnPropertyChanged(nameof(TreeCounter));
             OnPropertyChanged(nameof(TreeImagePath));
         }
 
+        [Obsolete]
         public void RefreshTerrain(Field field)
         {
             Field = field;
             ImagePath = DetermineImagePath();
             OnPropertyChanged(nameof(ImagePath));
         }
+
+        [Obsolete]
         public void RefreshInfrastructure()
         {
             OnPropertyChanged(nameof(InfrastructureRotation));
@@ -173,6 +182,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private Methods
+        [Obsolete]
         private string DetermineImagePath()
         {
             return Field.FieldType switch
