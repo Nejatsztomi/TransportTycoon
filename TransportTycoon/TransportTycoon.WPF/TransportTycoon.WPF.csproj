@@ -88,27 +88,27 @@
     <Content Include="Assets\Images\Stop\stop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Images\Structures\factory.png">
+    <Resource Include="Assets\Images\Structures\factory.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\farm.png">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\farm.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\house.jpg">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\house.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\lumbercamp.png">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\lumbercamp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\mill.png">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\mill.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\oil.jpg">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\oil.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\rubber.jpg">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\rubber.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
     <Resource Include="Assets\Images\Terrain\field.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
