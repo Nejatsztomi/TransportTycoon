@@ -298,7 +298,7 @@ namespace TransportTycoon.Model
             if ((Map[x, y] is not Infrastructure) || (Map[x, y] is Road r && r.InCity())) return;
             List<(int, int)> changedFields = [];
 
-            if(Map[x, y] is Road || Map[x, y] is Stop)
+            if (Map[x, y] is Road || Map[x, y] is Stop)
             {
                 Map[x, y] = new Terrain(x, y, Map[x, y].Height);
                 changedFields.Add((x, y));
@@ -314,7 +314,7 @@ namespace TransportTycoon.Model
             }
             else
             {
-                Map.DestroyBridge(x, y,ref changedFields);
+                Map.DestroyBridge(x, y, ref changedFields);
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
