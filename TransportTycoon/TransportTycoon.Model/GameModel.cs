@@ -293,6 +293,14 @@ namespace TransportTycoon.Model
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
         }
+        public void Destroy(int x, int y)
+        {
+            if ((Map[x, y] is not Infrastructure) || (Map[x, y] is Road r && r.InCity())) return;
+            List<(int, int)> changedFields = [];
+            Map[x, y] = new Terrain(x,y, Map[x, y].Height);
+            changedFields.Add((x, y));
+            InfrastructureBuilt?.Invoke(this, changedFields);
+        }
         #endregion
 
         #region Private Methods
