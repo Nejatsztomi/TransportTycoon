@@ -251,6 +251,24 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        private void DrawBridgeLayer(DrawingContext ctx, Field field, Rect baseRect)
+        {
+            if (field is not null && field.FieldType == FieldType.Bridge && field is Bridge bridge)
+            {
+                string? bridgeType = bridge.BridgeType switch
+                {
+                    BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => "green",
+                    BridgeType.VerticalGreenBridge or BridgeType.HorizontalGreenBridge => "red",
+                    BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => "yellow",
+                    _ => null
+                };
+                if (bridgeType is not null && _bridgeTextures.TryGetValue(bridgeType, out BitmapImage? texture))
+                {
+                    ctx.DrawImage(texture, baseRect);
+                }
+            }
+        }
+
         private void DrawTreesLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (field.GetTrees() > 0 && _treesTextures.TryGetValue(field.GetTrees(), out BitmapImage? texture))
@@ -297,6 +315,7 @@ namespace TransportTycoon.WPF.View.UserControls
                     DrawTerrainLayer(drawingContext, currentField, baseRect);
                     DrawStructureLayer(drawingContext, currentField, baseRect);
                     DrawRoadLayer(drawingContext, currentField, baseRect);
+                    DrawBridgeLayer(drawingContext, currentField, baseRect);
                     DrawTreesLayer(drawingContext, currentField, baseRect);
                 }
             }
