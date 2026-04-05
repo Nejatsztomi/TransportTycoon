@@ -239,14 +239,14 @@ namespace TransportTycoon.MapData
         {
             if (Table[x, y] is Bridge bridge)
             {
-                Table[x, y] = new Terrain(x, y, Table[x, y].Height);
+                Table[x, y] = new Water(x, y);
                 changedFields.Add((x, y));
                 if (bridge.BridgeType.ToString().Contains("Horizontal"))
                 {
                     int left = y - 1;
                     while (Table[x, left] is Bridge)
                     {
-                        Table[x, left] = new Terrain(x, left, Table[x, left].Height);
+                        Table[x, left] = new Water(x, left);
                         changedFields.Add((x, left));
                         left--;
                     }
@@ -254,7 +254,7 @@ namespace TransportTycoon.MapData
                     int right = y + 1;
                     while (Table[x, right] is Bridge)
                     {
-                        Table[x, right] = new Terrain(x, right, Table[x, right].Height);
+                        Table[x, right] = new Water(x, right);
                         changedFields.Add((x, right));
                         right++;
                     }
@@ -265,7 +265,7 @@ namespace TransportTycoon.MapData
                     int up = x - 1;
                     while (Table[up, y] is Bridge)
                     {
-                        Table[up, y] = new Terrain(up, y, Table[up, y].Height);
+                        Table[up, y] = new Water(up, y);
                         changedFields.Add((up, y));
                         up--;
                     }
@@ -273,7 +273,7 @@ namespace TransportTycoon.MapData
                     int down = x + 1;
                     while (Table[down, y] is Bridge)
                     {
-                        Table[down, y] = new Terrain(down, y, Table[down, y].Height);
+                        Table[down, y] = new Water(down, y);
                         changedFields.Add((down, y));
                         down++;
                     }
