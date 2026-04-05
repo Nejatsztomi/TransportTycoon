@@ -140,6 +140,7 @@
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="14"
                                 >
+                            <Image Source="/Assets/Images/Buttons/x.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
                 </TabItem>

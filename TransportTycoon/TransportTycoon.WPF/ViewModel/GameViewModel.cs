@@ -205,6 +205,9 @@ namespace TransportTycoon.WPF.ViewModel
                 case 13:
                     Model.BuildStop(tile.X, tile.Y);
                     break;
+                case 14:
+                    Model.Destroy(tile.X, tile.Y);
+                    break;
                 default:
                     break;
             }

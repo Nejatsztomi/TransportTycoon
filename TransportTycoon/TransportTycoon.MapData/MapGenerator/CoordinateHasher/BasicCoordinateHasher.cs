@@ -54,5 +54,5 @@
             return min + (int)(hashFloat * (max - min));
         }
     }
-        #endregion
+    #endregion
 }

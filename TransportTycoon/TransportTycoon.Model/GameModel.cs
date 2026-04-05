@@ -195,7 +195,7 @@ namespace TransportTycoon.Model
         }
         public void BuildRoad(int x, int y)
         {
-            if (Map[x, y] is not Terrain) return;
+            if (Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
             List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
@@ -271,7 +271,7 @@ namespace TransportTycoon.Model
         }
         public void BuildStop(int x, int y)
         {
-            if (Map[x, y] is not Terrain) return;
+            if (Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
             List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
@@ -292,6 +292,31 @@ namespace TransportTycoon.Model
             //if (IsGameOver) OnGameOver();
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
+        }
+        public void Destroy(int x, int y)
+        {
+            if ((Map[x, y] is not Infrastructure) || (Map[x, y] is Road r && r.InCity())) return;
+            List<(int, int)> changedFields = [];
+
+            if (Map[x, y] is Road || Map[x, y] is Stop)
+            {
+                Map[x, y] = new Terrain(x, y, Map[x, y].Height);
+                changedFields.Add((x, y));
+
+                foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
+                {
+                    if (e != null && e is Road road)
+                    {
+                        road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
+                        changedFields.Add((e.X, e.Y));
+                    }
+                }
+            }
+            else
+            {
+                Map.DestroyBridge(x, y, ref changedFields);
+            }
+            InfrastructureBuilt?.Invoke(this, changedFields);
         }
         #endregion
 

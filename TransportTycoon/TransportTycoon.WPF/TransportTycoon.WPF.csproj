@@ -14,6 +14,7 @@
     <None Remove="Assets\Images\Bridge\yellowBridge.png" />
     <None Remove="Assets\Images\Buttons\minus.png" />
     <None Remove="Assets\Images\Buttons\plus.png" />
+    <None Remove="Assets\Images\Buttons\x.png" />
     <None Remove="Assets\Images\Road\crossT.png" />
     <None Remove="Assets\Images\Road\crossX.png" />
     <None Remove="Assets\Images\Road\road.png" />
@@ -71,6 +72,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Bridge\yellowBridge.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Buttons\x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Road\crossT.png">
