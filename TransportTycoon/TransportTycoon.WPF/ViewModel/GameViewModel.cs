@@ -34,6 +34,14 @@ namespace TransportTycoon.WPF.ViewModel
         private int _selectedButton = 0;
         #endregion
 
+        #region Events
+        /// <summary>
+        /// A simple event to notify the view that the map has been updated and it should redraw itself.
+        /// This is needed because some changes to the map (like tree growth) don't trigger any of the other events, but they still require a redraw.
+        /// </summary>
+        public event Action? MapUpdated;
+        #endregion
+
         #region Constructors
         public GameViewModel(GameModel model)
         {
@@ -99,12 +107,13 @@ namespace TransportTycoon.WPF.ViewModel
             }
         }
 
-        private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
+        private void Model_GameAdvanced(object? _1, List<Tuple<int, int>> _2)
         {
             // O(n * m + m)
-            Tiles.Where(tile => grownTrees.Any(tuple => tuple.Item1 == tile.X && tuple.Item2 == tile.Y))
-                .ToList()
-                .ForEach(tile => tile.RefreshTreeCount());
+            //Tiles.Where(tile => grownTrees.Any(tuple => tuple.Item1 == tile.X && tuple.Item2 == tile.Y))
+            //    .ToList()
+            //    .ForEach(tile => tile.RefreshTreeCount());
+            MapUpdated?.Invoke();
         }
 
         private void RefreshTable()
