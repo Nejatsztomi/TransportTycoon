@@ -160,6 +160,29 @@ namespace TransportTycoon.WPF.View.UserControls
             GameMapRenderer.CameraX = Math.Clamp(desiredCameraX, 0.0, maxCameraX);
             GameMapRenderer.CameraY = Math.Clamp(desiredCameraY, 0.0, maxCameraY);
         }
+
+        private void GameMapRenderer_PreviewMouseLeftButtonDown(object? _, MouseButtonEventArgs e)
+        {
+            Point screenMousePos = e.GetPosition(GameMapRenderer);
+
+            double gameMousePosX = GameMapRenderer.CameraX + (screenMousePos.X / GameMapRenderer.ZoomLevel);
+            double gameMousePosY = GameMapRenderer.CameraY + (screenMousePos.Y / GameMapRenderer.ZoomLevel);
+
+            int tileX = (int)(gameMousePosX / FastMapRenderer.TileSize);
+            int tileY = (int)(gameMousePosY / FastMapRenderer.TileSize);
+
+            // Bounds check 
+            int mapWidth = GameMapRenderer.Map.GetLength(0);
+            int mapHeight = GameMapRenderer.Map.GetLength(1);
+
+            if ((0 <= tileX && tileX < mapWidth) && (0 <= tileY && tileY < mapHeight))
+            {
+                if (DataContext is GameViewModel viewModel)
+                {
+                    viewModel.OnTileLeftClick(tileX, tileY);
+                }
+            }
+        }
         #endregion
     }
 }
