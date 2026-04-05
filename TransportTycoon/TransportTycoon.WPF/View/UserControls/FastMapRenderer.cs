@@ -13,10 +13,40 @@ namespace TransportTycoon.WPF.View.UserControls
 
         #region Private fields
         /// <summary>
-        /// A dictionary that link each <see cref="FieldType"/> to their corresponding image.
+        /// A dictionary that link each <see cref="FieldType"/> to their corresponding terrain image.
         /// </summary>
         /// <remarks>Must be set manually for each <see cref="FieldType"/>.</remarks>
-        private readonly Dictionary<FieldType, BitmapImage> _textures;
+        private readonly Dictionary<FieldType, BitmapImage> _terrainTextures;
+
+        /// <summary>
+        /// A dictionary that link each <see cref="FieldType"/> to their structure image.
+        /// </summary>
+        /// <remarks>Must be set manually for each <see cref="FieldType"/>.</remarks>
+        private readonly Dictionary<FieldType, BitmapImage> _structureTextures;
+
+        /// <summary>
+        /// A dictionary that link each <see cref="RoadType"/> to their road image.
+        /// </summary>
+        /// <remarks>Must be set manually for each <see cref="RoadType"/>.</remarks>
+        private readonly Dictionary<string, BitmapImage> _roadTextures;
+
+        /// <summary>
+        /// A dictionary that link each <see cref="BridgeType"/> to their bridge image.
+        /// </summary>
+        /// <remarks>Must be set manually for each <see cref="BridgeType"/>.</remarks>
+        private readonly Dictionary<string, BitmapImage> _bridgeTextures;
+
+        /// <summary>
+        /// A dictionary that link integers 1 to 4 to their tree image.
+        /// </summary>
+        /// <remarks>Must be set manually for each tree type.</remarks>
+        private readonly Dictionary<int, BitmapImage> _treesTextures;
+
+        /// <summary>
+        /// A dictionary that link each vehicle type to their image.
+        /// </summary>
+        /// <remarks>Must be set manually for each vehicle type. Not currently implemented.</remarks>
+        private readonly Dictionary<object, BitmapImage> _vehicleTextures;
         #endregion
 
         #region Bindings
@@ -112,23 +142,51 @@ namespace TransportTycoon.WPF.View.UserControls
         public FastMapRenderer()
         {
             // TODO: Later maybe JSON or .rex format
-            _textures = new Dictionary<FieldType, BitmapImage>
+            _terrainTextures = new Dictionary<FieldType, BitmapImage>
             {
-                // Terrain
                 { FieldType.Water, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/water2.png")) },
                 { FieldType.Plain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/plain.png")) },
                 { FieldType.Hill, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/hill.png")) },
                 { FieldType.Mountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/mountain.png")) },
                 { FieldType.HighMountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/highmountain.png")) },
-                // Structures
-                { FieldType.Farm, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/farm.png"))  },
-                { FieldType.LumberCamp, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/lumbercamp.png"))  },
-                { FieldType.Mine, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/oil.jpg"))  },
-                { FieldType.Mill, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/mill.png"))  },
-                { FieldType.Plant, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/rubber.jpg"))  },
-                { FieldType.Factory, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/factory.png"))  },
-                {  FieldType.House, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/house.jpg"))   },
             };
+
+            _structureTextures = new Dictionary<FieldType, BitmapImage>
+            {
+                { FieldType.Farm, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/farm.png")) },
+                { FieldType.LumberCamp, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/lumbercamp.png")) },
+                { FieldType.Mine, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/oil.jpg")) },
+                { FieldType.Mill, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/mill.png")) },
+                { FieldType.Plant, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/rubber.jpg")) },
+                { FieldType.Factory, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/factory.png")) },
+                { FieldType.House, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/house.jpg")) },
+                { FieldType.Stop, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Stop/stop.png")) },
+            };
+
+            _treesTextures = new Dictionary<int, BitmapImage>
+            {
+                {1, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Trees/tree1.png"))  },
+                {2, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Trees/tree2.png")) },
+                {3, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Trees/tree3.png")) },
+                {4, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Trees/tree4.png")) },
+            };
+
+            _roadTextures = new Dictionary<string, BitmapImage>
+            {
+                { "crossX", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/crossX.png")) },
+                { "crossT", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/crossT.png")) },
+                { "road", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/road.png")) },
+                { "turn", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/turn.png")) },
+            };
+
+            _bridgeTextures = new Dictionary<string, BitmapImage>
+            {
+                { "green", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/greenBridge.png")) },
+                { "red", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/redBridge.png")) },
+                { "yellow", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/yellowBridge.png")) },
+            };
+
+            _vehicleTextures = [];
         }
         #endregion
 
@@ -150,6 +208,55 @@ namespace TransportTycoon.WPF.View.UserControls
             bitmap.EndInit();
             bitmap.Freeze();
             return bitmap;
+        }
+
+        /// <summary>
+        /// Helper method to draw the terrain layer of a tile.
+        /// </summary>
+        /// <remarks>Rendering remains efficient to JIT inlining.</remarks>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, where we draw the image.</param>
+        /// <param name="field">The <see cref="Field"/> object, which we want to draw</param>
+        /// <param name="baseRect">The <see cref="Rect"/> rectangle object where we draw the image</param>
+        private void DrawTerrainLayer(DrawingContext ctx, Field field, Rect baseRect)
+        {
+            if (_terrainTextures.TryGetValue((FieldType)field.Height, out BitmapImage? texture))
+            {
+                ctx.DrawImage(texture, baseRect);
+            }
+        }
+
+        private void DrawStructureLayer(DrawingContext ctx, Field field, Rect baseRect)
+        {
+            if (_structureTextures.TryGetValue(field.FieldType, out BitmapImage? texture))
+            {
+                ctx.DrawImage(texture, baseRect);
+            }
+        }
+
+        private void DrawRoadLayer(DrawingContext ctx, Field field, Rect baseRect)
+        {
+            if (field is not null && field.FieldType == FieldType.Road && field is Road road)
+            {
+                string roadType = "road";
+                if (road.RoadType == RoadType.RightTurn || road.RoadType == RoadType.LeftTurn || road.RoadType == RoadType.UpperRightTurn || road.RoadType == RoadType.UpperLeftTurn)
+                    roadType = "turn";
+                else if (road.RoadType == RoadType.UpperTRoad || road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad || road.RoadType == RoadType.LeftTRoad)
+                    roadType = "crossT";
+                else if (road.RoadType == RoadType.XRoad)
+                    roadType = "crossX";
+                if (_roadTextures.TryGetValue(roadType, out BitmapImage? texture))
+                {
+                    ctx.DrawImage(texture, baseRect);
+                }
+            }
+        }
+
+        private void DrawTreesLayer(DrawingContext ctx, Field field, Rect baseRect)
+        {
+            if (field.GetTrees() > 0 && _treesTextures.TryGetValue(field.GetTrees(), out BitmapImage? texture))
+            {
+                ctx.DrawImage(texture, baseRect);
+            }
         }
         #endregion
 
@@ -181,18 +288,16 @@ namespace TransportTycoon.WPF.View.UserControls
             int endCol = Math.Min(width, (int)((CameraX + visibleWorldWidth) / TileSize) + 1);
             int endRow = Math.Min(height, (int)((CameraY + visibleWorldHeight) / TileSize) + 1);
 
-            for (int x = startCol; x < endCol; x++)
+            for (int y = startRow; y < endRow; y++)
             {
-                for (int y = startRow; y < endRow; y++)
+                for (int x = startCol; x < endCol; x++)
                 {
                     Field currentField = currentMap[x, y];
-
-                    if (currentField != null && _textures.TryGetValue(currentField.FieldType, out BitmapImage? texture))
-                    {
-                        // The rectangle for the image
-                        Rect destinationRectangle = new(x * TileSize, y * TileSize, TileSize, TileSize);
-                        drawingContext.DrawImage(texture, destinationRectangle);
-                    }
+                    Rect baseRect = new(x * TileSize, y * TileSize, TileSize, TileSize);
+                    DrawTerrainLayer(drawingContext, currentField, baseRect);
+                    DrawStructureLayer(drawingContext, currentField, baseRect);
+                    DrawRoadLayer(drawingContext, currentField, baseRect);
+                    DrawTreesLayer(drawingContext, currentField, baseRect);
                 }
             }
 
@@ -207,7 +312,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         public void Redraw()
         {
-            this.InvalidateVisual();
+            InvalidateVisual();
         }
         #endregion
     }
