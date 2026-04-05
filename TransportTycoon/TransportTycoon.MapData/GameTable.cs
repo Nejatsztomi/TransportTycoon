@@ -68,7 +68,7 @@ namespace TransportTycoon.MapData
             //Up
             if (x > 0 && Math.Abs(height - Table[x - 1, y].Height) > 2) return false;
 
-            // Down 
+            // up 
             if (x < Height - 1 && Math.Abs(height - Table[x + 1, y].Height) > 2) return false;
 
             // Left
@@ -234,6 +234,52 @@ namespace TransportTycoon.MapData
                 changedFields.Add((b + 1, y));
             }
             return cost;
+        }
+        public void DestroyBridge(int x, int y, ref List<(int, int)> changedFields)
+        {
+            if (Table[x, y] is Bridge bridge)
+            {
+                Table[x, y] = new Terrain(x, y, Table[x, y].Height);
+                changedFields.Add((x, y));
+                if (bridge.BridgeType.ToString().Contains("Horizontal"))
+                {
+                    int left = y - 1;
+                    while (Table[x, left] is Bridge)
+                    {
+                        Table[x, left] = new Terrain(x, left, Table[x, left].Height);
+                        changedFields.Add((x, left));
+                        left--;
+                    }
+                    if (Table[x, left] is Road rl) { rl.ChangeType(CalculateRoadType(x, left)); changedFields.Add((x, left)); }
+                    int right = y + 1;
+                    while (Table[x, right] is Bridge)
+                    {
+                        Table[x, right] = new Terrain(x, right, Table[x, right].Height);
+                        changedFields.Add((x, right));
+                        right++;
+                    }
+                    if (Table[x, right] is Road rr) { rr.ChangeType(CalculateRoadType(x, right)); changedFields.Add((x, right)); }
+                }
+                else
+                {
+                    int up = x - 1;
+                    while (Table[up, y] is Bridge)
+                    {
+                        Table[up, y] = new Terrain(up, y, Table[up, y].Height);
+                        changedFields.Add((up, y));
+                        up--;
+                    }
+                    if (Table[up, y] is Road ru) { ru.ChangeType(CalculateRoadType(up, y)); changedFields.Add((up, y)); }
+                    int down = x + 1;
+                    while (Table[down, y] is Bridge)
+                    {
+                        Table[down, y] = new Terrain(down, y, Table[down, y].Height);
+                        changedFields.Add((down, y));
+                        down++;
+                    }
+                    if (Table[down, y] is Road rd) { rd.ChangeType(CalculateRoadType(down, y)); changedFields.Add((down, y)); }
+                }
+            }
         }
         #endregion
 
