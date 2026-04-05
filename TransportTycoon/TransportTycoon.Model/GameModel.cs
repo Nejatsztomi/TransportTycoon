@@ -219,7 +219,7 @@ namespace TransportTycoon.Model
         }
         public void BuildBridge(int x, int y)
         {
-            if (Map[x, y] is not Water) { SetSelectedField(-1, -1); return; }
+            if (Map[x, y].FieldType!=FieldType.Water) { SetSelectedField(-1, -1); return; }
             if (SelectedField == null) SetSelectedField(x, y);
             else
             {
@@ -240,7 +240,7 @@ namespace TransportTycoon.Model
 
                     for (int i = Math.Min(SelectedField.Y, y) + 1; i < Math.Max(SelectedField.Y, y); i++)
                     {
-                        if (Map[x, i] is not Water) { SetSelectedField(-1, -1); return; }
+                        if (Map[x, i].FieldType != FieldType.Water) { SetSelectedField(-1, -1); return; }
                     }
                     Balance -= Map.CreateHorizontalBridge(x, Math.Min(SelectedField.Y, y), Math.Max(SelectedField.Y, y), b_type, ref changedFields);
                 }
@@ -259,7 +259,7 @@ namespace TransportTycoon.Model
 
                     for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
                     {
-                        if (Map[i, y] is not Water) { SetSelectedField(-1, -1); return; }
+                        if (Map[i, y].FieldType != FieldType.Water) { SetSelectedField(-1, -1); return; }
                     }
                     Balance -= Map.CreateVerticalBridge(y, Math.Min(SelectedField.X, x), Math.Max(SelectedField.X, x), b_type, ref changedFields);
                 }
