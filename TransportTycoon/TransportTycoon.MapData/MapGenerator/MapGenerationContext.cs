@@ -3,12 +3,13 @@
     public readonly record struct MapGenerationContext
     {
         #region Properties
-        public int Width { get; } = 100;
-        public int Height { get; } = 100;
-        public int Seed { get; } = 0;
+        public int Width { get; }
+        public int Height { get; }
+        public int Seed { get; }
         public MapGenerationSettings Settings { get; }
         #endregion
 
+        #region Constructors
         public MapGenerationContext(int width, int height, int seed, MapGenerationSettings settings)
         {
             if (width < 0)
@@ -26,5 +27,14 @@
             Seed = seed;
             Settings = settings;
         }
+
+        public MapGenerationContext()
+        {
+            Width = 100;
+            Height = 100;
+            Seed = 0;
+            Settings = new();
+        }
+        #endregion
     };
 }
