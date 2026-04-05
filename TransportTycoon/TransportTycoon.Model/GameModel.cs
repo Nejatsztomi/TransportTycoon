@@ -195,7 +195,7 @@ namespace TransportTycoon.Model
         }
         public void BuildRoad(int x, int y)
         {
-            if (Map[x, y] is not Terrain) return;
+            if (Map[x, y].Height < 1 || Map[x, y].Height > 3) return;
             List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
@@ -271,7 +271,7 @@ namespace TransportTycoon.Model
         }
         public void BuildStop(int x, int y)
         {
-            if (Map[x, y] is not Terrain) return;
+            if (Map[x, y].Height<1 || Map[x, y].Height > 3) return;
             List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
