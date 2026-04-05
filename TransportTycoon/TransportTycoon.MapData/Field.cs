@@ -1,9 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public enum FieldType
     {
@@ -26,7 +21,6 @@ namespace TransportTycoon.MapData
 
     public abstract class Field
     {
-
         #region Properties
         public int X { protected set; get; }
         public int Y { protected set; get; }
