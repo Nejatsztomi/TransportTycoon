@@ -53,7 +53,7 @@
             <usercontrols:LeftPanel Grid.Column="0"/>
 
             <!-- Right panel -->
-            <usercontrols:Map Grid.Column="2"/>
+            <usercontrols:Map ViewModel="{Binding}" Grid.Column="2"/>
         </Grid>
     </DockPanel>
 </UserControl>

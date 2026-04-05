@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF.View.UserControls
 {
@@ -14,6 +15,33 @@ namespace TransportTycoon.WPF.View.UserControls
         private Point _dragStartCamera;
         #endregion
 
+        #region Bindings
+        /// <summary>
+        /// A binding for the viewmodel.
+        /// </summary>
+        /// <remarks>
+        /// This is need properly linking the <see cref="GameViewModel"/> to this UserControl.
+        /// We need to subscribe to the <see cref="GameViewModel.MapUpdated"/> event to know when to redraw the map.
+        /// </remarks>
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register(
+                nameof(ViewModel),
+                typeof(GameViewModel),
+                typeof(Map),
+                new PropertyMetadata(null, OnViewModelChanged));
+        #endregion
+
+        #region Properties
+        /// <summary>
+        /// The underlying property for the <see cref="ViewModelProperty"/>.
+        /// </summary>
+        public GameViewModel? ViewModel
+        {
+            get => (GameViewModel?)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
+        }
+        #endregion
+
         #region Constructors
         public Map()
         {
@@ -22,6 +50,27 @@ namespace TransportTycoon.WPF.View.UserControls
         #endregion
 
         #region Private event methods
+        /// <summary>
+        /// The method which is triggered when the <see cref="ViewModel"/> property changes.
+        /// It is responsible for subscribing to the new viewmodel's events and unsubscribing from the old one.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var map = (Map)d;
+            GameViewModel? oldVm = e.OldValue as GameViewModel;
+            GameViewModel? newVm = e.NewValue as GameViewModel;
+
+            oldVm?.MapUpdated -= map.GameViewModel_MapUpdated;
+            newVm?.MapUpdated += map.GameViewModel_MapUpdated;
+        }
+
+        private void GameViewModel_MapUpdated()
+        {
+            GameMapRenderer.Redraw();
+        }
+
         private void GameMapRenderer_PreviewMouseRightButtonDown(object? _, MouseButtonEventArgs e)
         {
             _dragStartPoint = e.GetPosition(this);

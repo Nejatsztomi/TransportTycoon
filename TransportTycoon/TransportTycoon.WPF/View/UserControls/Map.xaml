@@ -4,12 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TransportTycoon.WPF.View.UserControls"
-             xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:GameViewModel}"
+             xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel"
              xmlns:usercontrols="clr-namespace:TransportTycoon.WPF.View.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              >
-
     <Grid>
         <usercontrols:FastMapRenderer x:Name="GameMapRenderer"
                                       Map="{Binding Tiles2}"
