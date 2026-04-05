@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace TransportTycoon.WPF.View.UserControls
 {
@@ -8,9 +9,9 @@ namespace TransportTycoon.WPF.View.UserControls
     /// </summary>
     public partial class Map : UserControl
     {
-        #region Properties
-        private Point? DragStartPoint { get; set; } = null;
-        private Point? DragStartOffset { get; set; } = null;
+        #region Private fields
+        private Point? _dragStartPoint = null;
+        private Point _dragStartCamera;
         #endregion
 
         #region Constructors
@@ -20,60 +21,96 @@ namespace TransportTycoon.WPF.View.UserControls
         }
         #endregion
 
-        //#region Private event methods
-        //private void MapScrollViewer_PreviewMouseWheel(object? sender, MouseWheelEventArgs e)
-        //{
-        //    e.Handled = true;
-        //    // Zoom with touchpad: Pinch-to-zoom
-        //    // Zoom with mouse: Ctrl+Scroll wheel
-        //    if (Keyboard.Modifiers == ModifierKeys.Control)
-        //    {
-        //        e.Handled = true;
+        #region Private event methods
+        private void GameMapRenderer_PreviewMouseRightButtonDown(object? _, MouseButtonEventArgs e)
+        {
+            _dragStartPoint = e.GetPosition(this);
+            _dragStartCamera = new(GameMapRenderer.CameraX, GameMapRenderer.CameraY);
+            GameMapRenderer.CaptureMouse();
+        }
 
-        //        if (DataContext is GameViewModel vm)
-        //        {
-        //            if (e.Delta > 0 && vm.ZoomLevel < 3.0)
-        //            {
-        //                vm.ZoomLevel += 0.1;
-        //            }
-        //            else if (e.Delta < 0 && vm.ZoomLevel > 0.4)
-        //            {
-        //                vm.ZoomLevel -= 0.1;
-        //            }
-        //        }
-        //    }
-        //}
+        private void GameMapRenderer_PreviewMouseMove(object? _, MouseEventArgs e)
+        {
+            if (_dragStartPoint.HasValue)
+            {
+                Point screenMousePos = e.GetPosition(this);
 
-        //private void MapScrollViewer_PreviewMouseRightButtonDown(object? sender, MouseButtonEventArgs e)
-        //{
-        //    DragStartPoint = e.GetPosition(MapScrollViewer);
-        //    DragStartOffset = new(MapScrollViewer.HorizontalOffset, MapScrollViewer.VerticalOffset);
-        //    MapScrollViewer.CaptureMouse();
-        //}
+                // Calculate how much the mouse has moved in world coordinates
+                double deltaX = (screenMousePos.X - _dragStartPoint.Value.X) / GameMapRenderer.ZoomLevel;
+                double deltaY = (screenMousePos.Y - _dragStartPoint.Value.Y) / GameMapRenderer.ZoomLevel;
 
-        //private void MapScrollViewer_PreviewMouseMove(object? sender, MouseEventArgs e)
-        //{
-        //    if (DragStartPoint.HasValue && DragStartOffset.HasValue)
-        //    {
-        //        Point currentPoint = e.GetPosition(MapScrollViewer);
+                // Calculate camera position based on the mouse movement
+                double desiredCameraX = _dragStartCamera.X - deltaX;
+                double desiredCameraY = _dragStartCamera.Y - deltaY;
 
-        //        double deltaX = currentPoint.X - DragStartPoint.Value.X;
-        //        double deltaY = currentPoint.Y - DragStartPoint.Value.Y;
+                UpdateCamera(desiredCameraX, desiredCameraY, GameMapRenderer.ZoomLevel);
+            }
+        }
 
-        //        MapScrollViewer.ScrollToHorizontalOffset(DragStartOffset.Value.X - deltaX);
-        //        MapScrollViewer.ScrollToVerticalOffset(DragStartOffset.Value.Y - deltaY);
-        //    }
-        //}
+        private void GameMapRenderer_PreviewMouseRightButtonUp(object? _1, MouseButtonEventArgs _2)
+        {
+            if (_dragStartPoint.HasValue)
+            {
+                GameMapRenderer.ReleaseMouseCapture();
+                _dragStartPoint = null;
+            }
+        }
 
-        //private void MapScrollViewer_PreviewMouseRightButtonUp(object? sender, MouseButtonEventArgs e)
-        //{
-        //    if (DragStartPoint.HasValue)
-        //    {
-        //        MapScrollViewer.ReleaseMouseCapture();
-        //        DragStartPoint = null;
-        //    }
-        //}
-        //#endregion
+        private void GameMapRenderer_PreviewMouseWheel(object? _, MouseWheelEventArgs e)
+        {
+            // TODO: Move to class, calculate max zoom based on map size and tile size
+            const double ZOOM_IN_STEP = 1.1;
+            const double ZOOM_OUT_STEP = 1 / 1.1;
+            const double MIN_ZOOM = 0.2;
+            const double MAX_ZOOM = 3.0;
 
+            double zoomFactor = e.Delta > 0 ? ZOOM_IN_STEP : ZOOM_OUT_STEP;
+
+            double newZoomLevel = Math.Clamp(GameMapRenderer.ZoomLevel * zoomFactor, MIN_ZOOM, MAX_ZOOM);
+
+            // Get mouse position
+            Point screenMousePos = e.GetPosition(GameMapRenderer);
+
+            // Find where the mouse is in the game world
+            double gameMousePosX = GameMapRenderer.CameraX + (screenMousePos.X / GameMapRenderer.ZoomLevel);
+            double gameMousePosY = GameMapRenderer.CameraY + (screenMousePos.Y / GameMapRenderer.ZoomLevel);
+
+            // Calculate the desired camera position to keep the mouse pointing at the same world position after zooming
+            double desiredCameraX = gameMousePosX - (screenMousePos.X / newZoomLevel);
+            double desiredCameraY = gameMousePosY - (screenMousePos.Y / newZoomLevel);
+
+            UpdateCamera(desiredCameraX, desiredCameraY, newZoomLevel);
+        }
+
+        /// <summary>
+        /// Updates the camera position and zoom level to display the specified region of the map.
+        /// </summary>
+        /// <remarks>If the requested camera position would cause the viewport to extend beyond the map
+        /// boundaries, the position is automatically adjusted to keep the camera within valid bounds.</remarks>
+        /// <param name="desiredCameraX">The desired horizontal position of the camera in world coordinates.
+        /// Values outside the map bounds are clamped to the valid range.</param>
+        /// <param name="desiredCameraY">The desired vertical position of the camera in world coordinates.
+        /// Values outside the map bounds are clamped to the valid range.</param>
+        /// <param name="zoomLevel">The zoom level to apply to the camera. Higher values zoom in, lower zoom out.</param>
+        private void UpdateCamera(double desiredCameraX, double desiredCameraY, double zoomLevel)
+        {
+            double visibleWorldWidth = GameMapRenderer.ActualWidth / zoomLevel;
+            double visibleWorldHeight = GameMapRenderer.ActualHeight / zoomLevel;
+
+            // Max bounds (right and bottom side)
+            double maxCameraX = (GameMapRenderer.Map.GetLength(0) * FastMapRenderer.TileSize) - visibleWorldWidth;
+            double maxCameraY = (GameMapRenderer.Map.GetLength(1) * FastMapRenderer.TileSize) - visibleWorldHeight;
+
+            // Min bounds (left and top side)
+            maxCameraX = Math.Max(0.0, maxCameraX);
+            maxCameraY = Math.Max(0.0, maxCameraY);
+
+            // Apply the changes
+            // We don't have to worry about multiple redraw calls.
+            GameMapRenderer.ZoomLevel = zoomLevel;
+            GameMapRenderer.CameraX = Math.Clamp(desiredCameraX, 0.0, maxCameraX);
+            GameMapRenderer.CameraY = Math.Clamp(desiredCameraY, 0.0, maxCameraY);
+        }
+        #endregion
     }
 }

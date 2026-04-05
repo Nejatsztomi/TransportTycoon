@@ -11,9 +11,14 @@
              >
 
     <Grid>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-            <usercontrols:FastMapRenderer x:Name="GameMapRenderer" Map="{Binding Tiles2}"/>
-        </ScrollViewer>
+        <usercontrols:FastMapRenderer x:Name="GameMapRenderer"
+                                      Map="{Binding Tiles2}"
+                                      ClipToBounds="True"
+                                      PreviewMouseRightButtonDown="GameMapRenderer_PreviewMouseRightButtonDown"
+                                      PreviewMouseMove="GameMapRenderer_PreviewMouseMove"
+                                      PreviewMouseRightButtonUp="GameMapRenderer_PreviewMouseRightButtonUp"
+                                      PreviewMouseWheel="GameMapRenderer_PreviewMouseWheel"
+                                      />
     </Grid>
 
 </UserControl>
