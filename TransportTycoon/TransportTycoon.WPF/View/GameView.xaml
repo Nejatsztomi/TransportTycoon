@@ -59,6 +59,7 @@
                               />
             <usercontrols:MinimapControl
                 Grid.Column="2"
+                Margin="10"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 TargetRenderer="{Binding GameMapRenderer, ElementName=MainMapRenderer}"

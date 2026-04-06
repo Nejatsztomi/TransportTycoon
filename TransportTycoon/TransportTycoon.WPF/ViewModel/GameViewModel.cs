@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -20,11 +19,6 @@ namespace TransportTycoon.WPF.ViewModel
 
         public GameModel Model { get; init; }
 
-        [Obsolete]
-        public ObservableCollection<FieldViewModel> Tiles { get; private set; }
-        public Field[,] Tiles2 { get; }
-        public WriteableBitmap MinimapImage { get; set; }
-
         public int Balance => Model.Balance;
         public int GameTime => Model.GameTime;
         public bool IsPaused => Model.Mode == GameMode.Paused;
@@ -34,10 +28,10 @@ namespace TransportTycoon.WPF.ViewModel
         public GameTable Map => Model.Map;
         public int Width => Model.Map.Width;
         public int Height => Model.Map.Height;
-        [ObservableProperty]
-        [Obsolete]
-        private double _zoomLevel = 1.0;
+        public Field[,] Tiles { get; }
+        public WriteableBitmap MinimapImage { get; set; }
         #endregion
+
         [ObservableProperty]
         private int _selectedButton = 0;
         #endregion
@@ -55,7 +49,6 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model = model;
 
-            model.NewGameCreated += Model_NewGameCreated;
             model.GameTicked += Model_GameTicked;
             model.GameAdvanced += Model_GameAdvanced;
             model.InfrastructureBuilt += Model_InfrastructureBuilt;
@@ -63,10 +56,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.BalanceChanged += Model_BalanceChanged;
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
 
-            Tiles = [];
-            //RefreshTable();
-
-            Tiles2 = model.Map.Table;
+            Tiles = model.Map.Table;
             MinimapImage = new(Width, Height, 96, 96, PixelFormats.Bgra32, null);
             GenerateMinimap();
         }
@@ -95,6 +85,12 @@ namespace TransportTycoon.WPF.ViewModel
             MinimapImage.WritePixels(new Int32Rect(0, 0, Width, Height), pixels, Width * 4, 0);
         }
 
+        /// <summary>
+        /// Updates the tile (pixel) on the minimap based the given color.
+        /// </summary>
+        /// <param name="x">The tile's (pixel) X coordinate.</param>
+        /// <param name="y">The tile's (pixel) Y coordinate.</param>
+        /// <param name="newColor">The color in ARGB format.</param>
         public void UpdateMinimapTile(int x, int y, uint newColor)
         {
             uint[] colorData = [newColor];
@@ -104,6 +100,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public void OnTileLeftClick(int x, int y)
         {
+            // Predicate
             if (!IsEditorMode) return;
 
             switch (SelectedButton)
@@ -133,7 +130,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         #region Private methods
         /// <summary>
-        /// Convert's a tile's FieldType to a color for the minimap.
+        /// Convert's a tile's <see cref="FieldType"/> to a color for the minimap.
         /// </summary>
         /// <param name="tile">The field.</param>
         /// <returns>The <see cref="uint"/> ARGB format.</returns>
@@ -168,76 +165,59 @@ namespace TransportTycoon.WPF.ViewModel
             return ColorConverterUtil.ColorToUInt32(colorName);
         }
 
-        private void Model_SelectedFieldChanged(object? sender, (int, int) e)
+        // Nem tudom egyelőre ennek a függvénynek van-e valami haszna
+        // Lehet, hogy meg kell jeleníteni a kiválasztott mezőt a térképen
+        private void Model_SelectedFieldChanged(object? _1, (int x, int y) _2)
         {
-            if (Model.SelectedField == null)
-            {
-                var tile = Tiles.FirstOrDefault(t => t.IsSelected);
-                if (tile != null) tile.IsSelected = false;
-            }
-            else
-            {
-                var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
-                if (tile != null) tile.IsSelected = true;
-            }
+            //if (Model.SelectedField == null)
+            //{
+            //    var tile = Tiles.FirstOrDefault(t => t.IsSelected);
+            //    if (tile != null) tile.IsSelected = false;
+            //}
+            //else
+            //{
+            //    var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
+            //    if (tile != null) tile.IsSelected = true;
+            //}
         }
 
-        private void Model_BalanceChanged(object? sender, EventArgs e)
+        private void Model_BalanceChanged(object? _1, EventArgs _2)
         {
             OnPropertyChanged(nameof(Balance));
         }
 
-        [Obsolete("We redraw the map each time, and get all the data directly from GameTable." +
-            "If performance becomes and issues this can be considerd.")]
-        private void Model_FieldChanged(object? sender, TransportTycoonFieldEventArgs e)
+        // Ezt se tudom pontosan mit csinál.
+        private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs _2)
         {
-            var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
+            //var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
 
-            if (tile != null)
-            {
-                tile.RefreshTerrain(Model.Map[e.X, e.Y]);
-            }
+            //if (tile != null)
+            //{
+            //    tile.RefreshTerrain(Model.Map[e.X, e.Y]);
+            //}
         }
 
-        [Obsolete("We redraw the map each time, and get all the data directly from GameTable." +
-            "If performance becomes and issues this can be considerd.")]
-        private void Model_InfrastructureBuilt(object? sender, List<(int, int)> changedFields)
+        // TODO: hídak esetén minden Minimapbeli pontot frissíteni ez alapján
+        // TODO2: esetleg egy olyan Minimap frissítő ami listával végzi el
+        private void Model_InfrastructureBuilt(object? _1, List<(int x, int y)> _2)
         {
-            foreach (var (x, y) in changedFields)
-            {
-                FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
-                if (tile != null)
-                {
-                    string oldPath = tile.ImagePath;
-                    int index = Tiles.IndexOf(tile);
-                    Tiles[index] = new(Model.Map[x, y], oldPath);
-                    tile.RefreshInfrastructure();
-                }
-            }
+            //foreach (var (x, y) in changedFields)
+            //{
+            //    FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
+            //    if (tile != null)
+            //    {
+            //        string oldPath = tile.ImagePath;
+            //        int index = Tiles.IndexOf(tile);
+            //        Tiles[index] = new(Model.Map[x, y], oldPath);
+            //        tile.RefreshInfrastructure();
+            //    }
+            //}
         }
 
+        // Ez is felesleges lesz, össze kell vonni majd az eventeket, hogy csak globális frissítő event legyen
         private void Model_GameAdvanced(object? _1, List<Tuple<int, int>> _2)
         {
-            // O(n * m + m)
-            //Tiles.Where(tile => grownTrees.Any(tuple => tuple.Item1 == tile.X && tuple.Item2 == tile.Y))
-            //    .ToList()
-            //    .ForEach(tile => tile.RefreshTreeCount());
             MapUpdated?.Invoke();
-        }
-
-        [Obsolete]
-        private void RefreshTable()
-        {
-            //Tiles.Clear();
-            List<FieldViewModel> tempList = new(Model.Map.Width * Model.Map.Height + 1);
-            for (int x = 0; x < Model.Map.Width; x++)
-            {
-                for (int y = 0; y < Model.Map.Height; y++)
-                {
-                    tempList.Add(new(Model.Map[x, y]));
-                }
-            }
-            Tiles = new(tempList);
         }
         #endregion
 
@@ -309,14 +289,11 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Event methods
-        [Obsolete("If map generation takes to long, maybe we can subscribe to it." +
-            "But our renderer takes the tiles directly from GameTable")]
-        private void Model_NewGameCreated(object? sender, EventArgs e)
-        {
-            RefreshTable();
-        }
+        // Ha a renderelés sokáig tartanak feliratkozhatunk erre,
+        // de automatikus megjelenik a térkép, ha kész a render.
+        private void Model_NewGameCreated(object? _1, EventArgs _2) { }
 
-        private void Model_GameTicked(object? sender, EventArgs e)
+        private void Model_GameTicked(object? _1, EventArgs _2)
         {
             OnPropertyChanged(nameof(GameTime));
         }
