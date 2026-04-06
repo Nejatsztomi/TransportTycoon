@@ -104,6 +104,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public void OnTileLeftClick(int x, int y)
         {
+            if (!IsEditorMode) return;
 
             switch (SelectedButton)
             {
