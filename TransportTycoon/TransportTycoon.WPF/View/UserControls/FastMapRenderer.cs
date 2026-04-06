@@ -246,7 +246,28 @@ namespace TransportTycoon.WPF.View.UserControls
                     roadType = "crossX";
                 if (_roadTextures.TryGetValue(roadType, out BitmapImage? texture))
                 {
-                    ctx.DrawImage(texture, baseRect);
+                    int rotaion = road.RoadType switch
+                    {
+                        RoadType.Vertical or RoadType.UpperTRoad or RoadType.UpperRightTurn => 90,
+                        RoadType.LeftTRoad or RoadType.UpperLeftTurn => 180,
+                        RoadType.DownTRoad or RoadType.LeftTurn => 270,
+                        _ => 0
+                    };
+                    if (rotaion != 0)
+                    {
+                        // Calculate the rotaion center, match the size to the given rectangle
+                        double centerX = baseRect.X + (baseRect.Width / 2);
+                        double centerY = baseRect.Y + (baseRect.Height / 2);
+                        // Add the rotation
+                        ctx.PushTransform(new RotateTransform(rotaion, centerX, centerY));
+                        ctx.DrawImage(texture, baseRect);
+                        // Remove the rotation
+                        ctx.Pop();
+                    }
+                    else
+                    {
+                        ctx.DrawImage(texture, baseRect);
+                    }
                 }
             }
         }
@@ -264,7 +285,26 @@ namespace TransportTycoon.WPF.View.UserControls
                 };
                 if (bridgeType is not null && _bridgeTextures.TryGetValue(bridgeType, out BitmapImage? texture))
                 {
-                    ctx.DrawImage(texture, baseRect);
+                    int rotaion = bridge.BridgeType switch
+                    {
+                        BridgeType.HorizontalGreenBridge or BridgeType.HorizontalYellowBridge or BridgeType.HorizontalRedBridge => 0,
+                        _ => 90
+                    };
+                    if (rotaion != 0)
+                    {
+                        // Calculate the rotaion center, match the size to the given rectangle
+                        double centerX = baseRect.X + (baseRect.Width / 2);
+                        double centerY = baseRect.Y + (baseRect.Height / 2);
+                        // Add the rotation
+                        ctx.PushTransform(new RotateTransform(rotaion, centerX, centerY));
+                        ctx.DrawImage(texture, baseRect);
+                        // Remove the rotation
+                        ctx.Pop();
+                    }
+                    else
+                    {
+                        ctx.DrawImage(texture, baseRect);
+                    }
                 }
             }
         }
