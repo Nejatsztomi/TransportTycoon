@@ -12,7 +12,7 @@
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public FieldType FieldType { get; set; }
+        public readonly FieldType FieldType => FieldType.Road;
         public readonly int Price => 100;
         #endregion
 
@@ -21,7 +21,6 @@
         {
             X = x;
             Y = y;
-            FieldType = FieldType.Road;
             RoadType = type;
             Pointer = null;
             Height = height;
