@@ -18,6 +18,7 @@
                                       PreviewMouseRightButtonUp="GameMapRenderer_PreviewMouseRightButtonUp"
                                       PreviewMouseWheel="GameMapRenderer_PreviewMouseWheel"
                                       PreviewMouseLeftButtonDown="GameMapRenderer_PreviewMouseLeftButtonDown"
+                                      PreviewMouseLeftButtonUp="GameMapRenderer_PreviewMouseLeftButtonUp"
                                       />
     </Grid>
 

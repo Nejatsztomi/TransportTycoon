@@ -251,12 +251,30 @@ namespace TransportTycoon.WPF.View.UserControls
 
             if (IsInMapBounds(tileX, tileY))
             {
+                GameMapRenderer.SelectedX = tileX;
+                GameMapRenderer.SelectedY = tileY;
+
                 if (DataContext is GameViewModel viewModel)
                 {
                     viewModel.OnTileLeftClick(tileX, tileY);
                 }
             }
+            else
+            {
+                GameMapRenderer.SelectedX = -1;
+                GameMapRenderer.SelectedY = -1;
+            }
+        }
+
+        /// <summary>
+        /// An eventhandler Left Mouse Button release.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseLeftButtonUp(object? _1, MouseButtonEventArgs _2)
+        {
+            GameMapRenderer.SelectedX = -1;
+            GameMapRenderer.SelectedY = -1;
         }
         #endregion
+
     }
 }

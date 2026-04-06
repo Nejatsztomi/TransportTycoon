@@ -49,9 +49,19 @@ namespace TransportTycoon.WPF.View.UserControls
         private readonly Dictionary<object, BitmapImage> _vehicleTextures;
 
         /// <summary>
-        /// A cached brush for highlighting the hovered tile.
+        /// A cached brush for highlighting (adding occupancy effect) the hovered tile.
         /// </summary>
         private readonly Brush _highlightBrush = new SolidColorBrush(Color.FromArgb(100, 0, 150, 255));
+
+        /// <summary>
+        /// A cached pen for highlighting (adding border) the hovered tile.
+        /// </summary>
+        private readonly Pen _highlightPen = new(new SolidColorBrush(Color.FromArgb(150, 0, 255, 0)), 2.0);
+
+        /// <summary>
+        /// A cached pen for highlighting (adding border) the selected (left-clicked) tile.
+        /// </summary>
+        private readonly Pen _selectionPen = new(new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)), 2.0);
         #endregion
 
         #region Bindings
@@ -103,7 +113,7 @@ namespace TransportTycoon.WPF.View.UserControls
 
         /// <summary>
         /// A depdency property for the X coordinate of the tile currently hovered by the mouse.
-        /// By default it is set to -1, which means out of bounds and thus no tile is hovered.
+        /// By default it is set to <see langword="-1"/>, which means out of bounds and thus no tile is hovered.
         /// </summary>
         /// <remarks>Every time this value changes it causes a rerender to take effect.</remarks>
         public static readonly DependencyProperty HoverXProperty =
@@ -115,12 +125,26 @@ namespace TransportTycoon.WPF.View.UserControls
 
         /// <summary>
         /// A depdency property for the Y coordinate of the tile currently hovered by the mouse.
-        /// By default it is set to -1, which means out of bounds and thus no tile is hovered. 
+        /// By default it is set to <see langword="-1"/>, which means out of bounds and thus no tile is hovered. 
         /// </summary>
         /// <remarks>Every time this value changes it causes a rerender to take effect.</remarks>
         public static readonly DependencyProperty HoverYProperty =
             DependencyProperty.Register(
                 nameof(HoverY),
+                typeof(int),
+                typeof(FastMapRenderer),
+                new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty SelectedXProperty =
+            DependencyProperty.Register(
+                nameof(SelectedX),
+                typeof(int),
+                typeof(FastMapRenderer),
+                new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty SelectedYProperty =
+            DependencyProperty.Register(
+                nameof(SelectedY),
                 typeof(int),
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -183,13 +207,38 @@ namespace TransportTycoon.WPF.View.UserControls
             get => (int)GetValue(HoverYProperty);
             set => SetValue(HoverYProperty, value);
         }
+
+        /// <summary>
+        /// The underlying property for <see cref="SelectedXProperty"/>.
+        /// </summary>
+        public int SelectedX
+        {
+            get => (int)GetValue(SelectedXProperty);
+            set => SetValue(SelectedXProperty, value);
+        }
+
+        /// <summary>
+        /// The underlying property for <see cref="SelectedYProperty"/>.
+        /// </summary>
+        public int SelectedY
+        {
+            get => (int)GetValue(SelectedYProperty);
+            set => SetValue(SelectedYProperty, value);
+        }
         #endregion
 
         #region Constructors
         public FastMapRenderer()
         {
-            // Freeze the brush (just like with images)
+            // RenderOptions
+            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.NearestNeighbor);
+            // Disable anti-aliasing
+            RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
+
+            // Freeze the brushes and pens (just like with images)
             _highlightBrush.Freeze();
+            _highlightPen.Freeze();
+            _selectionPen.Freeze();
 
             // TODO: Later maybe JSON or .rex format
             _terrainTextures = new Dictionary<FieldType, BitmapImage>
@@ -416,7 +465,19 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         private void AddHoverEffectLayer(DrawingContext ctx, Rect baseRect)
         {
-            ctx.DrawRectangle(_highlightBrush, null, baseRect);
+            // Don't modify outer state (maybe it is not needed because Rect is a struct)
+            Rect hoverRect = baseRect;
+            double penThickness = _highlightPen.Thickness / 2.0;
+            hoverRect.Inflate(-penThickness, -penThickness);
+            ctx.DrawRectangle(_highlightBrush, _highlightPen, hoverRect);
+        }
+
+        private void AddSelectionEffectLayer(DrawingContext ctx, Rect baseRect)
+        {
+            Rect selectionRect = baseRect;
+            double penThickness = _selectionPen.Thickness / 2.0;
+            selectionRect.Inflate(-penThickness, -penThickness);
+            ctx.DrawRectangle(null, _selectionPen, selectionRect);
         }
         #endregion
 
@@ -464,6 +525,12 @@ namespace TransportTycoon.WPF.View.UserControls
                     if (x == HoverX && y == HoverY)
                     {
                         AddHoverEffectLayer(drawingContext, baseRect);
+                    }
+
+                    // Selection effect
+                    if (x == SelectedX && y == SelectedY)
+                    {
+                        AddSelectionEffectLayer(drawingContext, baseRect);
                     }
                 }
             }
