@@ -47,6 +47,11 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         /// <remarks>Must be set manually for each vehicle type. Not currently implemented.</remarks>
         private readonly Dictionary<object, BitmapImage> _vehicleTextures;
+
+        /// <summary>
+        /// A cached brush for highlighting the hovered tile.
+        /// </summary>
+        private readonly Brush _highlightBrush = new SolidColorBrush(Color.FromArgb(100, 0, 150, 255));
         #endregion
 
         #region Bindings
@@ -95,6 +100,30 @@ namespace TransportTycoon.WPF.View.UserControls
                 typeof(double),
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(1.0, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        /// <summary>
+        /// A depdency property for the X coordinate of the tile currently hovered by the mouse.
+        /// By default it is set to -1, which means out of bounds and thus no tile is hovered.
+        /// </summary>
+        /// <remarks>Every time this value changes it causes a rerender to take effect.</remarks>
+        public static readonly DependencyProperty HoverXProperty =
+            DependencyProperty.Register(
+                nameof(HoverX),
+                typeof(int),
+                typeof(FastMapRenderer),
+                new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        /// <summary>
+        /// A depdency property for the Y coordinate of the tile currently hovered by the mouse.
+        /// By default it is set to -1, which means out of bounds and thus no tile is hovered. 
+        /// </summary>
+        /// <remarks>Every time this value changes it causes a rerender to take effect.</remarks>
+        public static readonly DependencyProperty HoverYProperty =
+            DependencyProperty.Register(
+                nameof(HoverY),
+                typeof(int),
+                typeof(FastMapRenderer),
+                new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
         #endregion
 
         #region Properties
@@ -136,11 +165,32 @@ namespace TransportTycoon.WPF.View.UserControls
             get => (double)GetValue(ZoomLevelProperty);
             set => SetValue(ZoomLevelProperty, value);
         }
+
+        /// <summary>
+        /// The underlying property for <see cref="HoverXProperty"/>.
+        /// </summary>
+        public int HoverX
+        {
+            get => (int)GetValue(HoverXProperty);
+            set => SetValue(HoverXProperty, value);
+        }
+
+        /// <summary>
+        /// The underlying property for <see cref="HoverYProperty"/>.
+        /// </summary>
+        public int HoverY
+        {
+            get => (int)GetValue(HoverYProperty);
+            set => SetValue(HoverYProperty, value);
+        }
         #endregion
 
         #region Constructors
         public FastMapRenderer()
         {
+            // Freeze the brush (just like with images)
+            _highlightBrush.Freeze();
+
             // TODO: Later maybe JSON or .rex format
             _terrainTextures = new Dictionary<FieldType, BitmapImage>
             {
@@ -316,6 +366,11 @@ namespace TransportTycoon.WPF.View.UserControls
                 ctx.DrawImage(texture, baseRect);
             }
         }
+
+        private void AddHoverEffectLayer(DrawingContext ctx, Rect baseRect)
+        {
+            ctx.DrawRectangle(_highlightBrush, null, baseRect);
+        }
         #endregion
 
         #region Protected methods
@@ -357,6 +412,12 @@ namespace TransportTycoon.WPF.View.UserControls
                     DrawRoadLayer(drawingContext, currentField, baseRect);
                     DrawBridgeLayer(drawingContext, currentField, baseRect);
                     DrawTreesLayer(drawingContext, currentField, baseRect);
+
+                    // Hover effect
+                    if (x == HoverX && y == HoverY)
+                    {
+                        AddHoverEffectLayer(drawingContext, baseRect);
+                    }
                 }
             }
 

@@ -49,93 +49,14 @@ namespace TransportTycoon.WPF.View.UserControls
         }
         #endregion
 
-        #region Private event methods
-        /// <summary>
-        /// The method which is triggered when the <see cref="ViewModel"/> property changes.
-        /// It is responsible for subscribing to the new viewmodel's events and unsubscribing from the old one.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var map = (Map)d;
-            GameViewModel? oldVm = e.OldValue as GameViewModel;
-            GameViewModel? newVm = e.NewValue as GameViewModel;
-
-            oldVm?.MapUpdated -= map.GameViewModel_MapUpdated;
-            newVm?.MapUpdated += map.GameViewModel_MapUpdated;
-        }
-
-        private void GameViewModel_MapUpdated()
-        {
-            GameMapRenderer.Redraw();
-        }
-
-        private void GameMapRenderer_PreviewMouseRightButtonDown(object? _, MouseButtonEventArgs e)
-        {
-            _dragStartPoint = e.GetPosition(this);
-            _dragStartCamera = new(GameMapRenderer.CameraX, GameMapRenderer.CameraY);
-            GameMapRenderer.CaptureMouse();
-        }
-
-        private void GameMapRenderer_PreviewMouseMove(object? _, MouseEventArgs e)
-        {
-            if (_dragStartPoint.HasValue)
-            {
-                Point screenMousePos = e.GetPosition(this);
-
-                // Calculate how much the mouse has moved in world coordinates
-                double deltaX = (screenMousePos.X - _dragStartPoint.Value.X) / GameMapRenderer.ZoomLevel;
-                double deltaY = (screenMousePos.Y - _dragStartPoint.Value.Y) / GameMapRenderer.ZoomLevel;
-
-                // Calculate camera position based on the mouse movement
-                double desiredCameraX = _dragStartCamera.X - deltaX;
-                double desiredCameraY = _dragStartCamera.Y - deltaY;
-
-                UpdateCamera(desiredCameraX, desiredCameraY, GameMapRenderer.ZoomLevel);
-            }
-        }
-
-        private void GameMapRenderer_PreviewMouseRightButtonUp(object? _1, MouseButtonEventArgs _2)
-        {
-            if (_dragStartPoint.HasValue)
-            {
-                GameMapRenderer.ReleaseMouseCapture();
-                _dragStartPoint = null;
-            }
-        }
-
-        private void GameMapRenderer_PreviewMouseWheel(object? _, MouseWheelEventArgs e)
-        {
-            // TODO: Move to class, calculate max zoom based on map size and tile size
-            const double ZOOM_IN_STEP = 1.1;
-            const double ZOOM_OUT_STEP = 1 / 1.1;
-            const double MIN_ZOOM = 0.2;
-            const double MAX_ZOOM = 3.0;
-
-            double zoomFactor = e.Delta > 0 ? ZOOM_IN_STEP : ZOOM_OUT_STEP;
-
-            double newZoomLevel = Math.Clamp(GameMapRenderer.ZoomLevel * zoomFactor, MIN_ZOOM, MAX_ZOOM);
-
-            // Get mouse position
-            Point screenMousePos = e.GetPosition(GameMapRenderer);
-
-            // Find where the mouse is in the game world
-            double gameMousePosX = GameMapRenderer.CameraX + (screenMousePos.X / GameMapRenderer.ZoomLevel);
-            double gameMousePosY = GameMapRenderer.CameraY + (screenMousePos.Y / GameMapRenderer.ZoomLevel);
-
-            // Calculate the desired camera position to keep the mouse pointing at the same world position after zooming
-            double desiredCameraX = gameMousePosX - (screenMousePos.X / newZoomLevel);
-            double desiredCameraY = gameMousePosY - (screenMousePos.Y / newZoomLevel);
-
-            UpdateCamera(desiredCameraX, desiredCameraY, newZoomLevel);
-        }
-
+        #region Private methods
         /// <summary>
         /// Updates the camera position and zoom level to display the specified region of the map.
         /// </summary>
-        /// <remarks>If the requested camera position would cause the viewport to extend beyond the map
-        /// boundaries, the position is automatically adjusted to keep the camera within valid bounds.</remarks>
+        /// <remarks>
+        /// If the requested camera position would cause the viewport to extend beyond the map
+        /// boundaries, the position is automatically adjusted to keep the camera within valid bounds.
+        /// </remarks>
         /// <param name="desiredCameraX">The desired horizontal position of the camera in world coordinates.
         /// Values outside the map bounds are clamped to the valid range.</param>
         /// <param name="desiredCameraY">The desired vertical position of the camera in world coordinates.
@@ -161,21 +82,174 @@ namespace TransportTycoon.WPF.View.UserControls
             GameMapRenderer.CameraY = Math.Clamp(desiredCameraY, 0.0, maxCameraY);
         }
 
+        /// <summary>
+        /// Calculates the tile coordinates corresponding to the specified mouse position in screen space.
+        /// </summary>
+        /// <param name="mousePos">The mouse position in screen coordinates for which to determine the tile coordinates.</param>
+        /// <returns>A tuple containing the X and Y indices of the tile at the specified mouse position.</returns>
+        private (int tileX, int tileY) GetTileCoordinatesFromMousePosition(Point mousePos)
+        {
+            (double worldX, double worldY) = GetWorldCoordinatesFromMousePosition(mousePos);
+            int tileX = (int)worldX / FastMapRenderer.TileSize;
+            int tileY = (int)worldY / FastMapRenderer.TileSize;
+            return (tileX, tileY);
+        }
+
+        /// <summary>
+        /// Calculates the world coordinates corresponding to the specified mouse position on the screen.
+        /// </summary>
+        /// <param name="mousePos">The position of the mouse pointer in screen coordinates, relative to the top-left corner of the viewport.</param>
+        /// <returns>A tuple containing the X and Y coordinates in world space that correspond to the given mouse position.</returns>
+        private (double worldX, double worldY) GetWorldCoordinatesFromMousePosition(Point mousePos)
+        {
+            double worldX = GameMapRenderer.CameraX + (mousePos.X / GameMapRenderer.ZoomLevel);
+            double worldY = GameMapRenderer.CameraY + (mousePos.Y / GameMapRenderer.ZoomLevel);
+            return (worldX, worldY);
+        }
+
+        /// <summary>
+        /// Determines whether the specified tile coordinates are within the bounds of the current game map.
+        /// </summary>
+        /// <param name="tileX">The tile's X-coordinate to check.</param>
+        /// <param name="tileY">The tile's Y-coordiante to check.</param>
+        /// <returns><see langword="true"/> if both tileX and tileY are within the valid range of the map; otherwise, <see langword="false"/>.</returns>
+        private bool IsInMapBounds(int tileX, int tileY)
+        {
+            int mapWidth = GameMapRenderer.Map.GetLength(0);
+            int mapHeight = GameMapRenderer.Map.GetLength(1);
+            return (0 <= tileX && tileX < mapWidth) && (0 <= tileY && tileY < mapHeight);
+        }
+        #endregion
+
+        #region Private event methods
+        /// <summary>
+        /// The method which is triggered when the <see cref="ViewModel"/> property changes.
+        /// It is responsible for subscribing to the new viewmodel's events and unsubscribing from the old one.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var map = (Map)d;
+            GameViewModel? oldVm = e.OldValue as GameViewModel;
+            GameViewModel? newVm = e.NewValue as GameViewModel;
+
+            oldVm?.MapUpdated -= map.GameViewModel_MapUpdated;
+            newVm?.MapUpdated += map.GameViewModel_MapUpdated;
+        }
+
+        /// <summary>
+        /// An eventhandler to issue a map redraw.
+        /// </summary>
+        private void GameViewModel_MapUpdated()
+        {
+            GameMapRenderer.Redraw();
+        }
+
+        /// <summary>
+        /// Eventhandler for Mouse Right Button press.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseRightButtonDown(object? _, MouseButtonEventArgs e)
+        {
+            _dragStartPoint = e.GetPosition(this);
+            _dragStartCamera = new(GameMapRenderer.CameraX, GameMapRenderer.CameraY);
+            GameMapRenderer.CaptureMouse();
+        }
+
+        /// <summary>
+        /// An eventhandler for Mouse Movement.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseMove(object? _, MouseEventArgs e)
+        {
+            if (_dragStartPoint.HasValue)
+            {
+                Point screenMousePos = e.GetPosition(this);
+
+                // Calculate how much the mouse has moved in world coordinates
+                double deltaX = (screenMousePos.X - _dragStartPoint.Value.X) / GameMapRenderer.ZoomLevel;
+                double deltaY = (screenMousePos.Y - _dragStartPoint.Value.Y) / GameMapRenderer.ZoomLevel;
+
+                //// Calculate camera position based on the mouse movement
+                double desiredCameraX = _dragStartCamera.X - deltaX;
+                double desiredCameraY = _dragStartCamera.Y - deltaY;
+
+                UpdateCamera(desiredCameraX, desiredCameraY, GameMapRenderer.ZoomLevel);
+            }
+            else
+            {
+                Point screenMousePos = e.GetPosition(GameMapRenderer);
+
+                (int tileX, int tileY) = GetTileCoordinatesFromMousePosition(screenMousePos);
+
+                if (IsInMapBounds(tileX, tileY))
+                {
+                    if (GameMapRenderer.HoverX != tileX || GameMapRenderer.HoverY != tileY)
+                    {
+                        GameMapRenderer.HoverX = tileX;
+                        GameMapRenderer.HoverY = tileY;
+                    }
+                }
+                else
+                {
+                    if (GameMapRenderer.HoverX != -1)
+                    {
+                        GameMapRenderer.HoverX = -1;
+                        GameMapRenderer.HoverY = -1;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// An eventhandler for Mouse Right Button release.
+        /// </summary>
+        /// <param name="_1"></param>
+        /// <param name="_2"></param>
+        private void GameMapRenderer_PreviewMouseRightButtonUp(object? _1, MouseButtonEventArgs _2)
+        {
+            if (_dragStartPoint.HasValue)
+            {
+                GameMapRenderer.ReleaseMouseCapture();
+                _dragStartPoint = null;
+            }
+        }
+
+        /// <summary>
+        /// An eventhandler for Mouse Wheel Scrolling.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseWheel(object? _, MouseWheelEventArgs e)
+        {
+            // TODO: Move to class, calculate max zoom based on map size and tile size
+            const double ZOOM_IN_STEP = 1.1;
+            const double ZOOM_OUT_STEP = 1 / 1.1;
+            const double MIN_ZOOM = 0.2;
+            const double MAX_ZOOM = 3.0;
+
+            double zoomFactor = e.Delta > 0 ? ZOOM_IN_STEP : ZOOM_OUT_STEP;
+
+            double newZoomLevel = Math.Clamp(GameMapRenderer.ZoomLevel * zoomFactor, MIN_ZOOM, MAX_ZOOM);
+
+            // Get mouse position
+            Point screenMousePos = e.GetPosition(GameMapRenderer);
+
+            (double wordX, double wordY) = GetWorldCoordinatesFromMousePosition(screenMousePos);
+
+            double desiredCameraX = wordX - (screenMousePos.X / newZoomLevel);
+            double desiredCameraY = wordY - (screenMousePos.Y / newZoomLevel);
+
+            UpdateCamera(desiredCameraX, desiredCameraY, newZoomLevel);
+        }
+
+        /// <summary>
+        /// An eventhandler Left Mouse Button press.
+        /// </summary>
         private void GameMapRenderer_PreviewMouseLeftButtonDown(object? _, MouseButtonEventArgs e)
         {
             Point screenMousePos = e.GetPosition(GameMapRenderer);
 
-            double gameMousePosX = GameMapRenderer.CameraX + (screenMousePos.X / GameMapRenderer.ZoomLevel);
-            double gameMousePosY = GameMapRenderer.CameraY + (screenMousePos.Y / GameMapRenderer.ZoomLevel);
+            (int tileX, int tileY) = GetTileCoordinatesFromMousePosition(screenMousePos);
 
-            int tileX = (int)(gameMousePosX / FastMapRenderer.TileSize);
-            int tileY = (int)(gameMousePosY / FastMapRenderer.TileSize);
-
-            // Bounds check 
-            int mapWidth = GameMapRenderer.Map.GetLength(0);
-            int mapHeight = GameMapRenderer.Map.GetLength(1);
-
-            if ((0 <= tileX && tileX < mapWidth) && (0 <= tileY && tileY < mapHeight))
+            if (IsInMapBounds(tileX, tileY))
             {
                 if (DataContext is GameViewModel viewModel)
                 {
