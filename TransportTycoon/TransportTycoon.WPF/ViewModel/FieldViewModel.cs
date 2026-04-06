@@ -19,6 +19,7 @@ namespace TransportTycoon.WPF.ViewModel
         [Obsolete]
         [ObservableProperty]
         private bool _isSelected;
+        [Obsolete]
         public SolidColorBrush MinimapColor
         {
             get

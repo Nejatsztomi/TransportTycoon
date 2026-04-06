@@ -20,6 +20,33 @@
                                       PreviewMouseLeftButtonDown="GameMapRenderer_PreviewMouseLeftButtonDown"
                                       PreviewMouseLeftButtonUp="GameMapRenderer_PreviewMouseLeftButtonUp"
                                       />
-    </Grid>
 
+        <!-- Minimap -->
+        <Border HorizontalAlignment="Right" VerticalAlignment="Top" 
+                Margin="20"
+                BorderBrush="White"
+                BorderThickness="2" 
+                Background="Black"
+                Width="200"
+                Height="200"
+                >
+            <Canvas x:Name="MinimapCanvas"
+                    Width="200"
+                    Height="200"
+                    >
+                <Image Source="{Binding MinimapImage}"
+                       Width="200"
+                       Height="200"
+                       Stretch="Fill"
+                       />
+                <Rectangle x:Name="MinimapViewportBox" 
+                           Stroke="Yellow"
+                           StrokeThickness="2" 
+                           Fill="#40FFFF00" 
+                           Width="50"
+                           Height="50"
+                           />
+            </Canvas>
+        </Border>
+    </Grid>
 </UserControl>
