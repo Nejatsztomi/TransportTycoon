@@ -2,6 +2,6 @@
 {
     public interface IMapGenerator
     {
-        public Field[,] GenerateMap(MapGenerationContext context);
+        public IField[,] GenerateMap(MapGenerationContext context);
     }
 }

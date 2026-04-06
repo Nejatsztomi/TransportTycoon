@@ -2,33 +2,38 @@
 
 namespace TransportTycoon.MapData
 {
-    public class Stop : Infrastructure
+    public struct Stop : IInfrastructure
     {
         #region Fields
-        public List<BuildingBlocks>? Goods { get; private set; }
+        public List<IBuildingBlocks>? Goods { get; private set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Height { get; set; }
+        public readonly int Price => 200;
+        public readonly FieldType FieldType => FieldType.Stop;
         #endregion
 
         #region Constructors
         public Stop(int x, int y, int height)
         {
-            X = x; Y = y; Height = height;
-            FieldType = FieldType.Stop;
-            Price = 200;
+            X = x;
+            Y = y;
+            Height = height;
         }
         #endregion
 
         #region Public Methods
-        public List<Load> ShowLoads()
+        public readonly List<Load> ShowLoads()
         {
             return [];
         }
 
-        public bool VehicleToBuilding()
+        public readonly bool VehicleToBuilding()
         {
             return false;
         }
 
-        public bool BuildingToVehicle()
+        public readonly bool BuildingToVehicle()
         {
             return false;
         }
