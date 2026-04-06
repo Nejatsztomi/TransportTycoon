@@ -10,7 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800"
              >
     <Grid>
-        <usercontrols:FastMapRenderer x:Name="GameMapRenderer"
+        <usercontrols:FastMapRenderer x:Name="InternalGameMapRenderer"
                                       Map="{Binding Tiles2}"
                                       ClipToBounds="True"
                                       PreviewMouseRightButtonDown="GameMapRenderer_PreviewMouseRightButtonDown"
@@ -20,32 +20,5 @@
                                       PreviewMouseLeftButtonDown="GameMapRenderer_PreviewMouseLeftButtonDown"
                                       PreviewMouseLeftButtonUp="GameMapRenderer_PreviewMouseLeftButtonUp"
                                       />
-
-        <!-- Minimap -->
-        <Border HorizontalAlignment="Right" VerticalAlignment="Top" 
-                Margin="20"
-                BorderBrush="White"
-                BorderThickness="2" 
-                Background="Black"
-                >
-            <Canvas x:Name="MinimapCanvas"
-                    Width="200"
-                    Height="200"
-                    ClipToBounds="True"
-                    >
-                <Image Source="{Binding MinimapImage}"
-                       Width="200"
-                       Height="200"
-                       Stretch="Fill"
-                       />
-                <Rectangle x:Name="MinimapViewportBox" 
-                           Stroke="Yellow"
-                           StrokeThickness="2" 
-                           Fill="#40FFFF00" 
-                           Width="50"
-                           Height="50"
-                           />
-            </Canvas>
-        </Border>
     </Grid>
 </UserControl>

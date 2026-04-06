@@ -40,6 +40,11 @@ namespace TransportTycoon.WPF.View.UserControls
             get => (GameViewModel?)GetValue(ViewModelProperty);
             set => SetValue(ViewModelProperty, value);
         }
+
+        /// <summary>
+        /// Exposes the internal <see cref="FastMapRenderer"/> to allow other controls (like the minimap) to link to it.
+        /// </summary>
+        public FastMapRenderer GameMapRenderer => InternalGameMapRenderer;
         #endregion
 
         #region Constructors
@@ -64,12 +69,12 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <param name="zoomLevel">The zoom level to apply to the camera. Higher values zoom in, lower zoom out.</param>
         private void UpdateCamera(double desiredCameraX, double desiredCameraY, double zoomLevel)
         {
-            double visibleWorldWidth = GameMapRenderer.ActualWidth / zoomLevel;
-            double visibleWorldHeight = GameMapRenderer.ActualHeight / zoomLevel;
+            double visibleWorldWidth = InternalGameMapRenderer.ActualWidth / zoomLevel;
+            double visibleWorldHeight = InternalGameMapRenderer.ActualHeight / zoomLevel;
 
             // Max bounds (right and bottom side)
-            double maxCameraX = (GameMapRenderer.Map.GetLength(0) * FastMapRenderer.TileSize) - visibleWorldWidth;
-            double maxCameraY = (GameMapRenderer.Map.GetLength(1) * FastMapRenderer.TileSize) - visibleWorldHeight;
+            double maxCameraX = (InternalGameMapRenderer.Map.GetLength(0) * FastMapRenderer.TileSize) - visibleWorldWidth;
+            double maxCameraY = (InternalGameMapRenderer.Map.GetLength(1) * FastMapRenderer.TileSize) - visibleWorldHeight;
 
             // Min bounds (left and top side)
             maxCameraX = Math.Max(0.0, maxCameraX);
@@ -77,9 +82,9 @@ namespace TransportTycoon.WPF.View.UserControls
 
             // Apply the changes
             // We don't have to worry about multiple redraw calls.
-            GameMapRenderer.ZoomLevel = zoomLevel;
-            GameMapRenderer.CameraX = Math.Clamp(desiredCameraX, 0.0, maxCameraX);
-            GameMapRenderer.CameraY = Math.Clamp(desiredCameraY, 0.0, maxCameraY);
+            InternalGameMapRenderer.ZoomLevel = zoomLevel;
+            InternalGameMapRenderer.CameraX = Math.Clamp(desiredCameraX, 0.0, maxCameraX);
+            InternalGameMapRenderer.CameraY = Math.Clamp(desiredCameraY, 0.0, maxCameraY);
         }
 
         /// <summary>
@@ -102,8 +107,8 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <returns>A tuple containing the X and Y coordinates in world space that correspond to the given mouse position.</returns>
         private (double worldX, double worldY) GetWorldCoordinatesFromMousePosition(Point mousePos)
         {
-            double worldX = GameMapRenderer.CameraX + (mousePos.X / GameMapRenderer.ZoomLevel);
-            double worldY = GameMapRenderer.CameraY + (mousePos.Y / GameMapRenderer.ZoomLevel);
+            double worldX = InternalGameMapRenderer.CameraX + (mousePos.X / InternalGameMapRenderer.ZoomLevel);
+            double worldY = InternalGameMapRenderer.CameraY + (mousePos.Y / InternalGameMapRenderer.ZoomLevel);
             return (worldX, worldY);
         }
 
@@ -115,8 +120,8 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <returns><see langword="true"/> if both tileX and tileY are within the valid range of the map; otherwise, <see langword="false"/>.</returns>
         private bool IsInMapBounds(int tileX, int tileY)
         {
-            int mapWidth = GameMapRenderer.Map.GetLength(0);
-            int mapHeight = GameMapRenderer.Map.GetLength(1);
+            int mapWidth = InternalGameMapRenderer.Map.GetLength(0);
+            int mapHeight = InternalGameMapRenderer.Map.GetLength(1);
             return (0 <= tileX && tileX < mapWidth) && (0 <= tileY && tileY < mapHeight);
         }
         #endregion
@@ -143,7 +148,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameViewModel_MapUpdated()
         {
-            GameMapRenderer.Redraw();
+            InternalGameMapRenderer.Redraw();
         }
 
         /// <summary>
@@ -152,8 +157,8 @@ namespace TransportTycoon.WPF.View.UserControls
         private void GameMapRenderer_PreviewMouseRightButtonDown(object? _, MouseButtonEventArgs e)
         {
             _dragStartPoint = e.GetPosition(this);
-            _dragStartCamera = new(GameMapRenderer.CameraX, GameMapRenderer.CameraY);
-            GameMapRenderer.CaptureMouse();
+            _dragStartCamera = new(InternalGameMapRenderer.CameraX, InternalGameMapRenderer.CameraY);
+            InternalGameMapRenderer.CaptureMouse();
         }
 
         /// <summary>
@@ -166,35 +171,35 @@ namespace TransportTycoon.WPF.View.UserControls
                 Point screenMousePos = e.GetPosition(this);
 
                 // Calculate how much the mouse has moved in world coordinates
-                double deltaX = (screenMousePos.X - _dragStartPoint.Value.X) / GameMapRenderer.ZoomLevel;
-                double deltaY = (screenMousePos.Y - _dragStartPoint.Value.Y) / GameMapRenderer.ZoomLevel;
+                double deltaX = (screenMousePos.X - _dragStartPoint.Value.X) / InternalGameMapRenderer.ZoomLevel;
+                double deltaY = (screenMousePos.Y - _dragStartPoint.Value.Y) / InternalGameMapRenderer.ZoomLevel;
 
                 //// Calculate camera position based on the mouse movement
                 double desiredCameraX = _dragStartCamera.X - deltaX;
                 double desiredCameraY = _dragStartCamera.Y - deltaY;
 
-                UpdateCamera(desiredCameraX, desiredCameraY, GameMapRenderer.ZoomLevel);
+                UpdateCamera(desiredCameraX, desiredCameraY, InternalGameMapRenderer.ZoomLevel);
             }
             else
             {
-                Point screenMousePos = e.GetPosition(GameMapRenderer);
+                Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
 
                 (int tileX, int tileY) = GetTileCoordinatesFromMousePosition(screenMousePos);
 
                 if (IsInMapBounds(tileX, tileY))
                 {
-                    if (GameMapRenderer.HoverX != tileX || GameMapRenderer.HoverY != tileY)
+                    if (InternalGameMapRenderer.HoverX != tileX || InternalGameMapRenderer.HoverY != tileY)
                     {
-                        GameMapRenderer.HoverX = tileX;
-                        GameMapRenderer.HoverY = tileY;
+                        InternalGameMapRenderer.HoverX = tileX;
+                        InternalGameMapRenderer.HoverY = tileY;
                     }
                 }
                 else
                 {
-                    if (GameMapRenderer.HoverX != -1)
+                    if (InternalGameMapRenderer.HoverX != -1)
                     {
-                        GameMapRenderer.HoverX = -1;
-                        GameMapRenderer.HoverY = -1;
+                        InternalGameMapRenderer.HoverX = -1;
+                        InternalGameMapRenderer.HoverY = -1;
                     }
                 }
             }
@@ -209,7 +214,7 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             if (_dragStartPoint.HasValue)
             {
-                GameMapRenderer.ReleaseMouseCapture();
+                InternalGameMapRenderer.ReleaseMouseCapture();
                 _dragStartPoint = null;
             }
         }
@@ -227,10 +232,10 @@ namespace TransportTycoon.WPF.View.UserControls
 
             double zoomFactor = e.Delta > 0 ? ZOOM_IN_STEP : ZOOM_OUT_STEP;
 
-            double newZoomLevel = Math.Clamp(GameMapRenderer.ZoomLevel * zoomFactor, MIN_ZOOM, MAX_ZOOM);
+            double newZoomLevel = Math.Clamp(InternalGameMapRenderer.ZoomLevel * zoomFactor, MIN_ZOOM, MAX_ZOOM);
 
             // Get mouse position
-            Point screenMousePos = e.GetPosition(GameMapRenderer);
+            Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
 
             (double wordX, double wordY) = GetWorldCoordinatesFromMousePosition(screenMousePos);
 
@@ -245,14 +250,14 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseLeftButtonDown(object? _, MouseButtonEventArgs e)
         {
-            Point screenMousePos = e.GetPosition(GameMapRenderer);
+            Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
 
             (int tileX, int tileY) = GetTileCoordinatesFromMousePosition(screenMousePos);
 
             if (IsInMapBounds(tileX, tileY))
             {
-                GameMapRenderer.SelectedX = tileX;
-                GameMapRenderer.SelectedY = tileY;
+                InternalGameMapRenderer.SelectedX = tileX;
+                InternalGameMapRenderer.SelectedY = tileY;
 
                 if (DataContext is GameViewModel viewModel)
                 {
@@ -261,8 +266,8 @@ namespace TransportTycoon.WPF.View.UserControls
             }
             else
             {
-                GameMapRenderer.SelectedX = -1;
-                GameMapRenderer.SelectedY = -1;
+                InternalGameMapRenderer.SelectedX = -1;
+                InternalGameMapRenderer.SelectedY = -1;
             }
         }
 
@@ -271,10 +276,9 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseLeftButtonUp(object? _1, MouseButtonEventArgs _2)
         {
-            GameMapRenderer.SelectedX = -1;
-            GameMapRenderer.SelectedY = -1;
+            InternalGameMapRenderer.SelectedX = -1;
+            InternalGameMapRenderer.SelectedY = -1;
         }
         #endregion
-
     }
 }
