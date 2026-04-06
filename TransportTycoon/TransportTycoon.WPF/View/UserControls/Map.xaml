@@ -27,12 +27,11 @@
                 BorderBrush="White"
                 BorderThickness="2" 
                 Background="Black"
-                Width="200"
-                Height="200"
                 >
             <Canvas x:Name="MinimapCanvas"
                     Width="200"
                     Height="200"
+                    ClipToBounds="True"
                     >
                 <Image Source="{Binding MinimapImage}"
                        Width="200"
