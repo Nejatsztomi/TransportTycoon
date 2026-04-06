@@ -72,7 +72,7 @@ namespace TransportTycoon.WPF.View.UserControls
         public static readonly DependencyProperty MapProperty =
             DependencyProperty.Register(
                 nameof(Map),
-                typeof(Field[,]),
+                typeof(IField[,]),
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
@@ -154,9 +154,9 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <summary>
         /// The underlying property for <see cref="MapProperty"/>.
         /// </summary>
-        public Field[,] Map
+        public IField[,] Map
         {
-            get => (Field[,])GetValue(MapProperty);
+            get => (IField[,])GetValue(MapProperty);
             set
             {
                 SetValue(MapProperty, value);
@@ -316,9 +316,9 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Rendering remains efficient to JIT inlining.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="Field"/> object, which we want to draw.</param>
+        /// <param name="field">The <see cref="IField"/> object, which we want to draw.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
-        private void DrawTerrainLayer(DrawingContext ctx, Field field, Rect baseRect)
+        private void DrawTerrainLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (_terrainTextures.TryGetValue((FieldType)field.Height, out BitmapImage? texture))
             {
@@ -333,9 +333,9 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Rendering remains efficient to JIT inlining.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="Field"/> object, which we want to draw.</param>
+        /// <param name="field">The <see cref="IField"/> object, which we want to draw.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
-        private void DrawStructureLayer(DrawingContext ctx, Field field, Rect baseRect)
+        private void DrawStructureLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (_structureTextures.TryGetValue(field.FieldType, out BitmapImage? texture))
             {
@@ -350,9 +350,9 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Rendering remains efficient to JIT inlining.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="Field"/> object, that contains the road and it's rotataion.</param>
+        /// <param name="field">The <see cref="IField"/> object, that contains the road and it's rotataion.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
-        private void DrawRoadLayer(DrawingContext ctx, Field field, Rect baseRect)
+        private void DrawRoadLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (field is not null && field.FieldType == FieldType.Road && field is Road road)
             {
@@ -398,11 +398,11 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Rendering remains efficient to JIT inlining.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="Field"/> object, that contains the bridge and it's rotation.</param>
+        /// <param name="field">The <see cref="IField"/> object, that contains the bridge and it's rotation.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
-        private void DrawBridgeLayer(DrawingContext ctx, Field field, Rect baseRect)
+        private void DrawBridgeLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (field is not null && field.FieldType == FieldType.Bridge && field is Bridge bridge)
+            if (field is not null && field.FieldType == FieldType.Bridge && field is IBridge bridge)
             {
                 string? bridgeType = bridge.BridgeType switch
                 {
@@ -445,9 +445,9 @@ namespace TransportTycoon.WPF.View.UserControls
         /// This should be one the last layers to draw, since trees can be on top of roads and structures.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="Field"/> object, that contains the tree count.</param>
+        /// <param name="field">The <see cref="IField"/> object, that contains the tree count.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
-        private void DrawTreesLayer(DrawingContext ctx, Field field, Rect baseRect)
+        private void DrawTreesLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (field.GetTrees() > 0 && _treesTextures.TryGetValue(field.GetTrees(), out BitmapImage? texture))
             {
@@ -490,7 +490,7 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             base.OnRender(drawingContext);
             // Cache the map reference for performance
-            Field[,] currentMap = this.Map;
+            IField[,] currentMap = this.Map;
             if (Map == null) return;
 
             int width = currentMap.GetLength(0);
@@ -513,7 +513,7 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 for (int x = startCol; x < endCol; x++)
                 {
-                    Field currentField = currentMap[x, y];
+                    IField currentField = currentMap[x, y];
                     Rect baseRect = new(x * TileSize, y * TileSize, TileSize, TileSize);
                     DrawTerrainLayer(drawingContext, currentField, baseRect);
                     DrawStructureLayer(drawingContext, currentField, baseRect);

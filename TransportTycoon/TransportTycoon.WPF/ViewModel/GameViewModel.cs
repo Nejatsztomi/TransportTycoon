@@ -28,7 +28,7 @@ namespace TransportTycoon.WPF.ViewModel
         public GameTable Map => Model.Map;
         public int Width => Model.Map.Width;
         public int Height => Model.Map.Height;
-        public Field[,] Tiles { get; }
+        public IField[,] Tiles { get; }
         public WriteableBitmap MinimapImage { get; set; }
         #endregion
 
@@ -75,7 +75,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    Field tile = Map[x, y];
+                    IField tile = Map[x, y];
 
                     int index = (y * Width) + x;
 
@@ -134,7 +134,7 @@ namespace TransportTycoon.WPF.ViewModel
         /// </summary>
         /// <param name="tile">The field.</param>
         /// <returns>The <see cref="uint"/> ARGB format.</returns>
-        private uint ConvertTileToColor(Field tile)
+        private uint ConvertTileToColor(IField tile)
         {
             // Moved from FieldViewModel
             Color colorName = tile.FieldType switch

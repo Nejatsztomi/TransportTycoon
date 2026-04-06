@@ -48,7 +48,7 @@ namespace TransportTycoon.MapData.MapGenerator
         #endregion
 
         #region Public methods
-        public Field[,] GenerateMap(MapGenerationContext context)
+        public IField[,] GenerateMap(MapGenerationContext context)
         {
             int[,] heightMap = _terrainGenerator.GenerateTerrain(context);
             bool[,] waterMap = new bool[context.Width, context.Height];
@@ -111,7 +111,7 @@ namespace TransportTycoon.MapData.MapGenerator
             }
 
             // Generate terrain
-            Field[,] map = new Field[context.Width, context.Height];
+            IField[,] map = new IField[context.Width, context.Height];
             for (int x = 0; x < context.Width; x++)
             {
                 for (int y = 0; y < context.Height; y++)

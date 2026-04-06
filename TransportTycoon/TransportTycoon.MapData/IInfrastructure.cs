@@ -1,9 +1,9 @@
 ﻿namespace TransportTycoon.MapData
 {
-    public abstract class Infrastructure : Field
+    public interface IInfrastructure : IField
     {
         #region Field
-        public int Price { get; protected set; }
+        public int Price { get; }
         #endregion
 
         #region Public methods

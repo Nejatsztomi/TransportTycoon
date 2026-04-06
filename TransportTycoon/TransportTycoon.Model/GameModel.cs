@@ -44,7 +44,7 @@ namespace TransportTycoon.Model
 
         #region Properties
         public GameTable Map { get; private set; }
-        public Field? SelectedField { get; private set; }
+        public IField? SelectedField { get; private set; }
 
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
@@ -135,7 +135,7 @@ namespace TransportTycoon.Model
         {
             if (Mode == GameMode.Editor)
             {
-                Field field = Map[x, y];
+                IField field = Map[x, y];
 
                 if (field is Terrain terrain)
                 {
@@ -166,7 +166,7 @@ namespace TransportTycoon.Model
         {
             if (Mode == GameMode.Editor)
             {
-                Field field = Map[x, y];
+                IField field = Map[x, y];
 
                 if (field is Terrain terrain)
                 {
@@ -319,7 +319,7 @@ namespace TransportTycoon.Model
             List<Tuple<int, int>> grownTrees = [];
 
             Random rnd = new();
-            HashSet<Field> spreadedFields = [];
+            HashSet<IField> spreadedFields = [];
             for (int i = 0; i < Map.Height; i++)
             {
                 for (int j = 0; j < Map.Width; j++)
@@ -342,7 +342,7 @@ namespace TransportTycoon.Model
                 }
             }
 
-            foreach (Field field in spreadedFields)
+            foreach (IField field in spreadedFields)
             {
                 if (field is Terrain terrain && rnd.Next(1, 101) <= 100)
                 {
