@@ -263,10 +263,12 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <summary>
         /// Helper method to draw the terrain layer of a tile.
         /// </summary>
-        /// <remarks>Rendering remains efficient to JIT inlining.</remarks>
-        /// <param name="ctx">The <see cref="DrawingContext"/> object, where we draw the image.</param>
-        /// <param name="field">The <see cref="Field"/> object, which we want to draw</param>
-        /// <param name="baseRect">The <see cref="Rect"/> rectangle object where we draw the image</param>
+        /// <remarks>
+        /// Rendering remains efficient to JIT inlining.
+        /// </remarks>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
+        /// <param name="field">The <see cref="Field"/> object, which we want to draw.</param>
+        /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         private void DrawTerrainLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (_terrainTextures.TryGetValue((FieldType)field.Height, out BitmapImage? texture))
@@ -275,6 +277,15 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        /// <summary>
+        /// Helper method to draw the structure layer of a tile.
+        /// </summary>
+        /// <remarks>
+        /// Rendering remains efficient to JIT inlining.
+        /// </remarks>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
+        /// <param name="field">The <see cref="Field"/> object, which we want to draw.</param>
+        /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         private void DrawStructureLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (_structureTextures.TryGetValue(field.FieldType, out BitmapImage? texture))
@@ -283,6 +294,15 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        /// <summary>
+        /// Helper method to draw the road layer of a tile.
+        /// </summary>
+        /// <remarks>
+        /// Rendering remains efficient to JIT inlining.
+        /// </remarks>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
+        /// <param name="field">The <see cref="Field"/> object, that contains the road and it's rotataion.</param>
+        /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         private void DrawRoadLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (field is not null && field.FieldType == FieldType.Road && field is Road road)
@@ -322,6 +342,15 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        /// <summary>
+        /// Helper method to draw the bridge layer of a tile.
+        /// </summary>
+        /// <remarks>
+        /// Rendering remains efficient to JIT inlining.
+        /// </remarks>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
+        /// <param name="field">The <see cref="Field"/> object, that contains the bridge and it's rotation.</param>
+        /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         private void DrawBridgeLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (field is not null && field.FieldType == FieldType.Bridge && field is Bridge bridge)
@@ -359,6 +388,16 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        /// <summary>
+        /// Helper method to draw the tree layer of a tile.
+        /// </summary>
+        /// <remarks>
+        /// Rendering remains efficient to JIT inlining.
+        /// This should be one the last layers to draw, since trees can be on top of roads and structures.
+        /// </remarks>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
+        /// <param name="field">The <see cref="Field"/> object, that contains the tree count.</param>
+        /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         private void DrawTreesLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (field.GetTrees() > 0 && _treesTextures.TryGetValue(field.GetTrees(), out BitmapImage? texture))
@@ -367,6 +406,14 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        /// <summary>
+        /// Helper method to add hover effect on a tile
+        /// </summary>
+        /// <remarks>
+        /// Rendering remains efficient to JIT inlining.
+        /// </remarks>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
+        /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         private void AddHoverEffectLayer(DrawingContext ctx, Rect baseRect)
         {
             ctx.DrawRectangle(_highlightBrush, null, baseRect);
