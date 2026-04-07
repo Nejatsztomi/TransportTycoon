@@ -38,7 +38,7 @@ namespace TransportTycoon.Model
     public class Pickup : Transport
     {
         #region Constructor
-        public Pickup(int x, int y, Direction direction, Prouth route= null!)
+        public Pickup(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;

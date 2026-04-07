@@ -319,11 +319,14 @@ namespace TransportTycoon.Model
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
 
-        public Vehicle BuyVehicle(int x, int y, VehicleType type)
+        //Create a new Vehicle based on the given type and coordinates, and add it to the player's collection if they have enough balance. Returns the created Vehicle.
+        public Vehicle? BuyVehicle(int x, int y, VehicleType type)
         {
+            if (Map[x, y] is not Stop) return null;
+
             Vehicle vehicle = type switch
             {
-                VehicleType.Van => new Van(x,y,Direction.Up),
+                VehicleType.Van => new Van(x, y, Direction.Up),
                 VehicleType.Pickup => new Pickup(x, y, Direction.Up),
                 VehicleType.Truck => new Truck(x, y, Direction.Up),
                 VehicleType.LiquidTruck => new LiquidTruck(x, y, Direction.Up),
@@ -331,13 +334,12 @@ namespace TransportTycoon.Model
                 VehicleType.BigBus => new BigBus(x, y, Direction.Up),
                 _ => throw new ArgumentException("Invalid vehicle type", nameof(type)),
             };
-            
+
             if (Balance >= vehicle.Price)
             {
                 Balance -= vehicle.Price;
                 Vehicles.Add(vehicle);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
-                //FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
             }
             return vehicle;
         }

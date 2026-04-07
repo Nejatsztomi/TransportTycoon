@@ -17,8 +17,6 @@ namespace TransportTycoon.WPF.ViewModel
         public Direction Direction => Vehicle.Direction;
         public VehicleType VehicleType => Vehicle.Type;
 
-        public string ImagePath { get; set; }
-
         public double PixelX { get; set; }
         public double PixelY { get; set; }
 
@@ -38,7 +36,6 @@ namespace TransportTycoon.WPF.ViewModel
         public VehicleViewModel(Vehicle vehicle)
         {
             Vehicle = vehicle;
-            ImagePath = VehicleImagePath!;
             PixelX = 50 * Y;
             PixelY = 50 * X;
         }
