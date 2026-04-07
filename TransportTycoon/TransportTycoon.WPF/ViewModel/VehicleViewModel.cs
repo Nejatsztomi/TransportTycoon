@@ -30,7 +30,7 @@ namespace TransportTycoon.WPF.ViewModel
             VehicleType.Truck => "/Assets/Images/Vehicle/truck.png",
             VehicleType.LiquidTruck => "/Assets/Images/Vehicle/liquidTruck.png",
             VehicleType.SmallBus => "/Assets/Images/Vehicle/smallBus.png",
-            VehicleType.BigBus => "/Assets/Images/Vehicle/bigBus.png",
+            VehicleType.BigBus => "/Assets/Images/Vehicle/largeBus.png",
             _ => null
         };
         #endregion
