@@ -24,7 +24,7 @@ variables:
     GITLAB_ADVANCED_SAST_ENABLED: true
 
     BUILD_CONFIGURATION: 'Release'
-    ROOT: './TransportTycoon'
+    ROOT: '${$CI_PROJECT_DIR}/TransportTycoon'
     SOLUTION_PATH: '${ROOT}/TransportTycoon.slnx'
     MODEL_PATH: '${ROOT}/TransportTycoon.Model'
     MAPDATA_PATH: '${ROOT}/TransportTycoon.MapData'
@@ -105,7 +105,7 @@ test_model:
     # Compute code coverage percentage from Cobertura XML files through merging them with ReportGenerator
     # This is useful when you have multiple test projects in a repository
     # https://github.com/danielpalme/ReportGenerator
-    - ./reportgenerator "-reports:$CI_PROJECT_DIR/*/TestResults/*/coverage.cobertura.xml" "-targetdir:report"   "-reporttypes:Cobertura"
+    - ./reportgenerator "-reports:${TEST_PATH}/TestResults/*/coverage.cobertura.xml" "-targetdir:report"   "-reporttypes:Cobertura"
     # The generated Cobertura.xml file contains the overall code coverage in a format like this:
     # <coverage line-rate="..." ...>
     # Let's get that with the powers of sed :)
@@ -118,13 +118,13 @@ test_model:
     #- ./ci/coverage-percentage.sh .
     artifacts:
         paths:
-        - ./*/TestResults/TestResults.xml
-        - ./*/TestResults/*/coverage.cobertura.xml
+        - ${TEST_PATH}/TestResults/TestResults.xml
+        - ${TEST_PATH}/TestResults/*/coverage.cobertura.xml
         reports:
         # Publish unit test results to GitLab UI
         # https://docs.gitlab.com/ci/testing/unit_test_reports/
             junit:
-                - ./*/TestResults/TestResults.xml
+                - ${TEST_PATH}/TestResults/TestResults.xml
             # Test coverage visualization on GitLab UI
             # https://docs.gitlab.com/ci/testing/code_coverage/
             coverage_report:
@@ -135,6 +135,6 @@ test_model:
     cache:
     # The CI_COMMIT_REF_SLUG is a slug for the branch or tag name,
     # so there will be a separate cache for each branch.
-        key: "unittest-$CI_COMMIT_REF_SLUG"
+        key: "unittest-${CI_COMMIT_REF_SLUG}"
         paths:
         - .nuget
