@@ -340,6 +340,10 @@ namespace TransportTycoon.Model
                 Balance -= vehicle.Price;
                 Vehicles.Add(vehicle);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
+                if (IsGameOver)
+                {
+                    OnGameOver();
+                }
             }
             return vehicle;
         }

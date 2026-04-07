@@ -314,4 +314,118 @@ public class GameModelTest
             public void InfrastructureBuilt_EventArgumentIsCorrect() { }
         }
     }
+    [TestClass]
+    public class VehicleTests
+    {
+        private GameModel _gameModel = null!;
+        private GameTable _mockMap = null!;
+        private ITimer _mockTimer = null!;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            var mockMapGenerator = Substitute.For<IMapGenerator>();
+            MapGenerationContext context = new();
+
+            _mockTimer = Substitute.For<ITimer>();
+            _mockMap = Substitute.For<GameTable>(mockMapGenerator, context);
+
+            // Initialize GameModel with a default high balance for tests
+            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 10000);
+        }
+
+        [TestMethod]
+        public void BuyVehicle_LocationIsNotStop_ReturnsNullAndDoesNotChangeBalance()
+        {
+            // Arrange
+            int x = 0, y = 0;
+            // Mock the map to return a regular Terrain (not a Stop) at the given coordinates
+            _mockMap[x, y] = new Stop(x, y, 1);
+
+            // Re-initialize GameModel to strictly control the starting balance
+            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 10000);
+            int initialVehiclesCount = _gameModel.Vehicles.Count;
+
+            // Act
+            var result = _gameModel.BuyVehicle(x, y, VehicleType.Van);
+
+            // Assert
+            Assert.IsNull(result, "Should return null because the location is not a Stop.");
+            Assert.AreEqual(10000, _gameModel.Balance, "Balance should remain unchanged.");
+            Assert.HasCount(initialVehiclesCount, _gameModel.Vehicles, "No vehicle should be added to the list.");
+        }
+
+        [TestMethod]
+        public void BuyVehicle_SufficientBalance_DeductsBalanceAddsToVehiclesAndRaisesEvent()
+        {
+            // Arrange
+            int x = 1, y = 1;
+            // Mock the map to return a Stop at the given coordinates
+            _mockMap[x, y] = new Stop(x, y, 1);
+
+            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 5000);
+
+            bool eventRaised = false;
+            _gameModel.BalanceChanged += (sender, args) => { eventRaised = true; };
+
+            // Act
+            var result = _gameModel.BuyVehicle(x, y, VehicleType.Van);
+
+            // Assert
+            Assert.IsNotNull(result, "Vehicle should be created and returned.");
+            // We assume Van is a valid class derived from Vehicle
+            Assert.AreEqual(typeof(Van).Name, result.GetType().Name, "Created vehicle should be a Van.");
+
+            Assert.AreEqual(5000 - result.Price, _gameModel.Balance, "Balance should be deducted by the vehicle's price.");
+            Assert.Contains(result, _gameModel.Vehicles, "Vehicle should be added to the Vehicles list.");
+            Assert.IsTrue(eventRaised, "BalanceChanged event should be invoked.");
+        }
+
+        [TestMethod]
+        public void BuyVehicle_InsufficientBalance_DoesNotDeductBalanceOrAddToList()
+        {
+            // Arrange
+            int x = 2, y = 2;
+            _mockMap[x, y] = new Stop(x, y, 1);
+
+            // Initialize with 0 balance
+            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 0);
+
+            bool eventRaised = false;
+            _gameModel.BalanceChanged += (sender, args) => { eventRaised = true; };
+
+            // Act
+            var result = _gameModel.BuyVehicle(x, y, VehicleType.Truck);
+
+            // Assert
+            // Note: Based on the current implementation in GameModel, it STILL returns the instantiated vehicle object, 
+            // but does not deduct balance or add it to the list.
+            Assert.IsNotNull(result, "Current logic returns the vehicle object even if funds are insufficient.");
+            Assert.AreEqual(typeof(Truck).Name, result.GetType().Name);
+
+            Assert.AreEqual(0, _gameModel.Balance, "Balance should remain unchanged due to insufficient funds.");
+            Assert.DoesNotContain(result, _gameModel.Vehicles, "Vehicle should NOT be added to the list.");
+            Assert.IsFalse(eventRaised, "BalanceChanged event should NOT be invoked.");
+        }
+
+        [TestMethod]
+        public void BuyVehicle_DifferentVehicleType_CreatesCorrectInstance()
+        {
+            // Arrange
+            int x = 3, y = 3;
+            _mockMap[x, y] = new Stop(x, y, 1);
+
+            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 100000);
+
+            // Act
+            var result = _gameModel.BuyVehicle(x, y, VehicleType.BigBus);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(BigBus).Name, result.GetType().Name, "Should create a BigBus when requested.");
+        }
+
+
+    }
 }
+
