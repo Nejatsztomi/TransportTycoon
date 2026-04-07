@@ -37,11 +37,10 @@ public class TerrainTest
             Assert.AreEqual(expectedType, terrain.FieldType);
         }
 
-        [TestMethod]
-        public void IncreaseHeight_IncrementsHeightAndUpdatesType()
+        public void IncreaseHeight_From1To2_HeightIncreasesAndTypeIsHill()
         {
             // Arrange
-            var terrain = new Terrain(0, 0, 1); // Induló típus: Plain
+            var terrain = new Terrain(0, 0, 1);
 
             // Act
             terrain.IncreaseHeight();
@@ -52,10 +51,39 @@ public class TerrainTest
         }
 
         [TestMethod]
-        public void DecreaseHeight_DecrementsHeightAndUpdatesType()
+        public void IncreaseHeight_From3To4_HeightIncreasesAndTypeIsHighMountain()
         {
             // Arrange
-            var terrain = new Terrain(0, 0, 3); // Induló típus: Mountain
+            var terrain = new Terrain(0, 0, 3);
+
+            // Act
+            terrain.IncreaseHeight();
+
+            // Assert
+            Assert.AreEqual(4, terrain.Height);
+            Assert.AreEqual(FieldType.HighMountain, terrain.FieldType);
+        }
+
+        [TestMethod]
+        public void IncreaseHeight_WhenHeightIsAlready4_HeightDoesNotIncrease()
+        {
+            // Arrange
+            var terrain = new Terrain(0, 0, 4);
+
+            // Act
+            terrain.IncreaseHeight();
+
+            // Assert
+            Assert.AreEqual(4, terrain.Height, "Height should remain 4 since it has reached the maximum limit.");
+            Assert.AreEqual(FieldType.HighMountain, terrain.FieldType);
+        }
+
+
+        [TestMethod]
+        public void DecreaseHeight_From3To2_HeightDecreasesAndTypeIsHill()
+        {
+            // Arrange
+            var terrain = new Terrain(0, 0, 3);
 
             // Act
             terrain.DecreaseHeight();
@@ -63,6 +91,34 @@ public class TerrainTest
             // Assert
             Assert.AreEqual(2, terrain.Height);
             Assert.AreEqual(FieldType.Hill, terrain.FieldType);
+        }
+
+        [TestMethod]
+        public void DecreaseHeight_From2To1_HeightDecreasesAndTypeIsPlain()
+        {
+            // Arrange
+            var terrain = new Terrain(0, 0, 2);
+
+            // Act
+            terrain.DecreaseHeight();
+
+            // Assert
+            Assert.AreEqual(1, terrain.Height);
+            Assert.AreEqual(FieldType.Plain, terrain.FieldType);
+        }
+
+        [TestMethod]
+        public void DecreaseHeight_WhenHeightIsAlready1_HeightDoesNotDecrease()
+        {
+            // Arrange
+            var terrain = new Terrain(0, 0, 1);
+
+            // Act
+            terrain.DecreaseHeight();
+
+            // Assert
+            Assert.AreEqual(1, terrain.Height, "Height should remain 1 since it has reached the minimum limit.");
+            Assert.AreEqual(FieldType.Plain, terrain.FieldType);
         }
 
         [TestMethod]

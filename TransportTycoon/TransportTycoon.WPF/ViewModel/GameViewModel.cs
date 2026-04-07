@@ -24,9 +24,6 @@ namespace TransportTycoon.WPF.ViewModel
         public RelayCommand EditorModeCommand { get; init; }
         public RelayCommand<object> SetSelectedButtonCommand { get; init; }
 
-        public RelayCommand IncreaseHeightCommand { get; init; }
-        public RelayCommand DecreaseHeightCommand { get; init; }
-
         public RelayCommand<FieldViewModel> TileLeftClickCommand { get; init; }
         #endregion
 
@@ -76,8 +73,6 @@ namespace TransportTycoon.WPF.ViewModel
             ResumeGameCommand = new(OnResumeGame);
             EditorModeCommand = new(OnEditorMode);
 
-            //IncreaseHeightCommand = new(OnIncreaseHeight);
-            //DecreaseHeightCommand = new(OnDecreaseHeight);
 
             SetSelectedButtonCommand = new RelayCommand<object>(x =>
             {

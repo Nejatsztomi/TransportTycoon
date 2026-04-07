@@ -21,14 +21,14 @@
         #region Public methods
         public void IncreaseHeight()
         {
-            if(Height == 4) return;
+            if (Height == 4) return;
             Height++;
             SetFieldType();
         }
 
         public void DecreaseHeight()
         {
-            if(Height == 0) return;
+            if (Height == 1) return;
             Height--;
             SetFieldType();
         }
