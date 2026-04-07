@@ -9,7 +9,7 @@ namespace TransportTycoon.Model
 
     public enum VehicleType
     {
-        Van = 0, Pickup = 1, Truck = 2, LiquidTruck = 3, SmallBus = 4, BigBus = 5
+        Van = 0, Pickup = 1, Truck = 2, LiquidTruck = 3, SmallBus = 4, LargeBus = 5
     }
 
     public abstract class Vehicle

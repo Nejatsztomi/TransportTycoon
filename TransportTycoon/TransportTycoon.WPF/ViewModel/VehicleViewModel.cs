@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using TransportTycoon.Model;
+using TransportTycoon.MapData;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -14,7 +15,7 @@ namespace TransportTycoon.WPF.ViewModel
         public double Y => Vehicle.Y;
         //public FieldType Type => Vehicle.Type;
         public Direction Direction => Vehicle.Direction;
-        public VehicleType VehicleType => Vehicle.VehicleType;
+        public VehicleType VehicleType => Vehicle.Type;
 
         public string ImagePath { get; set; }
 
@@ -26,10 +27,10 @@ namespace TransportTycoon.WPF.ViewModel
         public VehicleViewModel(Vehicle vehicle)
         {
             Vehicle = vehicle;
-            ImagePath = Vehicle.VehicleType switch
+            ImagePath = Vehicle.Type switch
             {
-                VehicleType.Truck => "/Assets/Images/Vehicles/truck.png",
-                VehicleType.Train => "/Assets/Images/Vehicles/train.png",
+                VehicleType.SmallBus => "/Assets/Images/Vehicles/truck.png",
+                VehicleType.BigBus => "/Assets/Images/Vehicles/train.png",
                 VehicleType.Ship => "/Assets/Images/Vehicles/ship.png",
                 _ => throw new InvalidOperationException("Unknown vehicle type.")
             };
