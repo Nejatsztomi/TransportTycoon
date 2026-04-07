@@ -43,7 +43,7 @@ include:
   - template: Jobs/SAST.gitlab-ci.yml
   # Static analysis-based Code Quality evaluation for .NET/C#
   # https://szofttech.inf.elte.hu/components/code-quality-dotnet
-  - component: szofttech.inf.elte.hu/components/code-quality-dotnet/windows@master
+  - component: szofttech.inf.elte.hu/components/code-quality-dotnet/windows@2
     inputs:
         check_path: '${ROOT}'
         # We already have the analyzer plus some extra like NSubstitute.Analyzers
