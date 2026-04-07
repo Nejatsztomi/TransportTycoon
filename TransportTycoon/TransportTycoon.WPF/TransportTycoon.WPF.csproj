@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Fonts\PressStart2P.ttf" />
     <None Remove="Assets\Images\Bridge\greenBridge.png" />
     <None Remove="Assets\Images\Bridge\redBridge.png" />
     <None Remove="Assets\Images\Bridge\yellowBridge.png" />
@@ -167,6 +168,12 @@
     <Content Include="Assets\Images\Terrain\mountain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Fonts\PressStart2P.ttf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>
