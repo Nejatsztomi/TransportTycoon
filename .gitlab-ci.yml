@@ -24,12 +24,11 @@ variables:
     GITLAB_ADVANCED_SAST_ENABLED: true
 
     BUILD_CONFIGURATION: 'Release'
-    ROOT: '${$CI_PROJECT_DIR}/TransportTycoon'
+    ROOT: './TransportTycoon'
     SOLUTION_PATH: '${ROOT}/TransportTycoon.slnx'
     MODEL_PATH: '${ROOT}/TransportTycoon.Model'
     MAPDATA_PATH: '${ROOT}/TransportTycoon.MapData'
     TEST_PATH: '${ROOT}/TransportTycoon.Test'
-
 
 # Copied from tictactoe-dotnet
 include:
@@ -58,8 +57,11 @@ check_formatting:
     image: mcr.microsoft.com/dotnet/sdk:10.0-windowsservercore-ltsc2025
     tags:
         - windows # This routes the job to your Windows runner
+    before_script:
+        - dotnet --version
     script:
         - echo "Checking code formatting against .editorconfig on Windows..."
+        - echo "Path is ${ROOT}"
         - dotnet format ${ROOT} --verify-no-changes -v diag
 
 # 2.1. Build the model on Linux
@@ -129,7 +131,7 @@ test_model:
             # https://docs.gitlab.com/ci/testing/code_coverage/
             coverage_report:
                 coverage_format: cobertura
-                path: ./*/TestResults/*/coverage.cobertura.xml
+                path: ${TEST_PATH}/TestResults/*/coverage.cobertura.xml
 
     # Cache and keep downloaded NuGet dependencies between CI pipelines
     cache:
