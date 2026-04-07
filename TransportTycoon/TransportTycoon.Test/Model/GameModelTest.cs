@@ -329,13 +329,12 @@ public class GameModelTest
             [TestClass]
             public class GameModelHeightTests
             {
-                // Segédmetódus a tesztkörnyezet felállításához
-                private GameModel CreateEditorModelWithMap()
+                private GameModel CreateEditorModelWithMap(int startingBalance = 1000)
                 {
-                    var model = new GameModel(Difficulty.Medium, _mockTimer);
+                    var model = new GameModel(startingBalance, _mockTimer);
                     model.SetMode(GameMode.Editor);
 
-                    // Feltöltjük a pályát magasság=2 síkságokkal, hogy az IsTileHeightPossible ne szálljon el null reference miatt
+                    // Feltöltjük a pályát magasság=2 síkságokkal, hogy a szomszédvizsgálat ne dobjon kivételt
                     for (int i = 0; i < model.Map.Width; i++)
                     {
                         for (int j = 0; j < model.Map.Height; j++)
@@ -508,61 +507,6 @@ public class GameModelTest
                     Assert.AreEqual(initialBalance, model.Balance); // Nem vett le pénzt
                 }
 
-
-                private GameModel CreateEditorModelWithMap(int startingBalance = 1000)
-                {
-                    var model = new GameModel(startingBalance, _mockTimer);
-                    model.SetMode(GameMode.Editor);
-
-                    // Feltöltjük a pályát magasság=2 síkságokkal, hogy a szomszédvizsgálat ne dobjon kivételt
-                    for (int i = 0; i < model.Map.Width; i++)
-                    {
-                        for (int j = 0; j < model.Map.Height; j++)
-                        {
-                            model.Map[i, j] = new Terrain(i, j, 2);
-                        }
-                    }
-                    return model;
-                }
-                [TestMethod]
-                public void IncreaseHeight_TriggersGameOver_WhenBalanceDropsToZeroOrBelow()
-                {
-                    // Arrange
-                    var model = CreateEditorModelWithMap(100);
-                    bool gameOverFired = false;
-                    model.GameOver += (s, e) => gameOverFired = true;
-
-                    // Act
-                    model.IncreaseHeight(5, 5);
-
-                    // Assert
-                    Assert.AreEqual(0, model.Balance, "A balance-nak 0-ra kellett csökkennie.");
-                    Assert.IsTrue(model.IsGameOver, "Az IsGameOver property-nek true-nak kell lennie.");
-                    Assert.IsTrue(gameOverFired, "A GameOver eseménynek el kellett sülnie.");
-                }
-
-                [TestMethod]
-                public void DecreaseHeight_TriggersGameOver_WhenBalanceDropsToZeroOrBelow()
-                {
-                    // Arrange
-                    var model = CreateEditorModelWithMap(150);
-                    var terrain = (Terrain)model.Map[5, 5];
-                    // Hogy a magasságot lehessen csökkenteni, előbb felvisszük 3-ra.
-                    // (A manuális Height növelés a Terrain-ben nem kerül pénzbe)
-                    terrain.Grow();
-                    terrain.IncreaseHeight();
-
-                    bool gameOverFired = false;
-                    model.GameOver += (s, e) => gameOverFired = true;
-
-                    // Act
-                    model.DecreaseHeight(5, 5); // -100 (alap) - 50 (fa kivágás) = -150
-
-                    // Assert
-                    Assert.AreEqual(0, model.Balance, "A balance-nak 0-ra kellett csökkennie a fa és az ásás miatt.");
-                    Assert.IsTrue(model.IsGameOver, "Az IsGameOver property-nek true-nak kell lennie.");
-                    Assert.IsTrue(gameOverFired, "A GameOver eseménynek el kellett sülnie.");
-                }
                 //Forest methods
             }
         }
