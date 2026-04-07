@@ -340,7 +340,7 @@ public class GameModelTest
             // Arrange
             int x = 0, y = 0;
             // Mock the map to return a regular Terrain (not a Stop) at the given coordinates
-            _mockMap[x, y] = new Stop(x, y, 1);
+            _mockMap[x, y] = new Terrain(x, y, 1);
 
             // Re-initialize GameModel to strictly control the starting balance
             _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 10000);
