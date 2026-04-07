@@ -319,7 +319,7 @@ namespace TransportTycoon.Model
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
 
-        public void BuyVehicle(int x, int y, VehicleType type)
+        public Vehicle BuyVehicle(int x, int y, VehicleType type)
         {
             Vehicle vehicle = type switch
             {
@@ -338,6 +338,7 @@ namespace TransportTycoon.Model
                 Vehicles.Add(vehicle);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
             }
+            return vehicle;
         }
 
         #endregion

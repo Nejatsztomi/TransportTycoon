@@ -16,6 +16,7 @@ namespace TransportTycoon.WPF.ViewModel
         public GameModel Model { get; init; }
 
         public ObservableCollection<FieldViewModel> Tiles { get; private set; }
+        public ObservableCollection<VehicleViewModel> Vehicles { get; private set; }
 
         public int Balance => Model.Balance;
         public int GameTime => Model.GameTime;
@@ -46,6 +47,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
 
             Tiles = [];
+            Vehicles = [];
             RefreshTable();
         }
         #endregion
@@ -207,6 +209,10 @@ namespace TransportTycoon.WPF.ViewModel
                     break;
                 case 14:
                     Model.Destroy(tile.X, tile.Y);
+                    break;
+                case 21:
+                    Vehicle vehicle = Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
+                    Vehicles.Add(new VehicleViewModel(vehicle));
                     break;
                 default:
                     break;
