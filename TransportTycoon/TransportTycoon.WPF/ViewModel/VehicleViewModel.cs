@@ -22,18 +22,25 @@ namespace TransportTycoon.WPF.ViewModel
         public double PixelX { get; set; }
         public double PixelY { get; set; }
 
+
+        public string? VehicleImagePath => Vehicle.Type switch
+        {
+            VehicleType.Van => "/Assets/Images/Vehicle/van.png",
+            VehicleType.Pickup => "/Assets/Images/Vehicle/pickup.png",
+            VehicleType.Truck => "/Assets/Images/Vehicle/truck.png",
+            VehicleType.LiquidTruck => "/Assets/Images/Vehicle/liquidTruck.png",
+            VehicleType.SmallBus => "/Assets/Images/Vehicle/smallBus.png",
+            VehicleType.BigBus => "/Assets/Images/Vehicle/bigBus.png",
+            _ => null
+        };
         #endregion
         #region Constructor
         public VehicleViewModel(Vehicle vehicle)
         {
             Vehicle = vehicle;
-            ImagePath = Vehicle.Type switch
-            {
-                VehicleType.SmallBus => "/Assets/Images/Vehicle/smallBus.png",
-                VehicleType.BigBus => "/Assets/Images/Vehicle/largeBus.png",
-                _ => throw new InvalidOperationException("Unknown vehicle type.")
-                //Van = 0, Pickup = 1, Truck = 2, LiquidTruck = 3,
-            };
+            ImagePath = VehicleImagePath!;
+            PixelX = 50 * Y;
+            PixelY = 50 * X;
         }
         #endregion
         #region Public Methods

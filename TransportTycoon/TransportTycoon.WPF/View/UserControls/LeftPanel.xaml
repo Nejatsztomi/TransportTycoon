@@ -153,14 +153,14 @@
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
-                                CommandParameter="14"
+                                CommandParameter="21"
                                 >
                             <Image Source="/Assets/Images/Vehicle/smallBus.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
-                                CommandParameter="14"
+                                CommandParameter="22"
                                 >
                             <Image Source="/Assets/Images/Vehicle/largeBus.png" Stretch="Uniform"/>
                         </Button>

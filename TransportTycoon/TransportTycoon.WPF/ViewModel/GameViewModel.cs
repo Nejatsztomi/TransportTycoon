@@ -214,6 +214,10 @@ namespace TransportTycoon.WPF.ViewModel
                     Vehicle vehicle = Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
                     Vehicles.Add(new VehicleViewModel(vehicle));
                     break;
+                case 22:
+                    Vehicle vehicle2 = Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
+                    Vehicles.Add(new VehicleViewModel(vehicle2));
+                    break;
                 default:
                     break;
             }

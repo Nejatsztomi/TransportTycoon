@@ -337,6 +337,7 @@ namespace TransportTycoon.Model
                 Balance -= vehicle.Price;
                 Vehicles.Add(vehicle);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
+                FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
             }
             return vehicle;
         }
