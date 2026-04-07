@@ -48,7 +48,6 @@ include:
         check_path: '${ROOT}'
         # We already have the analyzer plus some extra like NSubstitute.Analyzers
         ruleset: project
-        build_config: ${BUILD_CONFIGURATION}
 
 # 1. Linting on Windows
 # We need Windows because 
