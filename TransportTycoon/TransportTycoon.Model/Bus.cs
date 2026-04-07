@@ -12,7 +12,7 @@ namespace TransportTycoon.Model
     public class SmallBus : Bus
     {
         #region Constructor
-        public SmallBus(Prouth route, int x, int y, Direction direction)
+        public SmallBus(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -36,7 +36,7 @@ namespace TransportTycoon.Model
     public class BigBus : Bus
     {
         #region Constructor
-        public BigBus(Prouth route, int x, int y, Direction direction)
+        public BigBus(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;

@@ -318,6 +318,28 @@ namespace TransportTycoon.Model
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
+
+        public void BuyVehicle(int x, int y, VehicleType type)
+        {
+            Vehicle vehicle = type switch
+            {
+                VehicleType.Van => new Van(x,y,Direction.Up),
+                VehicleType.Pickup => new Pickup(x, y, Direction.Up),
+                VehicleType.Truck => new Truck(x, y, Direction.Up),
+                VehicleType.LiquidTruck => new LiquidTruck(x, y, Direction.Up),
+                VehicleType.SmallBus => new SmallBus(x, y, Direction.Up),
+                VehicleType.BigBus => new BigBus(x, y, Direction.Up),
+                _ => throw new ArgumentException("Invalid vehicle type", nameof(type)),
+            };
+            
+            if (Balance >= vehicle.Price)
+            {
+                Balance -= vehicle.Price;
+                Vehicles.Add(vehicle);
+                BalanceChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
         #endregion
 
         #region Private Methods
