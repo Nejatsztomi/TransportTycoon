@@ -95,7 +95,7 @@ test_model:
     # 1) log test result in JUnit format, so GitLab web UI can diplay them;
     # 2) collect code coverage statistics.
     - > 
-      dotnet test TicTacToeGame.Test --no-restore
+      dotnet test ${TEST_PATH} --no-restore
       --logger:"junit;MethodFormat=Class;FailureBodyFormat=Verbose"
       --collect="XPlat Code Coverage"
     # Install tools for code coverage extraction from Cobertura XML files
