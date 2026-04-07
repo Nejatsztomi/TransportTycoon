@@ -29,8 +29,8 @@ namespace TransportTycoon.WPF.ViewModel
             Vehicle = vehicle;
             ImagePath = Vehicle.Type switch
             {
-                VehicleType.SmallBus => "/Assets/Images/Vehicles/truck.png",
-                VehicleType.LargeBus => "/Assets/Images/Vehicles/train.png",
+                VehicleType.SmallBus => "/Assets/Images/Vehicle/smallBus.png",
+                VehicleType.BigBus => "/Assets/Images/Vehicle/largeBus.png",
                 _ => throw new InvalidOperationException("Unknown vehicle type.")
                 //Van = 0, Pickup = 1, Truck = 2, LiquidTruck = 3,
             };
