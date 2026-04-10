@@ -2,7 +2,7 @@
 
 namespace TransportTycoon.Model.Graph
 {
-    public class Vertex
+    public class Node
     {
         #region Properties
         public int X { get; private set; }
@@ -12,7 +12,7 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Constructors
-        public Vertex(int x, int y, FieldType type)
+        public Node(int x, int y, FieldType type)
         {
             X = x;
             Y = y;

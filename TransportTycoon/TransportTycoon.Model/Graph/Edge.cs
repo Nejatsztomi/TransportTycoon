@@ -19,11 +19,11 @@ namespace TransportTycoon.Model.Graph
         /// <summary>
         /// The edge's starting vertex.
         /// </summary>
-        public Vertex StartVertex { get; private set; }
+        public Node StartVertex { get; private set; }
         /// <summary>
         /// The edge's ending vertex.
         /// </summary>
-        public Vertex EndVertex { get; private set; }
+        public Node EndVertex { get; private set; }
         /// <summary>
         /// List of the road tiles between the <see cref="StartVertex"/> and <see cref="EndVertex"/>.
         /// Also including the <see cref="StartVertex"/> and <see cref="EndVertex"/>.
@@ -40,7 +40,7 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Constructors
-        public Edge(Vertex startVertex, Vertex endVertex, List<Field> roads)
+        public Edge(Node startVertex, Node endVertex, List<Field> roads)
         {
             StartVertex = startVertex;
             EndVertex = endVertex;
