@@ -12,7 +12,7 @@ namespace TransportTycoon.Model
     public class Van : Transport
     {
         #region Constructor
-        public Van(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
+        public Van(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -20,7 +20,8 @@ namespace TransportTycoon.Model
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Van;
-            AcceptedGoods = acceptedGoods;
+            //TODO: kitölteni az acceptedGoods listát
+            AcceptedGoods = new List<LoadType> { };
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -37,7 +38,7 @@ namespace TransportTycoon.Model
     public class Pickup : Transport
     {
         #region Constructor
-        public Pickup(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
+        public Pickup(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -45,7 +46,8 @@ namespace TransportTycoon.Model
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Pickup;
-            AcceptedGoods = acceptedGoods;
+            //TODO: kitölteni az acceptedGoods listát
+            AcceptedGoods = new List<LoadType> { };
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -62,7 +64,7 @@ namespace TransportTycoon.Model
     public class Truck : Transport
     {
         #region Constructor
-        public Truck(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
+        public Truck(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -70,7 +72,8 @@ namespace TransportTycoon.Model
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Truck;
-            AcceptedGoods = acceptedGoods;
+            //TODO: kitölteni az acceptedGoods listát
+            AcceptedGoods = new List<LoadType> { };
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -87,7 +90,7 @@ namespace TransportTycoon.Model
     public class LiquidTruck : Transport
     {
         #region Constructor
-        public LiquidTruck(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
+        public LiquidTruck(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -95,7 +98,8 @@ namespace TransportTycoon.Model
             Price = 100;
             Maintance = 100;
             Type = VehicleType.LiquidTruck;
-            AcceptedGoods = acceptedGoods;
+            //TODO: kitölteni az acceptedGoods listát
+            AcceptedGoods = new List<LoadType> { };
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
