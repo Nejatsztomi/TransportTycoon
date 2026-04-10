@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData.MapGenerator;
+﻿using TransportTycoon.MapData.Buildings;
+using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
@@ -10,12 +11,11 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Properties
-        public Field[,] Table { get; }
-        public int Width { get; }
-        public int Height { get; }
+        public Field[,] Table { get; private set; }
+        public int Width => Context.Width;
+        public int Height => Context.Height;
 
-        public List<(int, int)> Pointers { get; }
-        public List<(int, int)> BuildingIDs { get; }
+        public List<BuildingEntity> BuildingEntities { get; }
 
         public Field this[int x, int y]
         {
@@ -23,29 +23,32 @@ namespace TransportTycoon.MapData
             set => Table[x, y] = value;
         }
 
-        private INoiseGenerator NoiseGenerator { get; }
+        private IMapGenerator MapGenerator { get; }
+        private MapGenerationContext Context { get; }
+        private MapGenerationSettings GenerationSettings => Context.Settings;
         #endregion
 
         #region Constructors
-        public GameTable(int width, int height)
+        public GameTable(IMapGenerator mapGenerator, MapGenerationContext context)
         {
-            Width = width;
-            Height = height;
-            Table = new Field[width, height];
+            Context = context;
+            BuildingEntities = [];
 
-            Pointers = [];
-            BuildingIDs = [];
-
-            NoiseGenerator = PerlinNoiseGeneratorFactory.Create(width, height, 0);
+            Table = new Field[Width, Height];
+            MapGenerator = mapGenerator;
         }
-        public GameTable() : this(DefaultWidth, DefaultHeight) { }
         #endregion
 
         #region Public methods
+        public void GenerateMap()
+        {
+            Table = MapGenerator.GenerateMap(Context);
+        }
+
         public List<Field> CheckNeighboringTrees(int x, int y)
         {
-            List<Field> neighbours = new List<Field>();
-            List<Field> acceptedNeighbours = new List<Field>();
+            List<Field> neighbours = [];
+            List<Field> acceptedNeighbours = [];
             if (x - 1 >= 0) neighbours.Add(Table[x - 1, y]);
             if (y + 1 <= Width - 1) neighbours.Add(Table[x, y + 1]);
             if (x + 1 <= Height - 1) neighbours.Add(Table[x + 1, y]);
@@ -57,71 +60,6 @@ namespace TransportTycoon.MapData
             return acceptedNeighbours;
         }
 
-        public void GenerateMap()
-        {
-            float[,] randomMap = NoiseGenerator.GenerateNoise(0.1f);
-            for (int i = 0; i < Width; i++)
-            {
-                for (int j = 0; j < Height; j++)
-                {
-                    if (randomMap[i, j] < 0.35f)
-                    {
-                        Table[i, j] = new Water(i, j);          // Bottom 35% of heights become water
-                    }
-                    else if (randomMap[i, j] < 0.55f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 1);          // Next 20% become plains
-                    }
-                    else if (randomMap[i, j] < 0.75f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 2);          // Next 20% become hills
-                    }
-                    else if (randomMap[i, j] < 0.90f)
-                    {
-                        Table[i, j] = new Terrain(i, j, 3);      // Next 15% become mountains
-                    }
-                    else
-                    {
-                        Table[i, j] = new Terrain(i, j, 4);  // Top 10% become high mountains
-                    }
-                }
-            }
-
-            GenerateTrees();
-        }
-
-        public void GenerateTrees()
-        {
-            float[,] randomTreeMap = NoiseGenerator.GenerateNoise(0.1f);
-            for (int i = 0; i < Width; i++)
-            {
-                for (int j = 0; j < Height; j++)
-                {
-                    if (Table[i, j] is not Terrain terrain) continue;
-                    if (terrain.FieldType == FieldType.HighMountain) continue;
-
-                    if (randomTreeMap[i, j] < 0.5f) continue;
-
-                    if (randomTreeMap[i, j] < 0.75f)
-                    {
-                        terrain.Trees = 1;
-                    }
-                    else if (randomTreeMap[i, j] < 0.85f)
-                    {
-                        terrain.Trees = 2;
-                    }
-                    else if (randomTreeMap[i, j] < 0.95f)
-                    {
-                        terrain.Trees = 3;
-                    }
-                    else
-                    {
-                        terrain.Trees = 4;
-                    }
-                }
-            }
-        }
-
         //Checks if the new field is possible
         public bool IsTileHeightPossible(int x, int y, int height)
         {
@@ -130,7 +68,7 @@ namespace TransportTycoon.MapData
             //Up
             if (x > 0 && Math.Abs(height - Table[x - 1, y].Height) > 2) return false;
 
-            // Down 
+            // up 
             if (x < Height - 1 && Math.Abs(height - Table[x + 1, y].Height) > 2) return false;
 
             // Left
@@ -141,25 +79,207 @@ namespace TransportTycoon.MapData
 
             return true;
         }
-        public List<int> NeighbourRoadsCount(int x, int y)
+        public List<Field?> NeighboursOfRoadsAndStops(int x, int y)
         {
-            List<int> result = new List<int> { 0, 0, 0, 0, 0 };//neighbour count,up,right,down,left
-            if (x - 1 >= 0 && Table[x - 1, y] is Infrastructure) result[1] = 1;
-            if (y + 1 <= Width - 1 && Table[x, y + 1] is Infrastructure) result[2] = 1;
-            if (x + 1 <= Height - 1 && Table[x + 1, y] is Infrastructure) result[3] = 1;
-            if (y - 1 >= 0 && Table[x, y - 1] is Infrastructure) result[4] = 1;
-
-            result[0] = result.Count(x => x != 0);
+            List<Field?> result = [null, null, null, null];
+            if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]))
+            {
+                if (Table[x - 1, y] is Bridge bridge && bridge.BridgeType.ToString().Contains("Vertical")) result[0] = Table[x - 1, y];
+                else if (Table[x - 1, y] is Road || Table[x - 1, y] is Stop) result[0] = Table[x - 1, y];
+            }
+            if (y + 1 <= Width - 1 && HeightCheck(Table[x, y + 1], Table[x, y]))
+            {
+                if (Table[x, y + 1] is Bridge bridge && bridge.BridgeType.ToString().Contains("Horizontal")) result[1] = Table[x, y + 1];
+                else if (Table[x, y + 1] is Road || Table[x, y + 1] is Stop) result[1] = Table[x, y + 1];
+            }
+            if (x + 1 <= Height - 1 && HeightCheck(Table[x + 1, y], Table[x, y]))
+            {
+                if (Table[x + 1, y] is Bridge bridge && bridge.BridgeType.ToString().Contains("Vertical")) result[2] = Table[x + 1, y];
+                else if (Table[x + 1, y] is Road || Table[x + 1, y] is Stop) result[2] = Table[x + 1, y];
+            }
+            if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]))
+            {
+                if (Table[x, y - 1] is Bridge bridge && bridge.BridgeType.ToString().Contains("Horizontal")) result[3] = Table[x, y - 1];
+                else if (Table[x, y - 1] is Road || Table[x, y - 1] is Stop) result[3] = Table[x, y - 1];
+            }
             return result;
         }
-        public List<(int, int)> NeighbourRoadsCoord(int x, int y)
+        public bool HeightCheck(Field a, Field b)
         {
-            List<(int, int)> result = new List<(int, int)>();
-            if (x - 1 >= 0 && Table[x - 1, y] is Road) result.Add((Table[x - 1, y].X, Table[x - 1, y].Y));
-            if (y + 1 <= Width - 1 && Table[x, y + 1] is Road) result.Add((Table[x, y + 1].X, Table[x, y + 1].Y));
-            if (x + 1 <= Height - 1 && Table[x + 1, y] is Road) result.Add((Table[x + 1, y].X, Table[x + 1, y].Y));
-            if (y - 1 >= 0 && Table[x, y - 1] is Road) result.Add((Table[x, y - 1].X, Table[x, y - 1].Y));
-            return result;
+            return Math.Abs(a.Height - b.Height) <= 1;
+        }
+        public RoadType CalculateRoadType(int x, int y)
+        {
+            List<Field?> neighbourRoads = NeighboursOfRoadsAndStops(x, y);
+            RoadType type = RoadType.Vertical;
+            switch (neighbourRoads.Count(x => x != null))
+            {
+                case 1:
+                    if (neighbourRoads[1] != null || neighbourRoads[3] != null) type = RoadType.Horizontal;
+                    break;
+                case 2:
+                    if (neighbourRoads[1] != null && neighbourRoads[3] != null) type = RoadType.Horizontal;
+                    else if (neighbourRoads[0] != null && neighbourRoads[1] != null) type = RoadType.UpperRightTurn;
+                    else if (neighbourRoads[1] != null && neighbourRoads[2] != null) type = RoadType.RightTurn;
+                    else if (neighbourRoads[2] != null && neighbourRoads[3] != null) type = RoadType.LeftTurn;
+                    else if (neighbourRoads[3] != null && neighbourRoads[0] != null) type = RoadType.UpperLeftTurn;
+                    break;
+                case 3:
+                    int noNeighbour = neighbourRoads.FindIndex(x => x == null);
+                    switch (noNeighbour)
+                    {
+                        case 0:
+                            type = RoadType.DownTRoad;
+                            break;
+                        case 1:
+                            type = RoadType.LeftTRoad;
+                            break;
+                        case 2:
+                            type = RoadType.UpperTRoad;
+                            break;
+                        case 3:
+                            type = RoadType.RightTRoad;
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 4:
+                    type = RoadType.XRoad;
+                    break;
+                default:
+                    break;
+            }
+            return type;
+        }
+        public BridgeType CalculateBridgeType(int dif, string dir)
+        {
+            if (dir == "horizontal")
+            {
+                if (dif <= 13) return BridgeType.HorizontalYellowBridge;
+                else if (dif <= 15) return BridgeType.HorizontalGreenBridge;
+                else if (dif <= 17) return BridgeType.HorizontalRedBridge;
+                else return BridgeType.Null;
+            }
+            else
+            {
+                if (dif <= 13) return BridgeType.VerticalYellowBridge;
+                else if (dif <= 15) return BridgeType.VerticalGreenBridge;
+                else if (dif <= 17) return BridgeType.VerticalRedBridge;
+                else return BridgeType.Null;
+            }
+        }
+        public int CreateHorizontalBridge(int x, int a, int b, BridgeType b_type, ref List<(int, int)> changedFields)
+        {
+            int cost = 0;
+            for (int i = a; i <= b; i++)
+            {
+                switch (b_type)
+                {
+                    case BridgeType.HorizontalYellowBridge:
+                        Table[x, i] = new YellowBridge(x, i, b_type, Table[x, i].Height);
+                        break;
+                    case BridgeType.HorizontalGreenBridge:
+                        Table[x, i] = new GreenBridge(x, i, b_type, Table[x, i].Height);
+                        break;
+                    case BridgeType.HorizontalRedBridge:
+                        Table[x, i] = new RedBridge(x, i, b_type, Table[x, i].Height);
+                        break;
+                }
+                changedFields.Add((x, i));
+                cost += ((Bridge)Table[x, i]).Price;
+            }
+            if (Table[x, a - 1] is Road road1)
+            {
+                road1.ChangeType(CalculateRoadType(x, a - 1));
+                changedFields.Add((x, a - 1));
+            }
+            if (Table[x, b + 1] is Road road2)
+            {
+                road2.ChangeType(CalculateRoadType(x, b + 1));
+                changedFields.Add((x, b + 1));
+            }
+            return cost;
+        }
+        public int CreateVerticalBridge(int y, int a, int b, BridgeType b_type, ref List<(int, int)> changedFields)
+        {
+            int cost = 0;
+            for (int i = a; i <= b; i++)
+            {
+                switch (b_type)
+                {
+                    case BridgeType.VerticalYellowBridge:
+                        Table[i, y] = new YellowBridge(i, y, b_type, Table[i, y].Height);
+                        break;
+                    case BridgeType.VerticalGreenBridge:
+                        Table[i, y] = new GreenBridge(i, y, b_type, Table[i, y].Height);
+                        break;
+                    case BridgeType.VerticalRedBridge:
+                        Table[i, y] = new RedBridge(i, y, b_type, Table[i, y].Height);
+                        break;
+                    default:
+                        break;
+                }
+                changedFields.Add((i, y));
+                cost += ((Bridge)Table[i, y]).Price;
+            }
+            if (Table[a - 1, y] is Road road1)
+            {
+                road1.ChangeType(CalculateRoadType(a - 1, y));
+                changedFields.Add((a - 1, y));
+            }
+            if (Table[b + 1, y] is Road road2)
+            {
+                road2.ChangeType(CalculateRoadType(b + 1, y));
+                changedFields.Add((b + 1, y));
+            }
+            return cost;
+        }
+        public void DestroyBridge(int x, int y, ref List<(int, int)> changedFields)
+        {
+            if (Table[x, y] is Bridge bridge)
+            {
+                Table[x, y] = new Water(x, y);
+                changedFields.Add((x, y));
+                if (bridge.BridgeType.ToString().Contains("Horizontal"))
+                {
+                    int left = y - 1;
+                    while (Table[x, left] is Bridge)
+                    {
+                        Table[x, left] = new Water(x, left);
+                        changedFields.Add((x, left));
+                        left--;
+                    }
+                    if (Table[x, left] is Road rl) { rl.ChangeType(CalculateRoadType(x, left)); changedFields.Add((x, left)); }
+                    int right = y + 1;
+                    while (Table[x, right] is Bridge)
+                    {
+                        Table[x, right] = new Water(x, right);
+                        changedFields.Add((x, right));
+                        right++;
+                    }
+                    if (Table[x, right] is Road rr) { rr.ChangeType(CalculateRoadType(x, right)); changedFields.Add((x, right)); }
+                }
+                else
+                {
+                    int up = x - 1;
+                    while (Table[up, y] is Bridge)
+                    {
+                        Table[up, y] = new Water(up, y);
+                        changedFields.Add((up, y));
+                        up--;
+                    }
+                    if (Table[up, y] is Road ru) { ru.ChangeType(CalculateRoadType(up, y)); changedFields.Add((up, y)); }
+                    int down = x + 1;
+                    while (Table[down, y] is Bridge)
+                    {
+                        Table[down, y] = new Water(down, y);
+                        changedFields.Add((down, y));
+                        down++;
+                    }
+                    if (Table[down, y] is Road rd) { rd.ChangeType(CalculateRoadType(down, y)); changedFields.Add((down, y)); }
+                }
+            }
         }
         #endregion
 

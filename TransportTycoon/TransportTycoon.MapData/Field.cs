@@ -18,6 +18,7 @@ namespace TransportTycoon.MapData
         LumberCamp,
         Mill,
         Factory,
+        Plant,
         Road,
         Bridge,
         Stop,
@@ -33,12 +34,11 @@ namespace TransportTycoon.MapData
         public FieldType FieldType { protected set; get; }
 
         public virtual bool Modifiable { protected set; get; } = true;
-
         #endregion
 
         #region Public Methods
         public virtual int GetTrees() => 0;
-        public void ChangeType(FieldType type) => FieldType = type;
+        //public void ChangeType(FieldType type) => FieldType = type;
         #endregion
     }
 

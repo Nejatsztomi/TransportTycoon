@@ -1,63 +1,89 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System.ComponentModel;
 using System.Windows;
+using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
-using TransportTycoon.WPF.View;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class MainViewModel : ViewModelBase
+    public partial class MainViewModel : ViewModelViewConstraintBase
     {
         #region Private fields
         [ObservableProperty]
-        private object _currentView;
-        #endregion
+        private ViewModelBase _currentView;
+        private GameModel? _model;
 
+        private readonly StartMenuViewModel _startMenuViewModel;
+
+        #endregion
+        public override double? MinimumWidth => 800;
+        public override double? MinimumHeight => 450;
         #region Properties
-        private GameModel? Model { get; set; }
+
         #endregion
 
         #region Constructors
         public MainViewModel()
         {
-            CurrentView = GetNewStartMenu();
+            _startMenuViewModel = new();
+
+            _startMenuViewModel.StartingNewGame += StartMenuViewModel_StartingNewGame;
+            _startMenuViewModel.ShowGameCreationView += StartMenuViewModel_ShowGameCreationView;
+            _startMenuViewModel.LoadingGame += StartMenuViewModel_LoadingGame;
+            _startMenuViewModel.ExitingGame += StartMenuViewModel_ExitingGame;
+
+            CurrentView = _startMenuViewModel;
         }
         #endregion
 
         #region Private Methods
-        private StartMenuViewModel GetNewStartMenu()
+        private void StartMenuViewModel_StartingNewGame(object? _1, EventArgs _2)
         {
-            StartMenuViewModel startMenuViewModel = new();
+            MapGenerationContext context = new();
 
-            startMenuViewModel.StartNewGame += (sender, selectedDifficulty) =>
-            {
-                StartGame(selectedDifficulty);
-            };
+            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer());
+            _model.GameOver += Model_GameOver;
+            _model.NewGame();
 
-            startMenuViewModel.LoadGame += (sender, e) =>
-            {
-                throw new NotImplementedException("Load game functionality is not implemented yet!");
-            };
-
-            startMenuViewModel.ExitGame += (sender, e) =>
-            {
-                // Calls the MainWindows close method, which is basically the same as pressing the X
-                Application.Current.MainWindow?.Close();
-            };
-
-            return startMenuViewModel;
-        }
-
-        private void StartGame(Difficulty difficulty)
-        {
-            Model = new(difficulty, new WpfDispatcherTimer());
-            Model.GameOver += new EventHandler<TransportTycoonEventArgs>(Model_GameOver);
-            Model.NewGame();
-
-            GameViewModel gameViewModel = new(Model);
+            GameViewModel gameViewModel = new(_model);
 
             CurrentView = gameViewModel;
+        }
+
+        private void StartMenuViewModel_ShowGameCreationView(object? _1, EventArgs _2)
+        {
+            CreateGameViewModel createGameViewModel = new();
+
+            createGameViewModel.BackToMainMenu += CreateGameViewModel_BackToMainMenu;
+            createGameViewModel.CreateGame += CreateGameViewModel_CreateGame;
+
+            CurrentView = createGameViewModel;
+        }
+
+        private void CreateGameViewModel_CreateGame(object? _, MapGenerationContext context)
+        {
+            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer());
+            _model.GameOver += Model_GameOver;
+            _model.NewGame();
+
+            GameViewModel gameViewModel = new(_model);
+
+            CurrentView = gameViewModel;
+        }
+
+        private void StartMenuViewModel_LoadingGame(object? _1, string _2)
+        {
+            throw new NotImplementedException("Load game functionality is not implemented yet!");
+        }
+
+        private void StartMenuViewModel_ExitingGame(object? _1, EventArgs _2)
+        {
+            // Calls the MainWindows close method, which is basically the same as pressing the 
+            Application.Current.MainWindow?.Close();
+        }
+
+        private void CreateGameViewModel_BackToMainMenu(object? _1, EventArgs _2)
+        {
+            CurrentView = _startMenuViewModel;
         }
         #endregion
 
@@ -76,7 +102,7 @@ namespace TransportTycoon.WPF.ViewModel
             if (result == MessageBoxResult.Yes)
             {
                 //Model = null;
-                CurrentView = GetNewStartMenu();
+                CurrentView = _startMenuViewModel;
             }
         }
 
@@ -86,16 +112,16 @@ namespace TransportTycoon.WPF.ViewModel
         #region Public method
         public bool CanClose()
         {
-            Model?.SetMode(GameMode.Paused);
+            _model?.Mode = GameMode.Paused;
 
             if (WantsToExit())
             {
                 return true;
             }
 
-            if (Model is not null && !Model.IsGameOver)
+            if (_model is not null && !_model.IsGameOver)
             {
-                Model.SetMode(GameMode.Run);
+                _model.Mode = GameMode.Run;
             }
             return false;
         }

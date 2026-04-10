@@ -1,67 +1,50 @@
 using CommunityToolkit.Mvvm.Input;
-using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public class StartMenuViewModel : ViewModelBase, IViewConstraints
+    public partial class StartMenuViewModel : ViewModelViewConstraintBase
     {
-        #region Private fields
-        private Difficulty _selectedGameDifficulty;
-        //We need an interface for Dependecy Injection
-        private int _selectedDifficulty = 1;
-        #endregion
-
         #region Properties
         #region IViewConstraints
-        public double MinimumWidth => 800;
-        public double MinimumHeight => 450;
+        public override double? MinimumWidth => 800;
+        public override double? MinimumHeight => 450;
         #endregion
-
-
-        public int SelectedDifficulty
-        {
-            get => _selectedDifficulty;
-            set
-            {
-                if (_selectedDifficulty != value)
-                {
-                    _selectedDifficulty = value;
-                    OnPropertyChanged(nameof(SelectedDifficulty));
-
-                    _selectedGameDifficulty = (Difficulty)_selectedDifficulty;
-                }
-            }
-        }
-        #endregion
-
-        #region Commands
-        public RelayCommand NewGameCommand { get; }
-        public RelayCommand LoadGameCommand { get; }
-        public RelayCommand ExitGameCommand { get; }
         #endregion
 
         #region Events
-        public event EventHandler<Difficulty>? StartNewGame;
-        public event EventHandler<string>? LoadGame;
-        public event EventHandler? ExitGame;
+        public event EventHandler? StartingNewGame;
+        public event EventHandler<string>? LoadingGame;
+        public event EventHandler? ExitingGame;
+        public event EventHandler? ShowGameCreationView;
         #endregion
 
-        #region Constructor
-        public StartMenuViewModel()
+        #region Constructors
+        public StartMenuViewModel() { }
+        #endregion
+
+        #region Relay commands
+        [RelayCommand]
+        public void NewGame()
         {
-            _selectedGameDifficulty = (Difficulty)_selectedDifficulty;
+            StartingNewGame?.Invoke(this, EventArgs.Empty);
+        }
 
-            NewGameCommand = new(() =>
-            {
-                StartNewGame?.Invoke(this, _selectedGameDifficulty);
-            });
+        [RelayCommand]
+        private void LoadGame()
+        {
+            LoadingGame?.Invoke(this, String.Empty);
+        }
 
-            LoadGameCommand = new(() => LoadGame?.Invoke(this, String.Empty));
+        [RelayCommand]
+        private void ExitGame()
+        {
+            ExitingGame?.Invoke(this, EventArgs.Empty);
+        }
 
-            ExitGameCommand = new(() =>
-            {
-                ExitGame?.Invoke(this, EventArgs.Empty);
-            });
+        [RelayCommand]
+        private void OnCreateNewGame()
+        {
+            ShowGameCreationView?.Invoke(this, EventArgs.Empty);
         }
         #endregion
     }

@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
@@ -24,10 +23,19 @@ namespace TransportTycoon.Model
     public class GameModel
     {
         #region Constants
-        public const int InitialInterval = 1_000;
+        /// <summary>
+        /// Represents the default interval value, in milliseconds, used for timing operations.
+        /// </summary>
+        public const int DefaultInterval = 1_000;
 
-        public const int InitialBalance = 1_000;
-        public const Difficulty InitialDifficulty = Difficulty.Easy;
+        /// <summary>
+        /// Default starting balance for new game.
+        /// </summary>
+        public const int DefaultBalance = 1_000_000;
+        /// <summary>
+        /// Default starting difficulty for new game.
+        /// </summary>
+        public const Difficulty DefaultDifficulty = Difficulty.Medium;
         #endregion
 
         #region Private fields
@@ -36,23 +44,42 @@ namespace TransportTycoon.Model
 
         #region Properties
         public GameTable Map { get; private set; }
-        public Field SelectedField { get; private set; }
+        public Field? SelectedField { get; private set; }
 
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
 
-        public GameMode Mode { get; private set; }
-        public TimeSpeed TimeSpeed { get; private set; }
-        public Difficulty Difficulty { get; private set; }
-
-        public bool IsGameOver
+        public GameMode Mode
         {
-            get
+            get;
+            set
             {
-                return Balance <= 0;
+                if (value == GameMode.Paused || value == GameMode.Editor)
+                {
+                    _timer.Stop();
+                }
+                else
+                {
+                    _timer.Start();
+                }
+                GameModeChanged?.Invoke(this, value);
+                field = value;
             }
         }
+        public TimeSpeed TimeSpeed
+        {
+            get;
+            set
+            {
+                _timer.Interval = DefaultInterval / (double)(value);
+                TimeSpeedChanged?.Invoke(this, value);
+                field = value;
+            }
+        }
+        public Difficulty Difficulty { get; }
+
+        public bool IsGameOver => Balance <= 0;
 
         public List<Vehicle> Vehicles { get; private set; } = [];
 
@@ -69,62 +96,39 @@ namespace TransportTycoon.Model
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
+        public event EventHandler<(int, int)>? SelectedFieldChanged;
         #endregion
 
         #region Constructor
-        public GameModel(Difficulty difficulty, int balance, ITimer timer)
+        public GameModel(GameTable map, ITimer timer, Difficulty difficulty = DefaultDifficulty, int balance = DefaultBalance)
         {
             Difficulty = difficulty;
             Balance = balance;
+            Map = map;
             _timer = timer;
             _timer.Elapsed += Timer_Tick;
 
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
-            SelectedField = null!;
-            Map = new();
         }
-
-        public GameModel(int balance, ITimer timer) : this(InitialDifficulty, balance, timer) { }
-
-        public GameModel(Difficulty difficulty, ITimer timer) : this(difficulty, InitialBalance, timer) { }
         #endregion
 
         #region Public Methods
         public void NewGame()
         {
-            Balance = InitialBalance;
+            Balance = DefaultBalance;
 
             Map.GenerateMap();
             _timer.Start();
             NewGameCreated?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetTimeSpeed(TimeSpeed timeSpeed)
-        {
-            TimeSpeed = timeSpeed;
-            _timer.Interval = InitialInterval / (double)(timeSpeed);
-            TimeSpeedChanged?.Invoke(this, timeSpeed);
-        }
-
-        public void SetMode(GameMode mode)
-        {
-            Mode = mode;
-            if (mode == GameMode.Paused || mode == GameMode.Editor)
-            {
-                _timer.Stop();
-            }
-            else
-            {
-                _timer.Start();
-            }
-            GameModeChanged?.Invoke(this, mode);
-        }
-
         public void SetSelectedField(int x, int y)
         {
-            SelectedField = Map[x, y];
+            if (x == -1 && y == -1) SelectedField = null;
+            else SelectedField = Map[x, y];
+            SelectedFieldChanged?.Invoke(this, (x, y));
         }
 
         public void IncreaseHeight(int x, int y)
@@ -148,7 +152,11 @@ namespace TransportTycoon.Model
                         terrain.IncreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
-
+                        if (IsGameOver)
+                        {
+                            OnGameOver();
+                            return;
+                        }
                     }
                 }
             }
@@ -175,6 +183,11 @@ namespace TransportTycoon.Model
                         terrain.DecreaseHeight();
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
+                        if (IsGameOver)
+                        {
+                            OnGameOver();
+                            return;
+                        }
 
                     }
                 }
@@ -182,28 +195,127 @@ namespace TransportTycoon.Model
         }
         public void BuildRoad(int x, int y)
         {
-            if (Map[x, y] is not Terrain) return;
-            List<(int, int)> changedFields = new List<(int, int)>();
+            if (Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
+            List<(int, int)> changedFields = [];
 
-            RoadType type = CalculateRoadType(x, y);
-            Map[x, y] = new Road(x, y, type, Map[x, y].Height);
+            int oldTrees = Map[x, y].GetTrees();
+            Map[x, y] = new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height);
             changedFields.Add((x, y));
 
-            List<(int, int)> neighbourRoads = Map.NeighbourRoadsCoord(x, y);
-            foreach (var e in neighbourRoads)
+            if (oldTrees == 0) Balance -= ((Road)Map[x, y]).Price;
+            else Balance -= ((Road)Map[x, y]).Price * 2;
+
+            foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
             {
-                RoadType e_type = CalculateRoadType(e.Item1, e.Item2);
-                ((Road)Map[e.Item1, e.Item2]).ChangeType(e_type);//ChangeType method of Road
-                changedFields.Add((e.Item1, e.Item2));
+                if (e != null && e is Road road)
+                {
+                    road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
+                    changedFields.Add((e.X, e.Y));
+                }
             }
+            //if (IsGameOver) OnGameOver();
             InfrastructureBuilt?.Invoke(this, changedFields);
+            BalanceChanged?.Invoke(this, EventArgs.Empty);
         }
         public void BuildBridge(int x, int y)
         {
-            if (Map[x, y] is not Water) return;
-            List<(int, int)> changedFields = new List<(int, int)>();
-            Map[x, y] = new YellowBridge(x, y, BridgeType.VerticalYellowBridge, Map[x, y].Height);
+            if (Map[x, y] is not Water) { SetSelectedField(-1, -1); return; }
+            if (SelectedField == null) SetSelectedField(x, y);
+            else
+            {
+                List<(int, int)> changedFields = [];
+                if (SelectedField.X != x && SelectedField.Y != y) { SetSelectedField(-1, -1); return; }
+                else if (SelectedField.X == x)
+                {
+                    if (Math.Min(SelectedField.Y, y) - 1 < 0 || Map[x, Math.Min(SelectedField.Y, y) - 1].Height != 1 ||
+                        Math.Max(SelectedField.Y, y) + 1 >= Map.Width || Map[x, Math.Max(SelectedField.Y, y) + 1].Height != 1)
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
+
+                    int dif = Math.Abs(SelectedField.Y - y);
+                    BridgeType b_type = Map.CalculateBridgeType(dif, "horizontal");
+                    if (b_type == BridgeType.Null) { SetSelectedField(-1, -1); return; }
+
+                    for (int i = Math.Min(SelectedField.Y, y) + 1; i < Math.Max(SelectedField.Y, y); i++)
+                    {
+                        if (Map[x, i] is not Water) { SetSelectedField(-1, -1); return; }
+                    }
+                    Balance -= Map.CreateHorizontalBridge(x, Math.Min(SelectedField.Y, y), Math.Max(SelectedField.Y, y), b_type, ref changedFields);
+                }
+                else if (SelectedField.Y == y)
+                {
+                    if (Math.Min(SelectedField.X, x) - 1 < 0 || Map[Math.Min(SelectedField.X, x) - 1, y].Height != 1 ||
+                        Math.Max(SelectedField.X, x) + 1 >= Map.Height || Map[Math.Max(SelectedField.X, x) + 1, y].Height != 1)
+                    {
+                        SetSelectedField(-1, -1);
+                        return;
+                    }
+
+                    int dif = Math.Abs(SelectedField.X - x);
+                    BridgeType b_type = Map.CalculateBridgeType(dif, "vertical");
+                    if (b_type == BridgeType.Null) { SetSelectedField(-1, -1); return; }
+
+                    for (int i = Math.Min(SelectedField.X, x); i <= Math.Max(SelectedField.X, x); i++)
+                    {
+                        if (Map[i, y] is not Water) { SetSelectedField(-1, -1); return; }
+                    }
+                    Balance -= Map.CreateVerticalBridge(y, Math.Min(SelectedField.X, x), Math.Max(SelectedField.X, x), b_type, ref changedFields);
+                }
+                SetSelectedField(-1, -1);
+                //if (IsGameOver) OnGameOver();
+                InfrastructureBuilt?.Invoke(this, changedFields);
+                BalanceChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public void BuildStop(int x, int y)
+        {
+            if (Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
+            List<(int, int)> changedFields = [];
+
+            int oldTrees = Map[x, y].GetTrees();
+            Map[x, y] = new Stop(x, y, Map[x, y].Height);
             changedFields.Add((x, y));
+
+            if (oldTrees == 0) Balance -= ((Stop)Map[x, y]).Price;
+            else Balance -= ((Stop)Map[x, y]).Price * 2;
+
+            foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
+            {
+                if (e != null && e is Road road)
+                {
+                    road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
+                    changedFields.Add((e.X, e.Y));
+                }
+            }
+            //if (IsGameOver) OnGameOver();
+            InfrastructureBuilt?.Invoke(this, changedFields);
+            BalanceChanged?.Invoke(this, EventArgs.Empty);
+        }
+        public void Destroy(int x, int y)
+        {
+            if ((Map[x, y] is not Infrastructure) || (Map[x, y] is Road r && r.InCity())) return;
+            List<(int, int)> changedFields = [];
+
+            if (Map[x, y] is Road || Map[x, y] is Stop)
+            {
+                Map[x, y] = new Terrain(x, y, Map[x, y].Height);
+                changedFields.Add((x, y));
+
+                foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
+                {
+                    if (e != null && e is Road road)
+                    {
+                        road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
+                        changedFields.Add((e.X, e.Y));
+                    }
+                }
+            }
+            else
+            {
+                Map.DestroyBridge(x, y, ref changedFields);
+            }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
         #endregion
@@ -266,56 +378,13 @@ namespace TransportTycoon.Model
 
             return grownTrees;
         }
-        private RoadType CalculateRoadType(int x, int y)
-        {
-            List<int> neighbourCountAndWhere = Map.NeighbourRoadsCount(x, y);
-            RoadType type = RoadType.Vertical;
-            switch (neighbourCountAndWhere[0])
-            {
-                case 1:
-                    if (neighbourCountAndWhere[2] == 1 || neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
-                    break;
-                case 2:
-                    if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.Horizontal;
-                    else if (neighbourCountAndWhere[1] == 1 && neighbourCountAndWhere[2] == 1) type = RoadType.UpperRightTurn;
-                    else if (neighbourCountAndWhere[2] == 1 && neighbourCountAndWhere[3] == 1) type = RoadType.RightTurn;
-                    else if (neighbourCountAndWhere[3] == 1 && neighbourCountAndWhere[4] == 1) type = RoadType.LeftTurn;
-                    else if (neighbourCountAndWhere[4] == 1 && neighbourCountAndWhere[1] == 1) type = RoadType.UpperLeftTurn;
-                    break;
-                case 3:
-                    int noNeighbour = neighbourCountAndWhere.FindIndex(x => x == 0);
-                    switch (noNeighbour)
-                    {
-                        case 1:
-                            type = RoadType.DownTRoad;
-                            break;
-                        case 2:
-                            type = RoadType.LeftTRoad;
-                            break;
-                        case 3:
-                            type = RoadType.UpperTRoad;
-                            break;
-                        case 4:
-                            type = RoadType.RightTRoad;
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                case 4:
-                    type = RoadType.XRoad;
-                    break;
-                default:
-                    break;
-            }
-            return type;
-        }
         #endregion
 
         #region Private event Methods
         private void OnGameOver()
         {
             _timer.Stop();
+            GameModeChanged?.Invoke(this, GameMode.Paused);
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
         #endregion
@@ -323,6 +392,11 @@ namespace TransportTycoon.Model
         #region Timer event handlers
         private void Timer_Tick(object? sender, EventArgs e)
         {
+            if (IsGameOver)
+            {
+                OnGameOver();
+                return;
+            }
             GameTime++;
             if (GameTime > 0 && GameTime % 10 == 0)
             {
@@ -330,10 +404,7 @@ namespace TransportTycoon.Model
                 GameAdvanced?.Invoke(this, grownTrees);
             }
             GameTicked?.Invoke(this, EventArgs.Empty);
-
-
         }
         #endregion
-
     }
 }

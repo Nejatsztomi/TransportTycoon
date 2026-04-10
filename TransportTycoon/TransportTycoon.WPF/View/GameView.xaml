@@ -3,13 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TransportTycoon.WPF" xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:GameViewModel}"
+        xmlns:local="clr-namespace:TransportTycoon.WPF"
+        xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:GameViewModel}"
+        xmlns:usercontrols="clr-namespace:TransportTycoon.WPF.View.UserControls"
         mc:Ignorable="d"
         >
 
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
-
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
@@ -39,297 +40,20 @@
                     <TextBlock Margin="0,0,10,0" Text="{Binding GameTime}" />
                 </StackPanel>
             </StatusBarItem>
-
         </StatusBar>
 
         <Grid Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" MinWidth="300"/>
-
                 <ColumnDefinition Width="15" />
-
                 <ColumnDefinition Width="8*" />
             </Grid.ColumnDefinitions>
 
             <!-- Left panel -->
-            <Border Grid.Column="0" Background="#ECECEC" CornerRadius="5">
-                <!--<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Text="Map Info" FontWeight="Bold" FontSize="18" Foreground="#333" HorizontalAlignment="Center" Margin="0,0,0,10"/>
-
-                    <TextBlock Text="{Binding SelectedTile}" FontSize="16" Foreground="#555" TextAlignment="Center" />
-                </StackPanel>-->
-                <TabControl Background="Transparent" BorderThickness="0">
-
-                    <!-- TabItem-ek stílusa (kiegészítve a fejléc szövegének megjelenítésével) -->
-                    <TabControl.Resources>
-                        <Style TargetType="TabItem">
-                            <Setter Property="Width" Value="60"/>
-                            <Setter Property="Height" Value="60"/>
-
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="TabItem">
-                                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="#888" BorderThickness="1">
-                                            <ContentPresenter x:Name="contentPresenter"
-                                                                  ContentSource="Header"
-                                                                  HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="border" Property="BorderThickness" Value="3"/>
-                                                <Setter TargetName="border" Property="BorderBrush" Value="Black"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </TabControl.Resources>
-
-                    <!-- Egyedi Template a vonal hozzáadásához -->
-                    <TabControl.Template>
-                        <ControlTemplate TargetType="TabControl">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" MinHeight="90"/>
-                                    <!-- fejléc sora -->
-                                    <RowDefinition Height="2"/>
-                                    <!-- vonal sora -->
-                                    <RowDefinition Height="*"/>
-                                    <!-- tartalom sora -->
-                                </Grid.RowDefinitions>
-
-                                <!-- Fejléc panel (alapértelmezett TabPanel, görgethető) -->
-                                <TabPanel Grid.Row="0"
-                                              Name="HeaderPanel"
-                                              Panel.ZIndex="1"
-                                              KeyboardNavigation.TabIndex="1"
-                                              IsItemsHost="True"
-                                              HorizontalAlignment="Center" Margin="10"/>
-
-                                <!-- Elválasztó vonal -->
-                                <Border Grid.Row="1" Background="Gray" Margin="10,0"/>
-
-                                <!-- Tartalom -->
-                                <Border Grid.Row="2"
-                                            Background="{TemplateBinding Background}"
-                                            BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            Padding="{TemplateBinding Padding}">
-                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
-                                </Border>
-                            </Grid>
-                        </ControlTemplate>
-                    </TabControl.Template>
-
-                    <!-- TabItem-ek-->
-                    <TabItem>
-                        <TabItem.Background>
-                            <ImageBrush ImageSource="/Assets/Images/Terrain/hill.png" Stretch="UniformToFill"/>
-                        </TabItem.Background>
-                        <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="1">
-                                <Image Source="/Assets/Images/Buttons/minus.png" Stretch="Uniform"/> 
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="2">
-                                <Image Source="/Assets/Images/Buttons/plus.png" Stretch="Uniform"/> 
-                            </Button>
-                        </WrapPanel>
-                    </TabItem>
-
-                    <TabItem>
-                        <TabItem.Background>
-                            <ImageBrush ImageSource="/Assets/Images/Road/road.png" Stretch="UniformToFill"/>
-                        </TabItem.Background>
-                        <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="11">
-                                <Image Source="/Assets/Images/Road/road.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="12">
-                                <Image Source="/Assets/Images/Bridge/yellowBridge.png" Stretch="Uniform"/>
-                            </Button>
-                        </WrapPanel>
-                    </TabItem>
-
-                    <TabItem>
-                        <TabItem.Background>
-                            <ImageBrush ImageSource="/Assets/Images/Vehicle/largeBus.png" Stretch="UniformToFill"/>
-                        </TabItem.Background>
-                        <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"/>
-                            <Button Width="50" Height="50" Margin="6"/>
-                        </WrapPanel>
-                    </TabItem>
-
-                    <TabItem>
-                        <WrapPanel Margin="15" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"/>
-                        </WrapPanel>
-                    </TabItem>
-
-                </TabControl>
-
-            </Border>
+            <usercontrols:LeftPanel Grid.Column="0"/>
 
             <!-- Right panel -->
-
-            <Border
-                Grid.Column="2"
-                Background="#2C2C2C"
-                CornerRadius="5"
-                ClipToBounds="True"
-                >
-                <Grid>
-                    <ScrollViewer
-                         x:Name="MapScrollViewer"
-                         HorizontalScrollBarVisibility="Auto"
-                         VerticalScrollBarVisibility="Auto"
-     
-                         PreviewMouseWheel="MapScrollViewer_PreviewMouseWheel"
-                         PreviewMouseRightButtonDown="MapScrollViewer_PreviewMouseRightButtonDown"
-                         PreviewMouseMove="MapScrollViewer_PreviewMouseMove"
-                         PreviewMouseRightButtonUp="MapScrollViewer_PreviewMouseRightButtonUp"
-                         >
-
-                        <ItemsControl ItemsSource="{Binding Tiles}">
-
-                            <ItemsControl.LayoutTransform>
-                                <ScaleTransform
-                                     ScaleX="{Binding ZoomLevel}"
-                                     ScaleY="{Binding ZoomLevel}"
-                                     />
-                            </ItemsControl.LayoutTransform>
-
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <UniformGrid
-                                         Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                         Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                         />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid
-                                         Width="50"
-                                         Height="50"
-                                         Background="Transparent"
-                                         >
-
-                                        <Grid.InputBindings>
-                                            <!--<MouseBinding 
-                                               MouseAction="LeftClick" 
-                                               Command="{Binding DataContext.TileClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                               CommandParameter="{Binding}"
-                                               />-->
-                                            <MouseBinding 
-                                               MouseAction="LeftClick" 
-                                               Command="{Binding DataContext.TileLeftClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                               CommandParameter="{Binding}"
-                                               />
-                                        </Grid.InputBindings>
-
-                                        <Border
-                                             BorderBrush="#404040"
-                                             BorderThickness="1"
-                                             >
-                                            <Border.Background>
-                                                <ImageBrush ImageSource="{Binding ImagePath}" 
-                                                     Stretch="UniformToFill" 
-                                                     RenderOptions.BitmapScalingMode="NearestNeighbor" />
-                                            </Border.Background>
-                                        </Border>
-
-                                        <Image Source="{Binding TreeImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
-                                               Stretch="UniformToFill" 
-                                               RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                               IsHitTestVisible="False"
-                                               Margin="2"/>
-
-                                        <Image Source="{Binding InfrastructureImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
-                                               Stretch="Uniform"
-                                               RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                               IsHitTestVisible="False"
-                                               Margin="2"
-                                               RenderTransformOrigin="0.5,0.5">
-                                            <Image.RenderTransform>
-                                                <RotateTransform Angle="{Binding InfrastructureRotation}"/>
-                                            </Image.RenderTransform>
-                                        </Image>
-
-
-                                        <Border x:Name="HoverOverlay" 
-                                             Visibility="Hidden" 
-                                             BorderBrush="Yellow" 
-                                             BorderThickness="2" 
-                                             Background="#33FFFFFF" 
-                                             IsHitTestVisible="False"
-                                             Panel.ZIndex="5"/>
-                                    </Grid>
-
-                                    <DataTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="HoverOverlay" Property="Visibility" Value="Visible" />
-
-                                            <Setter Property="Panel.ZIndex" Value="1" />
-                                        </Trigger>
-                                    </DataTemplate.Triggers>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-
-                        </ItemsControl>
-                    </ScrollViewer>
-
-
-                    <Border HorizontalAlignment="Right" 
-                            VerticalAlignment="Top" 
-                            Width="150" 
-                            Height="150" 
-                            Margin="20" 
-                            BorderBrush="#404040" 
-                            BorderThickness="2" 
-                            Background="Black"
-                            Opacity="0.9">
-                        <Viewbox Stretch="Uniform">
-                            <ItemsControl ItemsSource="{Binding Tiles}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid 
-                                            Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                            Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}" />
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Rectangle Width="10" Height="10" Fill="{Binding MinimapColor}" />
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Viewbox>
-
-                    </Border>
-
-
-
-
-                </Grid>
-
-
-
-
-            </Border>
-
+            <usercontrols:Map Grid.Column="2"/>
         </Grid>
-
     </DockPanel>
 </UserControl>

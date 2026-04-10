@@ -1,12 +1,11 @@
-﻿using TransportTycoon.MapData;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows.Media;
+using TransportTycoon.MapData;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public class FieldViewModel : ViewModelBase
+    public partial class FieldViewModel : ViewModelBase
     {
-        #region Fields
-        #endregion
-
         #region Properties
         public string ImagePath { get; set; }
 
@@ -15,27 +14,37 @@ namespace TransportTycoon.WPF.ViewModel
         public int Y => Field.Y;
         public int Height => Field.Height;
         public int TreeCounter => Field.GetTrees();
-        public string MinimapColor
+        [ObservableProperty]
+        private bool _isSelected;
+        public SolidColorBrush MinimapColor
         {
             get
             {
                 return Field.FieldType switch
                 {
-                    FieldType.Water => "Blue",
-                    FieldType.Plain => "Green",
-                    FieldType.Hill => "DarkGreen",
-                    FieldType.Mountain => "Gray",
-                    FieldType.HighMountain => "DarkGray",
-                    FieldType.House => "Yellow",
-                    FieldType.Farm => "LightGreen",
-                    FieldType.Mine => "DarkYellow",
-                    FieldType.LumberCamp => "SaddleBrown",
-                    FieldType.Mill => "LightGray",
-                    FieldType.Factory => "DimGray",
-                    FieldType.Road => "Black",
-                    FieldType.Bridge => "Peru",
-                    FieldType.Stop => "Red",
-                    _ => throw new InvalidOperationException("Unknown field type.")
+                    // Terrain
+                    FieldType.Water => Brushes.Blue,
+                    FieldType.Plain => Brushes.Green,
+                    FieldType.Hill => Brushes.DarkGreen,
+                    FieldType.Mountain => Brushes.Gray,
+                    FieldType.HighMountain => Brushes.DarkGreen,
+
+                    // Structures
+                    FieldType.House => Brushes.Yellow,
+
+                    FieldType.Farm => Brushes.LightGreen,
+                    FieldType.Mine => Brushes.DarkOrange,
+                    FieldType.LumberCamp => Brushes.SaddleBrown,
+
+                    FieldType.Mill => Brushes.LightGray,
+                    FieldType.Factory => Brushes.DimGray,
+                    FieldType.Road => Brushes.Black,
+
+                    // Infrastructure
+                    FieldType.Bridge => Brushes.Peru,
+                    FieldType.Stop => Brushes.Red,
+                    //_ => throw new InvalidOperationException("Unknown field type.")
+                    _ => Brushes.Magenta,
                 };
             }
         }
@@ -73,9 +82,12 @@ namespace TransportTycoon.WPF.ViewModel
                     return bridge.BridgeType switch
                     {
                         BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => $"/Assets/Images/Bridge/yellowBridge.png",
+                        BridgeType.VerticalGreenBridge or BridgeType.HorizontalGreenBridge => $"/Assets/Images/Bridge/greenBridge.png",
+                        BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => $"/Assets/Images/Bridge/redBridge.png",
                         _ => null
                     };
                 }
+                else if (Field is Stop) return $"/Assets/Images/Stop/stop.png";
                 return null;
             }
         }
@@ -93,7 +105,36 @@ namespace TransportTycoon.WPF.ViewModel
                         _ => 0
                     };
                 }
+                else if (Field is Bridge bridge)
+                {
+                    return bridge.BridgeType switch
+                    {
+                        BridgeType.HorizontalYellowBridge or BridgeType.HorizontalGreenBridge or BridgeType.HorizontalRedBridge => 90,
+                        _ => 0
+                    };
+                }
                 return 0;
+            }
+        }
+
+        public string? StructureImage
+        {
+            get
+            {
+                return Field.FieldType switch
+                {
+                    FieldType.House => $"/Assets/Images/Structures/house.jpg",
+
+                    FieldType.Farm => $"/Assets/Images/Structures/farm.png",
+                    FieldType.Mine => $"/Assets/Images/Structures/oil.jpg",
+                    FieldType.LumberCamp => $"/Assets/Images/Structures/lumbercamp.png",
+
+                    FieldType.Mill => $"/Assets/Images/Structures/mill.png",
+                    FieldType.Plant => $"/Assets/Images/Structures/rubber.jpg",
+                    FieldType.Factory => $"/Assets/Images/Structures/factory.png",
+
+                    _ => null
+                };
             }
         }
         #endregion
@@ -144,9 +185,6 @@ namespace TransportTycoon.WPF.ViewModel
                 _ => "Assets/Images/Terrain/field.png"
             };
         }
-        #endregion
-
-        #region Private event Methods
         #endregion
     }
 }
