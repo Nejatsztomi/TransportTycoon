@@ -17,33 +17,33 @@ namespace TransportTycoon.Model.Graph
 
         #region Properties
         /// <summary>
-        /// The edge's starting vertex.
+        /// The edge's starting node.
         /// </summary>
-        public Node StartVertex { get; private set; }
+        public Node StartNode { get; private set; }
         /// <summary>
-        /// The edge's ending vertex.
+        /// The edge's ending node.
         /// </summary>
-        public Node EndVertex { get; private set; }
+        public Node EndNode { get; private set; }
         /// <summary>
-        /// List of the road tiles between the <see cref="StartVertex"/> and <see cref="EndVertex"/>.
-        /// Also including the <see cref="StartVertex"/> and <see cref="EndVertex"/>.
-        /// It is ordered from <see cref="StartVertex"/> to <see cref="EndVertex"/>.
+        /// An enumerable collection of road tiles between the <see cref="StartNode"/> and <see cref="EndNode"/>.
+        /// Also including the <see cref="StartNode"/> and <see cref="EndNode"/>.
+        /// It is ordered from <see cref="StartNode"/> to <see cref="EndNode"/>.
         /// </summary>
-        public List<Field> Roads { get; private set; }
+        public IEnumerable<Field> Roads { get; private set; }
         /// <summary>
         /// Gives the cost of the edge.
         /// </summary>
         /// <remarks>
         /// This is calculated my multiplying the number of road tiles with the <see cref="CostModifier"/>.
         /// </remarks>
-        public double Cost => Roads.Count * CostModifier;
+        public double Cost => Roads.Count() * CostModifier;
         #endregion
 
         #region Constructors
-        public Edge(Node startVertex, Node endVertex, List<Field> roads)
+        public Edge(Node startNode, Node endNode, IEnumerable<Field> roads)
         {
-            StartVertex = startVertex;
-            EndVertex = endVertex;
+            StartNode = startNode;
+            EndNode = endNode;
             Roads = roads;
         }
         #endregion
