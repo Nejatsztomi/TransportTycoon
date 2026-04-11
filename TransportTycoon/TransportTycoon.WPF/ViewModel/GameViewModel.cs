@@ -224,6 +224,17 @@ namespace TransportTycoon.WPF.ViewModel
                     {
                         Vehicles.Add(new VehicleViewModel(vehicle2));
                     }
+                    break;
+                case 31:
+
+                    break;
+                case 32:
+
+                    break;
+                case 33:
+
+                    break;
+                case 34:
 
                     break;
                 default:

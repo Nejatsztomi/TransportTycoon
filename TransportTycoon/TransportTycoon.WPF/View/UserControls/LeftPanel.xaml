@@ -168,8 +168,38 @@
                 </TabItem>
 
                 <TabItem>
+                    <TabItem.Background>
+                        <ImageBrush ImageSource="/Assets/Images/Buttons/route.png" Stretch="UniformToFill"/>
+                    </TabItem.Background>
                     <WrapPanel Margin="15" HorizontalAlignment="Center">
-                        <Button Width="50" Height="50" Margin="8"/>
+                        <Button Width="50" Height="50"
+                                Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}"
+                                CommandParameter="31"
+                                >
+                            <Image Source="/Assets/Images/Buttons/route.png" Stretch="UniformToFill"/>
+                        </Button>
+                        <Button Width="50" Height="50"
+                                Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}"
+                                CommandParameter="32"
+                                >
+                            <Image Source="/Assets/Images/Buttons/pull.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50"
+                                Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}"
+                                CommandParameter="33"
+                                >
+                            <Image Source="/Assets/Images/Buttons/push.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50"
+                                Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}"
+                                CommandParameter="34"
+                                >
+                            <Image Source="/Assets/Images/Buttons/x.png" Stretch="Uniform"/>
+                        </Button>
                     </WrapPanel>
                 </TabItem>
             </TabControl>
