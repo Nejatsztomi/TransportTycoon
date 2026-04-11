@@ -15,18 +15,21 @@ namespace TransportTycoon.Model
     public abstract class Vehicle
     {
         #region Fields
-        public int TopSpeed { get; protected set; }
-        public int CurrentSpeed { get; protected set; }
+        public double TopSpeed { get; protected set; }
+        public double CurrentSpeed { get; protected set; }
         public Load? CurrentLoad { get; protected set; }
         public int MaxCapacity { get; protected set; }
         public int CurrentCapacity { get; protected set; }
         public Prouth? Route { get; protected set; }
         public VehicleType Type { get; protected set; }
-        public int X { get; protected set; }
-        public int Y { get; protected set; }
+        public double X { get; protected set; }
+        public double Y { get; protected set; }
         public Direction Direction { get; protected set; }
         public int Price { get; protected set; }
         public int Maintance { get; protected set; }
+
+        public int MapX => (int)Math.Round(X);
+        public int MapY => (int)Math.Round(Y);
         #endregion
 
         #region Public methods
@@ -40,16 +43,16 @@ namespace TransportTycoon.Model
             switch (dir)
             {
                 case Direction.Up:
-                    Y--;
+                    Y-=CurrentSpeed;
                     break;
                 case Direction.Down:
-                    Y++;
+                    Y+=CurrentSpeed;
                     break;
                 case Direction.Left:
-                    X--;
+                    X-=CurrentSpeed;
                     break;
                 case Direction.Right:
-                    X++;
+                    X+=CurrentSpeed;
                     break;
                 default:
                     break;
