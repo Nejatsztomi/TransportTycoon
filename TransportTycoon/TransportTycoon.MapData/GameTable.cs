@@ -259,6 +259,14 @@ namespace TransportTycoon.MapData
             }
             return cost;
         }
+        public void StopEnvironment(int x, int y)
+        {
+            if (!NeighboursOfRoadsAndStops(x, y).Any(n => n is Road or Bridge)) return;
+            if (x - 1 < 0 && HeightCheck(Table[x - 1, y], Table[x, y]) && Table[x - 1, y] is BuildingBlocks)
+            {
+                Table[x, y] = new Stop(x, y, Table[x, y].Height);
+            }
+        }
         public void DestroyBridge(int x, int y, ref List<(int, int)> changedFields)
         {
             if (Table[x, y] is Bridge bridge)
