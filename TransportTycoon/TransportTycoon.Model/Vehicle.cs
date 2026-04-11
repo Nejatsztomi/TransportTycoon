@@ -33,11 +33,6 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public methods
-        public void ChangeSpeed(int speed)
-        {
-            if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
-        }
-
         public void Step(Direction dir)
         {
             switch (dir)
@@ -58,6 +53,15 @@ namespace TransportTycoon.Model
                     break;
             }
         }
+        /// <summary>
+        /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
+        /// </summary>
+        /// <param name="speed"></param>
+        public void ChangeCurrentSpeed(double speed) 
+        {
+            if(speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
+        }
+
 
         public int Load(int quantity, Load load) //returns leftover
         {
