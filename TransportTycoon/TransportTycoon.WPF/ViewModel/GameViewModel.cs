@@ -152,6 +152,7 @@ namespace TransportTycoon.WPF.ViewModel
         private void OnResumeGame()
         {
             Model.Mode = GameMode.Run;
+            Model.SetSelectedField(-1, -1);
         }
 
         [RelayCommand]

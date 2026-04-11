@@ -5,7 +5,7 @@ namespace TransportTycoon.MapData
     public class Stop : Infrastructure
     {
         #region Fields
-        public List<BuildingBlocks>? Goods { get; private set; }
+        public List<BuildingBlocks>? Connenctions { get; private set; }
         #endregion
 
         #region Constructors
@@ -32,10 +32,13 @@ namespace TransportTycoon.MapData
         {
             return false;
         }
+        public void SetBuildingBlocks(BuildingBlocks buildingBlock)
+        {
+            Connenctions?.Add(buildingBlock);
+        }
         #endregion
 
         #region Private Methods
-        private void SetBuildingBlocks() { }
         #endregion
     }
 }
