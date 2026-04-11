@@ -45,7 +45,7 @@ namespace TransportTycoon.Model
         #region Properties
         public GameTable Map { get; private set; }
         public Field? SelectedField { get; private set; }
-
+        public List<Field>? SelectedStopFields { get; private set; }//
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
@@ -97,6 +97,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
+        public event EventHandler<Field>? SelectedStopFieldsChanged;//
         #endregion
 
         #region Constructor
