@@ -347,6 +347,11 @@ namespace TransportTycoon.Model
             }
             return vehicle;
         }
+        private void Step(Vehicle vehicle, Direction direction)
+        {
+
+            vehicle.Step(direction);
+        }
 
         #endregion
 
