@@ -347,6 +347,11 @@ namespace TransportTycoon.Model
             }
             return vehicle;
         }
+        /// <summary>
+        /// Advances the state of all vehicles in the game if the game is currently running.
+        /// </summary>
+        /// <remarks>This method iterates through the collection of vehicles and updates each one by
+        /// invoking the step operation. No action is taken if the game mode is not set to run.</remarks>
         public void StepAllVehicles()
         {
             if(Mode != GameMode.Run) return;
