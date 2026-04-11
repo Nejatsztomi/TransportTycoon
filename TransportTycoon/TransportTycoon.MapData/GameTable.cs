@@ -259,13 +259,39 @@ namespace TransportTycoon.MapData
             }
             return cost;
         }
-        public void StopEnvironment(int x, int y)
+        public bool StopEnvironment(int x, int y)
         {
-            if (!NeighboursOfRoadsAndStops(x, y).Any(n => n is Road or Bridge)) return;
-            if (x - 1 < 0 && HeightCheck(Table[x - 1, y], Table[x, y]) && Table[x - 1, y] is BuildingBlocks)
+            bool result = false;
+            if (NeighboursOfRoadsAndStops(x, y).Any(n => n is Road or Bridge))
             {
                 Table[x, y] = new Stop(x, y, Table[x, y].Height);
+                result = true;
             }
+            if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]) && Table[x - 1, y] is BuildingBlocks)
+            {
+                if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
+                ((Stop)Table[x, y]).SetBuildingBlocks((BuildingBlocks)Table[x - 1, y]);
+                result = true;
+            }
+            else if (y + 1 < Width && HeightCheck(Table[x, y + 1], Table[x, y]) && Table[x, y + 1] is BuildingBlocks)
+            {
+                if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
+                ((Stop)Table[x, y]).SetBuildingBlocks((BuildingBlocks)Table[x, y + 1]);
+                result = true;
+            }
+            else if (x + 1 < Height && HeightCheck(Table[x + 1, y], Table[x, y]) && Table[x + 1, y] is BuildingBlocks)
+            {
+                if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
+                ((Stop)Table[x, y]).SetBuildingBlocks((BuildingBlocks)Table[x + 1, y]);
+                result = true;
+            }
+            else if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]) && Table[x, y - 1] is BuildingBlocks)
+            {
+                if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
+                ((Stop)Table[x, y]).SetBuildingBlocks((BuildingBlocks)Table[x, y - 1]);
+                result = true;
+            }
+            return result;
         }
         public void DestroyBridge(int x, int y, ref List<(int, int)> changedFields)
         {

@@ -278,23 +278,25 @@ namespace TransportTycoon.Model
             List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
-            Map[x, y] = new Stop(x, y, Map[x, y].Height);
-            changedFields.Add((x, y));
-
-            if (oldTrees == 0) Balance -= ((Stop)Map[x, y]).Price;
-            else Balance -= ((Stop)Map[x, y]).Price * 2;
-
-            foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
+            if (Map.StopEnvironment(x, y))
             {
-                if (e != null && e is Road road)
+                changedFields.Add((x, y));
+
+                if (oldTrees == 0) Balance -= ((Stop)Map[x, y]).Price;
+                else Balance -= ((Stop)Map[x, y]).Price * 2;
+
+                foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
                 {
-                    road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
-                    changedFields.Add((e.X, e.Y));
+                    if (e != null && e is Road road)
+                    {
+                        road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
+                        changedFields.Add((e.X, e.Y));
+                    }
                 }
+                if (IsGameOver) OnGameOver();
+                InfrastructureBuilt?.Invoke(this, changedFields);
+                BalanceChanged?.Invoke(this, EventArgs.Empty);
             }
-            if (IsGameOver) OnGameOver();
-            InfrastructureBuilt?.Invoke(this, changedFields);
-            BalanceChanged?.Invoke(this, EventArgs.Empty);
         }
         public void Destroy(int x, int y)
         {
