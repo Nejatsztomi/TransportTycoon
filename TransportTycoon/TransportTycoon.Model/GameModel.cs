@@ -354,7 +354,22 @@ namespace TransportTycoon.Model
             }
             return vehicle;
         }
+        public void DefineRoute(int x,int y)//
+        {
 
+        }
+        public void QueryRoute(int x, int y)//
+        {
+
+        }
+        public void AssignRoute(int x, int y)//
+        {
+
+        }
+        public void DeleteRoute(int x, int y)//
+        {
+
+        }
         #endregion
 
         #region Private Methods

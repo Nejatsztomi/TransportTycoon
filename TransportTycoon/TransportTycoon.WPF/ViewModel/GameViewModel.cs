@@ -226,16 +226,16 @@ namespace TransportTycoon.WPF.ViewModel
                     }
                     break;
                 case 31:
-
+                    Model.DefineRoute(tile.X, tile.Y);
                     break;
                 case 32:
-
+                    Model.QueryRoute(tile.X, tile.Y);
                     break;
                 case 33:
-
+                    Model.AssignRoute(tile.X, tile.Y);
                     break;
                 case 34:
-
+                    Model.DeleteRoute(tile.X, tile.Y);
                     break;
                 default:
                     break;
