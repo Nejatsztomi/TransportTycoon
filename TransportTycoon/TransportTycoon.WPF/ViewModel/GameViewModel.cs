@@ -45,6 +45,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.FieldChanged += Model_FieldChanged;
             model.BalanceChanged += Model_BalanceChanged;
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
+            model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
 
             Tiles = [];
             Vehicles = [];
@@ -53,6 +54,11 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
+        private void Model_SelectedStopFieldsChanged(object? sender, MapData.Field e)
+        {
+            throw new NotImplementedException();
+        }
+
         private void Model_SelectedFieldChanged(object? sender, (int, int) e)
         {
             if (Model.SelectedField == null)
