@@ -54,7 +54,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
-        private void Model_SelectedStopFieldsChanged(object? sender, MapData.Field e)
+        private void Model_SelectedStopFieldsChanged(object? sender, MapData.Field e)//
         {
             throw new NotImplementedException();
         }
