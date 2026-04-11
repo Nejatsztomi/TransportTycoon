@@ -2,6 +2,8 @@ using NSubstitute;
 using NSubstitute.ClearExtensions;
 using TransportTycoon.MapData;
 using TransportTycoon.Model;
+using TransportTycoon.MapData.MapGenerator;
+
 using ITimer = TransportTycoon.Model.ITimer;
 
 namespace TransportTycoon.Test.Model;
@@ -318,6 +320,20 @@ public class GameModelTest
             [TestClass]
             public class GameModelHeightTests
             {
+                private static GameModel _gameModel = null!;
+                private static ITimer _mockTimer = null!;
+                private static GameTable _mockMap = null!;
+
+                [TestInitialize]
+                public void Initialize()
+                {
+                    IMapGenerator mockGenerator = Substitute.For<IMapGenerator>();
+                    MapGenerationContext context = new();
+
+                    _mockMap = Substitute.For<GameTable>(mockGenerator, context);
+                    _mockTimer = Substitute.For<ITimer>();
+                    _gameModel = new(_mockMap, _mockTimer);
+                }
                 private GameModel CreateEditorModelWithMap(int startingBalance = 1000)
                 {
                     var model = new GameModel(startingBalance, _mockTimer);
