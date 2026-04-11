@@ -195,7 +195,7 @@ namespace TransportTycoon.Model
         }
         public void BuildRoad(int x, int y)
         {
-            if (Mode!=GameMode.Editor || Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
+            if (Mode != GameMode.Editor || Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
             List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
@@ -225,6 +225,10 @@ namespace TransportTycoon.Model
             {
                 List<(int, int)> changedFields = [];
                 if (SelectedField.X != x && SelectedField.Y != y) { SetSelectedField(-1, -1); return; }
+                else if (SelectedField.X == x && SelectedField.Y == y)
+                {
+                    Balance -= Map.CreateShortBridge(x, y, ref changedFields);
+                }
                 else if (SelectedField.X == x)
                 {
                     if (Math.Min(SelectedField.Y, y) - 1 < 0 || Map[x, Math.Min(SelectedField.Y, y) - 1].Height != 1 ||
@@ -233,7 +237,6 @@ namespace TransportTycoon.Model
                         SetSelectedField(-1, -1);
                         return;
                     }
-
                     int dif = Math.Abs(SelectedField.Y - y);
                     BridgeType b_type = Map.CalculateBridgeType(dif, "horizontal");
                     if (b_type == BridgeType.Null) { SetSelectedField(-1, -1); return; }

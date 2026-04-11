@@ -235,6 +235,30 @@ namespace TransportTycoon.MapData
             }
             return cost;
         }
+        public int CreateShortBridge(int x, int y, ref List<(int, int)> changedFields)
+        {
+            int cost = 0;
+            if (x - 1 < 0 || y - 1 < 0 || x + 1 > Height - 1 || y + 1 > Width - 1) return 0;
+            if ((Table[x, y - 1] is Infrastructure && Table[x, y - 1].Height == 1 && Table[x, y + 1].Height == 1)
+                || (Table[x, y + 1] is Infrastructure && Table[x, y + 1].Height == 1 && Table[x, y - 1].Height == 1))
+            {
+                cost = CreateHorizontalBridge(x, y, y, BridgeType.HorizontalYellowBridge, ref changedFields);
+            }
+            else if ((Table[x - 1, y] is Infrastructure && Table[x - 1, y].Height == 1 && Table[x + 1, y].Height == 1)
+                || (Table[x + 1, y] is Infrastructure && Table[x + 1, y].Height == 1 && Table[x - 1, y].Height == 1))
+            {
+                cost = CreateVerticalBridge(y, x, x, BridgeType.VerticalYellowBridge, ref changedFields);
+            }
+            else if (Table[x, y - 1].FieldType == FieldType.Plain && Table[x, y + 1].FieldType == FieldType.Plain)
+            {
+                cost = CreateHorizontalBridge(x, y, y, BridgeType.HorizontalYellowBridge, ref changedFields);
+            }
+            else if (Table[x - 1, y].FieldType == FieldType.Plain && Table[x + 1, y].FieldType == FieldType.Plain)
+            {
+                cost = CreateVerticalBridge(y, x, x, BridgeType.VerticalYellowBridge, ref changedFields);
+            }
+            return cost;
+        }
         public void DestroyBridge(int x, int y, ref List<(int, int)> changedFields)
         {
             if (Table[x, y] is Bridge bridge)
