@@ -195,7 +195,7 @@ namespace TransportTycoon.Model
         }
         public void BuildRoad(int x, int y)
         {
-            if (Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
+            if (Mode!=GameMode.Editor || Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
             List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
@@ -219,7 +219,7 @@ namespace TransportTycoon.Model
         }
         public void BuildBridge(int x, int y)
         {
-            if (Map[x, y] is not Water) { SetSelectedField(-1, -1); return; }
+            if (Mode != GameMode.Editor || Map[x, y] is not Water) { SetSelectedField(-1, -1); return; }
             if (SelectedField == null) SetSelectedField(x, y);
             else
             {
@@ -271,7 +271,7 @@ namespace TransportTycoon.Model
         }
         public void BuildStop(int x, int y)
         {
-            if (Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
+            if (Mode != GameMode.Editor || Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
             List<(int, int)> changedFields = [];
 
             int oldTrees = Map[x, y].GetTrees();
@@ -295,7 +295,7 @@ namespace TransportTycoon.Model
         }
         public void Destroy(int x, int y)
         {
-            if ((Map[x, y] is not Infrastructure) || (Map[x, y] is Road r && r.InCity())) return;
+            if (Mode != GameMode.Editor || Map[x, y] is not Infrastructure || (Map[x, y] is Road r && r.InCity())) return;
             List<(int, int)> changedFields = [];
 
             if (Map[x, y] is Road || Map[x, y] is Stop)
