@@ -354,7 +354,7 @@ namespace TransportTycoon.Model
         /// invoking the step operation. No action is taken if the game mode is not set to run.</remarks>
         public void StepAllVehicles()
         {
-            if(Mode != GameMode.Run) return;
+            if (Mode != GameMode.Run) return;
             foreach (Vehicle vehicle in Vehicles)
             {
                 Step(vehicle);
@@ -442,27 +442,27 @@ namespace TransportTycoon.Model
             switch (dir)
             {
                 case Direction.Up:
-                    y-= speed;
+                    y -= speed;
                     break;
                 case Direction.Down:
-                    y+= speed;
+                    y += speed;
                     break;
                 case Direction.Left:
-                    x-= speed;
+                    x -= speed;
                     break;
                 case Direction.Right:
-                    x+= speed;
+                    x += speed;
                     break;
                 default:
                     break;
             }
             int newX = (int)Math.Round(x);
             int newY = (int)Math.Round(y);
-            Field newField = Map[newX, newY];            
+            Field newField = Map[newX, newY];
 
             //Checks if the new coordinates are within the map boundaries and if the vehicle can move to the new position (i.e., it must be an infrastructure).
             if (newField is not Infrastructure) return;
-            if(0>newX || newX>=Map.Width || 0>newY || newY>=Map.Height) return;
+            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
 
             Field currentField = Map[vehicle.MapX, vehicle.MapY];
             Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v.MapX == newX && v.MapY == newY);

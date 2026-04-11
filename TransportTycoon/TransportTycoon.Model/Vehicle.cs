@@ -38,16 +38,16 @@ namespace TransportTycoon.Model
             switch (Direction)
             {
                 case Direction.Up:
-                    Y-=CurrentSpeed;
+                    Y -= CurrentSpeed;
                     break;
                 case Direction.Down:
-                    Y+=CurrentSpeed;
+                    Y += CurrentSpeed;
                     break;
                 case Direction.Left:
-                    X-=CurrentSpeed;
+                    X -= CurrentSpeed;
                     break;
                 case Direction.Right:
-                    X+=CurrentSpeed;
+                    X += CurrentSpeed;
                     break;
                 default:
                     break;
@@ -57,9 +57,9 @@ namespace TransportTycoon.Model
         /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
         /// </summary>
         /// <param name="speed"></param>
-        public void ChangeCurrentSpeed(double speed) 
+        public void ChangeCurrentSpeed(double speed)
         {
-            if(speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
+            if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
         }
 
 
