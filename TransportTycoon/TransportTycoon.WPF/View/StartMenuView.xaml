@@ -6,6 +6,7 @@
         xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel"
         xmlns:local="clr-namespace:TransportTycoon.WPF.View" d:DataContext="{d:DesignInstance Type=vm:StartMenuViewModel}"
         mc:Ignorable="d"
+        Background="OrangeRed"
         >
 
 
