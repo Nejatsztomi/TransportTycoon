@@ -213,7 +213,7 @@ namespace TransportTycoon.Model
                     changedFields.Add((e.X, e.Y));
                 }
             }
-            //if (IsGameOver) OnGameOver();
+            if (IsGameOver) OnGameOver();
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -264,7 +264,7 @@ namespace TransportTycoon.Model
                     Balance -= Map.CreateVerticalBridge(y, Math.Min(SelectedField.X, x), Math.Max(SelectedField.X, x), b_type, ref changedFields);
                 }
                 SetSelectedField(-1, -1);
-                //if (IsGameOver) OnGameOver();
+                if (IsGameOver) OnGameOver();
                 InfrastructureBuilt?.Invoke(this, changedFields);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -289,7 +289,7 @@ namespace TransportTycoon.Model
                     changedFields.Add((e.X, e.Y));
                 }
             }
-            //if (IsGameOver) OnGameOver();
+            if (IsGameOver) OnGameOver();
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
         }
