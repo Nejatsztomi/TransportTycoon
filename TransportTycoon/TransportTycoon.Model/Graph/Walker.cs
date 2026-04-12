@@ -3,9 +3,9 @@
 namespace TransportTycoon.Model.Graph
 {
     public record WalkerResult(
-    List<Edge> CreatedEdges,
-    List<Walker> NewWalkers,
-    Node? EndNode
+        List<Edge> CreatedEdges,
+        List<Walker> NewWalkers,
+        Node? EndNode
     );
 
     public class Walker
@@ -18,7 +18,6 @@ namespace TransportTycoon.Model.Graph
         private readonly HashSet<(int X, int Y)> _visitedJunctions;
         private readonly List<Field> _roads = [];
         private (int X, int Y)? _previousFieldCoords = null;
-        private readonly (int dirx, int diry)[] _directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
         private (double forwardCost, double backwardCost) _roadCost = (0.0, 0.0);
         private Field _currentField;
         #endregion
@@ -38,13 +37,14 @@ namespace TransportTycoon.Model.Graph
         #region Public methods
         public WalkerResult Walk()
         {
+            (int dirx, int diry)[] directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
             _roads.Add(_gameTable[_startNode.X, _startNode.Y]);
             Node? terminatingNode = Step(_startField);
 
             while (terminatingNode is null)
             {
                 Field? nextField = null;
-                foreach ((int dirx, int diry) in _directions)
+                foreach ((int dirx, int diry) in directions)
                 {
                     nextField = GetNextValidField(_currentField.X + dirx, _currentField.Y + diry);
                     if (nextField is not null)
@@ -75,7 +75,7 @@ namespace TransportTycoon.Model.Graph
                 {
                     _visitedJunctions.Add((terminatingNode.X, terminatingNode.Y));
 
-                    foreach ((int dirx, int diry) in _directions)
+                    foreach ((int dirx, int diry) in directions)
                     {
                         Field? field = GetNextValidField(terminatingNode.X + dirx, terminatingNode.Y + diry);
                         if (field is null)
