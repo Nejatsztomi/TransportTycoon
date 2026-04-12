@@ -18,18 +18,31 @@ namespace TransportTycoon.Model.Graph
             List<Edge> edges = [];
             List<Node> nodes = [];
             HashSet<(int X, int Y)> visitedFields = [];
+            HashSet<(int X, int Y)> visitedJunctions = [];
 
             for (int x = 0; x < table.Width; x++)
             {
                 for (int y = 0; y < table.Height; y++)
                 {
-                    if (table[x, y].FieldType == FieldType.Stop && !visitedFields.Contains((x, y)))
+                    Field field = table[x, y];
+
+                    if (field.FieldType == FieldType.Stop && !visitedFields.Contains((x, y)))
                     {
-                        Node startNode = new(x, y, table[x, y].FieldType);
+                        Node startNode = new(x, y, field.FieldType);
                         nodes.Add(startNode);
-                        Walker initialWalker = new(startNode, table, visitedFields);
+                        visitedJunctions.Add((x, y));
+
+                        (int dirx, int diry)[] directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
+                        foreach ((int dirx, int diry) in directions)
+                        {
+                            if (table.IsInBounds(x + dirx, y + diry) && table[x + dirx, y + diry].FieldType == FieldType.Road)
+                            {
+                                Walker walker = new(startNode, table[x + dirx, y + diry], table, visitedFields, visitedJunctions);
+                                walkersQ.Enqueue(walker);
+                            }
+                        }
+
                         visitedFields.Add((x, y));
-                        walkersQ.Enqueue(initialWalker);
                     }
 
                     while (walkersQ.Count > 0)

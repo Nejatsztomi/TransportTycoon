@@ -47,6 +47,7 @@
             foreach (Edge edge in edges)
             {
                 AdjacencyList[edge.StartNode].Add(edge);
+                AdjacencyList[edge.EndNode].Add(edge);
             }
         }
         #endregion
