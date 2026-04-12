@@ -33,9 +33,9 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public methods
-        public void Step()
+        public void Step(Direction dir=Direction.Up)
         {
-            switch (Direction)
+            switch (dir)
             {
                 case Direction.Up:
                     Y -= CurrentSpeed;

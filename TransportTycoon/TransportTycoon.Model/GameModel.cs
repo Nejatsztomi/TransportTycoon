@@ -357,12 +357,12 @@ namespace TransportTycoon.Model
         /// </summary>
         /// <remarks>This method iterates through the collection of vehicles and updates each one by
         /// invoking the step operation. No action is taken if the game mode is not set to run.</remarks>
-        public void StepAllVehicles()
+        public void StepAllVehicles(Direction dir=Direction.Up)
         {
             if (Mode != GameMode.Run) return;
             foreach (Vehicle vehicle in Vehicles)
             {
-                Step(vehicle);
+                Step(vehicle, dir);
                 //lehet h elkene tarolni az legutolso lepest is???
             }
         }
@@ -435,7 +435,7 @@ namespace TransportTycoon.Model
         /// the vehicle can move to the new position, which must be an infrastructure. If the game is not in Run mode,
         /// the vehicle does not move.</remarks>
         /// <param name="vehicle">The vehicle to be moved, which influences its new position based on its direction and speed.</param>
-        private void Step(Vehicle vehicle)
+        private void Step(Vehicle vehicle, Direction direction=Direction.Up)
         {
             //if the game is not in Run mode, the vehicles should not move
             if (Mode != GameMode.Run) return;
@@ -445,7 +445,7 @@ namespace TransportTycoon.Model
             double x = vehicle.X;
             double y = vehicle.Y;
             double speed = vehicle.CurrentSpeed;
-            switch (dir)
+            switch (direction)
             {
                 case Direction.Up:
                     y -= speed;
@@ -474,7 +474,7 @@ namespace TransportTycoon.Model
             Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v.MapX == newX && v.MapY == newY);
 
             SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
-            vehicle.Step();
+            vehicle.Step(direction);
             VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
             //vehicle.UpdateDirection();
         }
