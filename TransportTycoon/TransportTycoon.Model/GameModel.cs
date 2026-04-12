@@ -545,6 +545,35 @@ namespace TransportTycoon.Model
             GameModeChanged?.Invoke(this, GameMode.Paused);
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
+
+        private void AllVehiclesTryToTransport() 
+        {
+            foreach (var vehicle in Vehicles)
+            {
+                if (IsCarOnStop(vehicle)) 
+                {
+                    Field currentField = Map[vehicle.MapX, vehicle.MapY];
+                    if (currentField is Stop stop)
+                    {
+                        vehicle. = stop.VehicleToBuilding();
+                    }
+
+                }
+            }
+        }
+
+        private bool IsCarOnStop(Vehicle v) 
+        {
+            int x = v.MapX;
+            int y = v.MapY;
+            if (0 > x || x >= Map.Width || 0 > y || y >= Map.Height) return false;
+            Field currentField = Map[x, y];
+            if (currentField is Stop)
+            {
+                return true;
+            }
+            return false;
+        }
         #endregion
 
         #region Timer event handlers
