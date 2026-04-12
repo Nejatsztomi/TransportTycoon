@@ -28,6 +28,27 @@
         {
             AdjacencyList = adjacencyList;
         }
+
+        public Graph(List<Node> nodes, List<Edge> edges)
+        {
+            AdjacencyList = [];
+            CreateGraphFromNodesNodesAndEdges(nodes, edges);
+        }
+        #endregion
+
+        #region Private methods
+        private void CreateGraphFromNodesNodesAndEdges(List<Node> nodes, List<Edge> edges)
+        {
+            foreach (Node node in nodes)
+            {
+                AdjacencyList[node] = [];
+            }
+
+            foreach (Edge edge in edges)
+            {
+                AdjacencyList[edge.StartNode].Add(edge);
+            }
+        }
         #endregion
     }
 }
