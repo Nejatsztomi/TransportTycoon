@@ -3,16 +3,12 @@
 namespace TransportTycoon.Model.Graph
 {
     /// <summary>
-    /// A class for building the graph from the <see cref="GameTable"/>.
+    /// A static class for building the graph from the <see cref="GameTable"/>.
     /// </summary>
-    public class GraphBuilder
+    public static class GraphBuilder
     {
-        #region Constructors
-        public GraphBuilder() { }
-        #endregion
-
-        #region Public methods
-        public Graph BuildGraph(GameTable table)
+        #region Public static methods
+        public static Graph BuildGraph(GameTable table)
         {
             Queue<Walker> walkersQ = [];
             List<Edge> edges = [];

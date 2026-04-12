@@ -378,7 +378,7 @@ namespace TransportTycoon.Model
             {
                 return;
             }
-            GraphNetwork = new Graph.GraphBuilder().BuildGraph(Map);
+            GraphNetwork = Graph.GraphBuilder.BuildGraph(Map);
         }
 
         private void SetTax()
