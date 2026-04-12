@@ -62,6 +62,7 @@ namespace TransportTycoon.Model
                 else
                 {
                     _timer.Start();
+                    RebuildGraph();
                 }
                 GameModeChanged?.Invoke(this, value);
                 field = value;
@@ -84,6 +85,11 @@ namespace TransportTycoon.Model
         public List<Vehicle> Vehicles { get; private set; } = [];
 
         public int NumberOfVehicles => Vehicles.Count;
+
+        /// <summary>
+        /// The game's graph representation of the map.
+        /// </summary>
+        public Graph.Graph GraphNetwork { get; private set; }
         #endregion
 
         #region Events
@@ -111,6 +117,9 @@ namespace TransportTycoon.Model
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
+
+            // We create an empty graph
+            GraphNetwork = new([], []);
         }
         #endregion
 
@@ -321,6 +330,18 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// A method that rebuilds the graph representation of the map.
+        /// </summary>
+        private void RebuildGraph()
+        {
+            if (!Map.IsMapGenerated)
+            {
+                return;
+            }
+            GraphNetwork = new Graph.GraphBuilder().BuildGraph(Map);
+        }
+
         private void SetTax()
         {
             int tax = 30;
