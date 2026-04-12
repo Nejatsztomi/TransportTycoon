@@ -45,6 +45,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.FieldChanged += Model_FieldChanged;
             model.BalanceChanged += Model_BalanceChanged;
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
+            model.VehicleChanged += Model_VehicleChanged;
 
             Tiles = [];
             Vehicles = [];
@@ -79,6 +80,14 @@ namespace TransportTycoon.WPF.ViewModel
             if (tile != null)
             {
                 tile.RefreshTerrain(Model.Map[e.X, e.Y]);
+            }
+        }
+        private void Model_VehicleChanged(object? sender, (int, int) e)
+        {
+            var vehicle = Vehicles.FirstOrDefault(v => v.X == e.Item1 && v.Y == e.Item2);
+            if (vehicle != null)
+            {
+                vehicle.RefreshVehicle(Model.GetVehicleAt(e.Item1, e.Item2));
             }
         }
 

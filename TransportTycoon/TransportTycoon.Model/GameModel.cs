@@ -97,6 +97,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
+        public event EventHandler<(int, int)>? VehicleChanged;
         #endregion
 
         #region Constructor
@@ -358,6 +359,8 @@ namespace TransportTycoon.Model
             foreach (Vehicle vehicle in Vehicles)
             {
                 Step(vehicle);
+                //lehet h elkene tarolni az legutolso lepest is???
+                VehicleChanged?.Invoke(this, (vehicle.MapX, vehicle.MapY));
             }
         }
 
