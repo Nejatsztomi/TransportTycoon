@@ -153,6 +153,12 @@ namespace TransportTycoon.Model.Graph
                 return null;
             }
 
+            // Height - check
+            if (Math.Abs(nextField.Height - _gameTable.Table[_currentField.X, _currentField.Y].Height) > 1)
+            {
+                return null;
+            }
+
             // Allow the walker to step on junctions again.
             if (!IsTerminatingField(nextField) && _visitedFields.Contains((nextField.X, nextField.Y)))
             {
