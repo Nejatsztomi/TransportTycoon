@@ -21,15 +21,30 @@ namespace TransportTycoon.WPF.ViewModel
         public double PixelY { get; set; }
 
 
-        public string? VehicleImagePath => Vehicle.Type switch
+        public string? VehicleImagePath => VehicleType switch
         {
+            VehicleType.BigBus => Direction switch
+            {
+                Direction.Up => "/Assets/Images/Vehicle/largeBusUp.png",
+                Direction.Down => "/Assets/Images/Vehicle/largeBusDown.png",
+                Direction.Left => "/Assets/Images/Vehicle/largeBusLeft.png",
+                Direction.Right => "/Assets/Images/Vehicle/largeBusRight.png",
+                _ => null
+            },
+            VehicleType.SmallBus => Direction switch
+            {
+                Direction.Up => "/Assets/Images/Vehicle/smallBusUp.png",
+                Direction.Down => "/Assets/Images/Vehicle/smallBusDown.png",
+                Direction.Left => "/Assets/Images/Vehicle/smallBusLeft.png",
+                Direction.Right => "/Assets/Images/Vehicle/smallBusRight.png",
+                _ => null
+            },
             VehicleType.Van => "/Assets/Images/Vehicle/van.png",
             VehicleType.Pickup => "/Assets/Images/Vehicle/pickup.png",
             VehicleType.Truck => "/Assets/Images/Vehicle/truck.png",
             VehicleType.LiquidTruck => "/Assets/Images/Vehicle/liquidTruck.png",
-            VehicleType.SmallBus => "/Assets/Images/Vehicle/smallBus.png",
-            VehicleType.BigBus => "/Assets/Images/Vehicle/largeBus.png",
             _ => null
+
         };
         #endregion
         #region Constructor
