@@ -97,7 +97,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
-        public event EventHandler<Field>? SelectedStopFieldsChanged;//
+        public event EventHandler<List<Field>>? SelectedStopFieldsChanged;//
         #endregion
 
         #region Constructor

@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -54,9 +55,14 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
-        private void Model_SelectedStopFieldsChanged(object? sender, MapData.Field e)//
+        private void Model_SelectedStopFieldsChanged(object? sender, List<Field> list)//
         {
-            throw new NotImplementedException();
+            List<FieldViewModel> tiles = Tiles.Where(t => t.IsSelected).ToList();
+            foreach (var tile in tiles)
+            {
+                if (list.Any(l => l.X == tile.X && l.Y == tile.Y)) tile.IsSelected = true;
+                else tile.IsSelected = false;
+            }
         }
 
         private void Model_SelectedFieldChanged(object? sender, (int, int) e)
