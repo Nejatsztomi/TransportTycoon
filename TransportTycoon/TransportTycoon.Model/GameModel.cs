@@ -448,16 +448,16 @@ namespace TransportTycoon.Model
             switch (direction)
             {
                 case Direction.Up:
-                    y -= speed;
-                    break;
-                case Direction.Down:
-                    y += speed;
-                    break;
-                case Direction.Left:
                     x -= speed;
                     break;
-                case Direction.Right:
+                case Direction.Down:
                     x += speed;
+                    break;
+                case Direction.Left:
+                    y -= speed;
+                    break;
+                case Direction.Right:
+                    y += speed;
                     break;
                 default:
                     break;

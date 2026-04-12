@@ -198,6 +198,27 @@ namespace TransportTycoon.WPF.ViewModel
             SelectedButton = Convert.ToInt32(x);
             Model.SetSelectedField(-1, -1);
         }
+        [RelayCommand]
+        private void OnVehicleStepUp() 
+        {
+            Model.StepAllVehicles(Direction.Up);
+        }
+        [RelayCommand]
+        private void OnVehicleStepDown()
+        {
+            Model.StepAllVehicles(Direction.Down);
+        }
+        [RelayCommand]
+        private void OnVehicleStepLeft()
+        {
+            Model.StepAllVehicles(Direction.Left);
+        }
+        [RelayCommand]
+        private void OnVehicleStepRight()
+        {
+            Model.StepAllVehicles(Direction.Right);
+        }
+
 
         [RelayCommand(CanExecute = nameof(IsEditorMode))]
         private void OnTileLeftClick(FieldViewModel tile)
