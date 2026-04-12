@@ -84,6 +84,10 @@ namespace TransportTycoon.Model
         public List<Vehicle> Vehicles { get; private set; } = [];
 
         public int NumberOfVehicles => Vehicles.Count;
+        public Vehicle? GetVehicleAt(int x, int y)
+        {
+            return Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
+        }
         #endregion
 
         #region Events
@@ -97,6 +101,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
+        public event EventHandler<(int oldX, int oldY, int newX, int newY)>? VehicleChanged;
         #endregion
 
         #region Constructor
@@ -353,6 +358,20 @@ namespace TransportTycoon.Model
             }
             return vehicle;
         }
+        /// <summary>
+        /// Advances the state of all vehicles in the game if the game is currently running.
+        /// </summary>
+        /// <remarks>This method iterates through the collection of vehicles and updates each one by
+        /// invoking the step operation. No action is taken if the game mode is not set to run.</remarks>
+        public void StepAllVehicles(Direction dir = Direction.Up)
+        {
+            if (Mode != GameMode.Run) return;
+            foreach (Vehicle vehicle in Vehicles)
+            {
+                Step(vehicle, dir);
+                //lehet h elkene tarolni az legutolso lepest is???
+            }
+        }
 
         #endregion
 
@@ -413,6 +432,108 @@ namespace TransportTycoon.Model
             }
 
             return grownTrees;
+        }
+        /// <summary>
+        /// Updates the position of the specified vehicle based on its current direction and speed, provided the game is
+        /// in Run mode.
+        /// </summary>
+        /// <remarks>The method checks if the new coordinates are within the map boundaries and whether
+        /// the vehicle can move to the new position, which must be an infrastructure. If the game is not in Run mode,
+        /// the vehicle does not move.</remarks>
+        /// <param name="vehicle">The vehicle to be moved, which influences its new position based on its direction and speed.</param>
+        private void Step(Vehicle vehicle, Direction direction = Direction.Up)
+        {
+            //if the game is not in Run mode, the vehicles should not move
+            if (Mode != GameMode.Run) return;
+
+            //Calculates the new coordinates of the vehicle based on its current direction and speed.
+            Direction dir = vehicle.Direction;
+            double x = vehicle.X;
+            double y = vehicle.Y;
+            double speed = vehicle.CurrentSpeed;
+            switch (direction)
+            {
+                case Direction.Up:
+                    x -= speed;
+                    break;
+                case Direction.Down:
+                    x += speed;
+                    break;
+                case Direction.Left:
+                    y -= speed;
+                    break;
+                case Direction.Right:
+                    y += speed;
+                    break;
+                default:
+                    break;
+            }
+            int newX = (int)Math.Round(x);
+            int newY = (int)Math.Round(y);
+            Field newField = Map[newX, newY];
+
+            //Checks if the new coordinates are within the map boundaries and if the vehicle can move to the new position (i.e., it must be an infrastructure).
+            if (newField is not Infrastructure) return;
+            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
+
+            Field currentField = Map[vehicle.MapX, vehicle.MapY];
+            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v.MapX == newX && v.MapY == newY);
+
+            SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
+            vehicle.Step(direction);
+            VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
+            //vehicle.UpdateDirection();
+        }
+
+        /// <summary>
+        /// Sets the speed of the given vehicle based on the type of the new field it is moving to, and the presence of another vehicle on that field. 
+        /// If the new field is a bridge, the vehicle's speed should be limited to the bridge's speed limit.
+        /// If there is another vehicle on the new field, the current vehicle's speed should be limited to the speed of that vehicle.
+        /// </summary>
+        /// <param name="vehicle"></param>
+        /// <param name="nextVehicle"></param>
+        /// <param name="currentField"></param>
+        /// <param name="newField"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void SetVehicleSpeed(Vehicle vehicle, Vehicle? nextVehicle, Field currentField, Field newField)
+        {
+            //set the vehicle's speed to its top speed,
+            //and then check if it needs to be reduced based on the type of the new field and the presence of other vehicles
+            vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
+
+            //if the vehicle will be on a bridge, it should slow down to its speedlimit
+            if (newField is Bridge bridge)
+            {
+                vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, bridge.SpeedLimit));
+            }
+
+            //if the newField is Incline, the vehicle should slow down to half of its current speed
+            if (newField.Height > currentField.Height)
+            {
+                vehicle.ChangeCurrentSpeed(vehicle.CurrentSpeed / 2);
+            }
+
+            //if the newField is a Road, and its a crossroads, the vehicle should stop, if there are other vehicles on the crossroads,
+            //otherwise it should continue moving
+            //the first one goes, the others wait until the first one leaves the crossroads
+            if (newField is Road road &&
+              (road.RoadType == RoadType.XRoad || road.RoadType == RoadType.UpperTRoad ||
+               road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad ||
+               road.RoadType == RoadType.LeftTRoad))
+            {
+                List<Vehicle> vehiclesOnCrossroads = Vehicles.Where(v => v.MapX == newField.X && v.MapY == newField.Y).ToList();
+                if (vehiclesOnCrossroads.Count > 0)
+                {
+                    vehicle.ChangeCurrentSpeed(0);
+                    return;
+                }
+            }
+
+            //if there is a vehicle on the new position, the current vehicle should slow down to its speedlimit
+            if (nextVehicle != null)
+            {
+                vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
+            }
         }
         #endregion
 

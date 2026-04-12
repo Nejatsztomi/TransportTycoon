@@ -15,46 +15,57 @@ namespace TransportTycoon.Model
     public abstract class Vehicle
     {
         #region Fields
-        public int TopSpeed { get; protected set; }
-        public int CurrentSpeed { get; protected set; }
+        public double TopSpeed { get; protected set; }
+        public double CurrentSpeed { get; protected set; }
         public Load? CurrentLoad { get; protected set; }
         public int MaxCapacity { get; protected set; }
         public int CurrentCapacity { get; protected set; }
         public Prouth? Route { get; protected set; }
         public VehicleType Type { get; protected set; }
-        public int X { get; protected set; }
-        public int Y { get; protected set; }
+        public double X { get; protected set; }
+        public double Y { get; protected set; }
         public Direction Direction { get; protected set; }
         public int Price { get; protected set; }
         public int Maintance { get; protected set; }
+
+        public int MapX => (int)Math.Round(X);
+        public int MapY => (int)Math.Round(Y);
         #endregion
 
         #region Public methods
-        public void ChangeSpeed(int speed)
-        {
-            if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
-        }
-
-        public void Step(Direction dir)
+        public void Step(Direction dir = Direction.Up)
         {
             switch (dir)
             {
                 case Direction.Up:
-                    Y--;
+                    X -= CurrentSpeed;
+                    Direction = Direction.Up;
                     break;
                 case Direction.Down:
-                    Y++;
+                    X += CurrentSpeed;
+                    Direction = Direction.Down;
                     break;
                 case Direction.Left:
-                    X--;
+                    Y -= CurrentSpeed;
+                    Direction = Direction.Left;
                     break;
                 case Direction.Right:
-                    X++;
+                    Y += CurrentSpeed;
+                    Direction = Direction.Right;
                     break;
                 default:
                     break;
             }
         }
+        /// <summary>
+        /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
+        /// </summary>
+        /// <param name="speed"></param>
+        public void ChangeCurrentSpeed(double speed)
+        {
+            if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
+        }
+
 
         public int Load(int quantity, Load load) //returns leftover
         {

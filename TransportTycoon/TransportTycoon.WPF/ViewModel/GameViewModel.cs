@@ -45,6 +45,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.FieldChanged += Model_FieldChanged;
             model.BalanceChanged += Model_BalanceChanged;
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
+            model.VehicleChanged += Model_VehicleChanged;
 
             Tiles = [];
             Vehicles = [];
@@ -79,6 +80,18 @@ namespace TransportTycoon.WPF.ViewModel
             if (tile != null)
             {
                 tile.RefreshTerrain(Model.Map[e.X, e.Y]);
+            }
+        }
+        private void Model_VehicleChanged(object? sender, (int oldX, int oldY, int newX, int newY) e)
+        {
+            var vehicle = Vehicles.FirstOrDefault(v => v.MapX == e.oldX && v.MapY == e.oldY);
+            if (vehicle != null)
+            {
+                var newVehicle = Model.GetVehicleAt(e.newX, e.newY);
+                if (newVehicle != null)
+                {
+                    vehicle.RefreshVehicle(newVehicle);
+                }
             }
         }
 
@@ -186,6 +199,27 @@ namespace TransportTycoon.WPF.ViewModel
             SelectedButton = Convert.ToInt32(x);
             Model.SetSelectedField(-1, -1);
         }
+        [RelayCommand]
+        private void OnVehicleStepUp()
+        {
+            Model.StepAllVehicles(Direction.Up);
+        }
+        [RelayCommand]
+        private void OnVehicleStepDown()
+        {
+            Model.StepAllVehicles(Direction.Down);
+        }
+        [RelayCommand]
+        private void OnVehicleStepLeft()
+        {
+            Model.StepAllVehicles(Direction.Left);
+        }
+        [RelayCommand]
+        private void OnVehicleStepRight()
+        {
+            Model.StepAllVehicles(Direction.Right);
+        }
+
 
         [RelayCommand(CanExecute = nameof(IsEditorMode))]
         private void OnTileLeftClick(FieldViewModel tile)
