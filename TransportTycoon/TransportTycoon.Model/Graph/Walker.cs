@@ -89,11 +89,11 @@ namespace TransportTycoon.Model.Graph
             {
                 SharedRoadSequence sharedRoadSequence = new(_roads);
                 edges.Add(new(_startNode, terminatingNode, sharedRoadSequence.ForwardEnumerator(), forwardCost));
-                edges.Add(new(terminatingNode, _startNode, sharedRoadSequence.BackwardEnumerator(), forwardCost));
+                edges.Add(new(terminatingNode, _startNode, sharedRoadSequence.BackwardEnumerator(), backwardCost));
 
                 foreach ((int dirx, int diry) in directions)
                 {
-                    Field? field = GetNextValidField(dirx, diry);
+                    Field? field = GetNextValidField(terminatingNode.X + dirx, terminatingNode.Y + diry);
                     if (field is null)
                     {
                         continue;
