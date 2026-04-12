@@ -46,6 +46,15 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Determines whether the specified coordinates are within the valid bounds defined by the current height and
+        /// width.
+        /// </summary>
+        /// <param name="x">The x-coordinate to check.</param>
+        /// <param name="y">The y-coordinate to check.</param>
+        /// <returns><see langword="true"/> if both coordinates are within bounds; otherwise, <see langword="false"/>.</returns>
+        public bool IsInBounds(int x, int y) => 0 <= x && x < Height && 0 <= y && y < Width;
+
         public void GenerateMap()
         {
             Table = MapGenerator.GenerateMap(Context);
