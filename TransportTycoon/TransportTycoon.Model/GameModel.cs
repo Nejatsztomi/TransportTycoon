@@ -113,6 +113,7 @@ namespace TransportTycoon.Model
             _timer = timer;
             _timer.Elapsed += Timer_Tick;
 
+            SetTax();
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
