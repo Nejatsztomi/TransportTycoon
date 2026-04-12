@@ -12,6 +12,8 @@ namespace TransportTycoon.WPF.ViewModel
     {
         #region Properties
         private Vehicle Vehicle { get; set; }
+        public int MapX { get; set; }
+        public int MapY { get; set; }
         public double X => Vehicle.X;
         public double Y => Vehicle.Y;
         //public FieldType Type => Vehicle.Type;
@@ -54,6 +56,8 @@ namespace TransportTycoon.WPF.ViewModel
             Vehicle = vehicle;
             PixelX = 50 * Y;
             PixelY = 50 * X;
+            MapX = vehicle.MapX;
+            MapY = vehicle.MapY;
         }
         #endregion
         #region Public Methods
@@ -62,8 +66,12 @@ namespace TransportTycoon.WPF.ViewModel
             Vehicle = vehicle;
             PixelX = 50 * Y;
             PixelY = 50 * X;
+            MapX = vehicle.MapX;
+            MapY = vehicle.MapY;
             OnPropertyChanged(nameof(PixelX));
             OnPropertyChanged(nameof(PixelY));
+            OnPropertyChanged(nameof(MapX));
+            OnPropertyChanged(nameof(MapY));    
             OnPropertyChanged(nameof(VehicleImagePath));
         }
         #endregion

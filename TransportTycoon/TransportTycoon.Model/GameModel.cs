@@ -84,6 +84,10 @@ namespace TransportTycoon.Model
         public List<Vehicle> Vehicles { get; private set; } = [];
 
         public int NumberOfVehicles => Vehicles.Count;
+        public Vehicle? GetVehicleAt(int x, int y)
+        {
+            return Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
+        }
         #endregion
 
         #region Events
@@ -97,7 +101,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
-        public event EventHandler<(int, int)>? VehicleChanged;
+        public event EventHandler<(int oldX, int oldY, int newX, int newY)>? VehicleChanged;
         #endregion
 
         #region Constructor
@@ -360,7 +364,6 @@ namespace TransportTycoon.Model
             {
                 Step(vehicle);
                 //lehet h elkene tarolni az legutolso lepest is???
-                VehicleChanged?.Invoke(this, (vehicle.MapX, vehicle.MapY));
             }
         }
 
@@ -472,6 +475,7 @@ namespace TransportTycoon.Model
 
             SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
             vehicle.Step();
+            VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
             //vehicle.UpdateDirection();
         }
 
