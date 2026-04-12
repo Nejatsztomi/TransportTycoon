@@ -51,6 +51,24 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
+        private void ShowRoute(HashSet<(int X, int Y)>? roads)
+        {
+            if (roads is null) return;
+            foreach (var (x, y) in roads)
+            {
+                var tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
+                tile?.IsPath = true;
+            }
+        }
+
+        private void RemoveRoutes()
+        {
+            foreach (var item in Tiles)
+            {
+                item.IsPath = false;
+            }
+        }
+
         private void Model_SelectedFieldChanged(object? sender, (int, int) e)
         {
             if (Model.SelectedField == null)
@@ -207,6 +225,15 @@ namespace TransportTycoon.WPF.ViewModel
                     break;
                 case 14:
                     Model.Destroy(tile.X, tile.Y);
+                    break;
+                case 100:
+                    var route = Model.CalculateRoute(tile.X, tile.Y);
+                    if (route is null)
+                    {
+                        RemoveRoutes();
+                        break;
+                    }
+                    ShowRoute(route);
                     break;
                 default:
                     break;

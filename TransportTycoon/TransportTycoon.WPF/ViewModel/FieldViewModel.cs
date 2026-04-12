@@ -7,6 +7,8 @@ namespace TransportTycoon.WPF.ViewModel
     public partial class FieldViewModel : ViewModelBase
     {
         #region Properties
+        [ObservableProperty]
+        private bool _isPath;
         public string ImagePath { get; set; }
 
         private Field Field { get; set; }
