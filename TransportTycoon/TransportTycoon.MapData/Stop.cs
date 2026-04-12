@@ -18,19 +18,51 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Public Methods
-        public List<Load> ShowLoads()
+        /// <summary>
+        /// Returns the loads that the connected buildings can provide, so the vehicle can check if it can pick up something from this stop
+        /// </summary>
+        /// <returns></returns>
+        public List<LoadType> ShowLoads()
         {
-            return [];
+            if (Connenctions is null) return new List<LoadType>();
+            List<LoadType> possibleLoads = new List<LoadType>();
+            foreach (var building in Connenctions)
+            {
+                possibleLoads.Add(building.BuildingEntity.GetProvideLoad());
+            }
+            return possibleLoads;
+        }
+        /// <summary>
+        /// Retrieves a list of load types that represent the consumption needs of all connected buildings.
+        /// </summary>
+        public List<LoadType> ShowNeeds()
+        {
+            if (Connenctions is null) return new List<LoadType>();
+            List<LoadType> possibleNeeds = new List<LoadType>();
+            foreach (var building in Connenctions)
+            {
+                possibleNeeds.Add(building.BuildingEntity.GetConsumeLoad());
+            }
+            return possibleNeeds;
         }
 
         public bool VehicleToBuilding()
         {
             return false;
+            //a jarmu megerkezik, leadja a termeket ha tudja,
+            //akkor tudja leadni ha a jarmu olyan termeket szallit, mint amit a gyár/város befogad
+            
+            
+
         }
 
         public bool BuildingToVehicle()
         {
             return false;
+            //a jarmu megerkezik, felveszi a termeket ha tudja,
+            //akkor tudja felvenni, ha a jarmu olyan termeket fogad, mint amit gyár/város ad, vagy nem szállít semmit se
+            //akkor nem, ha a jármű tele van
+            //tele lehet?
         }
         public void SetBuildingBlocks(BuildingBlocks buildingBlock)
         {
