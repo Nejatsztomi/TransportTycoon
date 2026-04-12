@@ -357,7 +357,7 @@ namespace TransportTycoon.Model
         /// </summary>
         /// <remarks>This method iterates through the collection of vehicles and updates each one by
         /// invoking the step operation. No action is taken if the game mode is not set to run.</remarks>
-        public void StepAllVehicles(Direction dir=Direction.Up)
+        public void StepAllVehicles(Direction dir = Direction.Up)
         {
             if (Mode != GameMode.Run) return;
             foreach (Vehicle vehicle in Vehicles)
@@ -435,7 +435,7 @@ namespace TransportTycoon.Model
         /// the vehicle can move to the new position, which must be an infrastructure. If the game is not in Run mode,
         /// the vehicle does not move.</remarks>
         /// <param name="vehicle">The vehicle to be moved, which influences its new position based on its direction and speed.</param>
-        private void Step(Vehicle vehicle, Direction direction=Direction.Up)
+        private void Step(Vehicle vehicle, Direction direction = Direction.Up)
         {
             //if the game is not in Run mode, the vehicles should not move
             if (Mode != GameMode.Run) return;

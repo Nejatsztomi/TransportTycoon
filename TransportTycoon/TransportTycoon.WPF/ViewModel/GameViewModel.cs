@@ -88,7 +88,7 @@ namespace TransportTycoon.WPF.ViewModel
             if (vehicle != null)
             {
                 var newVehicle = Model.GetVehicleAt(e.newX, e.newY);
-                if (newVehicle != null) 
+                if (newVehicle != null)
                 {
                     vehicle.RefreshVehicle(newVehicle);
                 }
@@ -199,7 +199,7 @@ namespace TransportTycoon.WPF.ViewModel
             Model.SetSelectedField(-1, -1);
         }
         [RelayCommand]
-        private void OnVehicleStepUp() 
+        private void OnVehicleStepUp()
         {
             Model.StepAllVehicles(Direction.Up);
         }

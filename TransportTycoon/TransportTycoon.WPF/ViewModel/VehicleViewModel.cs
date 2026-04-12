@@ -55,7 +55,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Vehicle = vehicle;
             DeterminePixels();
-            
+
             MapX = vehicle.MapX;
             MapY = vehicle.MapY;
         }
@@ -70,12 +70,12 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(PixelX));
             OnPropertyChanged(nameof(PixelY));
             OnPropertyChanged(nameof(MapX));
-            OnPropertyChanged(nameof(MapY));    
+            OnPropertyChanged(nameof(MapY));
             OnPropertyChanged(nameof(VehicleImagePath));
         }
         #endregion
         #region Private Methods
-        private void DeterminePixels() 
+        private void DeterminePixels()
         {
             PixelX = 50 * Y;
             PixelY = 50 * X;
