@@ -307,7 +307,7 @@ namespace TransportTycoon.Model
         public void Destroy(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Infrastructure || (Map[x, y] is Road r && r.InCity())
-                || Vehicles.Any(v => v.X == x && v.Y == y)) return;
+                || Vehicles.Any(v => v.MapX == x && v.MapY == y)) return;
             List<(int, int)> changedFields = [];
 
             if (Map[x, y] is Road || Map[x, y] is Stop)
