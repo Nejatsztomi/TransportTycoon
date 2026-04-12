@@ -23,6 +23,11 @@ namespace TransportTycoon.MapData
             set => Table[x, y] = value;
         }
 
+        /// <summary>
+        /// Tells whether the map has been generated or not.
+        /// This is used to prevent accessing the map before it is generated, which can cause errors.
+        /// </summary>
+        public bool IsMapGenerated { get; private set; }
         private IMapGenerator MapGenerator { get; }
         private MapGenerationContext Context { get; }
         private MapGenerationSettings GenerationSettings => Context.Settings;
@@ -35,6 +40,7 @@ namespace TransportTycoon.MapData
             BuildingEntities = [];
 
             Table = new Field[Width, Height];
+            IsMapGenerated = false;
             MapGenerator = mapGenerator;
         }
         #endregion
@@ -43,6 +49,7 @@ namespace TransportTycoon.MapData
         public void GenerateMap()
         {
             Table = MapGenerator.GenerateMap(Context);
+            IsMapGenerated = true;
         }
 
         public List<Field> CheckNeighboringTrees(int x, int y)
