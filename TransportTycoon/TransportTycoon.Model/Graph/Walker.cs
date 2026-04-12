@@ -2,6 +2,12 @@
 
 namespace TransportTycoon.Model.Graph
 {
+    /// <summary>
+    /// A DTO for the result of a walk performed by a <see cref="Walker"/>.
+    /// </summary>
+    /// <param name="CreatedEdges">The edges created during the walk.</param>
+    /// <param name="NewWalkers">The new walkers spawned from the current walk.</param>
+    /// <param name="EndNode">The node where the walk ended, if any.</param>
     public record WalkerResult(
         List<Edge> CreatedEdges,
         List<Walker> NewWalkers,
@@ -11,18 +17,59 @@ namespace TransportTycoon.Model.Graph
     public class Walker
     {
         #region Private fields
+        /// <summary>
+        /// The node where we branch off.
+        /// </summary>
         private readonly Node _startNode;
+        /// <summary>
+        /// The field where the walk starts.
+        /// </summary>
         private readonly Field _startField;
+        /// <summary>
+        /// The game table to traverse.
+        /// </summary>
         private readonly GameTable _gameTable;
+        /// <summary>
+        /// The already visited fields. Including roads, bridges and stops.
+        /// </summary>
         private readonly HashSet<(int X, int Y)> _visitedFields;
+        /// <summary>
+        /// The already visited junctions.
+        /// This is to prevent respawning <see cref="Walker"/> objects, making an infinite loop.
+        /// </summary>
         private readonly HashSet<(int X, int Y)> _visitedJunctions;
+        /// <summary>
+        /// The recorded roads during the walk.
+        /// This is used to create the edges after the walk is finished.
+        /// </summary>
         private readonly List<Field> _roads = [];
+        /// <summary>
+        /// The previous field's coordinates.
+        /// </summary>
         private (int X, int Y)? _previousFieldCoords = null;
+        /// <summary>
+        /// The total cost of traversal.
+        /// Records both the forward and backwards cost that can change depending on the height difference of the fields.
+        /// </summary>
         private (double forwardCost, double backwardCost) _roadCost = (0.0, 0.0);
+        /// <summary>
+        /// The field where the walker "stands" on.
+        /// </summary>
         private Field _currentField;
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// The class is design to perform a walk (or traverse) between two junctions (stops or crossroads) on the <see cref="GameTable"/>, starting from a given field.
+        /// During the walk, it records the roads it traverses and calculates the cost of traversal based on the height differences of the fields.
+        /// The walk continues until it reaches another junction, at which point it creates edges between the starting node and the terminating node, and potentially spawns new walkers for further exploration.
+        /// The walker also keeps track of visited fields and junctions to avoid infinite loops and redundant traversals.
+        /// </summary>
+        /// <param name="startNode">The node where the road branched off.</param>
+        /// <param name="startField">The field where the walk starts.</param>
+        /// <param name="gameTable">The game table to traverse.</param>
+        /// <param name="visitedFields">The already visited fields.</param>
+        /// <param name="visitedJunctions">The already visited junctions.</param>
         public Walker(Node startNode, Field startField, GameTable gameTable, HashSet<(int X, int Y)> visitedFields, HashSet<(int X, int Y)> visitedJunctions)
         {
             _startNode = startNode;
@@ -35,6 +82,11 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Perfoms a "walk" (traverse) on the given <see cref="GameTable"/>.
+        /// It checks each direction (north, east, south, west) for valid fields to step on, and continues the walk until it reaches a terminating field (a stop or a junction).
+        /// </summary>
+        /// <returns>A <see cref="WalkerResult"/> containing the edges, new walkers, and the end node of the walk.</returns>
         public WalkerResult Walk()
         {
             (int dirx, int diry)[] directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
@@ -46,7 +98,7 @@ namespace TransportTycoon.Model.Graph
                 Field? nextField = null;
                 foreach ((int dirx, int diry) in directions)
                 {
-                    nextField = GetNextValidField(_currentField.X + dirx, _currentField.Y + diry);
+                    nextField = GetValidField(_currentField.X + dirx, _currentField.Y + diry);
                     if (nextField is not null)
                     {
                         break;
@@ -77,7 +129,7 @@ namespace TransportTycoon.Model.Graph
 
                     foreach ((int dirx, int diry) in directions)
                     {
-                        Field? field = GetNextValidField(terminatingNode.X + dirx, terminatingNode.Y + diry);
+                        Field? field = GetValidField(terminatingNode.X + dirx, terminatingNode.Y + diry);
                         if (field is null)
                         {
                             continue;
@@ -94,6 +146,11 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Private methods
+        /// <summary>
+        /// A helper method to "step" to walker to the given field.
+        /// </summary>
+        /// <param name="nextField">The field to step onto.</param>
+        /// <returns>The <see cref="Node"/> if the field is a terminating field; otherwise, <see langword="null"/>.</returns>
         private Node? Step(Field nextField)
         {
             _visitedFields.Add((nextField.X, nextField.Y));
@@ -112,8 +169,17 @@ namespace TransportTycoon.Model.Graph
             return null;
         }
 
+        /// <summary>
+        /// Determines whether the specified field type is a valid type for processing.
+        /// </summary>
+        /// <param name="fieldType">The field type to validate. Only certain field types are considered valid.</param>
+        /// <returns><see langword="true"/> if the specified field type is valid; otherwise, <see langword="false"/>.</returns>
         private bool IsValidFieldType(FieldType fieldType) => fieldType == FieldType.Road || fieldType == FieldType.Bridge || fieldType == FieldType.Stop;
 
+        /// <summary>
+        /// Calculates and updates the forward and backward road costs based on the specified height difference.
+        /// </summary>
+        /// <param name="heightDifference">The difference in height between two points.</param>
         private void CalculateRoadCost(int heightDifference)
         {
             if (heightDifference > 0)
@@ -130,7 +196,13 @@ namespace TransportTycoon.Model.Graph
             _roadCost.backwardCost += 1.0;
         }
 
-        private Field? GetNextValidField(int x, int y)
+        /// <summary>
+        /// Get's the valid field for the walker to step onto based on the specified coordinates.
+        /// </summary>
+        /// <param name="x">The field's X coordinate.</param>
+        /// <param name="y">The field's Y coordinate.</param>
+        /// <returns>The valid <see cref="Field"/> if available; otherwise, <see langword="null"/>.</returns>
+        private Field? GetValidField(int x, int y)
         {
             // Prevent the walker from stepping back onto the starting node.
             if (x == _startNode.X && y == _startNode.Y)
@@ -167,6 +239,14 @@ namespace TransportTycoon.Model.Graph
             return nextField;
         }
 
+        /// <summary>
+        /// Determines whether the specified field represents a road junction.
+        /// </summary>
+        /// <remarks>
+        /// A field is considered a junction if it is a road with a road type of XRoad, DownTRoad, UpperTRoad, LeftTRoad, or RightTRoad.
+        /// </remarks>
+        /// <param name="field">The field to evaluate for junction status.</param>
+        /// <returns><see langword="true"/> if the field is a road and its road type represents a junction; otherwise, <see langword="false"/>.</returns>
         private bool IsJunction(Field field)
         {
             if (field.FieldType != FieldType.Road || field is not Road road)
@@ -180,6 +260,11 @@ namespace TransportTycoon.Model.Graph
                 || road.RoadType == RoadType.RightTRoad;
         }
 
+        /// <summary>
+        /// Determines whether the specified field is a terminating one.
+        /// </summary>
+        /// <param name="field">The field to evaluate for termination status.</param>
+        /// <returns><see langword="true"/> if the field is a stop or a junction; otherwise, <see langword="false"/>.</returns>
         private bool IsTerminatingField(Field field)
         {
             return field.FieldType == FieldType.Stop || IsJunction(field);
