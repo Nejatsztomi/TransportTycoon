@@ -46,7 +46,7 @@ namespace TransportTycoon.Model
         #region Properties
         public GameTable Map { get; private set; }
         public Field? SelectedField { get; private set; }
-        public List<Field>? SelectedStopFields { get; private set; } = new List<Field>();//
+        public List<Field> SelectedStopFields { get; private set; } = new();//
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
@@ -358,28 +358,36 @@ namespace TransportTycoon.Model
         public void DefineRoute(int x, int y)//
         {
             if (Map[x, y] is not Stop) return;
-            SelectedStopFields?.Add(Map[x, y]);
+            SelectedStopFields.Add(Map[x, y]);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
-        public void QueryRoute()//
+        public void QueryRoute(int x,int y)//
         {
-
+            Vehicle? selectedVehcile = Vehicles.Find(v => v.X == x && v.Y == y);
+            if (selectedVehcile != null) return;
+            //SelectedStopFields = selectedVehcile.Prouth.Stops;
+            SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void AssignRoute(int x, int y)//
         {
+            if (SelectedStopFields.Count == 0) return;
+
             Vehicle? selectedVehcile = Vehicles.Find(v => v.X == x && v.Y == y);
             if (selectedVehcile == null) return;
             //selectedVehcile.SetProuth(SelectedStopFields)
+            SelectedStopFields = new();
+            SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void DeleteRoute(int x, int y)//
         {
-            if (SelectedStopFields?.Count == 0) return;
+            if (SelectedStopFields.Count == 0) return;
 
             if (x == -1 && y == -1) SelectedStopFields = new();
             else
             {
-                Field? removeItem = SelectedStopFields?.Find(s => s.X == x && s.Y == y);
-                if (removeItem != null) SelectedStopFields?.Remove(removeItem);
+                Field? removeItem = SelectedStopFields.Find(s => s.X == x && s.Y == y);
+                if (removeItem == null) return;
+                SelectedStopFields.Remove(removeItem);
             }
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
