@@ -46,5 +46,21 @@ namespace TransportTycoon.Model.Graph
             Type = type;
         }
         #endregion
+
+        #region Public methods
+        public override bool Equals(object? obj)
+        {
+            if (obj is Node otherNode)
+            {
+                return otherNode.X == X && otherNode.Y == Y;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
+        }
+        #endregion
     }
 }

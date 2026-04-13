@@ -28,10 +28,10 @@ namespace TransportTycoon.Model.Graph
 
         #region Enumerators
         /// <summary>
-        /// Returns an enumerator that iterates through the collection of fields in forward order.
+        /// Returns an enumerable that iterates through the collection of fields in forward order.
         /// </summary>
-        /// <returns>An enumerator for the collection of fields, starting from the first field and proceeding in order to the last field.</returns>
-        public IEnumerator<Field> ForwardEnumerator()
+        /// <returns>An enumerable for the collection of fields, starting from the first field and proceeding in order to the last field.</returns>
+        public IEnumerable<Field> ForwardEnumerator()
         {
             for (int i = 0; i < _fields.Length; i++)
             {
@@ -40,10 +40,10 @@ namespace TransportTycoon.Model.Graph
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection of fields in reversed order.
+        /// Returns an enumerable that iterates through the collection of fields in reversed order.
         /// </summary>
-        /// <returns>An enumerator for the collection of fields, starting from the last field and proceeding in reverse order to the starting field.</returns>
-        public IEnumerator<Field> BackwardEnumerator()
+        /// <returns>An enumerable for the collection of fields, starting from the last field and proceeding in reverse order to the starting field.</returns>
+        public IEnumerable<Field> BackwardEnumerator()
         {
             for (int i = _fields.Length - 1; i >= 0; i--)
             {

@@ -158,6 +158,11 @@
                 <TabItem>
                     <WrapPanel Margin="15" HorizontalAlignment="Center">
                         <Button Width="50" Height="50" Margin="8"/>
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}"
+                                CommandParameter="100"
+                                Background="Gold"
+                                />
                     </WrapPanel>
                 </TabItem>
             </TabControl>

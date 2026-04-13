@@ -125,6 +125,22 @@
                                             </Style>
                                         </Border.Style>
                                     </Border>
+
+                                    <Border BorderBrush="DarkBlue" 
+                                            BorderThickness="3" 
+                                            Background="#33FFFFFF"
+                                            >
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsPath}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                    </Border>
                                 </Grid>
 
                                 <DataTemplate.Triggers>

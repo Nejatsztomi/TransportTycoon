@@ -1,4 +1,5 @@
 using TransportTycoon.MapData;
+using TransportTycoon.Model.Graph;
 
 namespace TransportTycoon.Model
 {
@@ -62,6 +63,7 @@ namespace TransportTycoon.Model
                 else
                 {
                     _timer.Start();
+                    RebuildGraph();
                 }
                 GameModeChanged?.Invoke(this, value);
                 field = value;
@@ -84,6 +86,11 @@ namespace TransportTycoon.Model
         public List<Vehicle> Vehicles { get; private set; } = [];
 
         public int NumberOfVehicles => Vehicles.Count;
+
+        /// <summary>
+        /// The game's graph representation of the map.
+        /// </summary>
+        public Graph.Graph GraphNetwork { get; private set; }
         #endregion
 
         #region Events
@@ -111,10 +118,51 @@ namespace TransportTycoon.Model
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
+
+            // We create an empty graph
+            GraphNetwork = new([], []);
         }
         #endregion
 
         #region Public Methods
+        public HashSet<(int X, int Y)>? CalculateRoute(int x, int y)
+        {
+            if (SelectedField == null)
+            {
+                SetSelectedField(x, y);
+                return null;
+            }
+            Field field1 = Map[x, y];
+            Field field2 = SelectedField;
+
+            AStarPathfinder pathFinder = new(GraphNetwork);
+            Node node1 = new(field1.X, field1.Y, field1.FieldType);
+            Node node2 = new(field2.X, field2.Y, field2.FieldType);
+            if (!node1.IsValidDestination || !node2.IsValidDestination)
+            {
+                SetSelectedField(-1, -1);
+                return null;
+            }
+
+            List<Edge>? path = pathFinder.FindPath(node1, node2);
+            if (path is null)
+            {
+                SetSelectedField(-1, -1);
+                return null;
+            }
+
+            HashSet<(int X, int Y)> fields = [];
+            foreach (Edge edge in path)
+            {
+                foreach (var road in edge.Roads)
+                {
+                    fields.Add((road.X, road.Y));
+                }
+            }
+            SetSelectedField(-1, -1);
+            return fields;
+        }
+
         public void NewGame()
         {
             Balance = DefaultBalance;
@@ -321,6 +369,18 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// A method that rebuilds the graph representation of the map.
+        /// </summary>
+        private void RebuildGraph()
+        {
+            if (!Map.IsMapGenerated)
+            {
+                return;
+            }
+            GraphNetwork = Graph.GraphBuilder.BuildGraph(Map);
+        }
+
         private void SetTax()
         {
             int tax = 30;

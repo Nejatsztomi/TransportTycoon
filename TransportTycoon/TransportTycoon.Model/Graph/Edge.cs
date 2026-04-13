@@ -33,18 +33,16 @@ namespace TransportTycoon.Model.Graph
         /// <summary>
         /// Gives the cost of the edge.
         /// </summary>
-        /// <remarks>
-        /// This is calculated my multiplying the number of road tiles with the <see cref="CostModifier"/>.
-        /// </remarks>
-        public double Cost => Roads.Count() * CostModifier;
+        public double Cost { get; }
         #endregion
 
         #region Constructors
-        public Edge(Node startNode, Node endNode, IEnumerable<Field> roads)
+        public Edge(Node startNode, Node endNode, IEnumerable<Field> roads, double cost)
         {
             StartNode = startNode;
             EndNode = endNode;
             Roads = roads;
+            Cost = cost;
         }
         #endregion
     }
