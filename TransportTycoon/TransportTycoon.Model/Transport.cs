@@ -5,7 +5,7 @@ namespace TransportTycoon.Model
     public abstract class Transport : Vehicle
     {
         #region Field
-        public List<LoadType>? AcceptedGoods { get; protected set; }
+        
         #endregion      
     }
 

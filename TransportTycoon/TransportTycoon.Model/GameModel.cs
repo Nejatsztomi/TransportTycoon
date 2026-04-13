@@ -555,20 +555,32 @@ namespace TransportTycoon.Model
                     Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
                     {
-                        //returns how much the vehicle can not unload
-                        int quantity;
-                        if (vehicle.CurrentLoad != null) 
+                        List<LoadType> vehicleAcceptedGoods = new List<LoadType>();                        
+                        if (vehicle is Transport vehicleTransport) 
                         {
-                            quantity= stop.VehicleToBuilding(vehicle.CurrentLoad.LoadType, vehicle.CurrentCapacity);
-                            vehicle.SetCurrentCapacity(quantity);
+                            
+                            vehicleAcceptedGoods = vehicleTransport.AcceptedGoods;
+
                         }
 
+                        if (vehicle is Bus vehicleBus) 
+                        {
 
-                        //returns how much the buildings can give to the vehicle, and what type of load it is
-                        int max = vehicle.MaxCapacity - vehicle.CurrentCapacity;
-                        (load,quantity)= stop.BuildingToVehicle(max, vehicle.CurrentLoad.LoadType);
-                        vehicle.SetCurrentCapacity(quantity);
-                        vehicle.SetCurrentLoad(load);
+                        }
+                        ////returns how much the vehicle can not unload
+                        //int quantity;
+                        //if (vehicle.CurrentLoad != null) 
+                        //{
+                        //    quantity= stop.VehicleToBuilding(vehicle.CurrentLoad.LoadType, vehicle.CurrentCapacity);
+                        //    vehicle.SetCurrentCapacity(quantity);
+                        //}
+
+
+                        ////returns how much the buildings can give to the vehicle, and what type of load it is
+                        //int max = vehicle.MaxCapacity - vehicle.CurrentCapacity;
+                        //(load,quantity)= stop.BuildingToVehicle(max, vehicle.CurrentLoad.LoadType);
+                        //vehicle.SetCurrentCapacity(quantity);
+                        //vehicle.SetCurrentLoad(load);
                     }
 
                 }

@@ -5,14 +5,17 @@ namespace TransportTycoon.Model
     public abstract class Bus : Vehicle
     {
         #region Field
-        public static LoadType AcceptedLoad { get; } = LoadType.People;
+        protected Bus()
+        {
+            AcceptedGoods = [LoadType.People];
+        }
         #endregion 
     }
 
     public class SmallBus : Bus
     {
         #region Constructor
-        public SmallBus(int x, int y, Direction direction, Prouth route = null!)
+        public SmallBus(int x, int y, Direction direction, Prouth route = null!) : base()
         {
             //fixed fields
             TopSpeed = 1;
@@ -28,7 +31,7 @@ namespace TransportTycoon.Model
             Route = route;
             X = x;
             Y = y;
-            Direction = direction; //get info from route?      
+            Direction = direction; //get info from route?
         }
         #endregion
     }
@@ -36,7 +39,7 @@ namespace TransportTycoon.Model
     public class BigBus : Bus
     {
         #region Constructor
-        public BigBus(int x, int y, Direction direction, Prouth route = null!)
+        public BigBus(int x, int y, Direction direction, Prouth route = null!) : base()
         {
             //fixed fields
             TopSpeed = 1;

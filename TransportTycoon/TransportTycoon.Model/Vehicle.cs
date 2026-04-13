@@ -30,6 +30,7 @@ namespace TransportTycoon.Model
 
         public int MapX => (int)Math.Round(X);
         public int MapY => (int)Math.Round(Y);
+        public List<LoadType>? AcceptedGoods { get; protected set; } = new List<LoadType>();
         #endregion
 
         #region Public methods

@@ -19,23 +19,29 @@ namespace TransportTycoon.MapData
 
         #region Public Methods
         /// <summary>
-        /// Returns the loads that the connected buildings can provide, so the vehicle can check if it can pick up something from this stop
+        /// returns the buildings what the vehicle is compatible with
         /// </summary>
+        /// <param name="vehicleAcceptedGoods"></param>
         /// <returns></returns>
-        public List<LoadType> ShowLoads()
+        public List<BuildingBlocks> ShowLoads(List<LoadType> vehicleAcceptedGoods)
         {
-            if (Connenctions is null) return new List<LoadType>();
-            List<LoadType> possibleLoads = new List<LoadType>();
+            List<BuildingBlocks> buildings = new List<BuildingBlocks>();
+            if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
-                possibleLoads.Add(building.BuildingEntity.GetProvideLoad());
+                LoadType type = building.BuildingEntity.GetConsumeLoad();
+                if (vehicleAcceptedGoods.Contains(type))
+                {
+                    buildings.Add(building);
+                }
+                    
             }
-            return possibleLoads;
+            return buildings;
         }
         /// <summary>
         /// Retrieves a list of load types that represent the consumption needs of all connected buildings.
         /// </summary>
-        public List<LoadType> ShowNeeds()
+        public List<BuildingBlocks> ShowNeeds()
         {
             if (Connenctions is null) return new List<LoadType>();
             List<LoadType> possibleNeeds = new List<LoadType>();
@@ -58,52 +64,68 @@ namespace TransportTycoon.MapData
         /// greater.</param>
         /// <returns>The remaining capacity of the vehicle after attempting to deliver the load. Returns 0 if at least one
         /// connected building accepts the load; otherwise, returns the original capacity.</returns>
-        public int VehicleToBuilding(LoadType? load, int vehicleCanGive)
-        {
-            //a jarmu megerkezik, leadja a termeket ha tudja,
-            //akkor tudja leadni ha a jarmu olyan termeket szallit, mint amit a gyár/város befogad
-            if (load is null) return 0; // if the vehicle is empty, it can deliver nothing, so the leftover capacity is 0
-            //if the stop has no connections, it has no needs, so the vehicle can deliver nothing, so the leftover capacity is 0
-            if (ShowNeeds().Count == 0) return vehicleCanGive;
-            if (Connenctions is null) return vehicleCanGive;
+        //public int VehicleToBuilding(LoadType? load, int vehicleCanGive)
+        //{
+        //    //a jarmu megerkezik, leadja a termeket ha tudja,
+        //    //akkor tudja leadni ha a jarmu olyan termeket szallit, mint amit a gyár/város befogad
+        //    if (load is null) return 0; // if the vehicle is empty, it can deliver nothing, so the leftover capacity is 0
+        //    //if the stop has no connections, it has no needs, so the vehicle can deliver nothing, so the leftover capacity is 0
+        //    if (ShowNeeds().Count == 0) return vehicleCanGive;
+        //    if (Connenctions is null) return vehicleCanGive;
 
-            List<BuildingBlocks> buildings = new List<BuildingBlocks>();
-            foreach (var building in Connenctions)
-            {
-                if (building.BuildingEntity.GetConsumeLoad() == load)
-                {
-                    buildings.Add(building);
-                }
-            }
+        //    List<BuildingBlocks> buildings = new List<BuildingBlocks>();
+        //    foreach (var building in Connenctions)
+        //    {
+        //        if (building.BuildingEntity.GetConsumeLoad() == load)
+        //        {
+        //            buildings.Add(building);
+        //        }
+        //    }
 
-            foreach(var building in buildings)
-            {
-                
-                int buildingCanTake = building.BuildingEntity.Capacity - building.BuildingEntity.Occupancy;
-                if (buildingCanTake >= vehicleCanGive)
-                {
-                    int buildingNewOccupancy = building.BuildingEntity.Occupancy + vehicleCanGive;
-                    building.BuildingEntity.SetOccupancy(buildingNewOccupancy);
-                    return 0;
-                }
-                else
-                {
-                    vehicleCanGive = vehicleCanGive - buildingCanTake;
-                    building.BuildingEntity.SetOccupancy(building.BuildingEntity.Capacity);
-                }
-            }
-            //returns the leftover what the buildings couldnt take
-            return vehicleCanGive;
-        }
+        //    foreach(var building in buildings)
+        //    {
 
-        public (LoadType?, int) BuildingToVehicle(int maxVehicleCanTake, LoadType? currentLoad)
-        {
-            //a jarmu megerkezik, felveszi a termeket ha tudja,
-            //akkor tudja felvenni, ha a jarmu olyan termeket fogad, mint amit gyár/város ad, vagy nem szállít semmit se
-            //akkor nem, ha a jármű tele van
-            //tele lehet?
+        //        int buildingCanTake = building.BuildingEntity.Capacity - building.BuildingEntity.Occupancy;
+        //        if (buildingCanTake >= vehicleCanGive)
+        //        {
+        //            int buildingNewOccupancy = building.BuildingEntity.Occupancy + vehicleCanGive;
+        //            building.BuildingEntity.SetOccupancy(buildingNewOccupancy);
+        //            return 0;
+        //        }
+        //        else
+        //        {
+        //            vehicleCanGive = vehicleCanGive - buildingCanTake;
+        //            building.BuildingEntity.SetOccupancy(building.BuildingEntity.Capacity);
+        //        }
+        //    }
+        //    //returns the leftover what the buildings couldnt take
+        //    return vehicleCanGive;
+        //}
+        ////return what the building can give to the vehicle , and how much the vehicle can still take after taking the load from the building
+        //public (LoadType?, int) BuildingToVehicle(int maxVehicleCanTake, LoadType? currentLoad)
+        //{
+        //    // if the stop has no connections, it has no loads, so the vehicle can take nothing, so the leftover capacity is 0
+        //    if (ShowLoads().Count == 0) return (currentLoad, 0);
+        //    if (Connenctions is null) return (currentLoad, 0);
+        //    List<BuildingBlocks> buildings = new List<BuildingBlocks>();
+        //    foreach (var building in Connenctions)
+        //    {
+        //        if (currentLoad != null)
+        //        {
+        //            if (building.BuildingEntity.GetProvideLoad() == currentLoad)
+        //            {
+        //                buildings.Add(building);
+        //            }
+        //        }
+        //        else 
+        //        {
+        //            buildings.Add(building);
+        //        }
 
-        }
+        //    }
+
+
+        //}
         public void SetBuildingBlocks(BuildingBlocks buildingBlock)
         {
             Connenctions?.Add(buildingBlock);
