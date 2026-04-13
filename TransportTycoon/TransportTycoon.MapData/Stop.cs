@@ -45,15 +45,42 @@ namespace TransportTycoon.MapData
             }
             return possibleNeeds;
         }
-
-        public bool VehicleToBuilding()
+        //returns the leftover capacity of the vehicle after it tries to deliver the load to the connected buildings,
+        //if it can deliver at least some of it, otherwise returns the original capacity
+        public int VehicleToBuilding(LoadType? load, int vehicleCanGive)
         {
-            return false;
             //a jarmu megerkezik, leadja a termeket ha tudja,
             //akkor tudja leadni ha a jarmu olyan termeket szallit, mint amit a gyár/város befogad
-            
-            
+            if (load is null) return 0; // if the vehicle is empty, it can deliver nothing, so the leftover capacity is 0
+            //if the stop has no connections, it has no needs, so the vehicle can deliver nothing, so the leftover capacity is 0
+            if (ShowNeeds().Count == 0) return vehicleCanGive;
+            if (Connenctions is null) return vehicleCanGive;
 
+            List<BuildingBlocks> buildings = new List<BuildingBlocks>();
+            foreach (var building in Connenctions)
+            {
+                if (building.BuildingEntity.GetConsumeLoad() == load)
+                {
+                    buildings.Add(building);
+                }
+            }
+
+            foreach(var building in buildings)
+            {
+                int buildingCanTake = building.BuildingEntity.Capacity;
+                if (buildingCanTake >= vehicleCanGive)
+                {
+                    int buildingLeftOver = buildingCanTake - vehicleCanGive;
+                    building.BuildingEntity.SetCapacity(buildingLeftOver);
+                    return 0;
+                }
+                else
+                {
+                    vehicleCanGive = vehicleCanGive - buildingCanTake;
+                    building.BuildingEntity.SetCapacity(0);
+                }
+            }
+            return vehicleCanGive;
         }
 
         public bool BuildingToVehicle()

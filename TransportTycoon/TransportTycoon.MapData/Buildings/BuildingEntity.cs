@@ -36,6 +36,7 @@
         /// Gets the coordinates of the top-left point of the building
         /// </summary>
         public (int X, int Y) TopLeftPoints => MapPoints.Keys.OrderBy(p => p.X).ThenBy(p => p.Y).FirstOrDefault();
+        
         #endregion
 
         #region Constructors
@@ -96,6 +97,13 @@
         {
             Occupancy = Math.Max(Occupancy - q, 0);
             return Occupancy;
+        }
+        public void SetCapacity(int buildingLeftOver)
+        {
+            if (0 <= buildingLeftOver)
+            {
+                Occupancy = buildingLeftOver;
+            }
         }
         #endregion
     }

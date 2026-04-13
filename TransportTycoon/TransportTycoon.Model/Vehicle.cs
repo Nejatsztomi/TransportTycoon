@@ -57,6 +57,14 @@ namespace TransportTycoon.Model
                     break;
             }
         }
+
+        public void SetCurrentCapacity(int quantity)
+        {
+            if (quantity >= 0 && quantity <= MaxCapacity) CurrentCapacity = quantity;
+
+            if(CurrentCapacity==0) CurrentLoad = null;
+        }
+
         /// <summary>
         /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
         /// </summary>
@@ -66,7 +74,7 @@ namespace TransportTycoon.Model
             if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
         }
 
-
+        
         public int Load(int quantity, Load load) //returns leftover
         {
             if (CurrentLoad != load) return quantity;
