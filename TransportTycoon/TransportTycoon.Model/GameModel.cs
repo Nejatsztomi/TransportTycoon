@@ -358,7 +358,7 @@ namespace TransportTycoon.Model
         public void DefineRoute(int x, int y)//
         {
             if (Map[x, y] is not Stop) return;
-            SelectedStopFields.Add(Map[x, y]);
+            SelectedStopFields?.Add(Map[x, y]);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void QueryRoute()//
@@ -373,7 +373,9 @@ namespace TransportTycoon.Model
         }
         public void DeleteRoute(int x, int y)//
         {
-            if (x == -1 && y == -1) SelectedStopFields = null;
+            if (SelectedStopFields?.Count == 0) return;
+
+            if (x == -1 && y == -1) SelectedStopFields = new();
             else
             {
                 Field? removeItem = SelectedStopFields?.Find(s => s.X == x && s.Y == y);
