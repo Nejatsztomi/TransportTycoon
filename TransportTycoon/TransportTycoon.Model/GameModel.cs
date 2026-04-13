@@ -1,3 +1,4 @@
+using System.Xml.Schema;
 using TransportTycoon.MapData;
 
 namespace TransportTycoon.Model
@@ -354,10 +355,10 @@ namespace TransportTycoon.Model
             }
             return vehicle;
         }
-        public void DefineRoute(int x,int y)//
+        public void DefineRoute(int x, int y)//
         {
             if (Map[x, y] is not Stop) return;
-            SelectedStopFields.Add(Map[x,y]);
+            SelectedStopFields.Add(Map[x, y]);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void QueryRoute()//
@@ -370,9 +371,15 @@ namespace TransportTycoon.Model
             if (selectedVehcile == null) return;
             //selectedVehcile.SetProuth(SelectedStopFields)
         }
-        public void DeleteRoute()//
+        public void DeleteRoute(int x, int y)//
         {
-
+            if (x == -1 && y == -1) SelectedStopFields = null;
+            else
+            {
+                Field? removeItem = SelectedStopFields?.Find(s => s.X == x && s.Y == y);
+                if (removeItem != null) SelectedStopFields?.Remove(removeItem);
+            }
+            SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         #endregion
 
