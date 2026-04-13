@@ -4,17 +4,6 @@ namespace TransportTycoon.Model.Graph
 {
     public class Edge
     {
-        #region Public constants
-        /// <summary>
-        /// A cost modifier for calculating the cost of an edge.
-        /// </summary>
-        /// <remarks>
-        /// This will likely to change in the future for a more dynamic one.
-        /// Which includes bridge speed limits and terrain heights.
-        /// </remarks>
-        public const double CostModifier = 2.0;
-        #endregion
-
         #region Properties
         /// <summary>
         /// The edge's starting node.
