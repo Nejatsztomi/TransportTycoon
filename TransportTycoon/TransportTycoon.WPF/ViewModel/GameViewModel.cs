@@ -57,11 +57,10 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private methods
         private void Model_SelectedStopFieldsChanged(object? sender, List<Field> list)//
         {
-            List<FieldViewModel> tiles = Tiles.Where(t => t.IsSelected).ToList();
-            foreach (var tile in tiles)
+            if (list == null) return;
+            foreach (var tile in Tiles)
             {
-                if (list.Any(l => l.X == tile.X && l.Y == tile.Y)) tile.IsSelected = true;
-                else tile.IsSelected = false;
+                tile.IsSelected = list.Any(t => t.X == tile.X && t.Y == tile.Y);
             }
         }
 
@@ -241,13 +240,13 @@ namespace TransportTycoon.WPF.ViewModel
                     Model.DefineRoute(tile.X, tile.Y);
                     break;
                 case 32:
-                    Model.QueryRoute(tile.X, tile.Y);
+                    Model.QueryRoute();
                     break;
                 case 33:
-                    Model.AssignRoute(tile.X, tile.Y);
+                    Model.AssignRoute();
                     break;
                 case 34:
-                    Model.DeleteRoute(tile.X, tile.Y);
+                    Model.DeleteRoute();
                     break;
                 default:
                     break;

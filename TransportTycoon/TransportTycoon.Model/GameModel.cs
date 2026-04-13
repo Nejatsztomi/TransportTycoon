@@ -45,7 +45,7 @@ namespace TransportTycoon.Model
         #region Properties
         public GameTable Map { get; private set; }
         public Field? SelectedField { get; private set; }
-        public List<Field>? SelectedStopFields { get; private set; }//
+        public List<Field>? SelectedStopFields { get; private set; } = new List<Field>();//
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
@@ -356,17 +356,19 @@ namespace TransportTycoon.Model
         }
         public void DefineRoute(int x,int y)//
         {
-
+            if (Map[x, y] is not Stop) return;
+            SelectedStopFields.Add(Map[x,y]);
+            SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
-        public void QueryRoute(int x, int y)//
+        public void QueryRoute()//
         {
 
         }
-        public void AssignRoute(int x, int y)//
+        public void AssignRoute()//
         {
 
         }
-        public void DeleteRoute(int x, int y)//
+        public void DeleteRoute()//
         {
 
         }
