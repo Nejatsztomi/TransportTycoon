@@ -21,7 +21,7 @@ namespace TransportTycoon.Model
             Maintance = 100;
             Type = VehicleType.Van;
             //TODO: kitölteni az acceptedGoods listát
-            AcceptedGoods = new List<LoadType> { };
+            AcceptedGoods = new List<LoadType> { LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat };
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -47,7 +47,7 @@ namespace TransportTycoon.Model
             Maintance = 100;
             Type = VehicleType.Pickup;
             //TODO: kitölteni az acceptedGoods listát
-            AcceptedGoods = new List<LoadType> { };
+            AcceptedGoods = new List<LoadType> { LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat };
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -73,7 +73,7 @@ namespace TransportTycoon.Model
             Maintance = 100;
             Type = VehicleType.Truck;
             //TODO: kitölteni az acceptedGoods listát
-            AcceptedGoods = new List<LoadType> { };
+            AcceptedGoods = new List<LoadType> { LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat };
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -99,7 +99,7 @@ namespace TransportTycoon.Model
             Maintance = 100;
             Type = VehicleType.LiquidTruck;
             //TODO: kitölteni az acceptedGoods listát
-            AcceptedGoods = new List<LoadType> { };
+            AcceptedGoods = [LoadType.Oil];
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
