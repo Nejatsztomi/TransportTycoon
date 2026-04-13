@@ -45,8 +45,19 @@ namespace TransportTycoon.MapData
             }
             return possibleNeeds;
         }
-        //returns the leftover capacity of the vehicle after it tries to deliver the load to the connected buildings,
-        //if it can deliver at least some of it, otherwise returns the original capacity
+
+        /// <summary>
+        /// Attempts to deliver the specified load from the vehicle to all connected buildings and returns the remaining
+        /// capacity of the vehicle after delivery.
+        /// </summary>
+        /// <remarks>If the vehicle is empty or there are no connected buildings that can accept the
+        /// specified load, the method returns the original capacity. The method distributes the load to all eligible
+        /// buildings based on their available capacity.</remarks>
+        /// <param name="load">The type of load being delivered by the vehicle. Specify null if the vehicle is empty.</param>
+        /// <param name="vehicleCanGive">The maximum amount of load, in units, that the vehicle can deliver during this operation. Must be zero or
+        /// greater.</param>
+        /// <returns>The remaining capacity of the vehicle after attempting to deliver the load. Returns 0 if at least one
+        /// connected building accepts the load; otherwise, returns the original capacity.</returns>
         public int VehicleToBuilding(LoadType? load, int vehicleCanGive)
         {
             //a jarmu megerkezik, leadja a termeket ha tudja,
@@ -67,29 +78,31 @@ namespace TransportTycoon.MapData
 
             foreach(var building in buildings)
             {
-                int buildingCanTake = building.BuildingEntity.Capacity;
+                
+                int buildingCanTake = building.BuildingEntity.Capacity - building.BuildingEntity.Occupancy;
                 if (buildingCanTake >= vehicleCanGive)
                 {
-                    int buildingLeftOver = buildingCanTake - vehicleCanGive;
-                    building.BuildingEntity.SetCapacity(buildingLeftOver);
+                    int buildingNewOccupancy = building.BuildingEntity.Occupancy + vehicleCanGive;
+                    building.BuildingEntity.SetOccupancy(buildingNewOccupancy);
                     return 0;
                 }
                 else
                 {
                     vehicleCanGive = vehicleCanGive - buildingCanTake;
-                    building.BuildingEntity.SetCapacity(0);
+                    building.BuildingEntity.SetOccupancy(building.BuildingEntity.Capacity);
                 }
             }
+            //returns the leftover what the buildings couldnt take
             return vehicleCanGive;
         }
 
-        public bool BuildingToVehicle()
+        public (LoadType?, int) BuildingToVehicle(int maxVehicleCanTake, LoadType? currentLoad)
         {
-            return false;
             //a jarmu megerkezik, felveszi a termeket ha tudja,
             //akkor tudja felvenni, ha a jarmu olyan termeket fogad, mint amit gyár/város ad, vagy nem szállít semmit se
             //akkor nem, ha a jármű tele van
             //tele lehet?
+
         }
         public void SetBuildingBlocks(BuildingBlocks buildingBlock)
         {

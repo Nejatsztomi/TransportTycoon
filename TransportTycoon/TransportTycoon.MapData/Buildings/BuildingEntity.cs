@@ -98,11 +98,11 @@
             Occupancy = Math.Max(Occupancy - q, 0);
             return Occupancy;
         }
-        public void SetCapacity(int buildingLeftOver)
+        public void SetOccupancy(int occupancy)
         {
-            if (0 <= buildingLeftOver)
+            if (0 <= occupancy && occupancy <= Capacity)
             {
-                Occupancy = buildingLeftOver;
+                Occupancy = occupancy;
             }
         }
         #endregion

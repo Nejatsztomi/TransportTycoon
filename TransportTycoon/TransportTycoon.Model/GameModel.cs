@@ -562,12 +562,13 @@ namespace TransportTycoon.Model
                             quantity= stop.VehicleToBuilding(vehicle.CurrentLoad.LoadType, vehicle.CurrentCapacity);
                             vehicle.SetCurrentCapacity(quantity);
                         }
-                        
 
-                        //returns how much the vehicle can load?
+
+                        //returns how much the buildings can give to the vehicle, and what type of load it is
                         int max = vehicle.MaxCapacity - vehicle.CurrentCapacity;
-                        quantity = stop.BuildingToVehicle(max, vehicle.CurrentLoad);
+                        (load,quantity)= stop.BuildingToVehicle(max, vehicle.CurrentLoad.LoadType);
                         vehicle.SetCurrentCapacity(quantity);
+                        vehicle.SetCurrentLoad(load);
                     }
 
                 }
