@@ -364,9 +364,11 @@ namespace TransportTycoon.Model
         {
 
         }
-        public void AssignRoute()//
+        public void AssignRoute(int x, int y)//
         {
-
+            Vehicle? selectedVehcile = Vehicles.Find(v => v.X == x && v.Y == y);
+            if (selectedVehcile == null) return;
+            //selectedVehcile.SetProuth(SelectedStopFields)
         }
         public void DeleteRoute()//
         {
