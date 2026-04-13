@@ -37,6 +37,11 @@
         #endregion
 
         #region Private methods
+        /// <summary>
+        /// Creates a directed, weighted graph from the given nodes and edges.
+        /// </summary>
+        /// <param name="nodes">The graph's nodes.</param>
+        /// <param name="edges">The graph's directed and weighted edges.</param>
         private void CreateGraphFromNodesNodesAndEdges(List<Node> nodes, List<Edge> edges)
         {
             foreach (Node node in nodes)
