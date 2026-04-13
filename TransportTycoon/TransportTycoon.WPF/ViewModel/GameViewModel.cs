@@ -63,6 +63,7 @@ namespace TransportTycoon.WPF.ViewModel
             foreach (var tile in Tiles)
             {
                 tile.IsSelected = list.Any(t => t.X == tile.X && t.Y == tile.Y);
+                tile.SelectedOrder = list.FindIndex(t => t.X == tile.X && t.Y == tile.Y)+1;
             }
         }
 
@@ -209,7 +210,7 @@ namespace TransportTycoon.WPF.ViewModel
                 Model.DeleteRoute(-1, -1);
             }
             else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton!=22 && Model.SelectedField != null) Model.SetSelectedField(-1, -1);
-            else if (SelectedButton > 40 && SelectedButton != 43 && SelectedButton != 44) Model.DeleteRoute(-1, -1);
+            else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
 
         [RelayCommand(CanExecute = nameof(IsEditorMode))]

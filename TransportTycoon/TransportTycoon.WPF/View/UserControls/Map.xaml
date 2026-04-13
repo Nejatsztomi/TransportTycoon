@@ -114,8 +114,8 @@
 
                                         <Border BorderBrush="Red" 
                                                 BorderThickness="3" 
-                                                Background="#33FFFFFF"
-                                                >
+                                                Background="#33FFFFFF">
+
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -126,6 +126,10 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
+
+                                            <TextBlock Text="{Binding SelectedOrder}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       FontWeight="Bold" FontSize="32"/>
                                         </Border>
                                     </Grid>
 
