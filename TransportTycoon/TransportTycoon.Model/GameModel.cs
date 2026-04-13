@@ -555,9 +555,14 @@ namespace TransportTycoon.Model
                     Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
                     {
-                        //returns how much the vehicle can not unload?
-                        int quantity = stop.VehicleToBuilding(vehicle.CurrentLoad., vehicle.CurrentCapacity);
-                        vehicle.SetCurrentCapacity(quantity);
+                        //returns how much the vehicle can not unload
+                        int quantity;
+                        if (vehicle.CurrentLoad != null) 
+                        {
+                            quantity= stop.VehicleToBuilding(vehicle.CurrentLoad.LoadType, vehicle.CurrentCapacity);
+                            vehicle.SetCurrentCapacity(quantity);
+                        }
+                        
 
                         //returns how much the vehicle can load?
                         int max = vehicle.MaxCapacity - vehicle.CurrentCapacity;
