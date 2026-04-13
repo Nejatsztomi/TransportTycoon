@@ -20,21 +20,27 @@ namespace TransportTycoon.Model.Graph
             {
                 for (int y = 0; y < table.Height; y++)
                 {
-                    Field field = table[x, y];
+                    Field middleField = table[x, y];
 
-                    if (field.FieldType == FieldType.Stop && !visitedFields.Contains((x, y)))
+                    if (middleField.FieldType == FieldType.Stop && !visitedFields.Contains((x, y)))
                     {
-                        Node startNode = new(x, y, field.FieldType);
+                        Node startNode = new(x, y, middleField.FieldType);
                         nodes.Add(startNode);
                         visitedJunctions.Add((x, y));
 
                         (int dirx, int diry)[] directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
                         foreach ((int dirx, int diry) in directions)
                         {
-                            if (table.IsInBounds(x + dirx, y + diry) && table[x + dirx, y + diry].FieldType == FieldType.Road)
+                            if (table.IsInBounds(x + dirx, y + diry))
                             {
-                                Walker walker = new(startNode, table[x + dirx, y + diry], table, visitedFields, visitedJunctions);
-                                walkersQ.Enqueue(walker);
+                                Field neighbourField = table[x + dirx, y + diry];
+                                if (neighbourField.FieldType == FieldType.Road
+                                    || neighbourField.FieldType == FieldType.Bridge
+                                    || neighbourField.FieldType == FieldType.Stop)
+                                {
+                                    Walker walker = new(startNode, neighbourField, table, visitedFields, visitedJunctions);
+                                    walkersQ.Enqueue(walker);
+                                }
                             }
                         }
 
