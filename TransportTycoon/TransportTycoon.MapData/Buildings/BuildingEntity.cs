@@ -6,12 +6,12 @@
         /// <summary>
         /// Mennyit tud tárolni
         /// </summary>
-        public int Capacity { protected set; get; } = 1000;
+        public int MaxCapacity { protected set; get; } = 1000;
 
         /// <summary>
         /// Jelenleg mennyit termelt
         /// </summary>
-        public int Occupancy { protected set; get; } = 0;
+        public int CurrentCapacity { protected set; get; } = 0;
 
         /// <summary>
         /// Milyen mennyiséggel termel
@@ -69,7 +69,7 @@
         {
             int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
 
-            Occupancy = Math.Min(Occupancy + production, Capacity);
+            CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
         }
         #endregion
 
@@ -95,14 +95,14 @@
         /// <returns>The maximum what the factory can give</returns>
         public int Unload(int q)
         {
-            Occupancy = Math.Max(Occupancy - q, 0);
-            return Occupancy;
+            CurrentCapacity = Math.Max(CurrentCapacity - q, 0);
+            return CurrentCapacity;
         }
-        public void SetOccupancy(int occupancy)
+        public void SetCurrentCapacity(int currentCapacity)
         {
-            if (0 <= occupancy && occupancy <= Capacity)
+            if (0 <= currentCapacity && currentCapacity <= MaxCapacity)
             {
-                Occupancy = occupancy;
+                CurrentCapacity = currentCapacity;
             }
         }
         #endregion
@@ -240,14 +240,14 @@
             double multiplier = GetMultiplier();
             int production = (int)Math.Round(Scaler * ConsumeOccupancy * Productivity * multiplier);
 
-            if (Occupancy + production > Capacity)
+            if (CurrentCapacity + production > MaxCapacity)
             {
-                Occupancy = Capacity;
+                CurrentCapacity = MaxCapacity;
                 ConsumeOccupancy = (int)Math.Round((production / Scaler) / (Productivity * multiplier));
             }
             else
             {
-                Occupancy += production;
+                CurrentCapacity += production;
                 ConsumeOccupancy = 0;
             }
         }
