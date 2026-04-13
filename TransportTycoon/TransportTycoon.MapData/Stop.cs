@@ -19,11 +19,16 @@ namespace TransportTycoon.MapData
 
         #region Public Methods
         /// <summary>
-        /// returns the buildings what the vehicle is compatible with
+        /// Retrieves a list of buildings that can accept any of the specified load types.
         /// </summary>
-        /// <param name="vehicleAcceptedGoods"></param>
-        /// <returns></returns>
-        public List<BuildingBlocks> ShowLoads(List<LoadType> vehicleAcceptedGoods)
+        /// <remarks>If the connections collection is null, the method returns an empty list. This method
+        /// filters buildings based on the load types they can consume, as determined by each building's
+        /// entity.</remarks>
+        /// <param name="vehicleAcceptedGoods">A list of load types representing the goods that vehicles can deliver. Only buildings that accept at least
+        /// one of these load types are included in the result.</param>
+        /// <returns>A list of BuildingBlocks objects representing buildings that can accept at least one of the specified load
+        /// types. The list is empty if no such buildings are found or if there are no connections.</returns>
+        public List<BuildingBlocks> ShowWhatTheBuildingsCanGet(List<LoadType> vehicleAcceptedGoods)
         {
             List<BuildingBlocks> buildings = new List<BuildingBlocks>();
             if (Connenctions is null) return buildings;
@@ -39,19 +44,31 @@ namespace TransportTycoon.MapData
             return buildings;
         }
         /// <summary>
-        /// Retrieves a list of load types that represent the consumption needs of all connected buildings.
+        /// Retrieves a list of building blocks that can provide goods accepted by the specified vehicles.
         /// </summary>
-        public List<BuildingBlocks> ShowNeeds()
+        /// <remarks>If the connections are null, an empty list is returned. This method filters buildings
+        /// based on the load type they provide and the types of goods that the vehicles can accept.</remarks>
+        /// <param name="vehicleAcceptedGoods">A list of load types representing the goods that the vehicles can accept. Only buildings that provide one of
+        /// these load types are included in the result.</param>
+        /// <returns>A list of BuildingBlocks that can provide goods matching the specified vehicle accepted goods. The list is
+        /// empty if no buildings match the criteria or if there are no connections.</returns>
+        public List<BuildingBlocks> ShowWhatTheBuildingsCanGive(List<LoadType> vehicleAcceptedGoods)
         {
-            if (Connenctions is null) return new List<LoadType>();
-            List<LoadType> possibleNeeds = new List<LoadType>();
+            List<BuildingBlocks> buildings = new List<BuildingBlocks>();
+            if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
-                possibleNeeds.Add(building.BuildingEntity.GetConsumeLoad());
+                LoadType type = building.BuildingEntity.GetProvideLoad();
+                if (vehicleAcceptedGoods.Contains(type))
+                {
+                    buildings.Add(building);
+                }
+
             }
-            return possibleNeeds;
+            return buildings;
         }
 
+        
         /// <summary>
         /// Attempts to deliver the specified load from the vehicle to all connected buildings and returns the remaining
         /// capacity of the vehicle after delivery.
