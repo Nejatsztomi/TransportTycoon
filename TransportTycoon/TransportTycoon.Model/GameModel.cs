@@ -546,7 +546,7 @@ namespace TransportTycoon.Model
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
 
-        private void AllVehiclesTryToTransport()
+        private void AllVehiclesDoTheTransport()
         {
             foreach (var vehicle in Vehicles)
             {
@@ -672,6 +672,7 @@ namespace TransportTycoon.Model
                 return;
             }
             GameTime++;
+            AllVehiclesDoTheTransport();
             if (GameTime > 0 && GameTime % 10 == 0)
             {
                 var grownTrees = ForestGrowing();
