@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData.Buildings
+﻿using TransportTycoon.MapData;
+namespace TransportTycoon.MapData.Buildings
+
 {
     public abstract class BuildingEntity
     {
@@ -52,12 +54,12 @@
         /// Returns the facility's consume load type
         /// </summary>
         /// <returns>The load type</returns>
-        public abstract LoadType GetConsumeLoad();
+        public abstract Load? GetConsumeLoad();
         /// <summary>
         /// Returns the facility's provided load type
         /// </summary>
         /// <returns>The load type</returns>
-        public abstract LoadType GetProvideLoad();
+        public abstract Load GetProvideLoad();
         public abstract void GenerateBuildingPoints(int startX, int startY);
         #endregion
 
@@ -120,8 +122,8 @@
 
         #region Public methods
         #region Overrides
-        public override LoadType GetConsumeLoad() => LoadType.None;
-        public override LoadType GetProvideLoad() => LoadType.People;
+        public override Load? GetConsumeLoad() => null;
+        public override Load GetProvideLoad() => new Load.People();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -138,6 +140,8 @@
 
     public abstract class SiteEntity : BuildingEntity
     {
+        
+
         #region Constructors
         protected SiteEntity()
         {
@@ -156,8 +160,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.None;
-        public override LoadType GetProvideLoad() => LoadType.Wood;
+        public override Load? GetConsumeLoad() => null;
+        public override Load GetProvideLoad() => new Wood();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -181,8 +185,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.None;
-        public override LoadType GetProvideLoad() => LoadType.Oil;
+        public override Load? GetConsumeLoad() => null;
+        public override Load GetProvideLoad() => new Oil();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -206,8 +210,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.None;
-        public override LoadType GetProvideLoad() => LoadType.Wheat;
+        public override Load? GetConsumeLoad() => null;
+        public override Load GetProvideLoad() => new Wheat();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -263,8 +267,8 @@
         }
         #endregion
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.Wheat;
-        public override LoadType GetProvideLoad() => LoadType.Flour;
+        public override Load? GetConsumeLoad() => new Wheat();
+        public override Load GetProvideLoad() => new Flour();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -288,8 +292,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.Wood;
-        public override LoadType GetProvideLoad() => LoadType.Paper;
+        public override Load? GetConsumeLoad() => new Wood();
+        public override Load GetProvideLoad() => new Paper();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -313,8 +317,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.Oil;
-        public override LoadType GetProvideLoad() => LoadType.Rubber;
+        public override Load? GetConsumeLoad() => new Oil();
+        public override Load GetProvideLoad() => new Rubber();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)

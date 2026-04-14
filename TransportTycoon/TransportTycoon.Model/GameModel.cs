@@ -568,7 +568,7 @@ namespace TransportTycoon.Model
                         LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
                         foreach (var building in buildings_taker)
                         {
-                            if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()) 
+                            if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType) 
                             {
                                 vehicleCanGive = vehicle.CurrentCapacity;
                                 int buildingCanTake = building.BuildingEntity.MaxCapacity - building.BuildingEntity.CurrentCapacity;
@@ -592,8 +592,8 @@ namespace TransportTycoon.Model
                         int vehicleCanTake = vehicle.MaxCapacity - vehicle.CurrentCapacity;
                         foreach (var building in buildings_giver)
                         {
-                            LoadType? buildingLoad = building.BuildingEntity.GetProvideLoad();
-                            if (vehicleAcceptedGoods.Contains(buildingLoad!.Value))
+                            Load buildingLoad = building.BuildingEntity.GetProvideLoad();
+                            if (vehicleAcceptedGoods.Contains(buildingLoad.LoadType))
                             {
                                 int buildingCanGive = building.BuildingEntity.CurrentCapacity;
                                 if (buildingCanGive >= vehicleCanTake)
@@ -612,23 +612,6 @@ namespace TransportTycoon.Model
                                 }
                             }
                         }
-
-
-
-                        ////returns how much the vehicle can not unload
-                        //int quantity;
-                        //if (vehicle.CurrentLoad != null) 
-                        //{
-                        //    quantity= stop.VehicleToBuilding(vehicle.CurrentLoad.LoadType, vehicle.CurrentCapacity);
-                        //    vehicle.SetCurrentCapacity(quantity);
-                        //}
-
-
-                        ////returns how much the buildings can give to the vehicle, and what type of load it is
-                        //int max = vehicle.MaxCapacity - vehicle.CurrentCapacity;
-                        //(load,quantity)= stop.BuildingToVehicle(max, vehicle.CurrentLoad.LoadType);
-                        //vehicle.SetCurrentCapacity(quantity);
-                        //vehicle.SetCurrentLoad(load);
                     }
 
                 }

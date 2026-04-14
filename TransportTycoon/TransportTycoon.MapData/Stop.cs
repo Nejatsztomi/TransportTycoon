@@ -34,7 +34,12 @@ namespace TransportTycoon.MapData
             if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
-                LoadType type = building.BuildingEntity.GetConsumeLoad();
+                LoadType type = LoadType.None;
+                Load? load = building.BuildingEntity.GetConsumeLoad();
+                if (load != null) 
+                {
+                     type= load.LoadType;
+                }
                 if (vehicleAcceptedGoods.Contains(type))
                 {
                     buildings.Add(building);
@@ -58,7 +63,7 @@ namespace TransportTycoon.MapData
             if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
-                LoadType type = building.BuildingEntity.GetProvideLoad();
+                LoadType type = building.BuildingEntity.GetProvideLoad().LoadType;
                 if (vehicleAcceptedGoods.Contains(type))
                 {
                     buildings.Add(building);
