@@ -1,4 +1,3 @@
-using System.Xml.Schema;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 namespace TransportTycoon.Model

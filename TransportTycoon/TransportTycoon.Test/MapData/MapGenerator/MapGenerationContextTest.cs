@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.Test.MapData.MapGenerator;

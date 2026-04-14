@@ -1,10 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TransportTycoon.Model;
-using TransportTycoon.MapData;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {

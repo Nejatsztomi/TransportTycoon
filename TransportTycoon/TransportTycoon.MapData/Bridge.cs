@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public enum BridgeType
     {
