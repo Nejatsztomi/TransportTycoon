@@ -1,6 +1,9 @@
 ﻿namespace TransportTycoon.Model.Graph
 {
-    public class AStarPathfinder
+    /// <summary>
+    /// A path finder class that implements the A* algorithm to find the shortest path between two nodes in a graph.
+    /// </summary>
+    public class AStarPathfinder : IPathFinder
     {
         #region Private fields
         private readonly Graph _graph;
