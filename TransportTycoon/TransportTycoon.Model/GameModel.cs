@@ -564,62 +564,68 @@ namespace TransportTycoon.Model
                         if(buildings_giver.Count == 0 && buildings_taker.Count == 0) continue;
 
                         //jármű ad a buildingnek
-                        
-                        int vehicleCanGive;
-                        LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
-                        foreach (var building in buildings_taker)
+                        if (vehicle.CurrentCapacity > 0 && vehicle.CurrentLoad != null) 
                         {
-                            if (building.BuildingEntity is IndustryEntity industry) 
+                            int vehicleCanGive;
+                            LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
+                            foreach (var building in buildings_taker)
                             {
-                                if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
+                                if (building.BuildingEntity is IndustryEntity industry)
                                 {
-                                    vehicleCanGive = vehicle.CurrentCapacity;
-                                    int buildingCanTake = building.BuildingEntity.MaxCapacity - building.BuildingEntity.CurrentCapacity;
-                                    if (buildingCanTake >= vehicleCanGive)
+                                    if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
                                     {
-                                        int buildingNewCapacity = building.BuildingEntity.CurrentCapacity + vehicleCanGive;
+                                        vehicleCanGive = vehicle.CurrentCapacity;
+                                        int buildingCanTake = industry.MaxConsumeCapacity - industry.ConsumeOccupancy;
+                                        if (buildingCanTake >= vehicleCanGive)
+                                        {
+                                            int buildingNewCapacity = industry.ConsumeOccupancy + vehicleCanGive;
+                                            industry.SetConsumeOccupancy(buildingNewCapacity);
+                                            vehicle.SetCurrentCapacity(0);
+                                            vehicle.SetCurrentLoad(null);
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            vehicleCanGive = vehicleCanGive - buildingCanTake;
+                                            industry.SetConsumeOccupancy(industry.MaxConsumeCapacity);
+                                            vehicle.SetCurrentCapacity(vehicleCanGive);
+                                        }
+                                    }
+                                }
+                            }
+                        } 
+                        
+
+                        //building ad a járműnek
+                        int vehicleCanTake = vehicle.MaxCapacity - vehicle.CurrentCapacity;
+                        if (vehicleCanTake > 0) 
+                        {
+                            foreach (var building in buildings_giver)
+                            {
+                                Load buildingLoad = building.BuildingEntity.GetProvideLoad();
+
+                                bool acceptsLoad = vehicleAcceptedGoods.Contains(buildingLoad.LoadType);
+                                bool isEmptyOrSameLoad = (vehicle.CurrentCapacity == 0) || (vehicle.CurrentLoad?.LoadType == buildingLoad.LoadType);
+
+                                if (acceptsLoad && isEmptyOrSameLoad)
+                                {
+                                    int buildingCanGive = building.BuildingEntity.CurrentCapacity;
+                                    if (buildingCanGive >= vehicleCanTake)
+                                    {
+                                        int buildingNewCapacity = buildingCanGive - vehicleCanTake;
                                         building.BuildingEntity.SetCurrentCapacity(buildingNewCapacity);
-                                        vehicle.SetCurrentCapacity(0);
-                                        vehicle.SetCurrentLoad(null);
+                                        vehicle.SetCurrentCapacity(vehicle.MaxCapacity);
+                                        vehicle.SetCurrentLoad(buildingLoad);
+                                        vehicleCanTake = 0;
                                         break;
                                     }
                                     else
                                     {
-                                        vehicleCanGive = vehicleCanGive - buildingCanTake;
-                                        building.BuildingEntity.SetCurrentCapacity(building.BuildingEntity.MaxCapacity);
-                                        vehicle.SetCurrentCapacity(vehicleCanGive);
+                                        vehicleCanTake = vehicleCanTake - buildingCanGive;
+                                        building.BuildingEntity.SetCurrentCapacity(0);
+                                        vehicle.SetCurrentCapacity(vehicle.CurrentCapacity + buildingCanGive);
+                                        vehicle.SetCurrentLoad(buildingLoad);
                                     }
-                                }
-                            }
-                        }
-
-                        //building ad a járműnek
-                        int vehicleCanTake = vehicle.MaxCapacity - vehicle.CurrentCapacity;
-                        foreach (var building in buildings_giver)
-                        {
-                            Load buildingLoad = building.BuildingEntity.GetProvideLoad();
-
-                            bool acceptsLoad = vehicleAcceptedGoods.Contains(buildingLoad.LoadType);
-                            bool isEmptyOrSameLoad = (vehicle.CurrentCapacity == 0) || (vehicle.CurrentLoad?.LoadType == buildingLoad.LoadType);
-
-                            if (acceptsLoad && isEmptyOrSameLoad)
-                            {
-                                int buildingCanGive = building.BuildingEntity.CurrentCapacity;
-                                if (buildingCanGive >= vehicleCanTake)
-                                {
-                                    int buildingNewCapacity = buildingCanGive - vehicleCanTake;
-                                    building.BuildingEntity.SetCurrentCapacity(buildingNewCapacity);
-                                    vehicle.SetCurrentCapacity(vehicle.MaxCapacity);
-                                    vehicle.SetCurrentLoad(buildingLoad);
-                                    vehicleCanTake = 0;
-                                    break;
-                                }
-                                else
-                                {
-                                    vehicleCanTake = vehicleCanTake - buildingCanGive;
-                                    building.BuildingEntity.SetCurrentCapacity(0);
-                                    vehicle.SetCurrentCapacity(vehicle.CurrentCapacity + buildingCanGive);
-                                    vehicle.SetCurrentLoad(buildingLoad);
                                 }
                             }
                         }

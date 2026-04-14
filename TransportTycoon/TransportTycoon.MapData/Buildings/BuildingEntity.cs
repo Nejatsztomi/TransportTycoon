@@ -229,6 +229,7 @@ namespace TransportTycoon.MapData.Buildings
     {
         #region Properties
         public int ConsumeOccupancy { protected set; get; }
+        public int MaxConsumeCapacity => 100;
         #endregion
 
         #region Constructors
