@@ -11,7 +11,7 @@
         {
             X = x;
             Y = y;
-            Height = -1;
+            Height = 1;
             Modifiable = false;
 
             BuildingEntity = buildingEntity;

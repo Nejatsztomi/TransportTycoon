@@ -15,46 +15,83 @@ namespace TransportTycoon.Model
     public abstract class Vehicle
     {
         #region Fields
-        public int TopSpeed { get; protected set; }
-        public int CurrentSpeed { get; protected set; }
+        public double TopSpeed { get; protected set; }
+        public double CurrentSpeed { get; protected set; }
         public Load? CurrentLoad { get; protected set; }
         public int MaxCapacity { get; protected set; }
         public int CurrentCapacity { get; protected set; }
         public Prouth? Route { get; protected set; }
         public VehicleType Type { get; protected set; }
-        public int X { get; protected set; }
-        public int Y { get; protected set; }
+        public double X { get; protected set; }
+        public double Y { get; protected set; }
         public Direction Direction { get; protected set; }
         public int Price { get; protected set; }
         public int Maintance { get; protected set; }
+
+        public int MapX => (int)Math.Round(X);
+        public int MapY => (int)Math.Round(Y);
+        public List<LoadType>? AcceptedGoods { get; protected set; } = new List<LoadType>();
         #endregion
 
         #region Public methods
-        public void ChangeSpeed(int speed)
-        {
-            if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
-        }
-
-        public void Step(Direction dir)
+        public void Step(Direction dir = Direction.Up)
         {
             switch (dir)
             {
                 case Direction.Up:
-                    Y--;
+                    X -= CurrentSpeed;
+                    Direction = Direction.Up;
                     break;
                 case Direction.Down:
-                    Y++;
+                    X += CurrentSpeed;
+                    Direction = Direction.Down;
                     break;
                 case Direction.Left:
-                    X--;
+                    Y -= CurrentSpeed;
+                    Direction = Direction.Left;
                     break;
                 case Direction.Right:
-                    X++;
+                    Y += CurrentSpeed;
+                    Direction = Direction.Right;
                     break;
                 default:
                     break;
             }
         }
+        /// <summary>
+        /// Sets the current capacity of the vehicle, if the given quantity is between 0 and the maximum capacity of the vehicle. If the quantity is set to 0, the current load is also set to null.
+        /// </summary>
+        /// <param name="quantity"></param>
+        public void SetCurrentCapacity(int quantity)
+        {
+            if (quantity >= 0 && quantity <= MaxCapacity) CurrentCapacity = quantity;
+
+            if (CurrentCapacity == 0) CurrentLoad = null;
+        }
+        /// <summary>
+        /// Sets the current load to the specified value if it is valid and accepted by the vehicle.
+        /// </summary>
+        /// <remarks>If the specified load is accepted by the vehicle, the current load is updated.
+        /// Setting the current load to null also resets the current capacity to zero.</remarks>
+        /// <param name="load">The load to assign as the current load. Specify null to clear the current load.</param>
+        public void SetCurrentLoad(Load? load)
+        {
+            if (load == null || AcceptedGoods != null && AcceptedGoods.Contains(load.LoadType))
+            {
+                CurrentLoad = load;
+                if (CurrentLoad == null) CurrentCapacity = 0;
+            }
+        }
+
+        /// <summary>
+        /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
+        /// </summary>
+        /// <param name="speed"></param>
+        public void ChangeCurrentSpeed(double speed)
+        {
+            if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
+        }
+
 
         public int Load(int quantity, Load load) //returns leftover
         {

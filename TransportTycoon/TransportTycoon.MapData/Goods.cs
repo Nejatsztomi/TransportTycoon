@@ -9,7 +9,6 @@
             return Tax * Price;
         }
 
-        //nincs benne az osztálydiagrammba
         public static void SetGlobalTax(int tax)
         {
             Tax = tax;
