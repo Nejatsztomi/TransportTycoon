@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using TransportTycoon.MapData;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -30,6 +31,8 @@ namespace TransportTycoon.WPF.ViewModel
         private double _zoomLevel = 1.0;
         #endregion
         [ObservableProperty]
+        private int _selectedTabIndex = 0;
+        [ObservableProperty]
         private int _selectedButton = 0;
         #endregion
 
@@ -46,6 +49,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.BalanceChanged += Model_BalanceChanged;
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
             model.VehicleChanged += Model_VehicleChanged;
+            model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
 
             Tiles = [];
             Vehicles = [];
@@ -54,6 +58,16 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
+        private void Model_SelectedStopFieldsChanged(object? sender, List<Stop> list)
+        {
+            if (list == null) return;
+            foreach (var tile in Tiles)
+            {
+                tile.IsSelected = list.Any(t => t.X == tile.X && t.Y == tile.Y);
+                tile.SelectedOrder = list.FindIndex(t => t.X == tile.X && t.Y == tile.Y) + 1;
+            }
+        }
+
         private void Model_SelectedFieldChanged(object? sender, (int, int) e)
         {
             if (Model.SelectedField == null)
@@ -131,6 +145,11 @@ namespace TransportTycoon.WPF.ViewModel
             }
             Tiles = new(tempList);
         }
+
+        partial void OnSelectedTabIndexChanged(int value)
+        {
+            OnSetSelectedButton(value);
+        }
         #endregion
 
         #region Relay commands
@@ -165,7 +184,8 @@ namespace TransportTycoon.WPF.ViewModel
         private void OnResumeGame()
         {
             Model.Mode = GameMode.Run;
-            Model.SetSelectedField(-1, -1);
+            if (Model.SelectedField != null) Model.SetSelectedField(-1, -1);
+            Model.DeleteRoute(-1, -1);
         }
 
         [RelayCommand]
@@ -197,7 +217,13 @@ namespace TransportTycoon.WPF.ViewModel
         {
             if (x == null) return;
             SelectedButton = Convert.ToInt32(x);
-            Model.SetSelectedField(-1, -1);
+            if (SelectedButton < 10)
+            {
+                if (Model.SelectedField != null) Model.SetSelectedField(-1, -1);
+                Model.DeleteRoute(-1, -1);
+            }
+            else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton != 22 && Model.SelectedField != null) Model.SetSelectedField(-1, -1);
+            else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
         [RelayCommand]
         private void OnVehicleStepUp()
@@ -227,38 +253,49 @@ namespace TransportTycoon.WPF.ViewModel
             if (tile == null) return;
             switch (SelectedButton)
             {
-                case 1:
+                case 11:
                     Model.DecreaseHeight(tile.X, tile.Y);
                     break;
-                case 2:
+                case 12:
                     Model.IncreaseHeight(tile.X, tile.Y);
                     break;
-                case 11:
+                case 21:
                     Model.BuildRoad(tile.X, tile.Y);
                     break;
-                case 12:
+                case 22:
                     Model.BuildBridge(tile.X, tile.Y);
                     break;
-                case 13:
+                case 23:
                     Model.BuildStop(tile.X, tile.Y);
                     break;
-                case 14:
+                case 24:
                     Model.Destroy(tile.X, tile.Y);
                     break;
-                case 21:
+                case 31:
                     Vehicle vehicle = Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus)!;
                     if (vehicle != null)
                     {
                         Vehicles.Add(new VehicleViewModel(vehicle));
                     }
                     break;
-                case 22:
+                case 32:
                     Vehicle vehicle2 = Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus)!;
                     if (vehicle2 != null)
                     {
                         Vehicles.Add(new VehicleViewModel(vehicle2));
                     }
-
+                    break;
+                case 41:
+                    Model.DefineRoute(tile.X, tile.Y);
+                    break;
+                case 42:
+                    Model.QueryRoute(tile.X, tile.Y);
+                    break;
+                case 43:
+                    Model.AssignRoute(tile.X, tile.Y);
+                    break;
+                case 44:
+                    Model.DeleteRoute(tile.X, tile.Y);
                     break;
                 default:
                     break;

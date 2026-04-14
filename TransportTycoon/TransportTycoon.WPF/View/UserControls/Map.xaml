@@ -102,7 +102,8 @@
                                                 IsHitTestVisible="False"
                                                 Margin="2"
                                                 />
-                                        
+
+                                        <!-- Hover effektus -->
                                         <Border x:Name="HoverOverlay" 
                                                 Visibility="Hidden" 
                                                 BorderBrush="Yellow" 
@@ -112,10 +113,11 @@
                                                 Panel.ZIndex="5"
                                                 />
 
+                                        <!-- Kijelölt mezők -->
                                         <Border BorderBrush="Red" 
                                                 BorderThickness="3" 
-                                                Background="#33FFFFFF"
-                                                >
+                                                Background="#33FFFFFF">
+
                                             <Border.Style>
                                                 <Style TargetType="Border">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -126,6 +128,10 @@
                                                     </Style.Triggers>
                                                 </Style>
                                             </Border.Style>
+
+                                            <TextBlock Text="{Binding SelectedOrder}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       FontWeight="Bold" FontSize="32"/>
                                         </Border>
                                     </Grid>
 

@@ -16,6 +16,8 @@ namespace TransportTycoon.WPF.ViewModel
         public int TreeCounter => Field.GetTrees();
         [ObservableProperty]
         private bool _isSelected;
+        [ObservableProperty]
+        private int _selectedOrder;
         public SolidColorBrush MinimapColor
         {
             get
