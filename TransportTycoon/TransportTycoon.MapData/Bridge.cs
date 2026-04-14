@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public enum BridgeType
     {
@@ -16,7 +14,7 @@ namespace TransportTycoon.MapData
         #endregion
     }
 
-    public class YellowBridge : Bridge
+    public sealed class YellowBridge : Bridge
     {
         #region Constructor
         public YellowBridge(int x, int y, BridgeType type, int height)
@@ -33,7 +31,7 @@ namespace TransportTycoon.MapData
         #endregion
     }
 
-    public class GreenBridge : Bridge
+    public sealed class GreenBridge : Bridge
     {
         #region Constructor
         public GreenBridge(int x, int y, BridgeType type, int height)
@@ -50,7 +48,7 @@ namespace TransportTycoon.MapData
         #endregion
     }
 
-    public class RedBridge : Bridge
+    public sealed class RedBridge : Bridge
     {
         #region Constructor
         public RedBridge(int x, int y, BridgeType type, int height)

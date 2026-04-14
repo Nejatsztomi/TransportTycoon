@@ -24,7 +24,7 @@ namespace TransportTycoon.MapData.MapGenerator
         }
     }
 
-    internal class MapGenerator : IMapGenerator
+    internal sealed class MapGenerator : IMapGenerator
     {
         #region Private fields
         private readonly ITerrainGenerator _terrainGenerator;

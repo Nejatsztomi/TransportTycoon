@@ -19,7 +19,7 @@
         #endregion
     }
 
-    public class House : BuildingBlocks
+    public sealed class House : BuildingBlocks
     {
         #region Constructors
         public House(int x, int y, CityEntity buildingEntity) : base(x, y, buildingEntity)

@@ -4,7 +4,7 @@ using TransportTycoon.MapData;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class FieldViewModel : ViewModelBase
+    public sealed partial class FieldViewModel : ViewModelBase
     {
         #region Properties
         public string ImagePath { get; set; }

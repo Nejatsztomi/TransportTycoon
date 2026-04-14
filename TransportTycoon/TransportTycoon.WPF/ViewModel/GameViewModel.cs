@@ -6,7 +6,7 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class GameViewModel : ViewModelViewConstraintBase, IDisposable
+    public sealed partial class GameViewModel : ViewModelViewConstraintBase, IDisposable
     {
         #region Properties
         #region IViewConstraints
@@ -73,12 +73,12 @@ namespace TransportTycoon.WPF.ViewModel
             if (Model.SelectedField == null)
             {
                 var tile = Tiles.FirstOrDefault(t => t.IsSelected);
-                if (tile != null) tile.IsSelected = false;
+                tile?.IsSelected = false;
             }
             else
             {
                 var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
-                if (tile != null) tile.IsSelected = true;
+                tile?.IsSelected = true;
             }
         }
 
@@ -91,10 +91,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
 
-            if (tile != null)
-            {
-                tile.RefreshTerrain(Model.Map[e.X, e.Y]);
-            }
+            tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
         }
         private void Model_VehicleChanged(object? sender, (int oldX, int oldY, int newX, int newY) e)
         {
@@ -134,8 +131,9 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void RefreshTable()
         {
-            //Tiles.Clear();
+#pragma warning disable IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             List<FieldViewModel> tempList = new(Model.Map.Width * Model.Map.Height + 1);
+#pragma warning restore IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             for (int x = 0; x < Model.Map.Width; x++)
             {
                 for (int y = 0; y < Model.Map.Height; y++)
@@ -143,7 +141,10 @@ namespace TransportTycoon.WPF.ViewModel
                     tempList.Add(new(Model.Map[x, y]));
                 }
             }
+
+#pragma warning disable IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             Tiles = new(tempList);
+#pragma warning restore IDE0028 // Simplify collection initialization, not yet supported in .NET 10
         }
 
         partial void OnSelectedTabIndexChanged(int value)

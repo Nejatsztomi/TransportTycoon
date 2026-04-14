@@ -12,7 +12,7 @@ namespace TransportTycoon.Model
         #endregion 
     }
 
-    public class SmallBus : Bus
+    public sealed class SmallBus : Bus
     {
         #region Constructor
         public SmallBus(int x, int y, Direction direction, Prouth route = null!) : base()
@@ -36,7 +36,7 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class BigBus : Bus
+    public sealed class BigBus : Bus
     {
         #region Constructor
         public BigBus(int x, int y, Direction direction, Prouth route = null!) : base()

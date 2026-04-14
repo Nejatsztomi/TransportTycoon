@@ -5,7 +5,7 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class MainViewModel : ViewModelViewConstraintBase
+    public sealed partial class MainViewModel : ViewModelViewConstraintBase
     {
         #region Private fields
         [ObservableProperty]

@@ -1,7 +1,5 @@
-using System.ComponentModel;
 using System.Windows;
 using TransportTycoon.Model;
-using TransportTycoon.WPF.View;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF

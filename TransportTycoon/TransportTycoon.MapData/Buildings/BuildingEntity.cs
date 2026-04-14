@@ -1,5 +1,4 @@
-﻿using TransportTycoon.MapData;
-namespace TransportTycoon.MapData.Buildings
+﻿namespace TransportTycoon.MapData.Buildings
 
 {
     public abstract class BuildingEntity
@@ -110,7 +109,7 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
     }
 
-    public class CityEntity : BuildingEntity
+    public sealed class CityEntity : BuildingEntity
     {
         #region Constructors
         public CityEntity(int width, int height) : base(width, height)
@@ -150,7 +149,7 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
     }
 
-    public class LumberCampEntity : SiteEntity
+    public sealed class LumberCampEntity : SiteEntity
     {
         #region Constructors
         public LumberCampEntity()
@@ -175,7 +174,7 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
     }
 
-    public class MineEntity : SiteEntity
+    public sealed class MineEntity : SiteEntity
     {
         #region Constructors
         public MineEntity()
@@ -200,7 +199,7 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
     }
 
-    public class FarmEntity : SiteEntity
+    public sealed class FarmEntity : SiteEntity
     {
         #region Constructors
         public FarmEntity()
@@ -267,7 +266,7 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
     }
 
-    public class MillEntity : IndustryEntity
+    public sealed class MillEntity : IndustryEntity
     {
         #region Constructors
         public MillEntity()
@@ -291,7 +290,7 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
     }
 
-    public class PlantEntity : IndustryEntity
+    public sealed class PlantEntity : IndustryEntity
     {
         #region Constructors
         public PlantEntity()
@@ -316,7 +315,7 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
     }
 
-    public class FactoryEntity : IndustryEntity
+    public sealed class FactoryEntity : IndustryEntity
     {
         #region Constructors
         public FactoryEntity()

@@ -18,10 +18,8 @@ public class INoiseGeneratorTest
         }
     }
 
-    [TestClass]
     public class NoiseGenerationTest
     {
-        [TestClass]
         public class PerlinNoiseGeneratorTest
         {
             private static readonly MapGenerationContext _context = new(10, 15, 0, new MapGenerationSettings());

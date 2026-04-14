@@ -1,3 +1,6 @@
+# Default image (both Linux and Windows)
+image: mcr.microsoft.com/dotnet/sdk:10.0
+
 workflow:
     rules:
         # 1. Run automatically on Merge Requests
@@ -12,43 +15,141 @@ workflow:
 
 stages:
     - lint
-    - test
     - build
+    - test
 
 variables:
+    # Copied from tictactoe-dotnet
+    # Enable GitLab Advanced SAST (Ultimate feature)
+    GITLAB_ADVANCED_SAST_ENABLED: true
+
     BUILD_CONFIGURATION: 'Release'
     ROOT: './TransportTycoon'
-    TEST_PATH: '${ROOT}/TransportTycoon.Test/TransportTycoon.Test.csproj'
-    WPF_PATH: '${ROOT}/TransportTycoon.WPF/TransportTycoon.WPF.csproj'
+    SOLUTION_PATH: '${ROOT}/TransportTycoon.slnx'
+    MODEL_PATH: '${ROOT}/TransportTycoon.Model'
+    MAPDATA_PATH: '${ROOT}/TransportTycoon.MapData'
+    TEST_PATH: '${ROOT}/TransportTycoon.Test'
+
+# Copied from tictactoe-dotnet
+include:
+  # NuGet Dependency Scanning
+  # https://docs.gitlab.com/ee/user/application_security/dependency_scanning/
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
+  # Secret Detection
+  # https://docs.gitlab.com/user/application_security/secret_detection/
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
+  # Static Application Security Testing (SAST)
+  # https://docs.gitlab.com/user/application_security/sast/
+  - template: Jobs/SAST.gitlab-ci.yml
+  # Static analysis-based Code Quality evaluation for .NET/C#
+  # https://szofttech.inf.elte.hu/components/code-quality-dotnet
+  - component: szofttech.inf.elte.hu/components/code-quality-dotnet/windows@2
+    inputs:
+        check_path: '${ROOT}'
+        # We already have the analyzer plus some extra like NSubstitute.Analyzers
+        ruleset: project
+
+# Override depedencies artifact lifetime
+sast:
+    artifacts:
+        expire_in: 14 days
+
+dependency_scanning:
+  artifacts:
+    expire_in: 7 days
+
+secret_detection:
+  artifacts:
+    expire_in: 7 days
 
 # 1. Linting on Windows
+# We need Windows because 
 check_formatting:
     stage: lint
     image: mcr.microsoft.com/dotnet/sdk:10.0-windowsservercore-ltsc2025
     tags:
         - windows # This routes the job to your Windows runner
+    before_script:
+        - dotnet --version
     script:
         - echo "Checking code formatting against .editorconfig on Windows..."
-        - dotnet format ${ROOT} --verify-no-changes
+        - echo "Path is ${ROOT}"
+        - dotnet format ${ROOT} --verify-no-changes -v diag
 
-# 2. Testing the Model on Linux
-test_model:
-    stage: test
-    image: mcr.microsoft.com/dotnet/sdk:10.0
-    needs:
-        - check_formatting
+# 2.1. Build the model on Linux
+build_model:
+    stage: build
+    before_script:
+        - dotnet --version
     script:
-        - echo "Running unit tests on Linux..."
-        - dotnet test ${TEST_PATH} --verbosity normal
+        - echo "Building the model and mapdata projects on Linux..."
+        - dotnet build ${MODEL_PATH} -c ${BUILD_CONFIGURATION}
+        - dotnet build ${MAPDATA_PATH} -c ${BUILD_CONFIGURATION}
 
-# 3. Building the WPF UI on Windows
-build_wpf:
+
+# 2.2. Build the solution on Windows (since we use WPF)
+build_view:
     stage: build
     image: mcr.microsoft.com/dotnet/sdk:10.0-windowsservercore-ltsc2025
-    tags:
-        - windows # This routes the job to your Windows runner
-    needs:
-        - test_model
+    tags: [windows]
+    before_script:
+        - dotnet --version
     script:
-        - echo "Building the WPF project on Windows..."
-        - dotnet build ${WPF_PATH} -c $BUILD_CONFIGURATION
+        - echo "Building the solution on Windows..."
+        - dotnet build ${SOLUTION_PATH} -c ${BUILD_CONFIGURATION}
+
+# 3. Testing the model on Linux
+# Most of the code is copied from tictactoe-dotnet
+test_model:
+    stage: test
+    before_script:
+        - dotnet restore ${TEST_PATH} --packages .nuget
+    script:
+    # Run the tests, and as extra:
+    # 1) log test result in JUnit format, so GitLab web UI can diplay them;
+    # 2) collect code coverage statistics.
+    - > 
+      dotnet test ${TEST_PATH} --no-restore
+      --logger:"junit;MethodFormat=Class;FailureBodyFormat=Verbose"
+      --collect="XPlat Code Coverage"
+    # Install tools for code coverage extraction from Cobertura XML files
+    - apt-get update -yqq
+    - apt-get install -yqq bc
+    - dotnet tool install --tool-path . dotnet-reportgenerator-globaltool
+    # Compute code coverage percentage from Cobertura XML files through merging them with ReportGenerator
+    # This is useful when you have multiple test projects in a repository
+    # https://github.com/danielpalme/ReportGenerator
+    - ./reportgenerator "-reports:${TEST_PATH}/TestResults/*/coverage.cobertura.xml" "-targetdir:report"   "-reporttypes:Cobertura"
+    # The generated Cobertura.xml file contains the overall code coverage in a format like this:
+    # <coverage line-rate="..." ...>
+    # Let's get that with the powers of sed :)
+    - line_rate="$(head -n 3 ./report/Cobertura.xml | sed 'N;N;s/.*line-rate="\([^" ]*\).*/\1/g')"
+    - coverage=$(echo "${line_rate} * 100" | bc)
+    - 'printf "TOTAL_COVERAGE=%2.2f\n" "$coverage"'
+    # Alternatively, without the reportgenerator tool, we could compute the total coverage 
+    # through simple summation of the test project based results
+    #- chmod +x ./ci/coverage-percentage.sh
+    #- ./ci/coverage-percentage.sh .
+    artifacts:
+        paths:
+        - ${TEST_PATH}/TestResults/TestResults.xml
+        - ${TEST_PATH}/TestResults/*/coverage.cobertura.xml
+        reports:
+        # Publish unit test results to GitLab UI
+        # https://docs.gitlab.com/ci/testing/unit_test_reports/
+            junit:
+                - ${TEST_PATH}/TestResults/TestResults.xml
+            # Test coverage visualization on GitLab UI
+            # https://docs.gitlab.com/ci/testing/code_coverage/
+            coverage_report:
+                coverage_format: cobertura
+                path: ${TEST_PATH}/TestResults/*/coverage.cobertura.xml
+        expire_in: 30 days
+
+    # Cache and keep downloaded NuGet dependencies between CI pipelines
+    cache:
+    # The CI_COMMIT_REF_SLUG is a slug for the branch or tag name,
+    # so there will be a separate cache for each branch.
+        key: "unittest-${CI_COMMIT_REF_SLUG}"
+        paths:
+        - .nuget

@@ -88,9 +88,9 @@ dotnet_naming_symbols.all_elements.applicable_accessibilities = *
 dotnet_naming_symbols.parameters.applicable_kinds = parameter, local
 dotnet_naming_symbols.parameters.applicable_accessibilities = *
 
-# Group C: underscore_camelCase: private Fields
+# Group C: underscore_camelCase: private and protected fields
 dotnet_naming_symbols.private_fields.applicable_kinds = field
-dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private, protected
 
 # Apply Naming Rules
 
@@ -109,7 +109,19 @@ dotnet_naming_rule.private_fields_rule.severity = suggestion
 dotnet_naming_rule.private_fields_rule.symbols = private_fields
 dotnet_naming_rule.private_fields_rule.style = underscore_camel_case_style
 
+### Dotnet Rules ###
+dotnet_remove_unnecessary_imports = true
+
 ### Analyzer Rule Overrides ###
 
 # Disable SonarAnalyzer S3400: Remove this method and declare a constant
 dotnet_diagnostic.S3400.severity = none
+
+# Suggestion about IDE0005: unused imports
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+# Disable IDE0290 primary constructors
+dotnet_diagnostic.IDE0290.severity = none
+
+# Disabele RCS1268: simply numeric comparison
+dotnet_diagnostic.RCS1268.severity = none

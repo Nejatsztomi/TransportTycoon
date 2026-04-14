@@ -1,7 +1,5 @@
 using NSubstitute;
-using TransportTycoon.MapData;
 using TransportTycoon.MapData.MapGenerator;
-using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.Test.MapData.MapGenerator;
 

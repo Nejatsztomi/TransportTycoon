@@ -19,7 +19,7 @@
         public LoadType LoadType { get; set; }
         #endregion
 
-        public class People : Load
+        public sealed class People : Load
         {
             #region Constructors
             public People()

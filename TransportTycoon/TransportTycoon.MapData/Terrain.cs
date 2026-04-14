@@ -1,6 +1,6 @@
 ﻿namespace TransportTycoon.MapData
 {
-    public class Terrain : Field
+    public sealed class Terrain : Field
     {
         #region Fields
         public int Trees { set; get; }
@@ -16,7 +16,6 @@
             SetFieldType();
             Modifiable = true;
         }
-
 
         #region Public methods
         public void IncreaseHeight()
@@ -58,6 +57,4 @@
         }
         #endregion
     }
-
-
 }

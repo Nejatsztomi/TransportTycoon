@@ -6,7 +6,7 @@ using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class CreateGameViewModel : ViewModelViewConstraintBase
+    public sealed partial class CreateGameViewModel : ViewModelViewConstraintBase
     {
         #region Properties
         #region IViewConstraint
