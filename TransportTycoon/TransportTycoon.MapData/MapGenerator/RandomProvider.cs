@@ -1,6 +1,6 @@
 ﻿namespace TransportTycoon.MapData.MapGenerator
 {
-    public class RandomProvider : IRandomProvider
+    public sealed class RandomProvider : IRandomProvider
     {
         #region Public methods
         public IRandom GetRandom(int baseSeed, GenerationDomain domain)

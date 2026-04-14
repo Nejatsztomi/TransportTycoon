@@ -37,7 +37,7 @@
         #endregion
     }
 
-    public class Water : Field
+    public sealed class Water : Field
     {
         public Water(int x, int y)
         {

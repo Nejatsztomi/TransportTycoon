@@ -1,6 +1,6 @@
 ﻿namespace TransportTycoon.Model
 {
-    public class TransportTycoonEventArgs : EventArgs
+    public sealed class TransportTycoonEventArgs : EventArgs
     {
         #region Fields
         private int gameTime;

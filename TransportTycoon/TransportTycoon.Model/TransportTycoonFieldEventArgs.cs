@@ -1,6 +1,6 @@
 ﻿namespace TransportTycoon.Model
 {
-    public class TransportTycoonFieldEventArgs : EventArgs
+    public sealed class TransportTycoonFieldEventArgs : EventArgs
     {
         public int X { get; }
         public int Y { get; }

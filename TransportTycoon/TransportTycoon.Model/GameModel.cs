@@ -20,7 +20,7 @@ namespace TransportTycoon.Model
     #region Private event Methods
     #endregion
 
-    public class GameModel
+    public sealed class GameModel
     {
         #region Constants
         /// <summary>

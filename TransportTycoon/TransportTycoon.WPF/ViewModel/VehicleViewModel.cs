@@ -2,7 +2,7 @@
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public class VehicleViewModel : ViewModelBase
+    public sealed class VehicleViewModel : ViewModelBase
     {
         #region Properties
         private Vehicle Vehicle { get; set; }

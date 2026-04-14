@@ -109,7 +109,7 @@
         #endregion
     }
 
-    public class CityEntity : BuildingEntity
+    public sealed class CityEntity : BuildingEntity
     {
         #region Constructors
         public CityEntity(int width, int height) : base(width, height)
@@ -149,7 +149,7 @@
         #endregion
     }
 
-    public class LumberCampEntity : SiteEntity
+    public sealed class LumberCampEntity : SiteEntity
     {
         #region Constructors
         public LumberCampEntity()
@@ -174,7 +174,7 @@
         #endregion
     }
 
-    public class MineEntity : SiteEntity
+    public sealed class MineEntity : SiteEntity
     {
         #region Constructors
         public MineEntity()
@@ -199,7 +199,7 @@
         #endregion
     }
 
-    public class FarmEntity : SiteEntity
+    public sealed class FarmEntity : SiteEntity
     {
         #region Constructors
         public FarmEntity()
@@ -266,7 +266,7 @@
         #endregion
     }
 
-    public class MillEntity : IndustryEntity
+    public sealed class MillEntity : IndustryEntity
     {
         #region Constructors
         public MillEntity()
@@ -290,7 +290,7 @@
         #endregion
     }
 
-    public class PlantEntity : IndustryEntity
+    public sealed class PlantEntity : IndustryEntity
     {
         #region Constructors
         public PlantEntity()
@@ -315,7 +315,7 @@
         #endregion
     }
 
-    public class FactoryEntity : IndustryEntity
+    public sealed class FactoryEntity : IndustryEntity
     {
         #region Constructors
         public FactoryEntity()

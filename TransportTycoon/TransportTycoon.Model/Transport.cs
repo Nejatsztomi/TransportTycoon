@@ -9,7 +9,7 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class Van : Transport
+    public sealed class Van : Transport
     {
         #region Constructor
         public Van(int x, int y, Direction direction, Prouth route = null!)
@@ -35,7 +35,7 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class Pickup : Transport
+    public sealed class Pickup : Transport
     {
         #region Constructor
         public Pickup(int x, int y, Direction direction, Prouth route = null!)
@@ -61,7 +61,7 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class Truck : Transport
+    public sealed class Truck : Transport
     {
         #region Constructor
         public Truck(int x, int y, Direction direction, Prouth route = null!)
@@ -87,7 +87,7 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class LiquidTruck : Transport
+    public sealed class LiquidTruck : Transport
     {
         #region Constructor
         public LiquidTruck(int x, int y, Direction direction, Prouth route = null!)
