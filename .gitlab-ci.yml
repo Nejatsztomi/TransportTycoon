@@ -49,6 +49,19 @@ include:
         # We already have the analyzer plus some extra like NSubstitute.Analyzers
         ruleset: project
 
+# Override depedencies artifact lifetime
+sast:
+    artifacts:
+        expire_in: 14 days
+
+dependency_scanning:
+  artifacts:
+    expire_in: 7 days
+
+secret_detection:
+  artifacts:
+    expire_in: 7 days
+
 # 1. Linting on Windows
 # We need Windows because 
 check_formatting:
@@ -131,6 +144,7 @@ test_model:
             coverage_report:
                 coverage_format: cobertura
                 path: ${TEST_PATH}/TestResults/*/coverage.cobertura.xml
+        expire_in: 30 days
 
     # Cache and keep downloaded NuGet dependencies between CI pipelines
     cache:
