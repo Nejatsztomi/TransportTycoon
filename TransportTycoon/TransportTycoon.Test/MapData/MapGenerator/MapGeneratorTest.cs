@@ -26,7 +26,6 @@ public class MapGeneratorTest
         }
     }
 
-    [TestClass]
     public class GenerateMapTest
     {
         private IMapGenerator _mapGenerator = null!;

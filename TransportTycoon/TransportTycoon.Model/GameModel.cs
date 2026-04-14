@@ -45,7 +45,7 @@ namespace TransportTycoon.Model
         #region Properties
         public GameTable Map { get; private set; }
         public Field? SelectedField { get; private set; }
-        public List<Stop> SelectedStopFields { get; private set; } = new();
+        public List<Stop> SelectedStopFields { get; private set; } = [];
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
@@ -394,14 +394,14 @@ namespace TransportTycoon.Model
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
             if (selectedVehcile == null) return;
             //selectedVehcile.SetProuth(SelectedStopFields)
-            SelectedStopFields = new();
+            SelectedStopFields = [];
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void DeleteRoute(int x, int y)
         {
             if (SelectedStopFields.Count == 0) return;
 
-            if (x == -1 && y == -1) SelectedStopFields = new();
+            if (x == -1 && y == -1) SelectedStopFields = [];
             else
             {
                 Stop? removeItem = SelectedStopFields.Find(s => s.X == x && s.Y == y);
@@ -558,7 +558,7 @@ namespace TransportTycoon.Model
                road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad ||
                road.RoadType == RoadType.LeftTRoad))
             {
-                List<Vehicle> vehiclesOnCrossroads = Vehicles.Where(v => v.MapX == newField.X && v.MapY == newField.Y).ToList();
+                List<Vehicle> vehiclesOnCrossroads = [.. Vehicles.Where(v => v.MapX == newField.X && v.MapY == newField.Y)];
                 if (vehiclesOnCrossroads.Count > 0)
                 {
                     vehicle.ChangeCurrentSpeed(0);
@@ -632,7 +632,7 @@ namespace TransportTycoon.Model
                                         }
                                         else
                                         {
-                                            vehicleCanGive = vehicleCanGive - buildingCanTake;
+                                            vehicleCanGive -= buildingCanTake;
                                             Balance += buildingCanTake * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
                                             industry.SetConsumeOccupancy(industry.MaxConsumeCapacity);
@@ -680,7 +680,7 @@ namespace TransportTycoon.Model
                                     }
                                     else
                                     {
-                                        vehicleCanTake = vehicleCanTake - buildingCanGive;
+                                        vehicleCanTake -= buildingCanGive;
                                         building.BuildingEntity.SetCurrentCapacity(0);
                                         vehicle.SetCurrentCapacity(vehicle.CurrentCapacity + buildingCanGive);
                                         vehicle.SetCurrentLoad(buildingLoad);

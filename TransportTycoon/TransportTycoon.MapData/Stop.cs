@@ -30,7 +30,7 @@ namespace TransportTycoon.MapData
         /// types. The list is empty if no such buildings are found or if there are no connections.</returns>
         public List<BuildingBlocks> ShowWhatTheBuildingsCanGet(List<LoadType> vehicleAcceptedGoods)
         {
-            List<BuildingBlocks> buildings = new List<BuildingBlocks>();
+            List<BuildingBlocks> buildings = [];
             if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
@@ -59,7 +59,7 @@ namespace TransportTycoon.MapData
         /// empty if no buildings match the criteria or if there are no connections.</returns>
         public List<BuildingBlocks> ShowWhatTheBuildingsCanGive(List<LoadType> vehicleAcceptedGoods)
         {
-            List<BuildingBlocks> buildings = new List<BuildingBlocks>();
+            List<BuildingBlocks> buildings = [];
             if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {

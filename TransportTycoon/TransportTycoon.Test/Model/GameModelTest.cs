@@ -92,20 +92,20 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler handler = (sender, args) =>
+                void Handler(object? _1, EventArgs _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.NewGameCreated += handler;
+                    _gameModel.NewGameCreated += Handler;
                     _gameModel.NewGame();
                     Assert.IsTrue(raised, "NewGameCreated should be raised after creating a new game");
                 }
                 finally
                 {
-                    _gameModel.NewGameCreated -= handler;
+                    _gameModel.NewGameCreated -= Handler;
                 }
             }
 
@@ -115,20 +115,20 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler<GameMode> handler = (_, _) =>
+                void Handler(object? _1, GameMode _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.GameModeChanged += handler;
+                    _gameModel.GameModeChanged += Handler;
                     _gameModel.Mode = gameMode;
                     Assert.IsTrue(raised, "GameModeChanged should be raised after changing the game mode");
                 }
                 finally
                 {
-                    _gameModel.GameModeChanged -= handler;
+                    _gameModel.GameModeChanged -= Handler;
                 }
             }
 
@@ -138,20 +138,20 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler<TimeSpeed> handler = (_, _) =>
+                void Handler(object? _1, TimeSpeed _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.TimeSpeedChanged += handler;
+                    _gameModel.TimeSpeedChanged += Handler;
                     _gameModel.TimeSpeed = timeSpeed;
                     Assert.IsTrue(raised, "TimeSpeedChanged should be raised after changing the game speed");
                 }
                 finally
                 {
-                    _gameModel.TimeSpeedChanged -= handler;
+                    _gameModel.TimeSpeedChanged -= Handler;
                 }
             }
 
@@ -160,14 +160,14 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler<List<Tuple<int, int>>> handler = (_, _) =>
+                void Handler(object? _1, List<Tuple<int, int>> _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.GameAdvanced += handler;
+                    _gameModel.GameAdvanced += Handler;
                     // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
                     for (int i = 0; i < 10; i++)
                     {
@@ -177,7 +177,7 @@ public class GameModelTest
                 }
                 finally
                 {
-                    _gameModel.GameAdvanced -= handler;
+                    _gameModel.GameAdvanced -= Handler;
                 }
             }
 
@@ -186,21 +186,21 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler handler = (_, _) =>
+                void Handler(object? _1, EventArgs _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.GameTicked += handler;
+                    _gameModel.GameTicked += Handler;
                     // Szimuláljuk a timer tick eseményét
                     _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
                     Assert.IsTrue(raised, "GameTicked should be raised after 1 timer tick");
                 }
                 finally
                 {
-                    _gameModel.GameTicked -= handler;
+                    _gameModel.GameTicked -= Handler;
                 }
             }
 
@@ -236,20 +236,20 @@ public class GameModelTest
                 GameModel gameModel = new(_mockMap, _mockTimer);
                 GameMode actualGameMode = GameMode.Run;
 
-                EventHandler<GameMode> handler = (_, e) =>
+                void Handler(object? _1, GameMode e)
                 {
                     actualGameMode = e;
-                };
+                }
 
                 try
                 {
-                    gameModel.GameModeChanged += handler;
+                    gameModel.GameModeChanged += Handler;
                     gameModel.Mode = expectedGameMode;
                     Assert.AreEqual(expectedGameMode, actualGameMode, "GameModeChanged event should have correct argument");
                 }
                 finally
                 {
-                    gameModel.GameModeChanged -= handler;
+                    gameModel.GameModeChanged -= Handler;
                 }
             }
 
@@ -260,20 +260,20 @@ public class GameModelTest
                 GameModel gameModel = new(_mockMap, _mockTimer);
                 TimeSpeed actualTimeSpeed = TimeSpeed.Normal;
 
-                EventHandler<TimeSpeed> handler = (_, e) =>
+                void Handler(object? _1, TimeSpeed e)
                 {
                     actualTimeSpeed = e;
-                };
+                }
 
                 try
                 {
-                    gameModel.TimeSpeedChanged += handler;
+                    gameModel.TimeSpeedChanged += Handler;
                     gameModel.TimeSpeed = expectedTimeSpeed;
                     Assert.AreEqual(expectedTimeSpeed, actualTimeSpeed, "TimeSpeedChanged event should have correct argument");
                 }
                 finally
                 {
-                    gameModel.TimeSpeedChanged -= handler;
+                    gameModel.TimeSpeedChanged -= Handler;
                 }
             }
 

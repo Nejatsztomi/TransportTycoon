@@ -73,12 +73,12 @@ namespace TransportTycoon.WPF.ViewModel
             if (Model.SelectedField == null)
             {
                 var tile = Tiles.FirstOrDefault(t => t.IsSelected);
-                if (tile != null) tile.IsSelected = false;
+                tile?.IsSelected = false;
             }
             else
             {
                 var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
-                if (tile != null) tile.IsSelected = true;
+                tile?.IsSelected = true;
             }
         }
 
@@ -91,10 +91,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
 
-            if (tile != null)
-            {
-                tile.RefreshTerrain(Model.Map[e.X, e.Y]);
-            }
+            tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
         }
         private void Model_VehicleChanged(object? sender, (int oldX, int oldY, int newX, int newY) e)
         {
@@ -134,7 +131,6 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void RefreshTable()
         {
-            //Tiles.Clear();
             List<FieldViewModel> tempList = new(Model.Map.Width * Model.Map.Height + 1);
             for (int x = 0; x < Model.Map.Width; x++)
             {
