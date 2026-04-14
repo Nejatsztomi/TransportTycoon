@@ -36,15 +36,15 @@ namespace TransportTycoon.MapData
             {
                 LoadType type = LoadType.None;
                 Load? load = building.BuildingEntity.GetConsumeLoad();
-                if (load != null) 
+                if (load != null)
                 {
-                     type= load.LoadType;
+                    type = load.LoadType;
                 }
                 if (vehicleAcceptedGoods.Contains(type))
                 {
                     buildings.Add(building);
                 }
-                    
+
             }
             return buildings;
         }
@@ -73,7 +73,7 @@ namespace TransportTycoon.MapData
             return buildings;
         }
 
-        
+
         /// <summary>
         /// Attempts to deliver the specified load from the vehicle to all connected buildings and returns the remaining
         /// capacity of the vehicle after delivery.
@@ -81,9 +81,6 @@ namespace TransportTycoon.MapData
         /// <remarks>If the vehicle is empty or there are no connected buildings that can accept the
         /// specified load, the method returns the original capacity. The method distributes the load to all eligible
         /// buildings based on their available capacity.</remarks>
-        /// <param name="load">The type of load being delivered by the vehicle. Specify null if the vehicle is empty.</param>
-        /// <param name="vehicleCanGive">The maximum amount of load, in units, that the vehicle can deliver during this operation. Must be zero or
-        /// greater.</param>
         /// <returns>The remaining capacity of the vehicle after attempting to deliver the load. Returns 0 if at least one
         /// connected building accepts the load; otherwise, returns the original capacity.</returns>
         //public int VehicleToBuilding(LoadType? load, int vehicleCanGive)

@@ -545,7 +545,15 @@ namespace TransportTycoon.Model
             GameModeChanged?.Invoke(this, GameMode.Paused);
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
-
+        /// <summary>
+        /// Processes the transfer of goods between all vehicles and buildings at their respective stop locations on the
+        /// map.
+        /// </summary>
+        /// <remarks>This method iterates through all vehicles, determining if each is currently at a
+        /// stop. For vehicles at a stop, it manages the loading and unloading of goods based on the vehicle's accepted
+        /// goods, current load, and capacity, as well as the needs and supplies of the buildings present. The method
+        /// updates the vehicle's state and the overall balance accordingly. This operation is typically called as part
+        /// of the game's main update loop to simulate ongoing transport activity.</remarks>
         private void AllVehiclesDoTheTransport()
         {
             foreach (var vehicle in Vehicles)
@@ -648,8 +656,14 @@ namespace TransportTycoon.Model
                 }
             }
         }
-
-        private bool IsCarOnStop(Vehicle v) 
+        /// <summary>
+        /// Determines whether the specified vehicle is currently located on a stop field within the map boundaries.
+        /// </summary>
+        /// <remarks>The method returns false if the vehicle's coordinates are outside the map
+        /// boundaries.</remarks>
+        /// <param name="v">The vehicle to check for presence on a stop field. Must have valid map coordinates.</param>
+        /// <returns>true if the vehicle is positioned on a stop field within the map; otherwise, false.</returns>
+        private bool IsCarOnStop(Vehicle v)
         {
             int x = v.MapX;
             int y = v.MapY;
@@ -672,6 +686,7 @@ namespace TransportTycoon.Model
                 return;
             }
             GameTime++;
+            //TODO: AllVehiclesStep() comes here
             AllVehiclesDoTheTransport();
             if (GameTime > 0 && GameTime % 10 == 0)
             {

@@ -66,7 +66,7 @@ namespace TransportTycoon.Model
         {
             if (quantity >= 0 && quantity <= MaxCapacity) CurrentCapacity = quantity;
 
-            if(CurrentCapacity==0) CurrentLoad = null;
+            if (CurrentCapacity == 0) CurrentLoad = null;
         }
         /// <summary>
         /// Sets the current load to the specified value if it is valid and accepted by the vehicle.
@@ -92,7 +92,7 @@ namespace TransportTycoon.Model
             if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
         }
 
-        
+
         public int Load(int quantity, Load load) //returns leftover
         {
             if (CurrentLoad != load) return quantity;

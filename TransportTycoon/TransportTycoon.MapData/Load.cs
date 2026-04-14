@@ -15,7 +15,7 @@
     public abstract class Load
     {
         #region Properties
-        public int Price {  get; protected  set; }
+        public int Price { get; protected set; }
         public LoadType LoadType { get; set; }
         #endregion
 

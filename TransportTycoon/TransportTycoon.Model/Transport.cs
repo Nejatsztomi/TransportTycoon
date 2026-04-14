@@ -5,8 +5,8 @@ namespace TransportTycoon.Model
     public abstract class Transport : Vehicle
     {
         #region Field
-        
-        #endregion      
+
+        #endregion
     }
 
     public class Van : Transport

@@ -38,7 +38,7 @@ namespace TransportTycoon.MapData.Buildings
         /// Gets the coordinates of the top-left point of the building
         /// </summary>
         public (int X, int Y) TopLeftPoints => MapPoints.Keys.OrderBy(p => p.X).ThenBy(p => p.Y).FirstOrDefault();
-        
+
         #endregion
 
         #region Constructors
@@ -140,7 +140,7 @@ namespace TransportTycoon.MapData.Buildings
 
     public abstract class SiteEntity : BuildingEntity
     {
-        
+
 
         #region Constructors
         protected SiteEntity()
@@ -256,13 +256,13 @@ namespace TransportTycoon.MapData.Buildings
                 ConsumeOccupancy = 0;
             }
         }
-        public void SetConsumeOccupancy(int value) 
+        public void SetConsumeOccupancy(int value)
         {
-            if (value >= 0) 
+            if (value >= 0)
             {
                 ConsumeOccupancy = value;
             }
-            
+
         }
         #endregion
     }
