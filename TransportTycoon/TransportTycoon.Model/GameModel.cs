@@ -579,14 +579,19 @@ namespace TransportTycoon.Model
                                         if (buildingCanTake >= vehicleCanGive)
                                         {
                                             int buildingNewCapacity = industry.ConsumeOccupancy + vehicleCanGive;
+                                            Balance +=vehicleCanGive* vehicle.CurrentLoad!.Price;
+                                            BalanceChanged?.Invoke(this, EventArgs.Empty);
                                             industry.SetConsumeOccupancy(buildingNewCapacity);
                                             vehicle.SetCurrentCapacity(0);
                                             vehicle.SetCurrentLoad(null);
+                                            
                                             break;
                                         }
                                         else
                                         {
                                             vehicleCanGive = vehicleCanGive - buildingCanTake;
+                                            Balance += buildingCanTake * vehicle.CurrentLoad!.Price;
+                                            BalanceChanged?.Invoke(this, EventArgs.Empty);
                                             industry.SetConsumeOccupancy(industry.MaxConsumeCapacity);
                                             vehicle.SetCurrentCapacity(vehicleCanGive);
                                         }
