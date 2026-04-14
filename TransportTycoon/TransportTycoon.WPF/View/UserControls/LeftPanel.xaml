@@ -164,6 +164,18 @@
                                 >
                             <Image Source="/Assets/Images/Vehicle/largeBus.png" Stretch="Uniform"/>
                         </Button>
+                        <Button Command="{Binding VehicleStepUpCommand}"
+                                Content="Up">
+                        </Button>
+                        <Button Command="{Binding VehicleStepDownCommand}"
+                                Content="Down">
+                        </Button>
+                        <Button Command="{Binding VehicleStepLeftCommand}"
+                                Content="Left">
+                        </Button>
+                        <Button Command="{Binding VehicleStepRightCommand}"
+                                Content="Right">
+                        </Button>
                     </WrapPanel>
                 </TabItem>
 

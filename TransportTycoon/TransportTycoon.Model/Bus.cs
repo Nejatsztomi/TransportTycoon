@@ -15,7 +15,7 @@ namespace TransportTycoon.Model
         public SmallBus(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 1;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
@@ -39,7 +39,7 @@ namespace TransportTycoon.Model
         public BigBus(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 1;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
