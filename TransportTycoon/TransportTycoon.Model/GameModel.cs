@@ -46,7 +46,7 @@ namespace TransportTycoon.Model
         #region Properties
         public GameTable Map { get; private set; }
         public Field? SelectedField { get; private set; }
-        public List<Stop> SelectedStopFields { get; private set; } = new();//
+        public List<Stop> SelectedStopFields { get; private set; } = new();
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
@@ -103,7 +103,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
         public event EventHandler<(int oldX, int oldY, int newX, int newY)>? VehicleChanged;
-        public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;//
+        public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;
         #endregion
 
         #region Constructor
@@ -308,7 +308,7 @@ namespace TransportTycoon.Model
         public void Destroy(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Infrastructure || (Map[x, y] is Road r && r.InCity())
-                || Vehicles.Any(v => v.X == x && v.Y == y)) return;
+                || Vehicles.Any(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001)) return;
             List<(int, int)> changedFields = [];
 
             if (Map[x, y] is Road || Map[x, y] is Stop)
@@ -374,30 +374,30 @@ namespace TransportTycoon.Model
                 //lehet h elkene tarolni az legutolso lepest is???
             }
         }
-        public void DefineRoute(int x, int y)//
+        public void DefineRoute(int x, int y)
         {
             if (Map[x, y] is not Stop) return;
             SelectedStopFields.Add((Stop)Map[x, y]);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
-        public void QueryRoute(int x, int y)//
+        public void QueryRoute(int x, int y)
         {
-            Vehicle? selectedVehcile = Vehicles.Find(v => v.X == x && v.Y == y);
+            Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
             if (selectedVehcile != null) return;
             //SelectedStopFields = selectedVehcile.Prouth.Stops;
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
-        public void AssignRoute(int x, int y)//
+        public void AssignRoute(int x, int y)
         {
             if (SelectedStopFields.Count == 0) return;
 
-            Vehicle? selectedVehcile = Vehicles.Find(v => v.X == x && v.Y == y);
+            Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
             if (selectedVehcile == null) return;
             //selectedVehcile.SetProuth(SelectedStopFields)
             SelectedStopFields = new();
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
-        public void DeleteRoute(int x, int y)//
+        public void DeleteRoute(int x, int y)
         {
             if (SelectedStopFields.Count == 0) return;
 

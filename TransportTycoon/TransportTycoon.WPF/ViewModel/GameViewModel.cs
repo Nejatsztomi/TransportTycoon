@@ -58,7 +58,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
-        private void Model_SelectedStopFieldsChanged(object? sender, List<Stop> list)//
+        private void Model_SelectedStopFieldsChanged(object? sender, List<Stop> list)
         {
             if (list == null) return;
             foreach (var tile in Tiles)
@@ -146,7 +146,7 @@ namespace TransportTycoon.WPF.ViewModel
             Tiles = new(tempList);
         }
 
-        partial void OnSelectedTabIndexChanged(int value)//
+        partial void OnSelectedTabIndexChanged(int value)
         {
             OnSetSelectedButton(value);
         }
