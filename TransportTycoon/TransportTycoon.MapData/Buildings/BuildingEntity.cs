@@ -255,6 +255,14 @@ namespace TransportTycoon.MapData.Buildings
                 ConsumeOccupancy = 0;
             }
         }
+        public void SetConsumeOccupancy(int value) 
+        {
+            if (value >= 0) 
+            {
+                ConsumeOccupancy = value;
+            }
+            
+        }
         #endregion
     }
 

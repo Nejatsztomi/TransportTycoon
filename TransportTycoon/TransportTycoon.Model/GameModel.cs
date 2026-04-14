@@ -564,28 +564,33 @@ namespace TransportTycoon.Model
                         if(buildings_giver.Count == 0 && buildings_taker.Count == 0) continue;
 
                         //jármű ad a buildingnek
+                        
                         int vehicleCanGive;
                         LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
                         foreach (var building in buildings_taker)
                         {
-                            if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType) 
+                            if (building.BuildingEntity is IndustryEntity industry) 
                             {
-                                vehicleCanGive = vehicle.CurrentCapacity;
-                                int buildingCanTake = building.BuildingEntity.MaxCapacity - building.BuildingEntity.CurrentCapacity;
-                                if (buildingCanTake >= vehicleCanGive)
+                                if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
                                 {
-                                    int buildingNewCapacity = building.BuildingEntity.CurrentCapacity + vehicleCanGive;
-                                    building.BuildingEntity.SetCurrentCapacity(buildingNewCapacity);
-                                    vehicle.SetCurrentCapacity(0);
-                                }
-                                else
-                                {
-                                    vehicleCanGive = vehicleCanGive - buildingCanTake;
-                                    building.BuildingEntity.SetCurrentCapacity(building.BuildingEntity.MaxCapacity);
-                                    vehicle.SetCurrentCapacity(vehicleCanGive);
+                                    vehicleCanGive = vehicle.CurrentCapacity;
+                                    int buildingCanTake = building.BuildingEntity.MaxCapacity - building.BuildingEntity.CurrentCapacity;
+                                    if (buildingCanTake >= vehicleCanGive)
+                                    {
+                                        int buildingNewCapacity = building.BuildingEntity.CurrentCapacity + vehicleCanGive;
+                                        building.BuildingEntity.SetCurrentCapacity(buildingNewCapacity);
+                                        vehicle.SetCurrentCapacity(0);
+                                        vehicle.SetCurrentLoad(null);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        vehicleCanGive = vehicleCanGive - buildingCanTake;
+                                        building.BuildingEntity.SetCurrentCapacity(building.BuildingEntity.MaxCapacity);
+                                        vehicle.SetCurrentCapacity(vehicleCanGive);
+                                    }
                                 }
                             }
-                            
                         }
 
                         //building ad a járműnek
@@ -593,7 +598,11 @@ namespace TransportTycoon.Model
                         foreach (var building in buildings_giver)
                         {
                             Load buildingLoad = building.BuildingEntity.GetProvideLoad();
-                            if (vehicleAcceptedGoods.Contains(buildingLoad.LoadType))
+
+                            bool acceptsLoad = vehicleAcceptedGoods.Contains(buildingLoad.LoadType);
+                            bool isEmptyOrSameLoad = (vehicle.CurrentCapacity == 0) || (vehicle.CurrentLoad?.LoadType == buildingLoad.LoadType);
+
+                            if (acceptsLoad && isEmptyOrSameLoad)
                             {
                                 int buildingCanGive = building.BuildingEntity.CurrentCapacity;
                                 if (buildingCanGive >= vehicleCanTake)
@@ -602,6 +611,8 @@ namespace TransportTycoon.Model
                                     building.BuildingEntity.SetCurrentCapacity(buildingNewCapacity);
                                     vehicle.SetCurrentCapacity(vehicle.MaxCapacity);
                                     vehicle.SetCurrentLoad(buildingLoad);
+                                    vehicleCanTake = 0;
+                                    break;
                                 }
                                 else
                                 {
