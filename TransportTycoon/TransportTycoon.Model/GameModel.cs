@@ -546,8 +546,7 @@ namespace TransportTycoon.Model
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
 
-        //TODO:private
-        public void AllVehiclesTryToTransport()
+        private void AllVehiclesTryToTransport()
         {
             foreach (var vehicle in Vehicles)
             {
@@ -563,7 +562,7 @@ namespace TransportTycoon.Model
 
                         if (buildings_giver.Count == 0 && buildings_taker.Count == 0) continue;
 
-                        //jármű ad a buildingnek
+                        //vehicle gives to the building
                         if (vehicle.CurrentCapacity > 0 && vehicle.CurrentLoad != null)
                         {
                             int vehicleCanGive;
@@ -610,43 +609,41 @@ namespace TransportTycoon.Model
                                     }
                                 }
                             }
+                        }
 
-
-                            //building ad a járműnek
-                            int vehicleCanTake = vehicle.MaxCapacity - vehicle.CurrentCapacity;
-                            if (vehicleCanTake > 0)
+                        //bulding gives to the vehicle
+                        int vehicleCanTake = vehicle.MaxCapacity - vehicle.CurrentCapacity;
+                        if (vehicleCanTake > 0)
+                        {
+                            foreach (var building in buildings_giver)
                             {
-                                foreach (var building in buildings_giver)
+                                Load buildingLoad = building.BuildingEntity.GetProvideLoad();
+
+                                bool acceptsLoad = vehicleAcceptedGoods.Contains(buildingLoad.LoadType);
+                                bool isEmptyOrSameLoad = (vehicle.CurrentCapacity == 0) || (vehicle.CurrentLoad?.LoadType == buildingLoad.LoadType);
+
+                                if (acceptsLoad && isEmptyOrSameLoad)
                                 {
-                                    Load buildingLoad = building.BuildingEntity.GetProvideLoad();
-
-                                    bool acceptsLoad = vehicleAcceptedGoods.Contains(buildingLoad.LoadType);
-                                    bool isEmptyOrSameLoad = (vehicle.CurrentCapacity == 0) || (vehicle.CurrentLoad?.LoadType == buildingLoad.LoadType);
-
-                                    if (acceptsLoad && isEmptyOrSameLoad)
+                                    int buildingCanGive = building.BuildingEntity.CurrentCapacity;
+                                    if (buildingCanGive >= vehicleCanTake)
                                     {
-                                        int buildingCanGive = building.BuildingEntity.CurrentCapacity;
-                                        if (buildingCanGive >= vehicleCanTake)
-                                        {
-                                            int buildingNewCapacity = buildingCanGive - vehicleCanTake;
-                                            building.BuildingEntity.SetCurrentCapacity(buildingNewCapacity);
-                                            vehicle.SetCurrentCapacity(vehicle.MaxCapacity);
-                                            vehicle.SetCurrentLoad(buildingLoad);
-                                            vehicleCanTake = 0;
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            vehicleCanTake = vehicleCanTake - buildingCanGive;
-                                            building.BuildingEntity.SetCurrentCapacity(0);
-                                            vehicle.SetCurrentCapacity(vehicle.CurrentCapacity + buildingCanGive);
-                                            vehicle.SetCurrentLoad(buildingLoad);
-                                        }
+                                        int buildingNewCapacity = buildingCanGive - vehicleCanTake;
+                                        building.BuildingEntity.SetCurrentCapacity(buildingNewCapacity);
+                                        vehicle.SetCurrentCapacity(vehicle.MaxCapacity);
+                                        vehicle.SetCurrentLoad(buildingLoad);
+                                        vehicleCanTake = 0;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        vehicleCanTake = vehicleCanTake - buildingCanGive;
+                                        building.BuildingEntity.SetCurrentCapacity(0);
+                                        vehicle.SetCurrentCapacity(vehicle.CurrentCapacity + buildingCanGive);
+                                        vehicle.SetCurrentLoad(buildingLoad);
                                     }
                                 }
                             }
                         }
-
                     }
                 }
             }
