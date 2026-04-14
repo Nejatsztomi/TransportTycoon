@@ -1,6 +1,6 @@
 using System.Xml.Schema;
 using TransportTycoon.MapData;
-
+using TransportTycoon.MapData.Buildings;
 namespace TransportTycoon.Model
 {
     public enum GameMode { Run, Paused, Editor }
@@ -115,6 +115,7 @@ namespace TransportTycoon.Model
             _timer = timer;
             _timer.Elapsed += Timer_Tick;
 
+            SetTax();
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
@@ -308,7 +309,7 @@ namespace TransportTycoon.Model
         public void Destroy(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Infrastructure || (Map[x, y] is Road r && r.InCity())
-                || Vehicles.Any(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001)) return;
+                || Vehicles.Any(v => v.MapX == x && v.MapY == y)) return;
             List<(int, int)> changedFields = [];
 
             if (Map[x, y] is Road || Map[x, y] is Stop)
@@ -581,6 +582,136 @@ namespace TransportTycoon.Model
             GameModeChanged?.Invoke(this, GameMode.Paused);
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
+        /// <summary>
+        /// Processes the transfer of goods between all vehicles and buildings at their respective stop locations on the
+        /// map.
+        /// </summary>
+        /// <remarks>This method iterates through all vehicles, determining if each is currently at a
+        /// stop. For vehicles at a stop, it manages the loading and unloading of goods based on the vehicle's accepted
+        /// goods, current load, and capacity, as well as the needs and supplies of the buildings present. The method
+        /// updates the vehicle's state and the overall balance accordingly. This operation is typically called as part
+        /// of the game's main update loop to simulate ongoing transport activity.</remarks>
+        private void AllVehiclesDoTheTransport()
+        {
+            foreach (var vehicle in Vehicles)
+            {
+                if (IsCarOnStop(vehicle))
+                {
+                    Field currentField = Map[vehicle.MapX, vehicle.MapY];
+                    if (currentField is Stop stop)
+                    {
+                        List<LoadType> vehicleAcceptedGoods = vehicle.AcceptedGoods!;
+
+                        List<BuildingBlocks> buildings_giver = stop.ShowWhatTheBuildingsCanGive(vehicleAcceptedGoods);
+                        List<BuildingBlocks> buildings_taker = stop.ShowWhatTheBuildingsCanGet(vehicleAcceptedGoods);
+
+                        if (buildings_giver.Count == 0 && buildings_taker.Count == 0) continue;
+
+                        //vehicle gives to the building
+                        if (vehicle.CurrentCapacity > 0 && vehicle.CurrentLoad != null)
+                        {
+                            int vehicleCanGive;
+                            LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
+                            foreach (var building in buildings_taker)
+                            {
+                                if (building.BuildingEntity is IndustryEntity industry)
+                                {
+                                    if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
+                                    {
+                                        vehicleCanGive = vehicle.CurrentCapacity;
+                                        int buildingCanTake = industry.MaxConsumeCapacity - industry.ConsumeOccupancy;
+                                        if (buildingCanTake >= vehicleCanGive)
+                                        {
+                                            int buildingNewCapacity = industry.ConsumeOccupancy + vehicleCanGive;
+                                            Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
+                                            BalanceChanged?.Invoke(this, EventArgs.Empty);
+                                            industry.SetConsumeOccupancy(buildingNewCapacity);
+                                            vehicle.SetCurrentCapacity(0);
+                                            vehicle.SetCurrentLoad(null);
+
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            vehicleCanGive = vehicleCanGive - buildingCanTake;
+                                            Balance += buildingCanTake * vehicle.CurrentLoad!.Price;
+                                            BalanceChanged?.Invoke(this, EventArgs.Empty);
+                                            industry.SetConsumeOccupancy(industry.MaxConsumeCapacity);
+                                            vehicle.SetCurrentCapacity(vehicleCanGive);
+                                        }
+                                    }
+                                }
+                                else if (building.BuildingEntity is CityEntity city)
+                                {
+                                    vehicleCanGive = vehicle.CurrentCapacity;
+                                    if (vehicleLoad == city.GetConsumeLoad()?.LoadType)
+                                    {
+                                        Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
+                                        BalanceChanged?.Invoke(this, EventArgs.Empty);
+                                        vehicle.SetCurrentCapacity(0);
+                                        vehicle.SetCurrentLoad(null);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        //bulding gives to the vehicle
+                        int vehicleCanTake = vehicle.MaxCapacity - vehicle.CurrentCapacity;
+                        if (vehicleCanTake > 0)
+                        {
+                            foreach (var building in buildings_giver)
+                            {
+                                Load buildingLoad = building.BuildingEntity.GetProvideLoad();
+
+                                bool acceptsLoad = vehicleAcceptedGoods.Contains(buildingLoad.LoadType);
+                                bool isEmptyOrSameLoad = (vehicle.CurrentCapacity == 0) || (vehicle.CurrentLoad?.LoadType == buildingLoad.LoadType);
+
+                                if (acceptsLoad && isEmptyOrSameLoad)
+                                {
+                                    int buildingCanGive = building.BuildingEntity.CurrentCapacity;
+                                    if (buildingCanGive >= vehicleCanTake)
+                                    {
+                                        int buildingNewCapacity = buildingCanGive - vehicleCanTake;
+                                        building.BuildingEntity.SetCurrentCapacity(buildingNewCapacity);
+                                        vehicle.SetCurrentCapacity(vehicle.MaxCapacity);
+                                        vehicle.SetCurrentLoad(buildingLoad);
+                                        vehicleCanTake = 0;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        vehicleCanTake = vehicleCanTake - buildingCanGive;
+                                        building.BuildingEntity.SetCurrentCapacity(0);
+                                        vehicle.SetCurrentCapacity(vehicle.CurrentCapacity + buildingCanGive);
+                                        vehicle.SetCurrentLoad(buildingLoad);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// Determines whether the specified vehicle is currently located on a stop field within the map boundaries.
+        /// </summary>
+        /// <remarks>The method returns false if the vehicle's coordinates are outside the map
+        /// boundaries.</remarks>
+        /// <param name="v">The vehicle to check for presence on a stop field. Must have valid map coordinates.</param>
+        /// <returns>true if the vehicle is positioned on a stop field within the map; otherwise, false.</returns>
+        private bool IsCarOnStop(Vehicle v)
+        {
+            int x = v.MapX;
+            int y = v.MapY;
+            if (0 > x || x >= Map.Width || 0 > y || y >= Map.Height) return false;
+            Field currentField = Map[x, y];
+            if (currentField is Stop)
+            {
+                return true;
+            }
+            return false;
+        }
         #endregion
 
         #region Timer event handlers
@@ -592,6 +723,8 @@ namespace TransportTycoon.Model
                 return;
             }
             GameTime++;
+            //TODO: AllVehiclesStep() comes here
+            AllVehiclesDoTheTransport();
             if (GameTime > 0 && GameTime % 10 == 0)
             {
                 var grownTrees = ForestGrowing();
