@@ -3,7 +3,7 @@ using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
-    public sealed class GameTable
+    public class GameTable
     {
         #region Constants
         public const int DefaultWidth = 100;
