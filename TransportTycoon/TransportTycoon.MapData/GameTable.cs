@@ -267,28 +267,28 @@ namespace TransportTycoon.MapData
                 Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 result = true;
             }
-            if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]) && Table[x - 1, y] is BuildingBlocks)
+            if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]) && Table[x - 1, y] is BuildingBlocks blocks)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
-                ((Stop)Table[x, y]).SetBuildingBlocks((BuildingBlocks)Table[x - 1, y]);
+                ((Stop)Table[x, y]).SetBuildingBlocks(blocks);
                 result = true;
             }
-            else if (y + 1 < Width && HeightCheck(Table[x, y + 1], Table[x, y]) && Table[x, y + 1] is BuildingBlocks)
+            else if (y + 1 < Width && HeightCheck(Table[x, y + 1], Table[x, y]) && Table[x, y + 1] is BuildingBlocks blocks1)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
-                ((Stop)Table[x, y]).SetBuildingBlocks((BuildingBlocks)Table[x, y + 1]);
+                ((Stop)Table[x, y]).SetBuildingBlocks(blocks1);
                 result = true;
             }
-            else if (x + 1 < Height && HeightCheck(Table[x + 1, y], Table[x, y]) && Table[x + 1, y] is BuildingBlocks)
+            else if (x + 1 < Height && HeightCheck(Table[x + 1, y], Table[x, y]) && Table[x + 1, y] is BuildingBlocks blocks2)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
-                ((Stop)Table[x, y]).SetBuildingBlocks((BuildingBlocks)Table[x + 1, y]);
+                ((Stop)Table[x, y]).SetBuildingBlocks(blocks2);
                 result = true;
             }
-            else if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]) && Table[x, y - 1] is BuildingBlocks)
+            else if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]) && Table[x, y - 1] is BuildingBlocks blocks3)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
-                ((Stop)Table[x, y]).SetBuildingBlocks((BuildingBlocks)Table[x, y - 1]);
+                ((Stop)Table[x, y]).SetBuildingBlocks(blocks3);
                 result = true;
             }
             return result;
