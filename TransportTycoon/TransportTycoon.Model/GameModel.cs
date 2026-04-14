@@ -361,7 +361,7 @@ namespace TransportTycoon.Model
             SelectedStopFields.Add((Stop)Map[x, y]);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
-        public void QueryRoute(int x,int y)//
+        public void QueryRoute(int x, int y)//
         {
             Vehicle? selectedVehcile = Vehicles.Find(v => v.X == x && v.Y == y);
             if (selectedVehcile != null) return;

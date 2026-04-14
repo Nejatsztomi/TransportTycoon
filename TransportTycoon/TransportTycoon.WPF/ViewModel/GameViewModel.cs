@@ -63,7 +63,7 @@ namespace TransportTycoon.WPF.ViewModel
             foreach (var tile in Tiles)
             {
                 tile.IsSelected = list.Any(t => t.X == tile.X && t.Y == tile.Y);
-                tile.SelectedOrder = list.FindIndex(t => t.X == tile.X && t.Y == tile.Y)+1;
+                tile.SelectedOrder = list.FindIndex(t => t.X == tile.X && t.Y == tile.Y) + 1;
             }
         }
 
@@ -206,10 +206,10 @@ namespace TransportTycoon.WPF.ViewModel
             SelectedButton = Convert.ToInt32(x);
             if (SelectedButton < 10)
             {
-                if(Model.SelectedField!=null) Model.SetSelectedField(-1, -1);
+                if (Model.SelectedField != null) Model.SetSelectedField(-1, -1);
                 Model.DeleteRoute(-1, -1);
             }
-            else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton!=22 && Model.SelectedField != null) Model.SetSelectedField(-1, -1);
+            else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton != 22 && Model.SelectedField != null) Model.SetSelectedField(-1, -1);
             else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
 
@@ -278,7 +278,7 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_GameTicked(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(GameTime));
-        }     
+        }
         #endregion
 
         #region Dispose
