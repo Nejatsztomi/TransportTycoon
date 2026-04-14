@@ -57,7 +57,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
-        private void Model_SelectedStopFieldsChanged(object? sender, List<Field> list)//
+        private void Model_SelectedStopFieldsChanged(object? sender, List<Stop> list)//
         {
             if (list == null) return;
             foreach (var tile in Tiles)

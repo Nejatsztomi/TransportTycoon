@@ -46,7 +46,7 @@ namespace TransportTycoon.Model
         #region Properties
         public GameTable Map { get; private set; }
         public Field? SelectedField { get; private set; }
-        public List<Field> SelectedStopFields { get; private set; } = new();//
+        public List<Stop> SelectedStopFields { get; private set; } = new();//
         public int Balance { get; private set; }
         public int GameTime { get; private set; }
         public int Maintance { get; private set; }
@@ -98,7 +98,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
-        public event EventHandler<List<Field>>? SelectedStopFieldsChanged;//
+        public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;//
         #endregion
 
         #region Constructor
@@ -358,7 +358,7 @@ namespace TransportTycoon.Model
         public void DefineRoute(int x, int y)//
         {
             if (Map[x, y] is not Stop) return;
-            SelectedStopFields.Add(Map[x, y]);
+            SelectedStopFields.Add((Stop)Map[x, y]);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void QueryRoute(int x,int y)//
@@ -385,7 +385,7 @@ namespace TransportTycoon.Model
             if (x == -1 && y == -1) SelectedStopFields = new();
             else
             {
-                Field? removeItem = SelectedStopFields.Find(s => s.X == x && s.Y == y);
+                Stop? removeItem = SelectedStopFields.Find(s => s.X == x && s.Y == y);
                 if (removeItem == null) return;
                 SelectedStopFields.Remove(removeItem);
             }
