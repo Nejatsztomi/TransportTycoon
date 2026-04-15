@@ -78,7 +78,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_SelectedStopFieldsChanged(object? _1, List<Stop> list)
         {
-            if (list is null) return;
+            //if (list is null) return;
             foreach (var tile in Tiles)
             {
                 tile.IsSelected = list.Any(t => t.X == tile.X && t.Y == tile.Y);
@@ -291,14 +291,14 @@ namespace TransportTycoon.WPF.ViewModel
                     Model.Destroy(tile.X, tile.Y);
                     break;
                 case 31:
-                    Vehicle? vehicle = Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus)!;
+                    Vehicle? vehicle = Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
                     if (vehicle is not null)
                     {
                         Vehicles.Add(new VehicleViewModel(vehicle));
                     }
                     break;
                 case 32:
-                    Vehicle? vehicle2 = Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus)!;
+                    Vehicle? vehicle2 = Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
                     if (vehicle2 is not null)
                     {
                         Vehicles.Add(new VehicleViewModel(vehicle2));
@@ -352,6 +352,9 @@ namespace TransportTycoon.WPF.ViewModel
             Model.InfrastructureBuilt -= Model_InfrastructureBuilt;
             Model.FieldChanged -= Model_FieldChanged;
             Model.BalanceChanged -= Model_BalanceChanged;
+            Model.SelectedFieldChanged -= Model_SelectedFieldChanged;
+            Model.VehicleChanged -= Model_VehicleChanged;
+            Model.SelectedStopFieldsChanged -= Model_SelectedStopFieldsChanged;
         }
         #endregion
     }

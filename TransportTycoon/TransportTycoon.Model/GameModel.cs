@@ -1,7 +1,6 @@
 using TransportTycoon.MapData;
-using TransportTycoon.Model.Graph;
-
 using TransportTycoon.MapData.Buildings;
+using TransportTycoon.Model.Graph;
 namespace TransportTycoon.Model
 {
     public enum GameMode { Run, Paused, Editor }
@@ -425,8 +424,8 @@ namespace TransportTycoon.Model
         }
         public void DefineRoute(int x, int y)
         {
-            if (Map[x, y] is not Stop) return;
-            SelectedStopFields.Add((Stop)Map[x, y]);
+            if (Map[x, y] is not Stop stop) return;
+            SelectedStopFields.Add(stop);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void QueryRoute(int x, int y)
