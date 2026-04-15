@@ -76,10 +76,10 @@ namespace TransportTycoon.Model
         /// <param name="load">The load to assign as the current load. Specify null to clear the current load.</param>
         public void SetCurrentLoad(Load? load)
         {
-            if (load == null || AcceptedGoods != null && AcceptedGoods.Contains(load.LoadType))
+            if (load is null || AcceptedGoods is not null && AcceptedGoods.Contains(load.LoadType))
             {
                 CurrentLoad = load;
-                if (CurrentLoad == null) CurrentCapacity = 0;
+                if (CurrentLoad is null) CurrentCapacity = 0;
             }
         }
 
@@ -96,7 +96,7 @@ namespace TransportTycoon.Model
         public int Load(int quantity, Load load) //returns leftover
         {
             if (CurrentLoad != load) return quantity;
-            else if (CurrentLoad == null)
+            else if (CurrentLoad is null)
             {
                 CurrentLoad = load;
                 if (quantity <= MaxCapacity)
@@ -127,7 +127,7 @@ namespace TransportTycoon.Model
 
         public int UnLoad(int quantity, Load load) //returns unloaded quantity
         {
-            if (CurrentLoad == null || CurrentLoad != load) return 0;
+            if (CurrentLoad is null || CurrentLoad != load) return 0;
             else if (quantity < CurrentCapacity)
             {
                 CurrentCapacity -= quantity;

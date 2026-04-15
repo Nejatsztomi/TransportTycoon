@@ -36,7 +36,7 @@ namespace TransportTycoon.MapData
                 }
                 LoadType type = LoadType.None;
                 Load? load = building.BuildingEntity.GetConsumeLoad();
-                if (load != null)
+                if (load is not null)
                 {
                     type = load.LoadType;
                 }

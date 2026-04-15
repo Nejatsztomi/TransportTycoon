@@ -23,7 +23,7 @@ namespace TransportTycoon.WPF.View.UserControls
         #endregion
 
         #region Private event methods
-        private void MapScrollViewer_PreviewMouseWheel(object? sender, MouseWheelEventArgs e)
+        private void MapScrollViewer_PreviewMouseWheel(object? _1, MouseWheelEventArgs e)
         {
             e.Handled = true;
             // Zoom with touchpad: Pinch-to-zoom
@@ -46,14 +46,14 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
-        private void MapScrollViewer_PreviewMouseRightButtonDown(object? sender, MouseButtonEventArgs e)
+        private void MapScrollViewer_PreviewMouseRightButtonDown(object? _1, MouseButtonEventArgs e)
         {
             DragStartPoint = e.GetPosition(MapScrollViewer);
             DragStartOffset = new(MapScrollViewer.HorizontalOffset, MapScrollViewer.VerticalOffset);
             MapScrollViewer.CaptureMouse();
         }
 
-        private void MapScrollViewer_PreviewMouseMove(object? sender, MouseEventArgs e)
+        private void MapScrollViewer_PreviewMouseMove(object? _1, MouseEventArgs e)
         {
             if (DragStartPoint.HasValue && DragStartOffset.HasValue)
             {
@@ -67,7 +67,7 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
-        private void MapScrollViewer_PreviewMouseRightButtonUp(object? sender, MouseButtonEventArgs e)
+        private void MapScrollViewer_PreviewMouseRightButtonUp(object? _1, MouseButtonEventArgs _2)
         {
             if (DragStartPoint.HasValue)
             {

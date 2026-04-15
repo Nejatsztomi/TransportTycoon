@@ -214,7 +214,7 @@ namespace TransportTycoon.Model
 
             foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
             {
-                if (e != null && e is Road road)
+                if (e is not null && e is Road road)
                 {
                     road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
                     changedFields.Add((e.X, e.Y));
@@ -227,7 +227,7 @@ namespace TransportTycoon.Model
         public void BuildBridge(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Water) { SetSelectedField(-1, -1); return; }
-            if (SelectedField == null) SetSelectedField(x, y);
+            if (SelectedField is null) SetSelectedField(x, y);
             else
             {
                 List<(int, int)> changedFields = [];
@@ -294,7 +294,7 @@ namespace TransportTycoon.Model
 
                 foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
                 {
-                    if (e != null && e is Road road)
+                    if (e is not null && e is Road road)
                     {
                         road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
                         changedFields.Add((e.X, e.Y));
@@ -318,7 +318,7 @@ namespace TransportTycoon.Model
 
                 foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
                 {
-                    if (e != null && e is Road road)
+                    if (e is not null && e is Road road)
                     {
                         road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
                         changedFields.Add((e.X, e.Y));
@@ -383,7 +383,7 @@ namespace TransportTycoon.Model
         public void QueryRoute(int x, int y)
         {
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
-            if (selectedVehcile != null) return;
+            if (selectedVehcile is null) return;
             //SelectedStopFields = selectedVehcile.Prouth.Stops;
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
@@ -392,7 +392,7 @@ namespace TransportTycoon.Model
             if (SelectedStopFields.Count == 0) return;
 
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
-            if (selectedVehcile == null) return;
+            if (selectedVehcile is null) return;
             //selectedVehcile.SetProuth(SelectedStopFields)
             SelectedStopFields = [];
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
@@ -405,7 +405,7 @@ namespace TransportTycoon.Model
             else
             {
                 Stop? removeItem = SelectedStopFields.Find(s => s.X == x && s.Y == y);
-                if (removeItem == null) return;
+                if (removeItem is null) return;
                 SelectedStopFields.Remove(removeItem);
             }
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
@@ -567,7 +567,7 @@ namespace TransportTycoon.Model
             }
 
             //if there is a vehicle on the new position, the current vehicle should slow down to its speedlimit
-            if (nextVehicle != null)
+            if (nextVehicle is not null)
             {
                 vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
             }
@@ -607,7 +607,7 @@ namespace TransportTycoon.Model
                         if (buildings_giver.Count == 0 && buildings_taker.Count == 0) continue;
 
                         //vehicle gives to the building
-                        if (vehicle.CurrentCapacity > 0 && vehicle.CurrentLoad != null)
+                        if (vehicle.CurrentCapacity > 0 && vehicle.CurrentLoad is not null)
                         {
                             int vehicleCanGive;
                             LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
@@ -714,7 +714,7 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Timer event handlers
-        private void Timer_Tick(object? sender, EventArgs e)
+        private void Timer_Tick(object? _1, EventArgs _2)
         {
             if (IsGameOver)
             {
