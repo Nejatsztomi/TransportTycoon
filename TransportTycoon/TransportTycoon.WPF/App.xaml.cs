@@ -44,7 +44,7 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Private event methods
-        private void ShowStartMenu(object? sender, StartupEventArgs e)
+        private void ShowStartMenu(object? _1, StartupEventArgs _2)
         {
             MainViewModel = new();
 

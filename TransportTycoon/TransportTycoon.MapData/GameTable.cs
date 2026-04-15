@@ -112,20 +112,20 @@ namespace TransportTycoon.MapData
         {
             List<Field?> neighbourRoads = NeighboursOfRoadsAndStops(x, y);
             RoadType type = RoadType.Vertical;
-            switch (neighbourRoads.Count(x => x != null))
+            switch (neighbourRoads.Count(x => x is not null))
             {
                 case 1:
-                    if (neighbourRoads[1] != null || neighbourRoads[3] != null) type = RoadType.Horizontal;
+                    if (neighbourRoads[1] is not null || neighbourRoads[3] is not null) type = RoadType.Horizontal;
                     break;
                 case 2:
-                    if (neighbourRoads[1] != null && neighbourRoads[3] != null) type = RoadType.Horizontal;
-                    else if (neighbourRoads[0] != null && neighbourRoads[1] != null) type = RoadType.UpperRightTurn;
-                    else if (neighbourRoads[1] != null && neighbourRoads[2] != null) type = RoadType.RightTurn;
-                    else if (neighbourRoads[2] != null && neighbourRoads[3] != null) type = RoadType.LeftTurn;
-                    else if (neighbourRoads[3] != null && neighbourRoads[0] != null) type = RoadType.UpperLeftTurn;
+                    if (neighbourRoads[1] is not null && neighbourRoads[3] is not null) type = RoadType.Horizontal;
+                    else if (neighbourRoads[0] is not null && neighbourRoads[1] is not null) type = RoadType.UpperRightTurn;
+                    else if (neighbourRoads[1] is not null && neighbourRoads[2] is not null) type = RoadType.RightTurn;
+                    else if (neighbourRoads[2] is not null && neighbourRoads[3] is not null) type = RoadType.LeftTurn;
+                    else if (neighbourRoads[3] is not null && neighbourRoads[0] is not null) type = RoadType.UpperLeftTurn;
                     break;
                 case 3:
-                    int noNeighbour = neighbourRoads.FindIndex(x => x == null);
+                    int noNeighbour = neighbourRoads.FindIndex(x => x is null);
                     switch (noNeighbour)
                     {
                         case 0:

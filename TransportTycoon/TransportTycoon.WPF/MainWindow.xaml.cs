@@ -17,7 +17,7 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Private event methods
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private void Window_Closing(object? _1, CancelEventArgs e)
         {
             if (DataContext is MainViewModel mainViewModel)
             {
