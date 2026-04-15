@@ -9,14 +9,13 @@
             return Tax * Price;
         }
 
-        //nincs benne az osztálydiagrammba
         public static void SetGlobalTax(int tax)
         {
             Tax = tax;
         }
     }
 
-    public class Wheat : Goods
+    public sealed class Wheat : Goods
     {
         public Wheat()
         {
@@ -24,7 +23,7 @@
         }
     }
 
-    public class Oil : Goods
+    public sealed class Oil : Goods
     {
         public Oil()
         {
@@ -32,7 +31,7 @@
         }
     }
 
-    public class Wood : Goods
+    public sealed class Wood : Goods
     {
         public Wood()
         {
@@ -40,7 +39,7 @@
         }
     }
 
-    public class Flour : Goods
+    public sealed class Flour : Goods
     {
         public Flour()
         {
@@ -49,7 +48,7 @@
         }
     }
 
-    public class Rubber : Goods
+    public sealed class Rubber : Goods
     {
         public Rubber()
         {
@@ -57,7 +56,7 @@
         }
     }
 
-    public class Paper : Goods
+    public sealed class Paper : Goods
     {
         public Paper()
         {

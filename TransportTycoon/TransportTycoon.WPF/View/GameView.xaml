@@ -8,7 +8,7 @@
         xmlns:usercontrols="clr-namespace:TransportTycoon.WPF.View.UserControls"
         mc:Ignorable="d"
         >
-
+   
     <DockPanel>
         <StatusBar DockPanel.Dock="Bottom">
             <StatusBar.ItemsPanel>

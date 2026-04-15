@@ -4,7 +4,7 @@
     {
         Horizontal = 0, Vertical = 1, RightTurn = 2, LeftTurn = 3, UpperRightTurn = 4, UpperLeftTurn = 5, UpperTRoad = 6, DownTRoad = 7, RightTRoad = 8, LeftTRoad = 9, XRoad = 10
     }
-    public class Road : Infrastructure
+    public sealed class Road : Infrastructure
     {
         #region Fields
         public RoadType RoadType { get; private set; }

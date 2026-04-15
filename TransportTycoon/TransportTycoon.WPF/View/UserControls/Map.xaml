@@ -27,137 +27,170 @@
                      PreviewMouseRightButtonUp="MapScrollViewer_PreviewMouseRightButtonUp"
                      >
 
-                    <ItemsControl ItemsSource="{Binding Tiles}">
-                        <ItemsControl.LayoutTransform>
-                            <ScaleTransform
-                                 ScaleX="{Binding ZoomLevel}"
-                                 ScaleY="{Binding ZoomLevel}"
-                             />
-                        </ItemsControl.LayoutTransform>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid
-                                     Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                     Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
-                                 />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
+                    <Grid>
+                        <!-- Statikus elemek -->
+                        <ItemsControl ItemsSource="{Binding Tiles}">
+                            <ItemsControl.LayoutTransform>
+                                <ScaleTransform
+                                    ScaleX="{Binding ZoomLevel}"
+                                    ScaleY="{Binding ZoomLevel}"
+                                />
+                            </ItemsControl.LayoutTransform>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid
+                                        Columns="{Binding DataContext.MapColumns, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                        Rows="{Binding DataContext.MapRows, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                    />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
 
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid
-                                 Width="50"
-                                 Height="50"
-                                 Background="Transparent"
-                                 >
-                                    <Grid.InputBindings>
-                                        <MouseBinding 
-                                           MouseAction="LeftClick" 
-                                           Command="{Binding DataContext.TileLeftClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
-                                           CommandParameter="{Binding}"
-                                       />
-                                    </Grid.InputBindings>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid
+                                          Width="50"
+                                          Height="50"
+                                          Background="Transparent"
+                                          >
+                                        <Grid.InputBindings>
+                                            <MouseBinding 
+                                                MouseAction="LeftClick" 
+                                                Command="{Binding DataContext.TileLeftClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+                                                CommandParameter="{Binding}"
+                                            />
+                                        </Grid.InputBindings>
 
-                                    <!-- Alap mező -->
-                                    <Border
-                                         BorderBrush="#404040"
-                                         BorderThickness="1"
-                                         >
-                                        <Border.Background>
-                                            <ImageBrush
-                                                 ImageSource="{Binding ImagePath}" 
-                                                 Stretch="UniformToFill" 
-                                                 RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                        <!-- Alap mező -->
+                                        <Border
+                                              BorderBrush="#404040"
+                                              BorderThickness="1"
+                                              >
+                                             <Border.Background>
+                                                    <ImageBrush
+                                                      ImageSource="{Binding ImagePath}" 
+                                                      Stretch="UniformToFill" 
+                                                      RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                     />
+                                            </Border.Background>
+                                        </Border>
+
+                                        <!-- Fák -->
+                                        <Image Source="{Binding TreeImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                                Stretch="UniformToFill" 
+                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                IsHitTestVisible="False"
+                                                Margin="2"
                                                 />
-                                        </Border.Background>
-                                    </Border>
 
-                                    <!-- Fák -->
-                                    <Image Source="{Binding TreeImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                        <!-- Utak és hidak -->
+                                        <Image Source="{Binding InfrastructureImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                                Stretch="Uniform"
+                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                IsHitTestVisible="False"
+                                                Margin="2"
+                                                RenderTransformOrigin="0.5,0.5"
+                                                >
+                                            <Image.RenderTransform>
+                                                <RotateTransform Angle="{Binding InfrastructureRotation}"/>
+                                            </Image.RenderTransform>
+                                        </Image>
+
+                                        <!-- Épületek -->
+                                        <Image Source="{Binding StructureImage, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                                Stretch="UniformToFill"
+                                                RenderOptions.BitmapScalingMode="NearestNeighbor"
+                                                IsHitTestVisible="False"
+                                                Margin="2"
+                                                />
+
+                                        <!-- Hover effektus -->
+                                        <Border x:Name="HoverOverlay" 
+                                                Visibility="Hidden" 
+                                                BorderBrush="Yellow" 
+                                                BorderThickness="2" 
+                                                Background="#33FFFFFF" 
+                                                IsHitTestVisible="False"
+                                                Panel.ZIndex="5"
+                                                />
+
+                                        <!-- Kijelölt mezők -->
+                                        <Border BorderBrush="Red" 
+                                                BorderThickness="3" 
+                                                Background="#33FFFFFF">
+
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+
+                                            <TextBlock Text="{Binding SelectedOrder}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       FontWeight="Bold" FontSize="32"/>
+                                        </Border>
+                                    </Grid>
+
+                                    <DataTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="HoverOverlay" Property="Visibility" Value="Visible" />
+
+                                            <Setter Property="Panel.ZIndex" Value="1" />
+                                        </Trigger>
+
+                                        <!--<Trigger  ="{Binding IsSelected}" Value="True">
+                          
+                                            </Trigger>-->
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                        <ItemsControl ItemsSource="{Binding Vehicles}">
+                            <ItemsControl.LayoutTransform>
+                                <ScaleTransform 
+                                    ScaleX="{Binding ZoomLevel}" 
+                                    ScaleY="{Binding ZoomLevel}" />
+                            </ItemsControl.LayoutTransform>
+
+                            <!-- Create Canvas -->
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            
+                            <!--Position-->                            
+                            <ItemsControl.ItemContainerStyle>
+                                <Style TargetType="ContentPresenter">
+                                    
+                                    <Setter Property="Canvas.Left" Value="{Binding PixelX}" />
+                                    <Setter Property="Canvas.Top" Value="{Binding PixelY}" />
+                                </Style>
+                            </ItemsControl.ItemContainerStyle>
+                            
+                            <!--Járművek-->
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Image Source="{Binding VehicleImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
+                                           Width="50"
+                                           Height="50"
                                            Stretch="UniformToFill" 
                                            RenderOptions.BitmapScalingMode="NearestNeighbor"
                                            IsHitTestVisible="False"
-                                           Margin="2"
-                                           />
+                                           Margin="2" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
 
-                                    <!-- Utak és hidak -->
-                                    <Image Source="{Binding InfrastructureImagePath, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
-                                           Stretch="Uniform"
-                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                           IsHitTestVisible="False"
-                                           Margin="2"
-                                           RenderTransformOrigin="0.5,0.5"
-                                           >
-                                        <Image.RenderTransform>
-                                            <RotateTransform Angle="{Binding InfrastructureRotation}"/>
-                                        </Image.RenderTransform>
-                                    </Image>
-
-                                    <!-- Épületek -->
-                                    <Image Source="{Binding StructureImage, TargetNullValue={x:Null}, FallbackValue={x:Null}}"
-                                           Stretch="UniformToFill"
-                                           RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                           IsHitTestVisible="False"
-                                           Margin="2"
-                                           />
-
-                                    <Border x:Name="HoverOverlay" 
-                                         Visibility="Hidden" 
-                                         BorderBrush="Yellow" 
-                                         BorderThickness="2" 
-                                         Background="#33FFFFFF" 
-                                         IsHitTestVisible="False"
-                                         Panel.ZIndex="5"
-                                         />
-
-                                    <Border BorderBrush="Red" 
-                                            BorderThickness="3" 
-                                            Background="#33FFFFFF"
-                                            >
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                    </Border>
-
-                                    <Border BorderBrush="DarkBlue" 
-                                            BorderThickness="3" 
-                                            Background="#33FFFFFF"
-                                            >
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsPath}" Value="True">
-                                                        <Setter Property="Visibility" Value="Visible"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                    </Border>
-                                </Grid>
-
-                                <DataTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="HoverOverlay" Property="Visibility" Value="Visible" />
-
-                                        <Setter Property="Panel.ZIndex" Value="1" />
-                                    </Trigger>
-
-                                    <!--<Trigger  ="{Binding IsSelected}" Value="True">
-                                             
-                                    </Trigger>-->
-                                </DataTemplate.Triggers>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-
-                    </ItemsControl>
+                        </ItemsControl>
+                    </Grid>
+                   
+                    
                 </ScrollViewer>
                 <usercontrols:Minimap/>
             </Grid>

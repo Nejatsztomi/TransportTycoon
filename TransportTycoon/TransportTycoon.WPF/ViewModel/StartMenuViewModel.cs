@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class StartMenuViewModel : ViewModelViewConstraintBase
+    public sealed partial class StartMenuViewModel : ViewModelViewConstraintBase
     {
         #region Properties
         #region IViewConstraints

@@ -6,7 +6,7 @@ namespace TransportTycoon.WPF
     /// <summary>
     /// Represents a timer that is integrated with the WPF dispatcher.
     /// </summary>
-    internal class WpfDispatcherTimer : ITimer
+    internal sealed class WpfDispatcherTimer : ITimer
     {
         #region Private fields
         private readonly DispatcherTimer _timer;

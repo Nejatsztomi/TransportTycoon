@@ -4,7 +4,7 @@ using TransportTycoon.MapData;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class FieldViewModel : ViewModelBase
+    public sealed partial class FieldViewModel : ViewModelBase
     {
         #region Properties
         [ObservableProperty]
@@ -18,6 +18,8 @@ namespace TransportTycoon.WPF.ViewModel
         public int TreeCounter => Field.GetTrees();
         [ObservableProperty]
         private bool _isSelected;
+        [ObservableProperty]
+        private int _selectedOrder;
         public SolidColorBrush MinimapColor
         {
             get

@@ -1,9 +1,4 @@
-﻿using Microsoft.VisualBasic.FileIO;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.MapData
+﻿namespace TransportTycoon.MapData
 {
     public enum FieldType
     {
@@ -42,7 +37,7 @@ namespace TransportTycoon.MapData
         #endregion
     }
 
-    public class Water : Field
+    public sealed class Water : Field
     {
         public Water(int x, int y)
         {

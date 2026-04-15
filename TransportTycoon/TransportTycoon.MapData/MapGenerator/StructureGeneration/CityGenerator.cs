@@ -62,7 +62,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             int y = startY;
 
             // North, East, South, West
-            (int dx, int dy)[] directions = { (0, -1), (1, 0), (0, 1), (-1, 0) };
+            (int dx, int dy)[] directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
             (int dx, int dy) = directions[_random.Next(4)];
 
             while (x <= topLeftX && x < topLeftX + city.Width &&
@@ -108,7 +108,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             int y = startY;
 
             // North, East, South, West
-            (int dx, int dy)[] directions = { (0, -1), (1, 0), (0, 1), (-1, 0) };
+            (int dx, int dy)[] directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
             (int dx, int dy) currentDir = directions[_random.Next(4)];
 
             for (int step = 0; step < maxRoadCount; step++)

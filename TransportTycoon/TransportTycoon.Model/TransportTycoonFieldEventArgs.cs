@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TransportTycoon.Model
+﻿namespace TransportTycoon.Model
 {
-    public class TransportTycoonFieldEventArgs : EventArgs
+    public sealed class TransportTycoonFieldEventArgs : EventArgs
     {
         public int X { get; }
         public int Y { get; }

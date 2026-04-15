@@ -5,14 +5,14 @@ namespace TransportTycoon.Model
     public abstract class Transport : Vehicle
     {
         #region Field
-        public List<LoadType>? AcceptedGoods { get; protected set; }
-        #endregion      
+
+        #endregion
     }
 
-    public class Van : Transport
+    public sealed class Van : Transport
     {
         #region Constructor
-        public Van(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
+        public Van(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -20,7 +20,8 @@ namespace TransportTycoon.Model
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Van;
-            AcceptedGoods = acceptedGoods;
+            //TODO: kitölteni az acceptedGoods listát
+            AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -34,10 +35,10 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class Pickup : Transport
+    public sealed class Pickup : Transport
     {
         #region Constructor
-        public Pickup(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
+        public Pickup(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -45,7 +46,8 @@ namespace TransportTycoon.Model
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Pickup;
-            AcceptedGoods = acceptedGoods;
+            //TODO: kitölteni az acceptedGoods listát
+            AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -59,10 +61,10 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class Truck : Transport
+    public sealed class Truck : Transport
     {
         #region Constructor
-        public Truck(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
+        public Truck(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -70,7 +72,8 @@ namespace TransportTycoon.Model
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Truck;
-            AcceptedGoods = acceptedGoods;
+            //TODO: kitölteni az acceptedGoods listát
+            AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
@@ -84,10 +87,10 @@ namespace TransportTycoon.Model
         #endregion
     }
 
-    public class LiquidTruck : Transport
+    public sealed class LiquidTruck : Transport
     {
         #region Constructor
-        public LiquidTruck(Prouth route, int x, int y, Direction direction, List<LoadType> acceptedGoods)
+        public LiquidTruck(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
             TopSpeed = 100;
@@ -95,7 +98,8 @@ namespace TransportTycoon.Model
             Price = 100;
             Maintance = 100;
             Type = VehicleType.LiquidTruck;
-            AcceptedGoods = acceptedGoods;
+            //TODO: kitölteni az acceptedGoods listát
+            AcceptedGoods = [LoadType.Oil];
 
             //modifiable fields
             CurrentSpeed = TopSpeed;

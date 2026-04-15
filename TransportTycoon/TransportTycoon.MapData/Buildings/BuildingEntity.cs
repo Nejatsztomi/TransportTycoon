@@ -1,4 +1,5 @@
 ﻿namespace TransportTycoon.MapData.Buildings
+
 {
     public abstract class BuildingEntity
     {
@@ -6,12 +7,12 @@
         /// <summary>
         /// Mennyit tud tárolni
         /// </summary>
-        public int Capacity { protected set; get; } = 1000;
+        public int MaxCapacity { protected set; get; } = 1000;
 
         /// <summary>
         /// Jelenleg mennyit termelt
         /// </summary>
-        public int Occupancy { protected set; get; } = 0;
+        public int CurrentCapacity { protected set; get; } = 0;
 
         /// <summary>
         /// Milyen mennyiséggel termel
@@ -36,6 +37,7 @@
         /// Gets the coordinates of the top-left point of the building
         /// </summary>
         public (int X, int Y) TopLeftPoints => MapPoints.Keys.OrderBy(p => p.X).ThenBy(p => p.Y).FirstOrDefault();
+
         #endregion
 
         #region Constructors
@@ -51,12 +53,12 @@
         /// Returns the facility's consume load type
         /// </summary>
         /// <returns>The load type</returns>
-        public abstract LoadType GetConsumeLoad();
+        public abstract Load? GetConsumeLoad();
         /// <summary>
         /// Returns the facility's provided load type
         /// </summary>
         /// <returns>The load type</returns>
-        public abstract LoadType GetProvideLoad();
+        public abstract Load GetProvideLoad();
         public abstract void GenerateBuildingPoints(int startX, int startY);
         #endregion
 
@@ -68,7 +70,7 @@
         {
             int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
 
-            Occupancy = Math.Min(Occupancy + production, Capacity);
+            CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
         }
         #endregion
 
@@ -94,13 +96,20 @@
         /// <returns>The maximum what the factory can give</returns>
         public int Unload(int q)
         {
-            Occupancy = Math.Max(Occupancy - q, 0);
-            return Occupancy;
+            CurrentCapacity = Math.Max(CurrentCapacity - q, 0);
+            return CurrentCapacity;
+        }
+        public void SetCurrentCapacity(int currentCapacity)
+        {
+            if (0 <= currentCapacity && currentCapacity <= MaxCapacity)
+            {
+                CurrentCapacity = currentCapacity;
+            }
         }
         #endregion
     }
 
-    public class CityEntity : BuildingEntity
+    public sealed class CityEntity : BuildingEntity
     {
         #region Constructors
         public CityEntity(int width, int height) : base(width, height)
@@ -112,8 +121,8 @@
 
         #region Public methods
         #region Overrides
-        public override LoadType GetConsumeLoad() => LoadType.None;
-        public override LoadType GetProvideLoad() => LoadType.People;
+        public override Load? GetConsumeLoad() => null;
+        public override Load GetProvideLoad() => new Load.People();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -130,6 +139,8 @@
 
     public abstract class SiteEntity : BuildingEntity
     {
+
+
         #region Constructors
         protected SiteEntity()
         {
@@ -138,7 +149,7 @@
         #endregion
     }
 
-    public class LumberCampEntity : SiteEntity
+    public sealed class LumberCampEntity : SiteEntity
     {
         #region Constructors
         public LumberCampEntity()
@@ -148,8 +159,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.None;
-        public override LoadType GetProvideLoad() => LoadType.Wood;
+        public override Load? GetConsumeLoad() => null;
+        public override Load GetProvideLoad() => new Wood();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -163,7 +174,7 @@
         #endregion
     }
 
-    public class MineEntity : SiteEntity
+    public sealed class MineEntity : SiteEntity
     {
         #region Constructors
         public MineEntity()
@@ -173,8 +184,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.None;
-        public override LoadType GetProvideLoad() => LoadType.Oil;
+        public override Load? GetConsumeLoad() => null;
+        public override Load GetProvideLoad() => new Oil();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -188,7 +199,7 @@
         #endregion
     }
 
-    public class FarmEntity : SiteEntity
+    public sealed class FarmEntity : SiteEntity
     {
         #region Constructors
         public FarmEntity()
@@ -198,8 +209,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.None;
-        public override LoadType GetProvideLoad() => LoadType.Wheat;
+        public override Load? GetConsumeLoad() => null;
+        public override Load GetProvideLoad() => new Wheat();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -217,6 +228,7 @@
     {
         #region Properties
         public int ConsumeOccupancy { protected set; get; }
+        public int MaxConsumeCapacity => 100;
         #endregion
 
         #region Constructors
@@ -232,21 +244,29 @@
             double multiplier = GetMultiplier();
             int production = (int)Math.Round(Scaler * ConsumeOccupancy * Productivity * multiplier);
 
-            if (Occupancy + production > Capacity)
+            if (CurrentCapacity + production > MaxCapacity)
             {
-                Occupancy = Capacity;
+                CurrentCapacity = MaxCapacity;
                 ConsumeOccupancy = (int)Math.Round((production / Scaler) / (Productivity * multiplier));
             }
             else
             {
-                Occupancy += production;
+                CurrentCapacity += production;
                 ConsumeOccupancy = 0;
             }
+        }
+        public void SetConsumeOccupancy(int value)
+        {
+            if (value >= 0)
+            {
+                ConsumeOccupancy = value;
+            }
+
         }
         #endregion
     }
 
-    public class MillEntity : IndustryEntity
+    public sealed class MillEntity : IndustryEntity
     {
         #region Constructors
         public MillEntity()
@@ -255,8 +275,8 @@
         }
         #endregion
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.Wheat;
-        public override LoadType GetProvideLoad() => LoadType.Flour;
+        public override Load? GetConsumeLoad() => new Wheat();
+        public override Load GetProvideLoad() => new Flour();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -270,7 +290,7 @@
         #endregion
     }
 
-    public class PlantEntity : IndustryEntity
+    public sealed class PlantEntity : IndustryEntity
     {
         #region Constructors
         public PlantEntity()
@@ -280,8 +300,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.Wood;
-        public override LoadType GetProvideLoad() => LoadType.Paper;
+        public override Load? GetConsumeLoad() => new Wood();
+        public override Load GetProvideLoad() => new Paper();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)
@@ -295,7 +315,7 @@
         #endregion
     }
 
-    public class FactoryEntity : IndustryEntity
+    public sealed class FactoryEntity : IndustryEntity
     {
         #region Constructors
         public FactoryEntity()
@@ -305,8 +325,8 @@
         #endregion
 
         #region Public methods
-        public override LoadType GetConsumeLoad() => LoadType.Oil;
-        public override LoadType GetProvideLoad() => LoadType.Rubber;
+        public override Load? GetConsumeLoad() => new Oil();
+        public override Load GetProvideLoad() => new Rubber();
         public override void GenerateBuildingPoints(int startX, int startY)
         {
             for (int i = 0; i < Width; i++)

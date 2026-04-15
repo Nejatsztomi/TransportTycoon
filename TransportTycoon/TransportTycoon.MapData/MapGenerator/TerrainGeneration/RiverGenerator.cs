@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
+﻿namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
     public static class RiverGeneratorFactory
     {
