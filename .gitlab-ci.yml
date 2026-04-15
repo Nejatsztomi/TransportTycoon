@@ -145,6 +145,10 @@ test_model:
                 coverage_format: cobertura
                 path: ${TEST_PATH}/TestResults/*/coverage.cobertura.xml
         expire_in: 30 days
+    # Report code coverage for GitLab
+    # https://docs.gitlab.com/ci/testing/code_coverage/
+    coverage: '/TOTAL_COVERAGE=(\d+.\d+)/'
+
 
     # Cache and keep downloaded NuGet dependencies between CI pipelines
     cache:
