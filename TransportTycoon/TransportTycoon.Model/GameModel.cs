@@ -482,6 +482,8 @@ namespace TransportTycoon.Model
             //if the game is not in Run mode, the vehicles should not move
             if (Mode != GameMode.Run) return;
 
+            vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
+
             //Calculates the new coordinates of the vehicle based on its current direction and speed.
             Direction dir = vehicle.Direction;
             double x = vehicle.X;
@@ -504,22 +506,35 @@ namespace TransportTycoon.Model
                 default:
                     break;
             }
-            int newX = (int)Math.Round(x);
-            int newY = (int)Math.Round(y);
+            int newX = (int)Math.Floor(x);
+            int newY = (int)Math.Floor(y);
 
             if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
-            Field newField = Map[newX, newY];
+            
 
             //Checks if the new coordinates are within the map boundaries and if the vehicle can move to the new position (i.e., it must be an infrastructure).
-            if (newField is not Infrastructure) return;
-            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
+            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height)
+            {
+                vehicle.ChangeCurrentSpeed(0);
+                return;
+            }
+            Field newField = Map[newX, newY];
+            if (newField is not Infrastructure)
+            {
+                vehicle.ChangeCurrentSpeed(0);
+                return;
+            }
 
             Field currentField = Map[vehicle.MapX, vehicle.MapY];
-            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v.MapX == newX && v.MapY == newY);
+            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v!=vehicle && v.MapX == newX && v.MapY == newY);
 
             SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
-            vehicle.Step(direction);
-            VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
+            if (vehicle.CurrentSpeed > 0) 
+            {
+                vehicle.Step(direction);
+                VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
+            }
+            
             //vehicle.UpdateDirection();
         }
 
@@ -535,10 +550,6 @@ namespace TransportTycoon.Model
         /// <exception cref="NotImplementedException"></exception>
         private void SetVehicleSpeed(Vehicle vehicle, Vehicle? nextVehicle, Field currentField, Field newField)
         {
-            //set the vehicle's speed to its top speed,
-            //and then check if it needs to be reduced based on the type of the new field and the presence of other vehicles
-            vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
-
             //if the vehicle will be on a bridge, it should slow down to its speedlimit
             if (newField is Bridge bridge)
             {
@@ -551,26 +562,18 @@ namespace TransportTycoon.Model
                 vehicle.ChangeCurrentSpeed(vehicle.CurrentSpeed / 2);
             }
 
-            //if the newField is a Road, and its a crossroads, the vehicle should stop, if there are other vehicles on the crossroads,
-            //otherwise it should continue moving
-            //the first one goes, the others wait until the first one leaves the crossroads
-            if (newField is Road road &&
-              (road.RoadType == RoadType.XRoad || road.RoadType == RoadType.UpperTRoad ||
-               road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad ||
-               road.RoadType == RoadType.LeftTRoad))
-            {
-                List<Vehicle> vehiclesOnCrossroads = [.. Vehicles.Where(v => v.MapX == newField.X && v.MapY == newField.Y)];
-                if (vehiclesOnCrossroads.Count > 0)
-                {
-                    vehicle.ChangeCurrentSpeed(0);
-                    return;
-                }
-            }
-
-            //if there is a vehicle on the new position, the current vehicle should slow down to its speedlimit
+            //if the next field has another vehicle on it, the current vehicle should slow down to the speed of that vehicle, or stop if the other vehicle is on a different field (to avoid collisions)
             if (nextVehicle != null)
             {
-                vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
+                
+                if (currentField != newField)
+                {
+                    vehicle.ChangeCurrentSpeed(0);
+                }
+                else
+                {
+                    vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
+                }
             }
         }
         #endregion
