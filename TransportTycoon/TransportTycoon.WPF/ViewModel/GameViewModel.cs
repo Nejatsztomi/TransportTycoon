@@ -316,15 +316,6 @@ namespace TransportTycoon.WPF.ViewModel
                 case 44:
                     Model.DeleteRoute(tile.X, tile.Y);
                     break;
-                case 100:
-                    var route = Model.CalculateRoute(tile.X, tile.Y);
-                    if (route is null)
-                    {
-                        RemoveRoutes();
-                        break;
-                    }
-                    ShowRoute(route);
-                    break;
                 default:
                     break;
             }
