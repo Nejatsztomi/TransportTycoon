@@ -29,7 +29,7 @@ namespace TransportTycoon.MapData
             if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
-                if (building.BuildingEntity is CityEntity) 
+                if (building.BuildingEntity is CityEntity)
                 {
                     buildings.Add(building);
                     continue;
