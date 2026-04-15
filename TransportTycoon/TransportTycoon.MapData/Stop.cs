@@ -19,21 +19,21 @@ namespace TransportTycoon.MapData
 
         #region Public Methods
         /// <summary>
-        /// Retrieves a list of buildings that can accept any of the specified load types.
+        /// the method that retrieves a list of building blocks that can accept goods from the specified vehicles.
         /// </summary>
-        /// <remarks>If the connections collection is null, the method returns an empty list. This method
-        /// filters buildings based on the load types they can consume, as determined by each building's
-        /// entity.</remarks>
-        /// <param name="vehicleAcceptedGoods">A list of load types representing the goods that vehicles can deliver. Only buildings that accept at least
-        /// one of these load types are included in the result.</param>
-        /// <returns>A list of BuildingBlocks objects representing buildings that can accept at least one of the specified load
-        /// types. The list is empty if no such buildings are found or if there are no connections.</returns>
+        /// <param name="vehicleAcceptedGoods"></param>
+        /// <returns></returns>
         public List<BuildingBlocks> ShowWhatTheBuildingsCanGet(List<LoadType> vehicleAcceptedGoods)
         {
             List<BuildingBlocks> buildings = [];
             if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
+                if (building.BuildingEntity is CityEntity) 
+                {
+                    buildings.Add(building);
+                    continue;
+                }
                 LoadType type = LoadType.None;
                 Load? load = building.BuildingEntity.GetConsumeLoad();
                 if (load != null)
