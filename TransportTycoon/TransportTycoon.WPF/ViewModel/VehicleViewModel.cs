@@ -48,19 +48,21 @@ namespace TransportTycoon.WPF.ViewModel
         public VehicleViewModel(Vehicle vehicle)
         {
             Vehicle = vehicle;
-            DeterminePixels();
-
             MapX = vehicle.MapX;
             MapY = vehicle.MapY;
+            DeterminePixels();
+
+            
         }
         #endregion
         #region Public Methods
         public void RefreshVehicle(Vehicle vehicle)
         {
             Vehicle = vehicle;
-            DeterminePixels();
             MapX = vehicle.MapX;
             MapY = vehicle.MapY;
+            DeterminePixels();
+            
             OnPropertyChanged(nameof(PixelX));
             OnPropertyChanged(nameof(PixelY));
             OnPropertyChanged(nameof(MapX));
@@ -71,25 +73,27 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private Methods
         private void DeterminePixels()
         {
-            PixelX = 50 * Y;
-            PixelY = 50 * X;
-            switch (Direction)
-            {
-                case Direction.Up:
-                    PixelX += 10;
-                    break;
-                case Direction.Down:
-                    PixelX -= 10;
-                    break;
-                case Direction.Left:
-                    PixelY -= 10;
-                    break;
-                case Direction.Right:
-                    PixelY += 10;
-                    break;
-                default:
-                    break;
-            }
+            //TODO: change mapY -> Y and mapX -> X, but for testing purposes only, 
+            PixelX = 50 * MapY;
+            PixelY = 50 * MapX;
+            //for testing purposes only, to see the movement of the vehicles more clearly, the pixel values are changed by 10 pixels in the direction of movement.
+            //switch (Direction)
+            //{
+            //    case Direction.Up:
+            //        PixelX += 10;
+            //        break;
+            //    case Direction.Down:
+            //        PixelX -= 10;
+            //        break;
+            //    case Direction.Left:
+            //        PixelY -= 10;
+            //        break;
+            //    case Direction.Right:
+            //        PixelY += 10;
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
         #endregion
         #region Private event Methods

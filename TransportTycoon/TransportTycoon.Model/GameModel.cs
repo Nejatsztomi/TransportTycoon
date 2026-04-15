@@ -371,7 +371,6 @@ namespace TransportTycoon.Model
             foreach (Vehicle vehicle in Vehicles)
             {
                 Step(vehicle, dir);
-                //lehet h elkene tarolni az legutolso lepest is???
             }
         }
         public void DefineRoute(int x, int y)
@@ -507,6 +506,8 @@ namespace TransportTycoon.Model
             }
             int newX = (int)Math.Round(x);
             int newY = (int)Math.Round(y);
+
+            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
             Field newField = Map[newX, newY];
 
             //Checks if the new coordinates are within the map boundaries and if the vehicle can move to the new position (i.e., it must be an infrastructure).
