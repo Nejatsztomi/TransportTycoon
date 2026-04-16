@@ -1,4 +1,5 @@
-﻿using TransportTycoon.Model.Graph;
+﻿using TransportTycoon.MapData;
+using TransportTycoon.Model.Graph;
 
 namespace TransportTycoon.Model
 {
@@ -37,5 +38,25 @@ namespace TransportTycoon.Model
             Stops.Remove(stop);
         }
         #endregion
+    }
+
+    public static class ProuthUtil
+    {
+        public static List<Node> ConvertStopTilesToNodes(List<Stop> stopTiles, Graph.Graph graph)
+        {
+            return [.. stopTiles
+                .Select(stop => graph.GetNodeAt(stop.X, stop.Y))
+                .OfType<Node>()
+                ];
+        }
+
+        public static List<Stop> ConvertNodestoStopTiles(List<Node> nodes, GameTable game)
+        {
+            return [.. nodes
+                .Select(node => game.Table[node.X, node.Y])
+                .Where(field => field is not null && field.FieldType == FieldType.Stop)
+                .Cast<Stop>()
+                ];
+        }
     }
 }

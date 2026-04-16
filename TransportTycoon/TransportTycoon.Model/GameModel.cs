@@ -1,6 +1,5 @@
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
-using TransportTycoon.Model.Graph;
 namespace TransportTycoon.Model
 {
     public enum GameMode { Run, Paused, Editor }
@@ -132,44 +131,6 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public Methods
-        public HashSet<(int X, int Y)>? CalculateRoute(int x, int y)
-        {
-            if (SelectedField == null)
-            {
-                SetSelectedField(x, y);
-                return null;
-            }
-            Field field1 = Map[x, y];
-            Field field2 = SelectedField;
-
-            AStarPathfinder pathFinder = new(GraphNetwork);
-            Node node1 = new(field1.X, field1.Y, field1.FieldType);
-            Node node2 = new(field2.X, field2.Y, field2.FieldType);
-            if (!node1.IsValidDestination || !node2.IsValidDestination)
-            {
-                SetSelectedField(-1, -1);
-                return null;
-            }
-
-            List<Edge>? path = pathFinder.FindPath(node1, node2);
-            if (path is null)
-            {
-                SetSelectedField(-1, -1);
-                return null;
-            }
-
-            HashSet<(int X, int Y)> fields = [];
-            foreach (Edge edge in path)
-            {
-                foreach (var road in edge.Roads)
-                {
-                    fields.Add((road.X, road.Y));
-                }
-            }
-            SetSelectedField(-1, -1);
-            return fields;
-        }
-
         public void NewGame()
         {
             Balance = DefaultBalance;
@@ -432,7 +393,12 @@ namespace TransportTycoon.Model
         {
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
             if (selectedVehcile is null) return;
-            //SelectedStopFields = selectedVehcile.Prouth.Stops;
+
+            if (selectedVehcile.Prouth is not null)
+            {
+                SelectedStopFields = ProuthUtil.ConvertNodestoStopTiles(selectedVehcile.Prouth.Stops, Map);
+            }
+
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void AssignRoute(int x, int y)
@@ -441,7 +407,10 @@ namespace TransportTycoon.Model
 
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
             if (selectedVehcile is null) return;
-            //selectedVehcile.SetProuth(SelectedStopFields)
+
+            Prouth prouth = new(ProuthUtil.ConvertStopTilesToNodes(SelectedStopFields, GraphNetwork));
+            selectedVehcile.Prouth = prouth;
+
             SelectedStopFields = [];
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }

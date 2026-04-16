@@ -44,7 +44,7 @@ namespace TransportTycoon.Model
         public Load? CurrentLoad { get; protected set; }
         public int MaxCapacity { get; protected set; }
         public int CurrentCapacity { get; protected set; }
-        public Prouth? Prouth { get; protected set; }
+        public Prouth? Prouth { get; set; }
         /// <summary>
         /// The current route of the vehicle, represented as a list of edges.
         /// The route may be null if the vehicle does not have a current route assigned.
