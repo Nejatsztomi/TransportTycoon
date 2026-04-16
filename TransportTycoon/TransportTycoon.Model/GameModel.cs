@@ -190,6 +190,7 @@ namespace TransportTycoon.Model
                 GameTime = GameTime,
                 PlayerBalance = Balance,
 
+                ModifiedTiles = tileSaveDatas,
                 ModifiedTrees = treesData,
                 Vehicles = vehiclesData,
                 BuildingEntities = buildingsData
