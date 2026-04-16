@@ -15,7 +15,7 @@ namespace TransportTycoon.MapData
         public int Width => Context.Width;
         public int Height => Context.Height;
 
-        public List<BuildingEntity> BuildingEntities { get; }
+        public List<BuildingEntity> BuildingEntities { get; private set; }
 
         public Field this[int x, int y]
         {
@@ -57,7 +57,7 @@ namespace TransportTycoon.MapData
 
         public void GenerateMap()
         {
-            Table = MapGenerator.GenerateMap(Context);
+            (Table, BuildingEntities) = MapGenerator.GenerateMap(Context);
             IsMapGenerated = true;
         }
 
