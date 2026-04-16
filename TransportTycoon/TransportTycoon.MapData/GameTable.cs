@@ -23,6 +23,11 @@ namespace TransportTycoon.MapData
             set => Table[x, y] = value;
         }
 
+        /// <summary>
+        /// Tells whether the map has been generated or not.
+        /// This is used to prevent accessing the map before it is generated, which can cause errors.
+        /// </summary>
+        public bool IsMapGenerated { get; private set; }
         private IMapGenerator MapGenerator { get; }
         private MapGenerationContext Context { get; }
         private MapGenerationSettings GenerationSettings => Context.Settings;
@@ -35,14 +40,25 @@ namespace TransportTycoon.MapData
             BuildingEntities = [];
 
             Table = new Field[Width, Height];
+            IsMapGenerated = false;
             MapGenerator = mapGenerator;
         }
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Determines whether the specified coordinates are within the valid bounds defined by the current height and
+        /// width.
+        /// </summary>
+        /// <param name="x">The x-coordinate to check.</param>
+        /// <param name="y">The y-coordinate to check.</param>
+        /// <returns><see langword="true"/> if both coordinates are within bounds; otherwise, <see langword="false"/>.</returns>
+        public bool IsInBounds(int x, int y) => 0 <= x && x < Height && 0 <= y && y < Width;
+
         public void GenerateMap()
         {
             Table = MapGenerator.GenerateMap(Context);
+            IsMapGenerated = true;
         }
 
         public List<Field> CheckNeighboringTrees(int x, int y)

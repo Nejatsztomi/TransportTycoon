@@ -62,6 +62,7 @@ namespace TransportTycoon.Model
                 else
                 {
                     _timer.Start();
+                    RebuildGraph();
                 }
                 GameModeChanged?.Invoke(this, value);
                 field = value;
@@ -84,6 +85,11 @@ namespace TransportTycoon.Model
         public List<Vehicle> Vehicles { get; private set; } = [];
 
         public int NumberOfVehicles => Vehicles.Count;
+
+        /// <summary>
+        /// The game's graph representation of the map.
+        /// </summary>
+        public Graph.Graph GraphNetwork { get; private set; }
         public Vehicle? GetVehicleAt(int x, int y)
         {
             return Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
@@ -118,6 +124,9 @@ namespace TransportTycoon.Model
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
+
+            // We create an empty graph
+            GraphNetwork = new([], []);
         }
         #endregion
 
@@ -376,15 +385,20 @@ namespace TransportTycoon.Model
         }
         public void DefineRoute(int x, int y)
         {
-            if (Map[x, y] is not Stop) return;
-            SelectedStopFields.Add((Stop)Map[x, y]);
+            if (Map[x, y] is not Stop stop) return;
+            SelectedStopFields.Add(stop);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void QueryRoute(int x, int y)
         {
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
             if (selectedVehcile is null) return;
-            //SelectedStopFields = selectedVehcile.Prouth.Stops;
+
+            if (selectedVehcile.Prouth is not null)
+            {
+                SelectedStopFields = ProuthUtil.ConvertNodestoStopTiles(selectedVehcile.Prouth.Stops, Map);
+            }
+
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void AssignRoute(int x, int y)
@@ -393,7 +407,10 @@ namespace TransportTycoon.Model
 
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
             if (selectedVehcile is null) return;
-            //selectedVehcile.SetProuth(SelectedStopFields)
+
+            Prouth prouth = new(ProuthUtil.ConvertStopTilesToNodes(SelectedStopFields, GraphNetwork));
+            selectedVehcile.Prouth = prouth;
+
             SelectedStopFields = [];
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
@@ -413,6 +430,18 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// A method that rebuilds the graph representation of the map.
+        /// </summary>
+        private void RebuildGraph()
+        {
+            if (!Map.IsMapGenerated)
+            {
+                return;
+            }
+            GraphNetwork = Graph.GraphBuilder.BuildGraph(Map);
+        }
+
         private void SetTax()
         {
             int tax = 30;
