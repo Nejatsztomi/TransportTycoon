@@ -73,9 +73,25 @@ namespace TransportTycoon.WPF.ViewModel
             CurrentView = gameViewModel;
         }
 
-        private void StartMenuViewModel_LoadingGame(object? _1, string _2)
+        private async void StartMenuViewModel_LoadingGame(object? _1, string uri)
         {
-            throw new NotImplementedException("Load game functionality is not implemented yet!");
+            try
+            {
+                MapGenerationContext context = new();
+
+                _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
+                _model.GameOver += Model_GameOver;
+
+                await _model.LoadGame(uri);
+
+                GameViewModel gameViewModel = new(_model);
+                CurrentView = gameViewModel;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to load the game. The file might be corrupted or incompatible." + Environment.NewLine +
+                                "Error details: " + ex.Message, "TransportTycoon", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void StartMenuViewModel_ExitingGame(object? _1, EventArgs _2)
