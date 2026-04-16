@@ -2,7 +2,9 @@ using NSubstitute;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
+using TransportTycoon.Persistence;
 using ITimer = TransportTycoon.Model.ITimer;
+using VehicleType = TransportTycoon.Model.VehicleType;
 
 namespace TransportTycoon.Test.Model;
 
@@ -12,6 +14,7 @@ public class GameModelTest
     public class ConstructorTest
     {
         private ITimer _mockTimer = null!;
+        private IPersistence _mockPersistence = null!;
         private GameTable _mockMap = null!;
 
         [TestInitialize]
@@ -22,6 +25,7 @@ public class GameModelTest
 
             _mockTimer = Substitute.For<ITimer>();
             _mockMap = Substitute.For<GameTable>(mockMapGenerator, context);
+            _mockPersistence = Substitute.For<IPersistence>();
         }
 
         [TestMethod]
@@ -29,13 +33,13 @@ public class GameModelTest
         {
             Difficulty difficulty = Difficulty.Hard;
             int balance = 5_000;
-            GameModel gameModel = new(_mockMap, _mockTimer, difficulty, balance);
+            GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence, difficulty, balance);
 
             Assert.AreEqual(difficulty, gameModel.Difficulty, "Difficulty should match");
             Assert.AreEqual(balance, gameModel.Balance, "Balance should match");
 
             Assert.AreEqual(GameMode.Run, gameModel.Mode, "GameMode should be Run");
-            Assert.AreEqual(0, gameModel.GameTime, "GameTime should be 0");
+            Assert.AreEqual(0UL, gameModel.GameTime, "GameTime should be 0");
 
             // Timer mock tesztek
             // Feliratkoztak az Elapsed eseményre
@@ -45,7 +49,7 @@ public class GameModelTest
         [TestMethod]
         public void Constructor_WithDefaultValues()
         {
-            GameModel gameModel = new(_mockMap, _mockTimer);
+            GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
 
             Assert.AreEqual(GameModel.DefaultDifficulty, gameModel.Difficulty, "Difficulty should be DefaultDifficulty");
             Assert.AreEqual(GameModel.DefaultBalance, gameModel.Balance, "Balance should be DefaultBalance");
@@ -75,6 +79,7 @@ public class GameModelTest
         {
             private GameModel _gameModel = null!;
             private ITimer _mockTimer = null!;
+            private IPersistence _mockPersistence = null!;
 
             [TestInitialize]
             public void Initialize()
@@ -84,7 +89,8 @@ public class GameModelTest
                 var mockGameTable = Substitute.For<GameTable>(mockMapGenerator, context);
 
                 _mockTimer = Substitute.For<ITimer>();
-                _gameModel = new(mockGameTable, _mockTimer);
+                _mockPersistence = Substitute.For<IPersistence>();
+                _gameModel = new(mockGameTable, _mockTimer, _mockPersistence);
             }
 
             [TestMethod]
@@ -214,9 +220,10 @@ public class GameModelTest
         [TestClass]
         public class EventArgumentTest
         {
-            private static GameModel _gameModel = null!;
-            private static ITimer _mockTimer = null!;
-            private static GameTable _mockMap = null!;
+            private GameModel _gameModel = null!;
+            private ITimer _mockTimer = null!;
+            private GameTable _mockMap = null!;
+            private IPersistence _mockPersistence = null!;
 
             [TestInitialize]
             public void Initialize()
@@ -226,14 +233,15 @@ public class GameModelTest
 
                 _mockMap = Substitute.For<GameTable>(mockGenerator, context);
                 _mockTimer = Substitute.For<ITimer>();
-                _gameModel = new(_mockMap, _mockTimer);
+                _mockPersistence = Substitute.For<IPersistence>();
+                _gameModel = new(_mockMap, _mockTimer, _mockPersistence);
             }
 
             [TestMethod]
             [DynamicData(nameof(GetAllGameModes), typeof(EventTest))]
             public void GameModeChanged_EventArgumentIsCorrect(GameMode expectedGameMode)
             {
-                GameModel gameModel = new(_mockMap, _mockTimer);
+                GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
                 GameMode actualGameMode = GameMode.Run;
 
                 void Handler(object? _1, GameMode e)
@@ -257,7 +265,7 @@ public class GameModelTest
             [DynamicData(nameof(GetAllTimeSpeeds), typeof(EventTest))]
             public void TimeSpeedChanged_EventArgumentIsCorrect(TimeSpeed expectedTimeSpeed)
             {
-                GameModel gameModel = new(_mockMap, _mockTimer);
+                GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
                 TimeSpeed actualTimeSpeed = TimeSpeed.Normal;
 
                 void Handler(object? _1, TimeSpeed e)
@@ -320,6 +328,7 @@ public class GameModelTest
         private GameModel _gameModel = null!;
         private GameTable _mockMap = null!;
         private ITimer _mockTimer = null!;
+        private IPersistence _mockPersistence = null!;
 
         [TestInitialize]
         public void Initialize()
@@ -329,9 +338,10 @@ public class GameModelTest
 
             _mockTimer = Substitute.For<ITimer>();
             _mockMap = Substitute.For<GameTable>(mockMapGenerator, context);
+            _mockPersistence = Substitute.For<IPersistence>();
 
             // Initialize GameModel with a default high balance for tests
-            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 10000);
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
         }
 
         [TestMethod]
@@ -343,7 +353,7 @@ public class GameModelTest
             _mockMap[x, y] = new Terrain(x, y, 1);
 
             // Re-initialize GameModel to strictly control the starting balance
-            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 10000);
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
             int initialVehiclesCount = _gameModel.Vehicles.Count;
 
             // Act
@@ -363,7 +373,7 @@ public class GameModelTest
             // Mock the map to return a Stop at the given coordinates
             _mockMap[x, y] = new Stop(x, y, 1);
 
-            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 5000);
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 5000);
 
             bool eventRaised = false;
             _gameModel.BalanceChanged += (sender, args) => { eventRaised = true; };
@@ -389,7 +399,7 @@ public class GameModelTest
             _mockMap[x, y] = new Stop(x, y, 1);
 
             // Initialize with 0 balance
-            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 0);
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 0);
 
             bool eventRaised = false;
             _gameModel.BalanceChanged += (sender, args) => { eventRaised = true; };
@@ -415,7 +425,7 @@ public class GameModelTest
             int x = 3, y = 3;
             _mockMap[x, y] = new Stop(x, y, 1);
 
-            _gameModel = new GameModel(_mockMap, _mockTimer, Difficulty.Medium, 100000);
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 100000);
 
             // Act
             var result = _gameModel.BuyVehicle(x, y, VehicleType.BigBus);

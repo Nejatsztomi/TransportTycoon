@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using TransportTycoon.MapData;
 using TransportTycoon.Model;
@@ -20,7 +21,7 @@ namespace TransportTycoon.WPF.ViewModel
         public ObservableCollection<VehicleViewModel> Vehicles { get; private set; }
 
         public int Balance => Model.Balance;
-        public int GameTime => Model.GameTime;
+        public ulong GameTime => Model.GameTime;
         public bool IsPaused => Model.Mode == GameMode.Paused;
         public bool IsEditorMode => Model.Mode == GameMode.Editor;
 
@@ -54,6 +55,22 @@ namespace TransportTycoon.WPF.ViewModel
             Tiles = [];
             Vehicles = [];
             RefreshTable();
+        }
+        #endregion
+
+        #region Public methods
+        public void PauseGame()
+        {
+            Model.Mode = GameMode.Paused;
+            OnPropertyChanged(nameof(IsPaused));
+        }
+
+        public void ResumeGame()
+        {
+            Model.Mode = GameMode.Run;
+            if (Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
+            Model.DeleteRoute(-1, -1);
+            OnPropertyChanged(nameof(IsPaused));
         }
         #endregion
 
@@ -196,15 +213,13 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnPauseGame()
         {
-            Model.Mode = GameMode.Paused;
+            PauseGame();
         }
 
         [RelayCommand]
         private void OnResumeGame()
         {
-            Model.Mode = GameMode.Run;
-            if (Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
-            Model.DeleteRoute(-1, -1);
+            ResumeGame();
         }
 
         [RelayCommand]
@@ -319,6 +334,31 @@ namespace TransportTycoon.WPF.ViewModel
                 default:
                     break;
             }
+        }
+
+        [RelayCommand]
+        private void OnExitGame()
+        {
+            App.Current.Shutdown();
+        }
+
+        [RelayCommand]
+        private async Task OnSaveGame()
+        {
+            var fileDiag = new OpenFileDialog
+            {
+                Title = "Choose a save location",
+                Filter = "JSON files|*.json|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Multiselect = false,
+                RestoreDirectory = true,
+            };
+
+            bool? result = fileDiag.ShowDialog();
+            if (result is null || result == false) return;
+
+            var uri = fileDiag.FileName;
+            await Model.SaveGame(uri);
         }
         #endregion
 
