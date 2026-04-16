@@ -61,6 +61,13 @@ namespace TransportTycoon.Model
         public int MapX => (int)Math.Round(X);
         public int MapY => (int)Math.Round(Y);
         public List<LoadType>? AcceptedGoods { get; protected set; } = [];
+
+        /// <summary>
+        /// <see langword="true"/> if the vehicle is lost, meaning it cannot find a valid route to its destination and is effectively stuck.
+        /// This can occur when the vehicle's current position is not connected to the rest of the map, or when all possible routes to the destination are blocked or inaccessible.
+        /// When a vehicle is marked as lost, it may require intervention to be moved back onto a valid path or to be removed from the game if it cannot be recovered.
+        /// </summary>
+        public bool IsLost { get; private set; } = false;
         #endregion
 
         #region Public methods
@@ -191,6 +198,40 @@ namespace TransportTycoon.Model
                 CurrentRoute = pathFinder.FindPath(start, end);
             }
 
+        }
+
+        /// <summary>
+        /// Recalculates the current route.
+        /// </summary>
+        /// <remarks>
+        /// If the current route or edge tiles are not set, or if the next stop node pair cannot be determined, the method does nothing.
+        /// If a ghost node cannot be injected, the route is marked as lost.
+        /// </remarks>
+        /// <param name="pathFinder">The path finder used to compute a new route between nodes.</param>
+        /// <param name="injector">The ghost node injector used to manage temporary nodes during route calculation.</param>
+        public void RecalculateRoute(IPathFinder pathFinder, GhostNodeInjector injector)
+        {
+            if (CurrentRoute is null || _currentEdgeTiles is null) return;
+            if (GetNextStopNodePair() is not (Node _, Node end)) return;
+
+            Field currentTile = _currentEdgeTiles[_currentTileIdx];
+
+            (Node? startNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
+
+            if (startNode is null)
+            {
+                IsLost = true;
+                return;
+            }
+
+            List<Edge>? newRoute = pathFinder.FindPath(startNode, end);
+
+            if (isGhost)
+            {
+                injector.RemoveGhostNode(startNode);
+            }
+
+            CurrentRoute = newRoute;
         }
         #endregion
 
