@@ -36,6 +36,48 @@
         }
         #endregion
 
+        #region Public methods
+        /// <summary>
+        /// Retrieves the node located at the specified X and Y coordinates, if it exists.
+        /// </summary>
+        /// <param name="x">The X-coordinate of the node to retrieve.</param>
+        /// <param name="y">The Y-coordinate of the node to retrieve.</param>
+        /// <returns>The <see cref="Node"/> at the specified coordinates, or <see langword="null"/> if no such node exists.</returns>
+        public Node? GetNodeAt(int x, int y)
+        {
+            return AdjacencyList.Keys.FirstOrDefault(node => node.X == x && node.Y == y);
+        }
+
+        /// <summary>
+        /// Adds a node to the graph if it does not already exist in the adjacency list.
+        /// </summary>
+        /// <param name="node">The node to add to the graph.</param>
+        public void AddNode(Node node)
+        {
+            if (!AdjacencyList.ContainsKey(node))
+            {
+                AdjacencyList[node] = [];
+            }
+        }
+
+        /// <summary>
+        /// Adds an edge to the adjacency list for the specified node if the node exists in the graph.
+        /// </summary>
+        /// <remarks>
+        /// If the specified node does not exist in the adjacency list, the method does nothing.
+        /// This method does not check for duplicate edges.
+        /// </remarks>
+        /// <param name="node">The node to which the edge will be added.</param>
+        /// <param name="edge">The edge to add to the specified node's adjacency list.</param>
+        public void AddEdge(Node node, Edge edge)
+        {
+            if (AdjacencyList.ContainsKey(node))
+            {
+                AdjacencyList[node].Add(edge);
+            }
+        }
+        #endregion
+
         #region Private methods
         /// <summary>
         /// Creates a directed, weighted graph from the given nodes and edges.
