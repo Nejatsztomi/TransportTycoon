@@ -1,4 +1,5 @@
 ﻿using TransportTycoon.MapData;
+using TransportTycoon.Model.Graph;
 
 namespace TransportTycoon.Model
 {
@@ -14,13 +15,42 @@ namespace TransportTycoon.Model
 
     public abstract class Vehicle
     {
-        #region Fields
+        #region Private fields
+        /// <summary>
+        /// The prouth's stop index.
+        /// </summary>
+        private int _currentStopIdx = 0;
+        /// <summary>
+        /// The current route's edge index.
+        /// </summary>
+        private int _currentEdgeIdx = 0;
+        /// <summary>
+        /// The current edge's tile index.
+        /// </summary>
+        private int _currentTileIdx = 0;
+        /// <summary>
+        /// The current tile's progress.
+        /// </summary>
+        private double _tileProgress = 0.0;
+        /// <summary>
+        /// The current edge's tiles.
+        /// </summary>
+        private List<Field>? _currentEdgeTiles = null;
+        #endregion
+
+        #region Properties
         public double TopSpeed { get; protected set; }
         public double CurrentSpeed { get; protected set; }
         public Load? CurrentLoad { get; protected set; }
         public int MaxCapacity { get; protected set; }
         public int CurrentCapacity { get; protected set; }
-        public Prouth? Route { get; protected set; }
+        public Prouth? Prouth { get; protected set; }
+        /// <summary>
+        /// The current route of the vehicle, represented as a list of edges.
+        /// The route may be null if the vehicle does not have a current route assigned.
+        /// The vehicle will be repeating this route, if not given a new one.
+        /// </summary>
+        public List<Edge>? CurrentRoute { get; protected set; }
         public VehicleType Type { get; protected set; }
         public double X { get; protected set; }
         public double Y { get; protected set; }
@@ -147,6 +177,64 @@ namespace TransportTycoon.Model
                 return tmp;
             }
             return 0;
+        }
+
+        /// <summary>
+        /// Gets the next route between two <see cref="Stop"/> tiles.
+        /// If it's last stop in the route, it loops over.
+        /// </summary>
+        /// <param name="pathFinder">The path finder to use for finding the route.</param>
+        public void GetNextRoute(IPathFinder pathFinder)
+        {
+            if (GetNextStopNodePair() is (Node start, Node end))
+            {
+                CurrentRoute = pathFinder.FindPath(start, end);
+            }
+
+        }
+        #endregion
+
+        #region Private method
+        /// <summary>
+        /// A helper method to be called when the vehicle arrives at a stop.
+        /// It resets the current route and edge tiles, and advances the prouth to the next stop.
+        /// After this method is called the vehicle should be ready to get the next route to the next stop in the prouth.
+        /// </summary>
+        private void ArriveAtStop()
+        {
+            CurrentRoute = null;
+            _currentEdgeTiles = null;
+            AdvanceProuth();
+        }
+
+        /// <summary>
+        /// Gets the next pair of nodes representing the start and end stops for the next route.
+        /// </summary>
+        /// <returns>The next pair of nodes, or <see langword="null"/> if there are not enough stops or the route is not defined.</returns>
+        private (Node startNode, Node endNode)? GetNextStopNodePair()
+        {
+            if (Prouth is null || Prouth.Stops.Count < 2)
+            {
+                return null;
+            }
+
+            Node start = Prouth.Stops[_currentStopIdx];
+
+            int nextIndex = (_currentStopIdx + 1) % Prouth.Stops.Count;
+
+            Node destination = Prouth.Stops[nextIndex];
+            return (start, destination);
+        }
+
+        /// <summary>
+        /// Move the <see cref="_currentEdgeIdx"/> "pointer" forward.
+        /// At the end it loops back to <see langword="0"/>.
+        /// </summary>
+        private void AdvanceProuth()
+        {
+            if (Prouth is null || Prouth.Stops.Count == 0) return;
+
+            _currentEdgeIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
         }
         #endregion
     }
