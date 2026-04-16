@@ -6,7 +6,7 @@ namespace TransportTycoon.Persistence
     public class GameSaveData
     {
         public MapGenerationContext MapContext { get; set; }
-        public ulong InGameTime { get; set; }
+        public ulong GameTime { get; set; }
         public int PlayerBalance { get; set; }
 
         public List<TileSaveData> ModifiedTiles { get; set; } = [];
@@ -19,7 +19,7 @@ namespace TransportTycoon.Persistence
     public readonly record struct TileSaveData(
         int X,
         int Y,
-        FieldType Type
+        SaveFieldType Type
         );
 
     public readonly record struct TreeSaveData(
@@ -30,8 +30,8 @@ namespace TransportTycoon.Persistence
 
     public readonly record struct VehicleSaveData(
         VehicleType Type,
-        double CurrentX,
-        double CurrentY,
+        int CurrentX,
+        int CurrentY,
         LoadType CurrentLoad,
         int CurrentCapacity
         );
@@ -43,9 +43,26 @@ namespace TransportTycoon.Persistence
         int Productivity
         );
 
-    // Enums to make JSON readable
     public enum VehicleType
     {
         Van = 0, Pickup = 1, Truck = 2, LiquidTruck = 3, SmallBus = 4, BigBus = 5
+    }
+
+    public enum SaveFieldType
+    {
+        Terrain,
+        Road,
+        Stop,
+        HorizontalGreenBridge,
+        VerticalGreenBridge,
+        HorizontalYellowBridge,
+        VerticalYellowBridge,
+        HorizontalRedBridge,
+        VerticalRedBridge,
+    }
+
+    public enum BuildingEntityType
+    {
+        House = 0, Farm = 1, Mine = 2, LumberCamp = 3, Mill = 4, Factory = 5, Plant = 6
     }
 }

@@ -12,12 +12,12 @@
         /// <summary>
         /// Jelenleg mennyit termelt
         /// </summary>
-        public int CurrentCapacity { protected set; get; } = 0;
+        public int CurrentCapacity { set; get; } = 0;
 
         /// <summary>
         /// Milyen mennyiséggel termel
         /// </summary>
-        public int Productivity { protected set; get; } = 1;
+        public int Productivity { set; get; } = 1;
 
         /// <summary>
         /// Melyik telephely milyen szorzóval termel
