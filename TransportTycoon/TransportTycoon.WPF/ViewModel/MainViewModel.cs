@@ -2,6 +2,7 @@
 using System.Windows;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
+using TransportTycoon.Persistence;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -42,7 +43,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             MapGenerationContext context = new();
 
-            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer());
+            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
             _model.GameOver += Model_GameOver;
             _model.NewGame();
 
@@ -63,7 +64,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void CreateGameViewModel_CreateGame(object? _1, MapGenerationContext context)
         {
-            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer());
+            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
             _model.GameOver += Model_GameOver;
             _model.NewGame();
 

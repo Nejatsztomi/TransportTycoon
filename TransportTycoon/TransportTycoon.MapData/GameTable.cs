@@ -29,7 +29,7 @@ namespace TransportTycoon.MapData
         /// </summary>
         public bool IsMapGenerated { get; private set; }
         private IMapGenerator MapGenerator { get; }
-        private MapGenerationContext Context { get; }
+        public MapGenerationContext Context { get; }
         private MapGenerationSettings GenerationSettings => Context.Settings;
         #endregion
 

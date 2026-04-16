@@ -1,5 +1,6 @@
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
+using TransportTycoon.Persistence;
 namespace TransportTycoon.Model
 {
     public enum GameMode { Run, Paused, Editor }
@@ -40,6 +41,8 @@ namespace TransportTycoon.Model
 
         #region Private fields
         private readonly ITimer _timer;
+        private readonly IPersistence _persistence;
+        private readonly Dictionary<(int X, int Y), Field> _modifiedFields = [];
         #endregion
 
         #region Properties
@@ -47,7 +50,7 @@ namespace TransportTycoon.Model
         public Field? SelectedField { get; private set; }
         public List<Stop> SelectedStopFields { get; private set; } = [];
         public int Balance { get; private set; }
-        public int GameTime { get; private set; }
+        public ulong GameTime { get; private set; }
         public int Maintance { get; private set; }
 
         public GameMode Mode
@@ -112,13 +115,14 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Constructor
-        public GameModel(GameTable map, ITimer timer, Difficulty difficulty = DefaultDifficulty, int balance = DefaultBalance)
+        public GameModel(GameTable map, ITimer timer, IPersistence persistence, Difficulty difficulty = DefaultDifficulty, int balance = DefaultBalance)
         {
             Difficulty = difficulty;
             Balance = balance;
             Map = map;
             _timer = timer;
             _timer.Elapsed += Timer_Tick;
+            _persistence = persistence;
 
             SetTax();
             Mode = GameMode.Run;
@@ -131,6 +135,55 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public Methods
+        public void SaveGame(string uri)
+        {
+            List<TreeSaveData> treesData = [.. Map.Table.Cast<Field>()
+                .Select(field => new TreeSaveData()
+                {
+                    X = field.X,
+                    Y = field.Y,
+                    Amount = field.GetTrees()
+                }
+                )];
+
+            List<VehicleSaveData> vehiclesData = [.. Vehicles.Select(v => new VehicleSaveData()
+            {
+                Type = (Persistence.VehicleType)v.Type,
+                CurrentX = v.X,
+                CurrentY = v.Y,
+                CurrentLoad = v.CurrentLoad?.LoadType ?? LoadType.None,
+                CurrentCapacity = v.CurrentCapacity
+            })];
+
+            List<BuildingEntitySaveData> buildingsData = [.. Map.BuildingEntities
+                .Select(entity => new BuildingEntitySaveData()
+                {
+                    TopLeftX = entity.TopLeftPoints.X,
+                    TopLeftY = entity.TopLeftPoints.Y,
+                    CurrentCapacity = entity.CurrentCapacity,
+                    Productivity = entity.Productivity
+                }
+                )];
+
+            GameSaveData data = new()
+            {
+                MapContext = Map.Context,
+                InGameTime = GameTime,
+                PlayerBalance = Balance,
+
+                ModifiedTrees = treesData,
+                Vehicles = vehiclesData,
+                BuildingEntities = buildingsData
+            };
+
+            _persistence.SaveGame(uri, data);
+        }
+
+        public void LoadGame(string uri)
+        {
+            _persistence.LoadGame(uri);
+        }
+
         public void NewGame()
         {
             Balance = DefaultBalance;
@@ -166,6 +219,8 @@ namespace TransportTycoon.Model
                         }
                         Balance -= 100;
                         terrain.IncreaseHeight();
+                        // Add the modified field to the dictionary
+                        _modifiedFields[(x, y)] = terrain;
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
                         if (IsGameOver)
@@ -197,6 +252,8 @@ namespace TransportTycoon.Model
                         }
                         Balance -= 100;
                         terrain.DecreaseHeight();
+                        // Add the modified field to the dictionary
+                        _modifiedFields[(x, y)] = terrain;
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
                         if (IsGameOver)
@@ -217,6 +274,8 @@ namespace TransportTycoon.Model
             int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height);
             changedFields.Add((x, y));
+            // Add the modified field to the dictionary
+            _modifiedFields[(x, y)] = Map[x, y];
 
             if (oldTrees == 0) Balance -= ((Road)Map[x, y]).Price;
             else Balance -= ((Road)Map[x, y]).Price * 2;
@@ -239,7 +298,7 @@ namespace TransportTycoon.Model
             if (SelectedField is null) SetSelectedField(x, y);
             else
             {
-                List<(int, int)> changedFields = [];
+                List<(int X, int Y)> changedFields = [];
                 if (SelectedField.X != x && SelectedField.Y != y) { SetSelectedField(-1, -1); return; }
                 else if (SelectedField.X == x && SelectedField.Y == y)
                 {
@@ -284,6 +343,11 @@ namespace TransportTycoon.Model
                 }
                 SetSelectedField(-1, -1);
                 if (IsGameOver) OnGameOver();
+                // Modify the changed fields in the dictionary
+                foreach (var change in changedFields)
+                {
+                    _modifiedFields[change] = Map[change.X, change.Y];
+                }
                 InfrastructureBuilt?.Invoke(this, changedFields);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -297,6 +361,8 @@ namespace TransportTycoon.Model
             if (Map.StopEnvironment(x, y))
             {
                 changedFields.Add((x, y));
+                // Add the modified field to the dictionary
+                _modifiedFields[(x, y)] = Map[x, y];
 
                 if (oldTrees == 0) Balance -= ((Stop)Map[x, y]).Price;
                 else Balance -= ((Stop)Map[x, y]).Price * 2;
@@ -318,7 +384,7 @@ namespace TransportTycoon.Model
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Infrastructure || (Map[x, y] is Road r && r.InCity())
                 || Vehicles.Any(v => v.MapX == x && v.MapY == y)) return;
-            List<(int, int)> changedFields = [];
+            List<(int X, int Y)> changedFields = [];
 
             if (Map[x, y] is Road || Map[x, y] is Stop)
             {
@@ -337,6 +403,11 @@ namespace TransportTycoon.Model
             else
             {
                 Map.DestroyBridge(x, y, ref changedFields);
+            }
+            // Modify the changed fields in the dictionary
+            foreach (var change in changedFields)
+            {
+                _modifiedFields[change] = Map[change.X, change.Y];
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }

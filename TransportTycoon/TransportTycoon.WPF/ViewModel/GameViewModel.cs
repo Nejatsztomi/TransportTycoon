@@ -20,7 +20,7 @@ namespace TransportTycoon.WPF.ViewModel
         public ObservableCollection<VehicleViewModel> Vehicles { get; private set; }
 
         public int Balance => Model.Balance;
-        public int GameTime => Model.GameTime;
+        public ulong GameTime => Model.GameTime;
         public bool IsPaused => Model.Mode == GameMode.Paused;
         public bool IsEditorMode => Model.Mode == GameMode.Editor;
 
