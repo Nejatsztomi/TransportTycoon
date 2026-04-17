@@ -1,5 +1,6 @@
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
+using TransportTycoon.Model.Graph;
 using TransportTycoon.Persistence;
 namespace TransportTycoon.Model
 {
@@ -43,6 +44,7 @@ namespace TransportTycoon.Model
         private readonly ITimer _timer;
         private readonly IPersistence _persistence;
         private readonly Dictionary<(int X, int Y), Field> _modifiedFields = [];
+        private IPathFinder _pathFinder;
         #endregion
 
         #region Properties
@@ -131,6 +133,7 @@ namespace TransportTycoon.Model
 
             // We create an empty graph
             GraphNetwork = new([], []);
+            _pathFinder = new AStarPathfinder(GraphNetwork);
         }
         #endregion
 
@@ -675,6 +678,16 @@ namespace TransportTycoon.Model
             if (Mode != GameMode.Run) return;
 
             vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
+
+            //the vehicle should start
+            if (vehicle.CurrentRoute == null && vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
+            {
+                
+                vehicle.GetNextRoute();
+
+                if (vehicle.CurrentRoute == null) return;
+            }
+
             Field? newField = vehicle.TargetTile;
 
             //if the target field is out of bounds or not an infrastructure, the vehicle should stop and not move
