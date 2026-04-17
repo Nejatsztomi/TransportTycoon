@@ -676,41 +676,8 @@ namespace TransportTycoon.Model
 
             vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
 
-            //Calculates the new coordinates of the vehicle based on its current direction and speed.
-            Direction dir = vehicle.Direction;
-            double x = vehicle.X;
-            double y = vehicle.Y;
-            double speed = vehicle.CurrentSpeed;
-            switch (dir)
-            {
-                case Direction.Up:
-                    x -= speed;
-                    break;
-                case Direction.Down:
-                    x += speed;
-                    break;
-                case Direction.Left:
-                    y -= speed;
-                    break;
-                case Direction.Right:
-                    y += speed;
-                    break;
-                default:
-                    break;
-            }
-            int newX = (int)Math.Round(x);
-            int newY = (int)Math.Round(y);
-
-            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
 
 
-            //Checks if the new coordinates are within the map boundaries and if the vehicle can move to the new position (i.e., it must be an infrastructure).
-            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height)
-            {
-                vehicle.ChangeCurrentSpeed(0);
-                return;
-            }
-            Field newField = Map[newX, newY];
             if (newField is not Infrastructure)
             {
                 vehicle.ChangeCurrentSpeed(0);
