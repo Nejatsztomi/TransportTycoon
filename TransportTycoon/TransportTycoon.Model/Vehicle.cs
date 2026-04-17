@@ -267,20 +267,7 @@ namespace TransportTycoon.Model
             CurrentRoute = newRoute;
         }
         
-        public void UpdateDirection()
-        {
-            if (_currentTileIdx + 1 < _currentEdgeTiles?.Count)
-            {
-                if (_currentEdgeTiles is not null && _currentEdgeTiles[_currentTileIdx + 1] is Infrastructure nextTile)
-                {
-                    Direction = nextTile.X == MapX ? (nextTile.Y > MapY ? Direction.Down : Direction.Up) : (nextTile.X > MapX ? Direction.Right : Direction.Left);
-                }
-            }
-            else if(_currentEdgeIdx == CurrentRoute?.Count)
-            {
-                GetNextRoute(path);
-            }
-        }
+        
         #endregion
 
         #region Private method
