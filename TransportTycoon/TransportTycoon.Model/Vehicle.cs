@@ -242,6 +242,25 @@ namespace TransportTycoon.Model
             else if(target.Y>MapY) Direction = Direction.Down;
         }
 
+        private void MoveTowardsTarget(Field target) 
+        {
+            UpdateDirection(target);
+            switch (Direction)
+            {
+                case Direction.Up:
+                    X -= CurrentSpeed;
+                    break;
+                case Direction.Down:
+                    X += CurrentSpeed;
+                    break;
+                case Direction.Right:
+                    Y -= CurrentSpeed;
+                    break;
+                case Direction.Left:
+                    Y += CurrentSpeed;
+                    break;
+            }
+        }
         /// <summary>
         /// Gets the next pair of nodes representing the start and end stops for the next route.
         /// </summary>
