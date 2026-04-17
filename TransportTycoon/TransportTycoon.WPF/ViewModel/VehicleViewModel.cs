@@ -48,19 +48,21 @@ namespace TransportTycoon.WPF.ViewModel
         public VehicleViewModel(Vehicle vehicle)
         {
             Vehicle = vehicle;
-            DeterminePixels();
-
             MapX = vehicle.MapX;
             MapY = vehicle.MapY;
+            DeterminePixels();
+
+
         }
         #endregion
         #region Public Methods
         public void RefreshVehicle(Vehicle vehicle)
         {
             Vehicle = vehicle;
-            DeterminePixels();
             MapX = vehicle.MapX;
             MapY = vehicle.MapY;
+            DeterminePixels();
+
             OnPropertyChanged(nameof(PixelX));
             OnPropertyChanged(nameof(PixelY));
             OnPropertyChanged(nameof(MapX));
@@ -71,6 +73,7 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private Methods
         private void DeterminePixels()
         {
+            //TODO: change mapY -> Y and mapX -> X, but for testing purposes only, 
             PixelX = 50 * Y;
             PixelY = 50 * X;
             switch (Direction)
