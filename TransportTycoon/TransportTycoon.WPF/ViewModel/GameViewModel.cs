@@ -259,27 +259,6 @@ namespace TransportTycoon.WPF.ViewModel
             else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton != 22 && Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
             else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
-        [RelayCommand]
-        private void OnVehicleStepUp()
-        {
-            Model.StepAllVehicles(Direction.Up);
-        }
-        [RelayCommand]
-        private void OnVehicleStepDown()
-        {
-            Model.StepAllVehicles(Direction.Down);
-        }
-        [RelayCommand]
-        private void OnVehicleStepLeft()
-        {
-            Model.StepAllVehicles(Direction.Left);
-        }
-        [RelayCommand]
-        private void OnVehicleStepRight()
-        {
-            Model.StepAllVehicles(Direction.Right);
-        }
-
 
         [RelayCommand(CanExecute = nameof(IsEditorMode))]
         private void OnTileLeftClick(FieldViewModel? tile)

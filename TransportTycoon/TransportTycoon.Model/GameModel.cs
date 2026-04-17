@@ -927,7 +927,7 @@ namespace TransportTycoon.Model
                 return;
             }
             GameTime++;
-            //TODO: AllVehiclesStep() comes here
+            StepAllVehicles();
             AllVehiclesDoTheTransport();
             if (GameTime > 0 && GameTime % 10 == 0)
             {
