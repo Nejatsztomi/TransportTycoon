@@ -87,20 +87,24 @@ namespace TransportTycoon.Model
             Field? targetTile = TargetTile;
             if (targetTile == null) return;
 
+            //check if we have arrived at the target tile
+            double distanceToTarget = Math.Sqrt(Math.Pow(X - targetTile.X, 2) + Math.Pow(Y - targetTile.Y, 2));
+            if (distanceToTarget < 0.1 || distanceToTarget <=CurrentSpeed) //if we are close enough to the target tile, we consider that we have arrived
+            {
+                X = targetTile.X;
+                Y = targetTile.Y;
+                AdvanceToNextTile();
+
+                return;
+            }
+
             //update the direction
             UpdateDirection(targetTile);
 
             //take the step
             MoveTowardsTarget(targetTile);
 
-            //check if we have arrived at the target tile
-            double distanceToTarget = Math.Sqrt(Math.Pow(X - targetTile.X, 2) + Math.Pow(Y - targetTile.Y, 2));
-            if(distanceToTarget < 0.1) //if we are close enough to the target tile, we consider that we have arrived
-            {
-                X = targetTile.X;
-                Y = targetTile.Y;
-                AdvanceToNextTile();
-            }
+            
         }
         /// <summary>
         /// Sets the current capacity of the vehicle, if the given quantity is between 0 and the maximum capacity of the vehicle. If the quantity is set to 0, the current load is also set to null.
@@ -213,10 +217,10 @@ namespace TransportTycoon.Model
         }
         private void UpdateDirection(Field target) 
         {
-            if(target.X<MapX) Direction = Direction.Up;
-            else if(target.X>MapX) Direction = Direction.Down;
-            else if(target.Y<MapY) Direction = Direction.Left;
-            else if(target.Y>MapY) Direction = Direction.Right;
+            if(target.Y<MapY) Direction = Direction.Up;
+            else if(target.Y>MapY) Direction = Direction.Down;
+            else if(target.X<MapX) Direction = Direction.Left;
+            else if(target.X>MapX) Direction = Direction.Right;
         }
 
         private void MoveTowardsTarget(Field target) 
@@ -225,16 +229,16 @@ namespace TransportTycoon.Model
             switch (Direction)
             {
                 case Direction.Up:
-                    X -= CurrentSpeed;
+                    Y -= CurrentSpeed;
                     break;
                 case Direction.Down:
-                    X += CurrentSpeed;
-                    break;
-                case Direction.Right:
                     Y += CurrentSpeed;
                     break;
+                case Direction.Right:
+                    X += CurrentSpeed;
+                    break;
                 case Direction.Left:
-                    Y -= CurrentSpeed;
+                    X -= CurrentSpeed;
                     break;
             }
         }
