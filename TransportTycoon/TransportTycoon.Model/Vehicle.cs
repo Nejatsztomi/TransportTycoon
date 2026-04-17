@@ -291,7 +291,14 @@ namespace TransportTycoon.Model
             _currentEdgeTiles = null;
             AdvanceProuth();
         }
-        
+        private void UpdateDirection(Field target) 
+        {
+            if(target.X<MapX) Direction = Direction.Left;
+            else if(target.X>MapX) Direction = Direction.Right;
+            else if(target.Y<MapY) Direction = Direction.Up;
+            else if(target.Y>MapY) Direction = Direction.Down;
+        }
+
         /// <summary>
         /// Gets the next pair of nodes representing the start and end stops for the next route.
         /// </summary>

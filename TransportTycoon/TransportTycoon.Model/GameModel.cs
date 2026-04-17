@@ -725,7 +725,6 @@ namespace TransportTycoon.Model
             {
                 vehicle.Step();
                 VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
-                vehicle.UpdateDirection();
             }
         }
 
