@@ -52,7 +52,7 @@ namespace TransportTycoon.WPF.ViewModel
             MapY = vehicle.MapY;
             DeterminePixels();
 
-            
+
         }
         #endregion
         #region Public Methods
@@ -62,7 +62,7 @@ namespace TransportTycoon.WPF.ViewModel
             MapX = vehicle.MapX;
             MapY = vehicle.MapY;
             DeterminePixels();
-            
+
             OnPropertyChanged(nameof(PixelX));
             OnPropertyChanged(nameof(PixelY));
             OnPropertyChanged(nameof(MapX));

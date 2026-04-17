@@ -510,7 +510,7 @@ namespace TransportTycoon.Model
             int newY = (int)Math.Floor(y);
 
             if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
-            
+
 
             //Checks if the new coordinates are within the map boundaries and if the vehicle can move to the new position (i.e., it must be an infrastructure).
             if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height)
@@ -526,15 +526,15 @@ namespace TransportTycoon.Model
             }
 
             Field currentField = Map[vehicle.MapX, vehicle.MapY];
-            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v!=vehicle && v.MapX == newX && v.MapY == newY);
+            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newX && v.MapY == newY);
 
             SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
-            if (vehicle.CurrentSpeed > 0) 
+            if (vehicle.CurrentSpeed > 0)
             {
                 vehicle.Step(direction);
                 VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
             }
-            
+
             //vehicle.UpdateDirection();
         }
 
@@ -570,7 +570,7 @@ namespace TransportTycoon.Model
                     (vehicle.Direction == Direction.Left && nextVehicle.Direction == Direction.Right) ||
                     (vehicle.Direction == Direction.Right && nextVehicle.Direction == Direction.Left);
 
-                if (!isOppositeDirection) 
+                if (!isOppositeDirection)
                 {
                     //if the next vehicle is on a different field
                     if (currentField != newField)
@@ -583,7 +583,7 @@ namespace TransportTycoon.Model
                         vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
                     }
                 }
-                
+
             }
         }
         #endregion
