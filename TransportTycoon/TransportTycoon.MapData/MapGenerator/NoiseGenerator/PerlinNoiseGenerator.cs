@@ -23,7 +23,7 @@
         #region Constructors
         public PerlinNoiseGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Noise);
+            _random = randomProvider.GetRandom(context.Seed, "BaseGame.Noise");
             _offsetX = _random.Next(-10000, 10000);
             _offsetY = _random.Next(-10000, 10000);
         }

@@ -18,7 +18,7 @@
         #region Constructors
         public RiverGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Rivers);
+            _random = randomProvider.GetRandom(context.Seed, "BaseGame.Rivers");
         }
         #endregion
 

@@ -22,7 +22,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         public StructureGenerator(ICityGenerator cityGenerator, IRandomProvider randomProvider, MapGenerationContext context)
         {
             _cityGenerator = cityGenerator;
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Structures);
+            _random = randomProvider.GetRandom(context.Seed, "BaseGame.Structures");
         }
         #endregion
 

@@ -12,7 +12,6 @@ namespace TransportTycoon.MapData.MapGenerator
         {
             IRandomProvider randomProvider = new RandomProvider();
 
-
             INoiseGenerator noiseGenerator = ValueNoiseGeneratorFactory.Create(0.05f);
             ICityGenerator cityGenerator = CityGeneratorFactory.Create(randomProvider, context);
 
@@ -21,7 +20,7 @@ namespace TransportTycoon.MapData.MapGenerator
             IWaterGenerator riverGenerator = RiverGeneratorFactory.Create(randomProvider, context);
             IStructureGenerator structureGenerator = StructureGeneratorFactory.Create(cityGenerator, randomProvider, context);
             List<IMapPluginGenerator> generators = [noiseGenerator, terrainGenerator, forestGenerator, riverGenerator, structureGenerator];
-            return new MapGenerator(generators, randomProvider.GetRandom(context.Seed, GenerationDomain.Map));
+            return new MapGenerator(generators, randomProvider.GetRandom(context.Seed, "BaseGame.Map"));
         }
     }
 

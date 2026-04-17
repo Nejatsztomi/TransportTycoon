@@ -20,7 +20,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         #region Constructor
         public CityGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Cities);
+            _random = randomProvider.GetRandom(context.Seed, "BaseGame.Cities");
         }
         #endregion
 
