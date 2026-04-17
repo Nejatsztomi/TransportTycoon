@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
+﻿using System.Runtime.CompilerServices;
+
+namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
     public static class RiverGeneratorFactory
     {
@@ -37,7 +39,6 @@
         #region Private methods
         private void SpawnRiver(float[,] noiseMap, bool[,] waterMap, MapGenerationContext context)
         {
-
             int currentX = _random.Next(5, context.Width - 5);
             int currentY = _random.Next(5, context.Height - 5);
 
@@ -132,6 +133,7 @@
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool IsValidNeighbouringHeights(int x, int y, float[,] noiseMap, MapGenerationContext context)
         {
             // TODO: Replace magic number with TerrainHeight enum
