@@ -48,7 +48,7 @@ namespace TransportTycoon.MapData.MapGenerator
         #endregion
 
         #region Public methods
-        public Field[,] GenerateMap(MapGenerationContext context)
+        public (Field[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
         {
             int[,] heightMap = _terrainGenerator.GenerateTerrain(context);
             bool[,] waterMap = new bool[context.Width, context.Height];
@@ -143,7 +143,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 Debug.WriteLine($"Placed {structure.GetType().Name} at ({structure.MapPoints.Keys.First().X}, {structure.MapPoints.Keys.First().Y})");
             });
 
-            return map;
+            return (map, structures);
         }
         #endregion
 

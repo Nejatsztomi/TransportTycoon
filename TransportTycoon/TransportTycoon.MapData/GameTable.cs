@@ -15,7 +15,7 @@ namespace TransportTycoon.MapData
         public int Width => Context.Width;
         public int Height => Context.Height;
 
-        public List<BuildingEntity> BuildingEntities { get; }
+        public List<BuildingEntity> BuildingEntities { get; private set; }
 
         public Field this[int x, int y]
         {
@@ -23,8 +23,13 @@ namespace TransportTycoon.MapData
             set => Table[x, y] = value;
         }
 
+        /// <summary>
+        /// Tells whether the map has been generated or not.
+        /// This is used to prevent accessing the map before it is generated, which can cause errors.
+        /// </summary>
+        public bool IsMapGenerated { get; private set; }
         private IMapGenerator MapGenerator { get; }
-        private MapGenerationContext Context { get; }
+        public MapGenerationContext Context { get; set; }
         private MapGenerationSettings GenerationSettings => Context.Settings;
         #endregion
 
@@ -35,14 +40,25 @@ namespace TransportTycoon.MapData
             BuildingEntities = [];
 
             Table = new Field[Width, Height];
+            IsMapGenerated = false;
             MapGenerator = mapGenerator;
         }
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Determines whether the specified coordinates are within the valid bounds defined by the current height and
+        /// width.
+        /// </summary>
+        /// <param name="x">The x-coordinate to check.</param>
+        /// <param name="y">The y-coordinate to check.</param>
+        /// <returns><see langword="true"/> if both coordinates are within bounds; otherwise, <see langword="false"/>.</returns>
+        public bool IsInBounds(int x, int y) => 0 <= x && x < Height && 0 <= y && y < Width;
+
         public void GenerateMap()
         {
-            Table = MapGenerator.GenerateMap(Context);
+            (Table, BuildingEntities) = MapGenerator.GenerateMap(Context);
+            IsMapGenerated = true;
         }
 
         public List<Field> CheckNeighboringTrees(int x, int y)
@@ -112,20 +128,20 @@ namespace TransportTycoon.MapData
         {
             List<Field?> neighbourRoads = NeighboursOfRoadsAndStops(x, y);
             RoadType type = RoadType.Vertical;
-            switch (neighbourRoads.Count(x => x != null))
+            switch (neighbourRoads.Count(x => x is not null))
             {
                 case 1:
-                    if (neighbourRoads[1] != null || neighbourRoads[3] != null) type = RoadType.Horizontal;
+                    if (neighbourRoads[1] is not null || neighbourRoads[3] is not null) type = RoadType.Horizontal;
                     break;
                 case 2:
-                    if (neighbourRoads[1] != null && neighbourRoads[3] != null) type = RoadType.Horizontal;
-                    else if (neighbourRoads[0] != null && neighbourRoads[1] != null) type = RoadType.UpperRightTurn;
-                    else if (neighbourRoads[1] != null && neighbourRoads[2] != null) type = RoadType.RightTurn;
-                    else if (neighbourRoads[2] != null && neighbourRoads[3] != null) type = RoadType.LeftTurn;
-                    else if (neighbourRoads[3] != null && neighbourRoads[0] != null) type = RoadType.UpperLeftTurn;
+                    if (neighbourRoads[1] is not null && neighbourRoads[3] is not null) type = RoadType.Horizontal;
+                    else if (neighbourRoads[0] is not null && neighbourRoads[1] is not null) type = RoadType.UpperRightTurn;
+                    else if (neighbourRoads[1] is not null && neighbourRoads[2] is not null) type = RoadType.RightTurn;
+                    else if (neighbourRoads[2] is not null && neighbourRoads[3] is not null) type = RoadType.LeftTurn;
+                    else if (neighbourRoads[3] is not null && neighbourRoads[0] is not null) type = RoadType.UpperLeftTurn;
                     break;
                 case 3:
-                    int noNeighbour = neighbourRoads.FindIndex(x => x == null);
+                    int noNeighbour = neighbourRoads.FindIndex(x => x is null);
                     switch (noNeighbour)
                     {
                         case 0:

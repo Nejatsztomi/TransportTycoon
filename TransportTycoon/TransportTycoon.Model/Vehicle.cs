@@ -1,4 +1,5 @@
 ﻿using TransportTycoon.MapData;
+using TransportTycoon.Model.Graph;
 
 namespace TransportTycoon.Model
 {
@@ -14,13 +15,42 @@ namespace TransportTycoon.Model
 
     public abstract class Vehicle
     {
-        #region Fields
+        #region Private fields
+        /// <summary>
+        /// The prouth's stop index.
+        /// </summary>
+        private int _currentStopIdx = 0;
+        /// <summary>
+        /// The current route's edge index.
+        /// </summary>
+        private int _currentEdgeIdx = 0;
+        /// <summary>
+        /// The current edge's tile index.
+        /// </summary>
+        private int _currentTileIdx = 0;
+        /// <summary>
+        /// The current tile's progress.
+        /// </summary>
+        private double _tileProgress = 0.0;
+        /// <summary>
+        /// The current edge's tiles.
+        /// </summary>
+        private List<Field>? _currentEdgeTiles = null;
+        #endregion
+
+        #region Properties
         public double TopSpeed { get; protected set; }
         public double CurrentSpeed { get; protected set; }
         public Load? CurrentLoad { get; protected set; }
         public int MaxCapacity { get; protected set; }
         public int CurrentCapacity { get; protected set; }
-        public Prouth? Route { get; protected set; }
+        public Prouth? Prouth { get; set; }
+        /// <summary>
+        /// The current route of the vehicle, represented as a list of edges.
+        /// The route may be null if the vehicle does not have a current route assigned.
+        /// The vehicle will be repeating this route, if not given a new one.
+        /// </summary>
+        public List<Edge>? CurrentRoute { get; protected set; }
         public VehicleType Type { get; protected set; }
         public double X { get; protected set; }
         public double Y { get; protected set; }
@@ -31,6 +61,13 @@ namespace TransportTycoon.Model
         public int MapX => (int)Math.Floor(X);
         public int MapY => (int)Math.Floor(Y);
         public List<LoadType>? AcceptedGoods { get; protected set; } = [];
+
+        /// <summary>
+        /// <see langword="true"/> if the vehicle is lost, meaning it cannot find a valid route to its destination and is effectively stuck.
+        /// This can occur when the vehicle's current position is not connected to the rest of the map, or when all possible routes to the destination are blocked or inaccessible.
+        /// When a vehicle is marked as lost, it may require intervention to be moved back onto a valid path or to be removed from the game if it cannot be recovered.
+        /// </summary>
+        public bool IsLost { get; private set; } = false;
         #endregion
 
         #region Public methods
@@ -76,10 +113,10 @@ namespace TransportTycoon.Model
         /// <param name="load">The load to assign as the current load. Specify null to clear the current load.</param>
         public void SetCurrentLoad(Load? load)
         {
-            if (load == null || AcceptedGoods != null && AcceptedGoods.Contains(load.LoadType))
+            if (load is null || AcceptedGoods is not null && AcceptedGoods.Contains(load.LoadType))
             {
                 CurrentLoad = load;
-                if (CurrentLoad == null) CurrentCapacity = 0;
+                if (CurrentLoad is null) CurrentCapacity = 0;
             }
         }
 
@@ -96,7 +133,7 @@ namespace TransportTycoon.Model
         public int Load(int quantity, Load load) //returns leftover
         {
             if (CurrentLoad != load) return quantity;
-            else if (CurrentLoad == null)
+            else if (CurrentLoad is null)
             {
                 CurrentLoad = load;
                 if (quantity <= MaxCapacity)
@@ -127,7 +164,7 @@ namespace TransportTycoon.Model
 
         public int UnLoad(int quantity, Load load) //returns unloaded quantity
         {
-            if (CurrentLoad == null || CurrentLoad != load) return 0;
+            if (CurrentLoad is null || CurrentLoad != load) return 0;
             else if (quantity < CurrentCapacity)
             {
                 CurrentCapacity -= quantity;
@@ -147,6 +184,98 @@ namespace TransportTycoon.Model
                 return tmp;
             }
             return 0;
+        }
+
+        /// <summary>
+        /// Gets the next route between two <see cref="Stop"/> tiles.
+        /// If it's last stop in the route, it loops over.
+        /// </summary>
+        /// <param name="pathFinder">The path finder to use for finding the route.</param>
+        public void GetNextRoute(IPathFinder pathFinder)
+        {
+            if (GetNextStopNodePair() is (Node start, Node end))
+            {
+                CurrentRoute = pathFinder.FindPath(start, end);
+            }
+
+        }
+
+        /// <summary>
+        /// Recalculates the current route.
+        /// </summary>
+        /// <remarks>
+        /// If the current route or edge tiles are not set, or if the next stop node pair cannot be determined, the method does nothing.
+        /// If a ghost node cannot be injected, the route is marked as lost.
+        /// </remarks>
+        /// <param name="pathFinder">The path finder used to compute a new route between nodes.</param>
+        /// <param name="injector">The ghost node injector used to manage temporary nodes during route calculation.</param>
+        public void RecalculateRoute(IPathFinder pathFinder, GhostNodeInjector injector)
+        {
+            if (CurrentRoute is null || _currentEdgeTiles is null) return;
+            if (GetNextStopNodePair() is not (Node _, Node end)) return;
+
+            Field currentTile = _currentEdgeTiles[_currentTileIdx];
+
+            (Node? startNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
+
+            if (startNode is null)
+            {
+                IsLost = true;
+                return;
+            }
+
+            List<Edge>? newRoute = pathFinder.FindPath(startNode, end);
+
+            if (isGhost)
+            {
+                injector.RemoveGhostNode(startNode);
+            }
+
+            CurrentRoute = newRoute;
+        }
+        #endregion
+
+        #region Private method
+        /// <summary>
+        /// A helper method to be called when the vehicle arrives at a stop.
+        /// It resets the current route and edge tiles, and advances the prouth to the next stop.
+        /// After this method is called the vehicle should be ready to get the next route to the next stop in the prouth.
+        /// </summary>
+        private void ArriveAtStop()
+        {
+            CurrentRoute = null;
+            _currentEdgeTiles = null;
+            AdvanceProuth();
+        }
+
+        /// <summary>
+        /// Gets the next pair of nodes representing the start and end stops for the next route.
+        /// </summary>
+        /// <returns>The next pair of nodes, or <see langword="null"/> if there are not enough stops or the route is not defined.</returns>
+        private (Node startNode, Node endNode)? GetNextStopNodePair()
+        {
+            if (Prouth is null || Prouth.Stops.Count < 2)
+            {
+                return null;
+            }
+
+            Node start = Prouth.Stops[_currentStopIdx];
+
+            int nextIndex = (_currentStopIdx + 1) % Prouth.Stops.Count;
+
+            Node destination = Prouth.Stops[nextIndex];
+            return (start, destination);
+        }
+
+        /// <summary>
+        /// Move the <see cref="_currentEdgeIdx"/> "pointer" forward.
+        /// At the end it loops back to <see langword="0"/>.
+        /// </summary>
+        private void AdvanceProuth()
+        {
+            if (Prouth is null || Prouth.Stops.Count == 0) return;
+
+            _currentEdgeIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
         }
         #endregion
     }

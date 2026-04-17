@@ -1,7 +1,9 @@
-﻿namespace TransportTycoon.MapData.MapGenerator
+﻿using TransportTycoon.MapData.Buildings;
+
+namespace TransportTycoon.MapData.MapGenerator
 {
     public interface IMapGenerator
     {
-        public Field[,] GenerateMap(MapGenerationContext context);
+        public (Field[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context);
     }
 }

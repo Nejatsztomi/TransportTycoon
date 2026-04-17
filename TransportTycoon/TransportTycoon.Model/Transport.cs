@@ -27,7 +27,7 @@ namespace TransportTycoon.Model
             CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
-            Route = route;
+            Prouth = route;
             X = x;
             Y = y;
             Direction = direction; //get info from route?      
@@ -53,7 +53,7 @@ namespace TransportTycoon.Model
             CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
-            Route = route;
+            Prouth = route;
             X = x;
             Y = y;
             Direction = direction; //get info from route?      
@@ -79,7 +79,7 @@ namespace TransportTycoon.Model
             CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
-            Route = route;
+            Prouth = route;
             X = x;
             Y = y;
             Direction = direction; //get info from route?      
@@ -105,7 +105,7 @@ namespace TransportTycoon.Model
             CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
-            Route = route;
+            Prouth = route;
             X = x;
             Y = y;
             Direction = direction; //get info from route?      

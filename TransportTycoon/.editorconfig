@@ -125,3 +125,6 @@ dotnet_diagnostic.IDE0290.severity = none
 
 # Disabele RCS1268: simply numeric comparison
 dotnet_diagnostic.RCS1268.severity = none
+
+# Enable IDE0041: Use 'is null' check
+dotnet_diagnostic.IDE0041.severity = error

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using TransportTycoon.MapData;
 using TransportTycoon.Model;
@@ -20,7 +21,7 @@ namespace TransportTycoon.WPF.ViewModel
         public ObservableCollection<VehicleViewModel> Vehicles { get; private set; }
 
         public int Balance => Model.Balance;
-        public int GameTime => Model.GameTime;
+        public ulong GameTime => Model.GameTime;
         public bool IsPaused => Model.Mode == GameMode.Paused;
         public bool IsEditorMode => Model.Mode == GameMode.Editor;
 
@@ -57,10 +58,44 @@ namespace TransportTycoon.WPF.ViewModel
         }
         #endregion
 
-        #region Private methods
-        private void Model_SelectedStopFieldsChanged(object? sender, List<Stop> list)
+        #region Public methods
+        public void PauseGame()
         {
-            if (list == null) return;
+            Model.Mode = GameMode.Paused;
+            OnPropertyChanged(nameof(IsPaused));
+        }
+
+        public void ResumeGame()
+        {
+            Model.Mode = GameMode.Run;
+            if (Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
+            Model.DeleteRoute(-1, -1);
+            OnPropertyChanged(nameof(IsPaused));
+        }
+        #endregion
+
+        #region Private methods
+        private void ShowRoute(HashSet<(int X, int Y)>? roads)
+        {
+            if (roads is null) return;
+            foreach (var (x, y) in roads)
+            {
+                var tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
+                tile?.IsPath = true;
+            }
+        }
+
+        private void RemoveRoutes()
+        {
+            foreach (var item in Tiles)
+            {
+                item.IsPath = false;
+            }
+        }
+
+        private void Model_SelectedStopFieldsChanged(object? _1, List<Stop> list)
+        {
+            //if (list is null) return;
             foreach (var tile in Tiles)
             {
                 tile.IsSelected = list.Any(t => t.X == tile.X && t.Y == tile.Y);
@@ -68,9 +103,9 @@ namespace TransportTycoon.WPF.ViewModel
             }
         }
 
-        private void Model_SelectedFieldChanged(object? sender, (int, int) e)
+        private void Model_SelectedFieldChanged(object? _1, (int, int) e)
         {
-            if (Model.SelectedField == null)
+            if (Model.SelectedField is null)
             {
                 var tile = Tiles.FirstOrDefault(t => t.IsSelected);
                 tile?.IsSelected = false;
@@ -82,36 +117,36 @@ namespace TransportTycoon.WPF.ViewModel
             }
         }
 
-        private void Model_BalanceChanged(object? sender, EventArgs e)
+        private void Model_BalanceChanged(object? _1, EventArgs _2)
         {
             OnPropertyChanged(nameof(Balance));
         }
 
-        private void Model_FieldChanged(object? sender, TransportTycoonFieldEventArgs e)
+        private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs e)
         {
             var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
 
             tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
         }
-        private void Model_VehicleChanged(object? sender, (int oldX, int oldY, int newX, int newY) e)
+        private void Model_VehicleChanged(object? _1, (int oldX, int oldY, int newX, int newY) e)
         {
             var vehicle = Vehicles.FirstOrDefault(v => v.MapX == e.oldX && v.MapY == e.oldY);
-            if (vehicle != null)
+            if (vehicle is not null)
             {
                 var newVehicle = Model.GetVehicleAt(e.newX, e.newY);
-                if (newVehicle != null)
+                if (newVehicle is not null)
                 {
                     vehicle.RefreshVehicle(newVehicle);
                 }
             }
         }
 
-        private void Model_InfrastructureBuilt(object? sender, List<(int, int)> changedFields)
+        private void Model_InfrastructureBuilt(object? _1, List<(int, int)> changedFields)
         {
             foreach (var (x, y) in changedFields)
             {
                 FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
-                if (tile != null)
+                if (tile is not null)
                 {
                     string oldPath = tile.ImagePath;
                     int index = Tiles.IndexOf(tile);
@@ -121,7 +156,7 @@ namespace TransportTycoon.WPF.ViewModel
             }
         }
 
-        private void Model_GameAdvanced(object? sender, List<Tuple<int, int>> grownTrees)
+        private void Model_GameAdvanced(object? _1, List<Tuple<int, int>> grownTrees)
         {
             // O(n * m + m)
             Tiles.Where(tile => grownTrees.Any(tuple => tuple.Item1 == tile.X && tuple.Item2 == tile.Y))
@@ -178,15 +213,13 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnPauseGame()
         {
-            Model.Mode = GameMode.Paused;
+            PauseGame();
         }
 
         [RelayCommand]
         private void OnResumeGame()
         {
-            Model.Mode = GameMode.Run;
-            if (Model.SelectedField != null) Model.SetSelectedField(-1, -1);
-            Model.DeleteRoute(-1, -1);
+            ResumeGame();
         }
 
         [RelayCommand]
@@ -198,7 +231,7 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnIncreaseHeight()
         {
-            if (Model.SelectedField != null)
+            if (Model.SelectedField is not null)
             {
                 Model.IncreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
             }
@@ -207,23 +240,23 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnDecreaseHeight()
         {
-            if (Model.SelectedField != null)
+            if (Model.SelectedField is not null)
             {
                 Model.DecreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
             }
         }
 
         [RelayCommand]
-        private void OnSetSelectedButton(object x)
+        private void OnSetSelectedButton(object? x)
         {
-            if (x == null) return;
+            if (x is null) return;
             SelectedButton = Convert.ToInt32(x);
             if (SelectedButton < 10)
             {
-                if (Model.SelectedField != null) Model.SetSelectedField(-1, -1);
+                if (Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
                 Model.DeleteRoute(-1, -1);
             }
-            else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton != 22 && Model.SelectedField != null) Model.SetSelectedField(-1, -1);
+            else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton != 22 && Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
             else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
         [RelayCommand]
@@ -249,9 +282,9 @@ namespace TransportTycoon.WPF.ViewModel
 
 
         [RelayCommand(CanExecute = nameof(IsEditorMode))]
-        private void OnTileLeftClick(FieldViewModel tile)
+        private void OnTileLeftClick(FieldViewModel? tile)
         {
-            if (tile == null) return;
+            if (tile is null) return;
             switch (SelectedButton)
             {
                 case 11:
@@ -273,15 +306,15 @@ namespace TransportTycoon.WPF.ViewModel
                     Model.Destroy(tile.X, tile.Y);
                     break;
                 case 31:
-                    Vehicle vehicle = Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus)!;
-                    if (vehicle != null)
+                    Vehicle? vehicle = Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
+                    if (vehicle is not null)
                     {
                         Vehicles.Add(new VehicleViewModel(vehicle));
                     }
                     break;
                 case 32:
-                    Vehicle vehicle2 = Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus)!;
-                    if (vehicle2 != null)
+                    Vehicle? vehicle2 = Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
+                    if (vehicle2 is not null)
                     {
                         Vehicles.Add(new VehicleViewModel(vehicle2));
                     }
@@ -302,15 +335,40 @@ namespace TransportTycoon.WPF.ViewModel
                     break;
             }
         }
+
+        [RelayCommand]
+        private void OnExitGame()
+        {
+            App.Current.Shutdown();
+        }
+
+        [RelayCommand]
+        private async Task OnSaveGame()
+        {
+            var fileDiag = new OpenFileDialog
+            {
+                Title = "Choose a save location",
+                Filter = "JSON files|*.json|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Multiselect = false,
+                RestoreDirectory = true,
+            };
+
+            bool? result = fileDiag.ShowDialog();
+            if (result is null || result == false) return;
+
+            var uri = fileDiag.FileName;
+            await Model.SaveGame(uri);
+        }
         #endregion
 
         #region Event methods
-        private void Model_NewGameCreated(object? sender, EventArgs e)
+        private void Model_NewGameCreated(object? _1, EventArgs _2)
         {
             RefreshTable();
         }
 
-        private void Model_GameTicked(object? sender, EventArgs e)
+        private void Model_GameTicked(object? _1, EventArgs _2)
         {
             OnPropertyChanged(nameof(GameTime));
         }
@@ -325,6 +383,9 @@ namespace TransportTycoon.WPF.ViewModel
             Model.InfrastructureBuilt -= Model_InfrastructureBuilt;
             Model.FieldChanged -= Model_FieldChanged;
             Model.BalanceChanged -= Model_BalanceChanged;
+            Model.SelectedFieldChanged -= Model_SelectedFieldChanged;
+            Model.VehicleChanged -= Model_VehicleChanged;
+            Model.SelectedStopFieldsChanged -= Model_SelectedStopFieldsChanged;
         }
         #endregion
     }

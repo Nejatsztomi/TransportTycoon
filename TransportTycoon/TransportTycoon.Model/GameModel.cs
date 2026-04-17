@@ -1,5 +1,6 @@
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
+using TransportTycoon.Persistence;
 namespace TransportTycoon.Model
 {
     public enum GameMode { Run, Paused, Editor }
@@ -40,6 +41,8 @@ namespace TransportTycoon.Model
 
         #region Private fields
         private readonly ITimer _timer;
+        private readonly IPersistence _persistence;
+        private readonly Dictionary<(int X, int Y), Field> _modifiedFields = [];
         #endregion
 
         #region Properties
@@ -47,7 +50,7 @@ namespace TransportTycoon.Model
         public Field? SelectedField { get; private set; }
         public List<Stop> SelectedStopFields { get; private set; } = [];
         public int Balance { get; private set; }
-        public int GameTime { get; private set; }
+        public ulong GameTime { get; private set; }
         public int Maintance { get; private set; }
 
         public GameMode Mode
@@ -62,6 +65,7 @@ namespace TransportTycoon.Model
                 else
                 {
                     _timer.Start();
+                    RebuildGraph();
                 }
                 GameModeChanged?.Invoke(this, value);
                 field = value;
@@ -84,6 +88,11 @@ namespace TransportTycoon.Model
         public List<Vehicle> Vehicles { get; private set; } = [];
 
         public int NumberOfVehicles => Vehicles.Count;
+
+        /// <summary>
+        /// The game's graph representation of the map.
+        /// </summary>
+        public Graph.Graph GraphNetwork { get; private set; }
         public Vehicle? GetVehicleAt(int x, int y)
         {
             return Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
@@ -106,25 +115,170 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Constructor
-        public GameModel(GameTable map, ITimer timer, Difficulty difficulty = DefaultDifficulty, int balance = DefaultBalance)
+        public GameModel(GameTable map, ITimer timer, IPersistence persistence, Difficulty difficulty = DefaultDifficulty, int balance = DefaultBalance)
         {
             Difficulty = difficulty;
             Balance = balance;
             Map = map;
             _timer = timer;
             _timer.Elapsed += Timer_Tick;
+            _persistence = persistence;
 
             SetTax();
             Mode = GameMode.Run;
             TimeSpeed = TimeSpeed.Normal;
             GameTime = 0;
+
+            // We create an empty graph
+            GraphNetwork = new([], []);
         }
         #endregion
 
         #region Public Methods
+        public async Task SaveGame(string uri)
+        {
+            List<TileSaveData> tileSaveDatas = [.. _modifiedFields.Select(kv => new TileSaveData()
+            {
+                X = kv.Key.X,
+                Y = kv.Key.Y,
+                Type = kv.Value switch
+                {
+                    Terrain => SaveFieldType.Terrain,
+                    Road => SaveFieldType.Road,
+                    Stop => SaveFieldType.Stop,
+                    YellowBridge yellowBridge when yellowBridge.BridgeType == BridgeType.HorizontalYellowBridge => SaveFieldType.HorizontalYellowBridge,
+                    YellowBridge yellowBridge when yellowBridge.BridgeType == BridgeType.VerticalYellowBridge => SaveFieldType.VerticalYellowBridge,
+                    RedBridge redBridge when redBridge.BridgeType == BridgeType.HorizontalRedBridge => SaveFieldType.HorizontalRedBridge,
+                    RedBridge redBridge when redBridge.BridgeType == BridgeType.VerticalRedBridge => SaveFieldType.VerticalRedBridge,
+                    GreenBridge greenBridge when greenBridge.BridgeType == BridgeType.HorizontalGreenBridge => SaveFieldType.HorizontalGreenBridge,
+                    GreenBridge greenBridge when greenBridge.BridgeType == BridgeType.VerticalGreenBridge => SaveFieldType.VerticalGreenBridge,
+                    _ => throw new Exception($"Invalid field type at ({kv.Key.X}, {kv.Key.Y})")
+                }
+            })];
+
+            List<TreeSaveData> treesData = [.. Map.Table.Cast<Field>()
+                .Select(field => new TreeSaveData()
+                {
+                    X = field.X,
+                    Y = field.Y,
+                    Amount = field.GetTrees()
+                }
+                )];
+
+            List<VehicleSaveData> vehiclesData = [.. Vehicles.Select(v => new VehicleSaveData()
+            {
+                Type = (Persistence.VehicleType)v.Type,
+                CurrentX = (int)v.X,
+                CurrentY = (int)v.Y,
+                CurrentLoad = v.CurrentLoad?.LoadType ?? LoadType.None,
+                CurrentCapacity = v.CurrentCapacity
+            })];
+
+            List<BuildingEntitySaveData> buildingsData = [.. Map.BuildingEntities
+                .Select(entity => new BuildingEntitySaveData()
+                {
+                    TopLeftX = entity.TopLeftPoints.X,
+                    TopLeftY = entity.TopLeftPoints.Y,
+                    CurrentCapacity = entity.CurrentCapacity,
+                    Productivity = entity.Productivity
+                }
+                )];
+
+            GameSaveData data = new()
+            {
+                MapContext = Map.Context,
+                GameTime = GameTime,
+                PlayerBalance = Balance,
+
+                ModifiedTiles = tileSaveDatas,
+                ModifiedTrees = treesData,
+                Vehicles = vehiclesData,
+                BuildingEntities = buildingsData
+            };
+
+            await _persistence.SaveGame(uri, data);
+        }
+
+        public async Task LoadGame(string uri)
+        {
+            Mode = GameMode.Paused;
+            GameSaveData data = await _persistence.LoadGame(uri) ?? throw new Exception("Failed to load game data.");
+            Balance = data.PlayerBalance;
+            GameTime = data.GameTime;
+
+            Map.Context = data.MapContext;
+            Map.GenerateMap();
+
+            data.ModifiedTiles.ForEach(tile =>
+            {
+                int x = tile.X;
+                int y = tile.Y;
+                Map[x, y] = tile.Type switch
+                {
+                    SaveFieldType.Terrain => new Terrain(x, y, Map[x, y].Height),
+                    SaveFieldType.Road => new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height),
+                    SaveFieldType.Stop => new Stop(x, y, Map[x, y].Height),
+                    SaveFieldType.HorizontalYellowBridge => new YellowBridge(x, y, BridgeType.HorizontalYellowBridge, 0),
+                    SaveFieldType.VerticalYellowBridge => new YellowBridge(x, y, BridgeType.VerticalYellowBridge, 0),
+                    SaveFieldType.HorizontalRedBridge => new RedBridge(x, y, BridgeType.HorizontalRedBridge, 0),
+                    SaveFieldType.VerticalRedBridge => new RedBridge(x, y, BridgeType.VerticalRedBridge, 0),
+                    SaveFieldType.HorizontalGreenBridge => new GreenBridge(x, y, BridgeType.HorizontalGreenBridge, 0),
+                    SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
+                    _ => Map[x, y]
+                };
+            });
+
+            // Make sure roads have correct rotation
+            data.ModifiedTiles
+                .Where(tile => tile.Type == SaveFieldType.Road)
+                .ToList()
+                .ForEach(tile =>
+                {
+                    Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
+                });
+
+            data.ModifiedTrees.ForEach(treeData =>
+                {
+                    if (Map[treeData.X, treeData.Y] is Terrain terrain)
+                    {
+                        terrain.Trees = treeData.Amount;
+                    }
+                });
+
+            data.Vehicles.ForEach(vehicleData =>
+            {
+                Vehicle vehicle = vehicleData.Type switch
+                {
+                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
+                };
+                Vehicles.Add(vehicle);
+            });
+
+
+            data.BuildingEntities.ForEach(buildingEntityData =>
+            {
+                BuildingEntity? buildingEntity = Map.BuildingEntities.
+                FirstOrDefault(entity => entity.TopLeftPoints.X == buildingEntityData.TopLeftX && entity.TopLeftPoints.Y == buildingEntityData.TopLeftY)
+                ?? throw new Exception($"Failed to find building entity at ({buildingEntityData.TopLeftX}, {buildingEntityData.TopLeftY}) in the map.");
+
+                buildingEntity.CurrentCapacity = buildingEntityData.CurrentCapacity;
+                buildingEntity.Productivity = buildingEntityData.Productivity;
+            });
+
+            NewGameCreated?.Invoke(this, EventArgs.Empty);
+        }
+
         public void NewGame()
         {
             Balance = DefaultBalance;
+            Vehicles.Clear();
+            Map.BuildingEntities.Clear();
 
             Map.GenerateMap();
             _timer.Start();
@@ -157,6 +311,8 @@ namespace TransportTycoon.Model
                         }
                         Balance -= 100;
                         terrain.IncreaseHeight();
+                        // Add the modified field to the dictionary
+                        _modifiedFields[(x, y)] = terrain;
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
                         if (IsGameOver)
@@ -188,6 +344,8 @@ namespace TransportTycoon.Model
                         }
                         Balance -= 100;
                         terrain.DecreaseHeight();
+                        // Add the modified field to the dictionary
+                        _modifiedFields[(x, y)] = terrain;
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
                         if (IsGameOver)
@@ -208,13 +366,15 @@ namespace TransportTycoon.Model
             int oldTrees = Map[x, y].GetTrees();
             Map[x, y] = new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height);
             changedFields.Add((x, y));
+            // Add the modified field to the dictionary
+            _modifiedFields[(x, y)] = Map[x, y];
 
             if (oldTrees == 0) Balance -= ((Road)Map[x, y]).Price;
             else Balance -= ((Road)Map[x, y]).Price * 2;
 
             foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
             {
-                if (e != null && e is Road road)
+                if (e is not null && e is Road road)
                 {
                     road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
                     changedFields.Add((e.X, e.Y));
@@ -227,10 +387,10 @@ namespace TransportTycoon.Model
         public void BuildBridge(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Water) { SetSelectedField(-1, -1); return; }
-            if (SelectedField == null) SetSelectedField(x, y);
+            if (SelectedField is null) SetSelectedField(x, y);
             else
             {
-                List<(int, int)> changedFields = [];
+                List<(int X, int Y)> changedFields = [];
                 if (SelectedField.X != x && SelectedField.Y != y) { SetSelectedField(-1, -1); return; }
                 else if (SelectedField.X == x && SelectedField.Y == y)
                 {
@@ -275,6 +435,11 @@ namespace TransportTycoon.Model
                 }
                 SetSelectedField(-1, -1);
                 if (IsGameOver) OnGameOver();
+                // Modify the changed fields in the dictionary
+                foreach (var change in changedFields)
+                {
+                    _modifiedFields[change] = Map[change.X, change.Y];
+                }
                 InfrastructureBuilt?.Invoke(this, changedFields);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -288,13 +453,15 @@ namespace TransportTycoon.Model
             if (Map.StopEnvironment(x, y))
             {
                 changedFields.Add((x, y));
+                // Add the modified field to the dictionary
+                _modifiedFields[(x, y)] = Map[x, y];
 
                 if (oldTrees == 0) Balance -= ((Stop)Map[x, y]).Price;
                 else Balance -= ((Stop)Map[x, y]).Price * 2;
 
                 foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
                 {
-                    if (e != null && e is Road road)
+                    if (e is not null && e is Road road)
                     {
                         road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
                         changedFields.Add((e.X, e.Y));
@@ -309,7 +476,7 @@ namespace TransportTycoon.Model
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Infrastructure || (Map[x, y] is Road r && r.InCity())
                 || Vehicles.Any(v => v.MapX == x && v.MapY == y)) return;
-            List<(int, int)> changedFields = [];
+            List<(int X, int Y)> changedFields = [];
 
             if (Map[x, y] is Road || Map[x, y] is Stop)
             {
@@ -318,7 +485,7 @@ namespace TransportTycoon.Model
 
                 foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
                 {
-                    if (e != null && e is Road road)
+                    if (e is not null && e is Road road)
                     {
                         road.ChangeType(Map.CalculateRoadType(e.X, e.Y));
                         changedFields.Add((e.X, e.Y));
@@ -328,6 +495,11 @@ namespace TransportTycoon.Model
             else
             {
                 Map.DestroyBridge(x, y, ref changedFields);
+            }
+            // Modify the changed fields in the dictionary
+            foreach (var change in changedFields)
+            {
+                _modifiedFields[change] = Map[change.X, change.Y];
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
         }
@@ -375,15 +547,20 @@ namespace TransportTycoon.Model
         }
         public void DefineRoute(int x, int y)
         {
-            if (Map[x, y] is not Stop) return;
-            SelectedStopFields.Add((Stop)Map[x, y]);
+            if (Map[x, y] is not Stop stop) return;
+            SelectedStopFields.Add(stop);
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void QueryRoute(int x, int y)
         {
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
-            if (selectedVehcile != null) return;
-            //SelectedStopFields = selectedVehcile.Prouth.Stops;
+            if (selectedVehcile is null) return;
+
+            if (selectedVehcile.Prouth is not null)
+            {
+                SelectedStopFields = ProuthUtil.ConvertNodestoStopTiles(selectedVehcile.Prouth.Stops, Map);
+            }
+
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
         public void AssignRoute(int x, int y)
@@ -391,8 +568,11 @@ namespace TransportTycoon.Model
             if (SelectedStopFields.Count == 0) return;
 
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
-            if (selectedVehcile == null) return;
-            //selectedVehcile.SetProuth(SelectedStopFields)
+            if (selectedVehcile is null) return;
+
+            Prouth prouth = new(ProuthUtil.ConvertStopTilesToNodes(SelectedStopFields, GraphNetwork));
+            selectedVehcile.Prouth = prouth;
+
             SelectedStopFields = [];
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
@@ -404,7 +584,7 @@ namespace TransportTycoon.Model
             else
             {
                 Stop? removeItem = SelectedStopFields.Find(s => s.X == x && s.Y == y);
-                if (removeItem == null) return;
+                if (removeItem is null) return;
                 SelectedStopFields.Remove(removeItem);
             }
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
@@ -412,6 +592,18 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Private Methods
+        /// <summary>
+        /// A method that rebuilds the graph representation of the map.
+        /// </summary>
+        private void RebuildGraph()
+        {
+            if (!Map.IsMapGenerated)
+            {
+                return;
+            }
+            GraphNetwork = Graph.GraphBuilder.BuildGraph(Map);
+        }
+
         private void SetTax()
         {
             int tax = 30;
@@ -621,7 +813,7 @@ namespace TransportTycoon.Model
                         if (buildings_giver.Count == 0 && buildings_taker.Count == 0) continue;
 
                         //vehicle gives to the building
-                        if (vehicle.CurrentCapacity > 0 && vehicle.CurrentLoad != null)
+                        if (vehicle.CurrentCapacity > 0 && vehicle.CurrentLoad is not null)
                         {
                             int vehicleCanGive;
                             LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
@@ -728,7 +920,7 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Timer event handlers
-        private void Timer_Tick(object? sender, EventArgs e)
+        private void Timer_Tick(object? _1, EventArgs _2)
         {
             if (IsGameOver)
             {
