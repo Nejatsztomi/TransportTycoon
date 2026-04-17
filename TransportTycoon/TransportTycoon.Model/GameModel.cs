@@ -675,17 +675,20 @@ namespace TransportTycoon.Model
             if (Mode != GameMode.Run) return;
 
             vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
+            Field? newField = vehicle.TargetTile;
 
-
-
-            if (newField is not Infrastructure)
+            //if the target field is out of bounds or not an infrastructure, the vehicle should stop and not move
+            if (newField == null||
+                0> newField.X || newField.X >=Map.Height ||
+                0 > newField.Y || newField.Y >= Map.Width ||
+                newField is not Infrastructure)
             {
                 vehicle.ChangeCurrentSpeed(0);
                 return;
             }
 
             Field currentField = Map[vehicle.MapX, vehicle.MapY];
-            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newX && v.MapY == newY);
+            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
 
             SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
             if (vehicle.CurrentSpeed > 0)
