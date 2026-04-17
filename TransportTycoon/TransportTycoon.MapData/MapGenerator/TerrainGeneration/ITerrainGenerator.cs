@@ -1,6 +1,6 @@
 ﻿namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
-    public interface ITerrainGenerator
+    public interface ITerrainGenerator : IMapPluginGenerator
     {
         public int[,] GenerateTerrain(float[,] noiseMap, MapGenerationContext context);
     }

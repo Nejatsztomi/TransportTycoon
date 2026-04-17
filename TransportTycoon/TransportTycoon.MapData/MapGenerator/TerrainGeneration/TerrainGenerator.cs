@@ -7,6 +7,10 @@
 
     internal class TerrainGenerator : ITerrainGenerator
     {
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.BaseTerrain;
+        #endregion
+
         #region Constructors
         public TerrainGenerator() { }
         #endregion

@@ -11,6 +11,10 @@
         private readonly IRandom _random;
         #endregion
 
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.WaterLayer;
+        #endregion
+
         #region Constructors
         public RiverGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {

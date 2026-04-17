@@ -13,6 +13,10 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         private readonly INoiseGenerator _noiseGenerator;
         #endregion
 
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.Forest;
+        #endregion
+
         #region Constructors
         public ForestGenerator(INoiseGenerator noiseGenerator)
         {

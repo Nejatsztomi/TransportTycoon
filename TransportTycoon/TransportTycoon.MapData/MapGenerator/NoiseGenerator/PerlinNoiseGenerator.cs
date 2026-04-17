@@ -16,6 +16,10 @@
         private readonly float _noiseScale = 0.05f;
         #endregion
 
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.Noise;
+        #endregion
+
         #region Constructors
         public PerlinNoiseGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {

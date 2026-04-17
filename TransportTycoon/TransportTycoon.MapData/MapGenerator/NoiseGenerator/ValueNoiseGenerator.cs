@@ -15,6 +15,10 @@ namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
         private readonly ICoordinateHasher _hasher = new BasicCoordinateHasher();
         #endregion
 
+        #region Properties
+        public GenerationPhase Phase => GenerationPhase.Noise;
+        #endregion
+
         #region Constructors
         public ValueNoiseGenerator(float frequency = 0.05f)
         {

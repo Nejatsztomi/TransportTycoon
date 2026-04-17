@@ -14,6 +14,10 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         private readonly IRandom _random;
         #endregion
 
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.Structures;
+        #endregion
+
         #region Constructors
         public StructureGenerator(ICityGenerator cityGenerator, IRandomProvider randomProvider, MapGenerationContext context)
         {
