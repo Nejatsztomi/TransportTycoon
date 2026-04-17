@@ -626,7 +626,7 @@ namespace TransportTycoon.Model
         {
             List<Tuple<int, int>> grownTrees = [];
 
-            Random rnd = new();
+            Random rnd = new(Map.Context.Seed);
             HashSet<Field> spreadedFields = [];
             for (int i = 0; i < Map.Height; i++)
             {
