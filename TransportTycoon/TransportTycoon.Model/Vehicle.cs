@@ -171,63 +171,6 @@ namespace TransportTycoon.Model
             if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
         }
 
-
-        public int Load(int quantity, Load load) //returns leftover
-        {
-            if (CurrentLoad != load) return quantity;
-            else if (CurrentLoad is null)
-            {
-                CurrentLoad = load;
-                if (quantity <= MaxCapacity)
-                {
-                    CurrentCapacity = quantity;
-                    return 0;
-                }
-                else
-                {
-                    CurrentCapacity = MaxCapacity;
-                    return quantity - MaxCapacity;
-                }
-            }
-            else
-            {
-                if (CurrentCapacity + quantity <= MaxCapacity)
-                {
-                    CurrentCapacity = quantity;
-                    return 0;
-                }
-                else
-                {
-                    CurrentCapacity = MaxCapacity;
-                    return quantity - (MaxCapacity - CurrentCapacity);
-                }
-            }
-        }
-
-        public int UnLoad(int quantity, Load load) //returns unloaded quantity
-        {
-            if (CurrentLoad is null || CurrentLoad != load) return 0;
-            else if (quantity < CurrentCapacity)
-            {
-                CurrentCapacity -= quantity;
-                return quantity;
-            }
-            else if (quantity == CurrentCapacity)
-            {
-                CurrentCapacity -= quantity;
-                CurrentLoad = null;
-                return quantity;
-            }
-            else if (quantity > CurrentCapacity)
-            {
-                int tmp = CurrentCapacity;
-                CurrentCapacity = 0;
-                CurrentLoad = null;
-                return tmp;
-            }
-            return 0;
-        }
-
         /// <summary>
         /// Gets the next route between two <see cref="Stop"/> tiles.
         /// If it's last stop in the route, it loops over.
