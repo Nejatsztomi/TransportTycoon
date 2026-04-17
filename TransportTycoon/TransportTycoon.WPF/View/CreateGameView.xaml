@@ -111,11 +111,13 @@
                 <TextBlock Grid.Row="8" Grid.Column="0" Text="Select biome:" Margin="0,10"/>
                 <ComboBox Grid.Row="8" Grid.Column="1" SelectedIndex="{Binding SettingsBiome, FallbackValue=0}" Height="35">
                     <ComboBoxItem Content="Default"/>
+                    <ComboBoxItem Content="Flat"/>
+                    <ComboBoxItem Content="Mountainous"/>
                 </ComboBox>
 
                 <TextBlock Grid.Row="9" Grid.Column="0" Text="Select water biome:" Margin="0,10"/>
                 <ComboBox Grid.Row="9" Grid.Column="1" SelectedIndex="{Binding SettingsWaterBiome, FallbackValue=0}" Height="35">
-                    <ComboBoxItem Content="Normal"/>
+                    <ComboBoxItem Content="Normal" />
                     <ComboBoxItem Content="Dry"/>
                     <ComboBoxItem Content="Wet"/>
                 </ComboBox>

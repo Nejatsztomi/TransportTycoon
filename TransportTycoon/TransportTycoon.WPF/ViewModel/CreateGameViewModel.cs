@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using TransportTycoon.MapData.MapGenerator;
+using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
@@ -67,7 +68,9 @@ namespace TransportTycoon.WPF.ViewModel
 
                 Debug.WriteLine($"Map generation settings:");
                 Debug.WriteLine($"Biome: {SettingsBiome}");
+                IBiome biome = TryConvertToBiome(SettingsBiome);
                 Debug.WriteLine($"Water biome: {SettingsWaterBiome}");
+                IWaterBiome waterBiome = TryConvertToWaterBiome(SettingsWaterBiome);
                 float forestPercentage = SettingsForestPercentage / 100.0f;
                 Debug.WriteLine($"Forest percentage: {forestPercentage}");
                 int riverCount = int.Parse(SettingsRiverCount);
@@ -83,6 +86,8 @@ namespace TransportTycoon.WPF.ViewModel
 
                 MapGenerationSettings settings = new()
                 {
+                    Biome = biome,
+                    WaterBiome = waterBiome,
                     ForestPercentage = forestPercentage,
                     RiverCount = riverCount,
                     MinCities = minCities,
@@ -109,9 +114,31 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
-        public void ShowErrorMsgBox(string message)
+        private void ShowErrorMsgBox(string message)
         {
             MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private IWaterBiome TryConvertToWaterBiome(int num)
+        {
+            return num switch
+            {
+                0 => WaterBiomes.Normal,
+                1 => WaterBiomes.Dry,
+                2 => WaterBiomes.Wet,
+                _ => throw new ArgumentException("Invalid water biome!")
+            };
+        }
+
+        private IBiome TryConvertToBiome(int num)
+        {
+            return num switch
+            {
+                0 => Biomes.Default,
+                1 => Biomes.Flat,
+                2 => Biomes.Mountainous,
+                _ => throw new ArgumentException("Invalid biome!")
+            };
         }
         #endregion
     }
