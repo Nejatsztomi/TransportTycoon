@@ -82,48 +82,7 @@ namespace TransportTycoon.Model
 
         public void Step()
         {
-            if (CurrentRoute != null) 
-            {
-                switch (Direction)
-                {
-                    case Direction.Up:
-                        X -= CurrentSpeed;
-                        Direction = Direction.Up;
-                        break;
-                    case Direction.Down:
-                        X += CurrentSpeed;
-                        Direction = Direction.Down;
-                        break;
-                    case Direction.Left:
-                        Y -= CurrentSpeed;
-                        Direction = Direction.Left;
-                        break;
-                    case Direction.Right:
-                        Y += CurrentSpeed;
-                        Direction = Direction.Right;
-                        break;
-                    default:
-                        break;
-                }
-                if (_currentTileIdx == _currentEdgeTiles?.Count())
-                {
-                    if (_currentEdgeIdx + 1 == CurrentRoute.Count())
-                    {
-                        ArriveAtStop();
-
-                    }
-                    else
-                    {
-                        _currentEdgeIdx++;
-                        _currentTileIdx = 0;
-                    }
-
-                }
-                else
-                {
-                    _currentTileIdx++;
-                }
-            } 
+            
         }
         /// <summary>
         /// Sets the current capacity of the vehicle, if the given quantity is between 0 and the maximum capacity of the vehicle. If the quantity is set to 0, the current load is also set to null.
