@@ -605,6 +605,19 @@ namespace TransportTycoon.Model
                 return;
             }
             GraphNetwork = Graph.GraphBuilder.BuildGraph(Map);
+
+            foreach (Vehicle vehicle in Vehicles)
+            {
+                if (vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
+                {
+                    // 1. A régi csomópontok alapján lekérjük a fizikai Stop mezőket a térképről
+                    List<Stop> stopFields = ProuthUtil.ConvertNodestoStopTiles(vehicle.Prouth.Stops, Map);
+
+                    // 2. Készítünk egy új útvonalat, ami már az ÚJ GraphNetwork csomópontjait használja
+                    vehicle.Prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stopFields, GraphNetwork));
+                }
+            }
+            _pathFinder = new AStarPathfinder(GraphNetwork);
         }
 
         private void SetTax()
@@ -683,7 +696,7 @@ namespace TransportTycoon.Model
             if (vehicle.CurrentRoute == null && vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
             {
                 
-                vehicle.GetNextRoute();
+                vehicle.GetNextRoute(_pathFinder);
 
                 if (vehicle.CurrentRoute == null) return;
             }

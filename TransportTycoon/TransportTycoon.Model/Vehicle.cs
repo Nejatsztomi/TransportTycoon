@@ -213,10 +213,10 @@ namespace TransportTycoon.Model
         }
         private void UpdateDirection(Field target) 
         {
-            if(target.X<MapX) Direction = Direction.Left;
-            else if(target.X>MapX) Direction = Direction.Right;
-            else if(target.Y<MapY) Direction = Direction.Up;
-            else if(target.Y>MapY) Direction = Direction.Down;
+            if(target.X<MapX) Direction = Direction.Up;
+            else if(target.X>MapX) Direction = Direction.Down;
+            else if(target.Y<MapY) Direction = Direction.Left;
+            else if(target.Y>MapY) Direction = Direction.Right;
         }
 
         private void MoveTowardsTarget(Field target) 
@@ -231,10 +231,10 @@ namespace TransportTycoon.Model
                     X += CurrentSpeed;
                     break;
                 case Direction.Right:
-                    Y -= CurrentSpeed;
+                    Y += CurrentSpeed;
                     break;
                 case Direction.Left:
-                    Y += CurrentSpeed;
+                    Y -= CurrentSpeed;
                     break;
             }
         }
