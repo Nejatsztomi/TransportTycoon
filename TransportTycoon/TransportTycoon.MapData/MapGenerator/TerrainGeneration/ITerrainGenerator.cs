@@ -2,6 +2,6 @@
 {
     public interface ITerrainGenerator
     {
-        public int[,] GenerateTerrain(MapGenerationContext context);
+        public int[,] GenerateTerrain(float[,] noiseMap, MapGenerationContext context);
     }
 }

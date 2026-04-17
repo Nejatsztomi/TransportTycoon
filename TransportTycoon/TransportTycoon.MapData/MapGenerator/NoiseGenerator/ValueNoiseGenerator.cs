@@ -25,6 +25,27 @@ namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
         #region Public methods
         public float GenerateNoise(float x, float y, int seed)
         {
+            return CalculateNoise(x, y, seed);
+        }
+
+        public float[,] GenerateNoiseMap(int width, int height, int seed)
+        {
+            float[,] noiseMap = new float[width, height];
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    noiseMap[i, j] = CalculateNoise(i, j, seed);
+                }
+            }
+            return noiseMap;
+        }
+        #endregion
+
+        #region Private methods
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private float CalculateNoise(float x, float y, int seed)
+        {
             float scaledX = x * _frequency;
             float scaledY = y * _frequency;
 
@@ -47,9 +68,7 @@ namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
 
             return Lerp(top_blend, bottom_blend, v);
         }
-        #endregion
 
-        #region Private methods
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private float Lerp(float a, float b, float t) => a + t * (b - a);
 

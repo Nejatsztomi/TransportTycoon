@@ -2,9 +2,11 @@
 {
     public static class PerlinNoiseGeneratorFactory
     {
+        [Obsolete]
         public static INoiseGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new PerlinNoiseGenerator(randomProvider, context);
     }
 
+    [Obsolete]
     internal class PerlinNoiseGenerator : INoiseGenerator
     {
         #region Private fields
@@ -28,6 +30,19 @@
         {
             // Calculate normalized noise (0.0 to 1.0)
             return CalculateNoise((x + _offsetX) * _noiseScale, (y + _offsetY) * _noiseScale);
+        }
+
+        public float[,] GenerateNoiseMap(int width, int height, int seed)
+        {
+            float[,] noiseMap = new float[width, height];
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    noiseMap[i, j] = GenerateNoise(i, j, seed);
+                }
+            }
+            return noiseMap;
         }
         #endregion
 
