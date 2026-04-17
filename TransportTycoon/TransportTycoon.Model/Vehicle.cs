@@ -68,9 +68,18 @@ namespace TransportTycoon.Model
         /// When a vehicle is marked as lost, it may require intervention to be moved back onto a valid path or to be removed from the game if it cannot be recovered.
         /// </summary>
         public bool IsLost { get; private set; } = false;
+        public Field? TargetTile
+        {
+            get
+            {
+                if (_currentEdgeTiles is null || _currentTileIdx >= _currentEdgeTiles.Count) return null;
+                return _currentEdgeTiles[_currentTileIdx];
+            }
+        }
         #endregion
 
         #region Public methods
+
         public void Step()
         {
             if (CurrentRoute != null) 
