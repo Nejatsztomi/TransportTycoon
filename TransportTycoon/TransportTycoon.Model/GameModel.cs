@@ -565,15 +565,25 @@ namespace TransportTycoon.Model
             //if the next field has another vehicle on it, the current vehicle should slow down to the speed of that vehicle, or stop if the other vehicle is on a different field (to avoid collisions)
             if (nextVehicle != null)
             {
+                bool isOppositeDirection = (vehicle.Direction == Direction.Up && nextVehicle.Direction == Direction.Down) ||
+                    (vehicle.Direction == Direction.Down && nextVehicle.Direction == Direction.Up) ||
+                    (vehicle.Direction == Direction.Left && nextVehicle.Direction == Direction.Right) ||
+                    (vehicle.Direction == Direction.Right && nextVehicle.Direction == Direction.Left);
+
+                if (!isOppositeDirection) 
+                {
+                    //if the next vehicle is on a different field
+                    if (currentField != newField)
+                    {
+
+                        vehicle.ChangeCurrentSpeed(0);
+                    }
+                    else //if they are on the same field
+                    {
+                        vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
+                    }
+                }
                 
-                if (currentField != newField)
-                {
-                    vehicle.ChangeCurrentSpeed(0);
-                }
-                else
-                {
-                    vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
-                }
             }
         }
         #endregion
