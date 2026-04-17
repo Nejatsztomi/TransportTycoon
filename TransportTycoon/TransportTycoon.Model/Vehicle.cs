@@ -82,7 +82,25 @@ namespace TransportTycoon.Model
 
         public void Step()
         {
-            
+            if(CurrentRoute is null) return;
+
+            Field? targetTile = TargetTile;
+            if (targetTile == null) return;
+
+            //update the direction
+            UpdateDirection(targetTile);
+
+            //take the step
+            MoveTowardsTarget(targetTile);
+
+            //check if we have arrived at the target tile
+            double distanceToTarget = Math.Sqrt(Math.Pow(X - targetTile.X, 2) + Math.Pow(Y - targetTile.Y, 2));
+            if(distanceToTarget < 0.1) //if we are close enough to the target tile, we consider that we have arrived
+            {
+                X = targetTile.X;
+                Y = targetTile.Y;
+                AdvanceToNextTile();
+            }
         }
         /// <summary>
         /// Sets the current capacity of the vehicle, if the given quantity is between 0 and the maximum capacity of the vehicle. If the quantity is set to 0, the current load is also set to null.
