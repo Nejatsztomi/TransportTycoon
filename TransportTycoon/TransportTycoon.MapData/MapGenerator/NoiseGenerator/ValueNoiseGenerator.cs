@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData.MapGenerator.CoordinateHasher;
+﻿using System.Runtime.CompilerServices;
+using TransportTycoon.MapData.MapGenerator.CoordinateHasher;
 
 namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
 {
@@ -49,8 +50,10 @@ namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
         #endregion
 
         #region Private methods
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private float Lerp(float a, float b, float t) => a + t * (b - a);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private float Fade(float t) => t * t * (3f - 2f * t);
         #endregion
     }
