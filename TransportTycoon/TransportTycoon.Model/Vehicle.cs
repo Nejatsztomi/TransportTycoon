@@ -71,29 +71,50 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public methods
-        public void Step(Direction dir = Direction.Up)
+        public void Step()
         {
-            switch (dir)
+            if (CurrentRoute != null) 
             {
-                case Direction.Up:
-                    X -= CurrentSpeed;
-                    Direction = Direction.Up;
-                    break;
-                case Direction.Down:
-                    X += CurrentSpeed;
-                    Direction = Direction.Down;
-                    break;
-                case Direction.Left:
-                    Y -= CurrentSpeed;
-                    Direction = Direction.Left;
-                    break;
-                case Direction.Right:
-                    Y += CurrentSpeed;
-                    Direction = Direction.Right;
-                    break;
-                default:
-                    break;
-            }
+                switch (Direction)
+                {
+                    case Direction.Up:
+                        X -= CurrentSpeed;
+                        Direction = Direction.Up;
+                        break;
+                    case Direction.Down:
+                        X += CurrentSpeed;
+                        Direction = Direction.Down;
+                        break;
+                    case Direction.Left:
+                        Y -= CurrentSpeed;
+                        Direction = Direction.Left;
+                        break;
+                    case Direction.Right:
+                        Y += CurrentSpeed;
+                        Direction = Direction.Right;
+                        break;
+                    default:
+                        break;
+                }
+                if (_currentTileIdx == _currentEdgeTiles?.Count())
+                {
+                    if (_currentEdgeIdx + 1 == CurrentRoute.Count())
+                    {
+                        ArriveAtStop();
+
+                    }
+                    else
+                    {
+                        _currentEdgeIdx++;
+                        _currentTileIdx = 0;
+                    }
+
+                }
+                else
+                {
+                    _currentTileIdx++;
+                }
+            } 
         }
         /// <summary>
         /// Sets the current capacity of the vehicle, if the given quantity is between 0 and the maximum capacity of the vehicle. If the quantity is set to 0, the current load is also set to null.
@@ -233,6 +254,20 @@ namespace TransportTycoon.Model
 
             CurrentRoute = newRoute;
         }
+        public void UpdateDirection()
+        {
+            if (_currentTileIdx + 1 < _currentEdgeTiles?.Count)
+            {
+                if (_currentEdgeTiles is not null && _currentEdgeTiles[_currentTileIdx + 1] is Infrastructure nextTile)
+                {
+                    Direction = nextTile.X == MapX ? (nextTile.Y > MapY ? Direction.Down : Direction.Up) : (nextTile.X > MapX ? Direction.Right : Direction.Left);
+                }
+            }
+            else 
+            {
+
+            }
+        }
         #endregion
 
         #region Private method
@@ -275,8 +310,10 @@ namespace TransportTycoon.Model
         {
             if (Prouth is null || Prouth.Stops.Count == 0) return;
 
-            _currentEdgeIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
+            _currentStopIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
         }
+
+        
         #endregion
     }
 }
