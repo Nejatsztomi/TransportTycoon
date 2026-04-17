@@ -58,8 +58,8 @@ namespace TransportTycoon.Model
         public int Price { get; protected set; }
         public int Maintance { get; protected set; }
 
-        public int MapX => (int)Math.Floor(X);
-        public int MapY => (int)Math.Floor(Y);
+        public int MapX => (int)Math.Round(X);
+        public int MapY => (int)Math.Round(Y);
         public List<LoadType>? AcceptedGoods { get; protected set; } = [];
 
         /// <summary>
