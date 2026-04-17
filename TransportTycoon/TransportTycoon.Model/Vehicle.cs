@@ -261,6 +261,31 @@ namespace TransportTycoon.Model
                     break;
             }
         }
+        private void AdvanceToNextTile() 
+        {
+            if (_currentEdgeTiles == null) return;
+
+            _currentTileIdx++;
+
+            if(_currentTileIdx>= _currentEdgeTiles.Count)
+            {
+                _currentEdgeIdx++;
+                if (CurrentRoute != null && _currentEdgeIdx + 1 < CurrentRoute.Count)
+                {
+                    ArriveAtStop();
+                }
+                else //if its the last edge, but there are more stops in the prouth, we need to get the next route
+                {
+                    _currentEdgeIdx++;
+                    _currentTileIdx = 0;
+                    if (CurrentRoute != null) 
+                    {
+                        _currentEdgeTiles = CurrentRoute[_currentEdgeIdx].Roads.ToList();
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Gets the next pair of nodes representing the start and end stops for the next route.
         /// </summary>
