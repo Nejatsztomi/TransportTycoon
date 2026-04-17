@@ -66,6 +66,16 @@ namespace TransportTycoon.MapData.MapGenerator
                 {
                     var heightMap = terrainGen.GenerateTerrain(context.NoiseMap, context);
                     Array2DCopy(heightMap, context.HeightMap, sizeof(int));
+                    for (int x = 0; x < context.Width; x++)
+                    {
+                        for (int y = 0; y < context.Height; y++)
+                        {
+                            if (heightMap[x, y] == 0)
+                            {
+                                context.WaterMap[x, y] = true;
+                            }
+                        }
+                    }
                 }
                 else if (generator is IWaterGenerator waterGen)
                 {
@@ -166,7 +176,7 @@ namespace TransportTycoon.MapData.MapGenerator
             {
                 for (int y = 0; y < context.Height; y++)
                 {
-                    if (context.WaterMap[x, y])
+                    if (context.WaterMap[x, y] || context.HeightMap[x, y] == 0)
                     {
                         map[x, y] = new Water(x, y);
                     }

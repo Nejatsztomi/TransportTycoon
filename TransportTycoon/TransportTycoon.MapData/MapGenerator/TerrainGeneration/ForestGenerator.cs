@@ -36,7 +36,10 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
                 for (int j = 0; j < context.Height; j++)
                 {
                     // TODO: Don't use magic number, later on there will a TerrainHeight enum
-                    if (heightMap[i, j] >= 4) continue;
+                    if (heightMap[i, j] >= 3)
+                    {
+                        continue;
+                    }
 
                     if (randomTreeNoiseMap[i, j] < forestPercentage) continue;
 
