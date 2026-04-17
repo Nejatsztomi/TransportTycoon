@@ -28,13 +28,7 @@ namespace TransportTycoon.MapData.MapGenerator
     {
         #region Private fields
         private readonly IEnumerable<IMapPluginGenerator> _generators;
-        //private readonly ITerrainGenerator _terrainGenerator;
-        //private readonly IForestGenerator _forestGenerator;
-        //private readonly IWaterGenerator _lakeGenerator;
-        //private readonly IWaterGenerator _riverGenerator;
-        //private readonly IStructureGenerator _structureGenerator;
         private readonly IRandom _random;
-        //private readonly INoiseGenerator _noiseGenerator;
         #endregion
 
         #region Debug
@@ -45,22 +39,10 @@ namespace TransportTycoon.MapData.MapGenerator
         public MapGenerator(
             IEnumerable<IMapPluginGenerator> generators,
             IRandom random
-            //INoiseGenerator noiseGenerator,
-            //ITerrainGenerator terrainGenerator,
-            //IForestGenerator forestGenerator,
-            //IWaterGenerator lakeGenerator,
-            //IWaterGenerator riverGenerator,
-            //IStructureGenerator structureGenerator
             )
         {
             _generators = generators;
             _random = random;
-            //_noiseGenerator = noiseGenerator;
-            //_terrainGenerator = terrainGenerator;
-            //_forestGenerator = forestGenerator;
-            //_lakeGenerator = lakeGenerator;
-            //_riverGenerator = riverGenerator;
-            //_structureGenerator = structureGenerator;
         }
         #endregion
 
@@ -200,18 +182,6 @@ namespace TransportTycoon.MapData.MapGenerator
             }
             return map;
         }
-        //private bool[,] GenerateEmptyStructureMap(int width, int height)
-        //{
-        //    bool[,] structureMap = new bool[width, height];
-        //    for (int i = 0; i < width; i++)
-        //    {
-        //        for (int j = 0; j < height; j++)
-        //        {
-        //            structureMap[i, j] = false;
-        //        }
-        //    }
-        //    return structureMap;
-        //}
 
         private (SiteEntity se, IndustryEntity ie) GenerateRandomEntityPair()
         {
