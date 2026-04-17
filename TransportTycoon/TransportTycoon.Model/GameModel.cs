@@ -698,8 +698,8 @@ namespace TransportTycoon.Model
                 default:
                     break;
             }
-            int newX = (int)Math.Floor(x);
-            int newY = (int)Math.Floor(y);
+            int newX = (int)Math.Round(x);
+            int newY = (int)Math.Round(y);
 
             if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
 

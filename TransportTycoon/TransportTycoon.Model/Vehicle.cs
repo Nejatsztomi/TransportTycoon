@@ -140,7 +140,19 @@ namespace TransportTycoon.Model
                 if (CurrentLoad is null) CurrentCapacity = 0;
             }
         }
+        public void StartDriving(List<Edge> route)
+        {
+            CurrentRoute = route;
+            _currentEdgeIdx = 0;
+            _currentTileIdx = 0;
+            _tileProgress = 0.0;
 
+            if (CurrentRoute.Count > 0)
+            {
+                // Cache the tiles for the very first edge
+                _currentEdgeTiles= CurrentRoute[0].Roads.ToList();
+            }
+        }
         /// <summary>
         /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
         /// </summary>
@@ -218,7 +230,7 @@ namespace TransportTycoon.Model
             {
                 CurrentRoute = pathFinder.FindPath(start, end);
             }
-
+            StartDriving(CurrentRoute ?? new List<Edge>());
         }
 
         /// <summary>
@@ -254,6 +266,7 @@ namespace TransportTycoon.Model
 
             CurrentRoute = newRoute;
         }
+        
         public void UpdateDirection()
         {
             if (_currentTileIdx + 1 < _currentEdgeTiles?.Count)
@@ -263,9 +276,9 @@ namespace TransportTycoon.Model
                     Direction = nextTile.X == MapX ? (nextTile.Y > MapY ? Direction.Down : Direction.Up) : (nextTile.X > MapX ? Direction.Right : Direction.Left);
                 }
             }
-            else 
+            else if(_currentEdgeIdx == CurrentRoute?.Count)
             {
-
+                GetNextRoute(path);
             }
         }
         #endregion
@@ -282,7 +295,7 @@ namespace TransportTycoon.Model
             _currentEdgeTiles = null;
             AdvanceProuth();
         }
-
+        
         /// <summary>
         /// Gets the next pair of nodes representing the start and end stops for the next route.
         /// </summary>
