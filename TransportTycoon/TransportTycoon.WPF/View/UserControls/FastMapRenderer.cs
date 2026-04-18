@@ -66,6 +66,8 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private readonly Pen _selectionPen = new(new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)), 2.0);
 
+        private readonly Dictionary<int, BitmapSource> _stopTextures;
+
         /// <summary>
         /// The font type for writing.
         /// </summary>
@@ -298,10 +300,17 @@ namespace TransportTycoon.WPF.View.UserControls
             RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
 
             // Freeze the brushes and pens (just like with images)
-            _highlightBrush.Freeze();
-            _highlightPen.Freeze();
-            _selectionPen.Freeze();
-            _stopBorderPen.Freeze();
+            if (_highlightBrush.CanFreeze) _highlightBrush.Freeze();
+            if (_highlightPen.CanFreeze) _highlightPen.Freeze();
+            if (_selectionPen.CanFreeze) _selectionPen.Freeze();
+            if (_stopBorderPen.CanFreeze) _stopBorderPen.Freeze();
+            if (_stopTextBrush.CanFreeze) _stopTextBrush.Freeze();
+
+            // Generate the stop textures
+#pragma warning disable IDE0028 // Simplify collection initialization
+            _stopTextures = new(20);
+#pragma warning restore IDE0028 // Simplify collection initialization
+            GenerateRouteStopTextures(0, 20);
 
             // TODO: Later maybe JSON or .rex format
             _terrainTextures = new Dictionary<FieldType, BitmapImage>
@@ -610,23 +619,71 @@ namespace TransportTycoon.WPF.View.UserControls
                 double pixelY = stop.Y * TileSize;
                 Rect stopRect = new(pixelX, pixelY, TileSize, TileSize);
 
-                ctx.DrawRectangle(null, _stopBorderPen, stopRect);
-
                 // The text
+                if (_stopTextures.TryGetValue(stop.Order, out BitmapSource? texture))
+                {
+                    ctx.DrawImage(texture, stopRect);
+                }
+                else
+                {
+                    // Cache new ones
+                    BitmapSource generatedTexture = GenerateRouteStopTexture(stop.Order);
+                    _stopTextures[stop.Order] = generatedTexture;
+                    ctx.DrawImage(generatedTexture, stopRect);
+                }
+            }
+        }
+
+        private BitmapSource GenerateRouteStopTexture(int order)
+        {
+            // Standard WPF DPI
+            const double DPI = 96.0;
+            DrawingVisual visual = new();
+
+            using (DrawingContext ctx = visual.RenderOpen())
+            {
+                Rect tileRect = new(0, 0, TileSize, TileSize);
+
+                ctx.DrawRectangle(null, _stopBorderPen, tileRect);
+
                 FormattedText text = new(
-                    textToFormat: stop.Order.ToString(),
+                    textToFormat: order.ToString(),
                     culture: System.Globalization.CultureInfo.CurrentCulture,
                     flowDirection: FlowDirection.LeftToRight,
                     typeface: _stopTextTypeface,
                     emSize: 24,
                     foreground: _stopTextBrush,
-                    pixelsPerDip: VisualTreeHelper.GetDpi(this).PixelsPerDip);
+                    pixelsPerDip: DPI / 96.0);
 
-                // Center the text inside the tile
-                double textX = pixelX + (TileSize / 2.0) - (text.Width / 2.0);
-                double textY = pixelY + (TileSize / 2.0) - (text.Height / 2.0);
+                // Center the text
+                double textX = (TileSize / 2.0) - (text.Width / 2.0);
+                double textY = (TileSize / 2.0) - (text.Height / 2.0);
 
                 ctx.DrawText(text, new Point(textX, textY));
+            }
+
+            RenderTargetBitmap bmp = new(
+                TileSize,
+                TileSize,
+                DPI,
+                DPI,
+                PixelFormats.Pbgra32
+                );
+
+            bmp.Render(visual);
+            bmp.Freeze();
+
+            return bmp;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void GenerateRouteStopTextures(int start, int end)
+        {
+            for (int i = start; i <= end; i++)
+            {
+                _stopTextures[i] = GenerateRouteStopTexture(i);
             }
         }
         #endregion
