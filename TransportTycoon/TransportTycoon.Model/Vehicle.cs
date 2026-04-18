@@ -36,7 +36,6 @@ namespace TransportTycoon.Model
         /// The current edge's tiles.
         /// </summary>
         private List<Field>? _currentEdgeTiles = null;
-        private IPathFinder? _pathFinder;
         #endregion
 
         #region Properties
@@ -211,11 +210,6 @@ namespace TransportTycoon.Model
             }
 
             CurrentRoute = newRoute;
-        }
-        
-        public void SetPathFinder(IPathFinder pathFinder)
-        {
-            _pathFinder = pathFinder;
         }
         #endregion
 
