@@ -80,7 +80,13 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public methods
-
+        /// <summary>
+        /// Advances the entity along its current route by moving it one step toward the next target tile, updating its
+        /// position and direction as needed.
+        /// </summary>
+        /// <remarks>This method performs a single movement operation for the entity. If the entity is
+        /// close enough to the target tile or can reach it within the current speed, it advances to the next tile in
+        /// the route. The method has no effect if there is no active route or target tile.</remarks>
         public void Step()
         {
             if (CurrentRoute is null) return;
@@ -143,6 +149,9 @@ namespace TransportTycoon.Model
                 if (CurrentLoad is null) CurrentCapacity = 0;
             }
         }
+        /// <summary>
+        /// Sets the current route of the vehicle to the specified list of edges and initializes the indices for tracking the current edge and tile.
+        /// </summary>
         public void StartDriving(List<Edge> route)
         {
             CurrentRoute = route;
@@ -152,7 +161,6 @@ namespace TransportTycoon.Model
 
             if (CurrentRoute.Count > 0)
             {
-                // Cache the tiles for the very first edge
                 _currentEdgeTiles = [.. CurrentRoute[0].Roads];
             }
         }
@@ -226,6 +234,10 @@ namespace TransportTycoon.Model
             _currentEdgeTiles = null;
             AdvanceProuth();
         }
+        /// <summary>
+        /// if the target tile is in a different direction than the current one, it updates the direction to face towards the target tile.
+        /// </summary>
+        /// <param name="target"></param>
         private void UpdateDirection(Field target)
         {
             if (target.X < MapX) Direction = Direction.Up;
@@ -233,7 +245,14 @@ namespace TransportTycoon.Model
             else if (target.Y < MapY) Direction = Direction.Left;
             else if (target.Y > MapY) Direction = Direction.Right;
         }
-
+        /// <summary>
+        /// Moves the object toward the specified target field based on the current direction and speed.
+        /// </summary>
+        /// <remarks>The method updates the object's position by adjusting its coordinates according to
+        /// the current direction and speed. The direction is determined by the Direction property, which can be set to
+        /// Up, Down, Left, or Right.</remarks>
+        /// <param name="target">The field that the object is moving toward. This parameter determines the destination used to update the
+        /// object's direction and position.</param>
         private void MoveTowardsTarget(Field target)
         {
             UpdateDirection(target);
@@ -253,6 +272,9 @@ namespace TransportTycoon.Model
                     break;
             }
         }
+        /// <summary>
+        /// advances the current tile index to the next tile in the current edge.
+        /// </summary>
         private void AdvanceToNextTile()
         {
             if (_currentEdgeTiles == null) return;
