@@ -788,6 +788,22 @@ namespace TransportTycoon.Model
 
 
         }
+
+        private void AllProduction()
+        {
+            HashSet<BuildingEntity> buildingEntities = [];
+            for (int i = 0; i < Map.Height; i++)
+            {
+                for (int j = 0; j < Map.Width; j++)
+                {
+                    if (Map[i, j] is BuildingBlocks b) buildingEntities.Add(b.BuildingEntity);
+                }
+            }
+            foreach (var item in buildingEntities)
+            {
+                item.Production();
+            }
+        }
         #endregion
 
         #region Private event Methods
@@ -834,13 +850,13 @@ namespace TransportTycoon.Model
                                     if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
                                     {
                                         vehicleCanGive = vehicle.CurrentCapacity;
-                                        int buildingCanTake = industry.MaxConsumeCapacity - industry.ConsumeOccupancy;
+                                        int buildingCanTake = industry.MaxConsumeCapacity - industry.ConsumeCapacity;
                                         if (buildingCanTake >= vehicleCanGive)
                                         {
-                                            int buildingNewCapacity = industry.ConsumeOccupancy + vehicleCanGive;
+                                            int buildingNewCapacity = industry.ConsumeCapacity + vehicleCanGive;
                                             Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
-                                            industry.SetConsumeOccupancy(buildingNewCapacity);
+                                            industry.SetConsumeCapacity(buildingNewCapacity);
                                             vehicle.SetCurrentCapacity(0);
                                             vehicle.SetCurrentLoad(null);
 
@@ -851,7 +867,7 @@ namespace TransportTycoon.Model
                                             vehicleCanGive -= buildingCanTake;
                                             Balance += buildingCanTake * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
-                                            industry.SetConsumeOccupancy(industry.MaxConsumeCapacity);
+                                            industry.SetConsumeCapacity(industry.MaxConsumeCapacity);
                                             vehicle.SetCurrentCapacity(vehicleCanGive);
                                         }
                                     }
@@ -940,6 +956,7 @@ namespace TransportTycoon.Model
             GameTime++;
             StepAllVehicles();
             AllVehiclesDoTheTransport();
+            AllProduction();
             if (GameTime > 0 && GameTime % 10 == 0)
             {
                 var grownTrees = ForestGrowing();
