@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF.View.UserControls
@@ -51,6 +52,8 @@ namespace TransportTycoon.WPF.View.UserControls
         public Map()
         {
             InitializeComponent();
+
+            CompositionTarget.Rendering += OnFrameRendered;
         }
         #endregion
 
@@ -127,6 +130,26 @@ namespace TransportTycoon.WPF.View.UserControls
         #endregion
 
         #region Private event methods
+        /// <summary>
+        /// WPF's game loop event. We use it to trigger redraws of the map.
+        /// </summary>
+        /// <param name="_1"></param>
+        /// <param name="_2"></param>
+        private void OnFrameRendered(object? _1, EventArgs _2)
+        {
+            InternalGameMapRenderer.Redraw();
+        }
+
+        /// <summary>
+        /// Unload event to prevent memory leaks.
+        /// </summary>
+        /// <param name="_1"></param>
+        /// <param name="_2"></param>
+        private void UserControl_Unloaded(object? _1, EventArgs _2)
+        {
+            CompositionTarget.Rendering -= OnFrameRendered;
+        }
+
         /// <summary>
         /// The method which is triggered when the <see cref="ViewModel"/> property changes.
         /// It is responsible for subscribing to the new viewmodel's events and unsubscribing from the old one.
