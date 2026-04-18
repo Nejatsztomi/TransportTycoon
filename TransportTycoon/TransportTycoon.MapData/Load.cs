@@ -25,6 +25,7 @@
             public People()
             {
                 Price = 120;
+                LoadType = LoadType.People;
             }
             #endregion
         }

@@ -824,27 +824,48 @@ namespace TransportTycoon.Model
         /// of the game's main update loop to simulate ongoing transport activity.</remarks>
         private void AllVehiclesDoTheTransport()
         {
+            Console.Error.WriteLine($"Aktuális járművek száma a pályán: {Vehicles.Count}");
+            System.Diagnostics.Debug.WriteLine($"Aktuális járművek száma a pályán: {Vehicles.Count}");
             foreach (var vehicle in Vehicles)
             {
                 if (IsCarOnStop(vehicle))
                 {
+                    Console.Error.WriteLine("A jármű megállóban van");
+                    System.Diagnostics.Debug.WriteLine("A jármű megállóban van");
                     Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
                     {
                         List<LoadType> vehicleAcceptedGoods = vehicle.AcceptedGoods!;
+                        foreach (var item in vehicleAcceptedGoods)
+                        {
+                            Console.Error.WriteLine($"vehicleAcceptedGoods:{item}");
+                            System.Diagnostics.Debug.WriteLine($"vehicleAcceptedGoods:{item}");
+                        }
 
                         List<BuildingBlocks> buildings_giver = stop.ShowWhatTheBuildingsCanGive(vehicleAcceptedGoods);
                         List<BuildingBlocks> buildings_taker = stop.ShowWhatTheBuildingsCanGet(vehicleAcceptedGoods);
-
+                        foreach (var item in buildings_giver)
+                        {
+                            Console.Error.WriteLine($"buildings_giver:{item}");
+                            System.Diagnostics.Debug.WriteLine($"buildings_giver:{item}");
+                        }
+                        foreach (var item in buildings_taker)
+                        {
+                            Console.Error.WriteLine($"buildings_taker:{item}");
+                            System.Diagnostics.Debug.WriteLine($"buildings_taker:{item}");
+                        }
                         if (buildings_giver.Count == 0 && buildings_taker.Count == 0) continue;
 
                         //vehicle gives to the building
                         if (vehicle.CurrentCapacity > 0 && vehicle.CurrentLoad is not null)
                         {
+                            Console.Error.WriteLine("Vehicle ad az épületnek");
                             int vehicleCanGive;
                             LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
                             foreach (var building in buildings_taker)
                             {
+                                Console.Error.WriteLine($"Processing building: {building}");
+                                System.Diagnostics.Debug.WriteLine($"Processing building: {building}");
                                 if (building.BuildingEntity is IndustryEntity industry)
                                 {
                                     if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
@@ -859,7 +880,8 @@ namespace TransportTycoon.Model
                                             industry.SetConsumeCapacity(buildingNewCapacity);
                                             vehicle.SetCurrentCapacity(0);
                                             vehicle.SetCurrentLoad(null);
-
+                                            Console.Error.WriteLine(vehicle.CurrentCapacity);
+                                            System.Diagnostics.Debug.WriteLine(vehicle.CurrentCapacity);
                                             break;
                                         }
                                         else
@@ -874,6 +896,7 @@ namespace TransportTycoon.Model
                                 }
                                 else if (building.BuildingEntity is CityEntity city)
                                 {
+                                    Console.Error.WriteLine("város ad");
                                     vehicleCanGive = vehicle.CurrentCapacity;
                                     Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
                                     BalanceChanged?.Invoke(this, EventArgs.Empty);
@@ -888,6 +911,8 @@ namespace TransportTycoon.Model
                         int vehicleCanTake = vehicle.MaxCapacity - vehicle.CurrentCapacity;
                         if (vehicleCanTake > 0)
                         {
+                            Console.Error.WriteLine("épület ad a vehiclnek");
+                            System.Diagnostics.Debug.WriteLine("épület ad a vehiclnek");
                             foreach (var building in buildings_giver)
                             {
                                 Load buildingLoad = building.BuildingEntity.GetProvideLoad();
@@ -932,7 +957,7 @@ namespace TransportTycoon.Model
         {
             int x = v.MapX;
             int y = v.MapY;
-            if (0 > x || x >= Map.Width || 0 > y || y >= Map.Height) return false;
+            if (0 > x || x >= Map.Height || 0 > y || y >= Map.Width) return false;
             Field currentField = Map[x, y];
             if (currentField is Stop)
             {

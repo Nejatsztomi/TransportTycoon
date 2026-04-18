@@ -5,7 +5,7 @@ namespace TransportTycoon.MapData
     public sealed class Stop : Infrastructure
     {
         #region Fields
-        public List<BuildingBlocks>? Connenctions { get; private set; }
+        public List<BuildingBlocks> Connenctions { get; private set; } = [];
         #endregion
 
         #region Constructors
