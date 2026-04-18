@@ -159,9 +159,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void RefreshTable()
         {
-#pragma warning disable IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             List<FieldViewModel> tempList = new(Model.Map.Width * Model.Map.Height + 1);
-#pragma warning restore IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             for (int x = 0; x < Model.Map.Width; x++)
             {
                 for (int y = 0; y < Model.Map.Height; y++)
@@ -170,9 +168,7 @@ namespace TransportTycoon.WPF.ViewModel
                 }
             }
 
-#pragma warning disable IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             Tiles = new(tempList);
-#pragma warning restore IDE0028 // Simplify collection initialization, not yet supported in .NET 10
         }
 
         partial void OnSelectedTabIndexChanged(int value)
