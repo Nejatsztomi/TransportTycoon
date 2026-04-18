@@ -875,14 +875,11 @@ namespace TransportTycoon.Model
                                 else if (building.BuildingEntity is CityEntity city)
                                 {
                                     vehicleCanGive = vehicle.CurrentCapacity;
-                                    if (vehicleLoad == city.GetConsumeLoad()?.LoadType)
-                                    {
-                                        Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
-                                        BalanceChanged?.Invoke(this, EventArgs.Empty);
-                                        vehicle.SetCurrentCapacity(0);
-                                        vehicle.SetCurrentLoad(null);
-                                        break;
-                                    }
+                                    Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
+                                    BalanceChanged?.Invoke(this, EventArgs.Empty);
+                                    vehicle.SetCurrentCapacity(0);
+                                    vehicle.SetCurrentLoad(null);
+                                    break;
                                 }
                             }
                         }
