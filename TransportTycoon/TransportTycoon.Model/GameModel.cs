@@ -745,29 +745,45 @@ namespace TransportTycoon.Model
                 vehicle.ChangeCurrentSpeed(vehicle.CurrentSpeed / 2);
             }
 
-            //if the next field has another vehicle on it, the current vehicle should slow down to the speed of that vehicle, or stop if the other vehicle is on a different field (to avoid collisions)
-            if (nextVehicle != null)
+
+            if (newField is Road road)
             {
-                bool isOppositeDirection = (vehicle.Direction == Direction.Up && nextVehicle.Direction == Direction.Down) ||
-                    (vehicle.Direction == Direction.Down && nextVehicle.Direction == Direction.Up) ||
-                    (vehicle.Direction == Direction.Left && nextVehicle.Direction == Direction.Right) ||
-                    (vehicle.Direction == Direction.Right && nextVehicle.Direction == Direction.Left);
-
-                if (!isOppositeDirection)
+                if (road.RoadType == RoadType.LeftTRoad || road.RoadType == RoadType.UpperTRoad ||
+                    road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad || road.RoadType == RoadType.XRoad)
                 {
-                    //if the next vehicle is on a different field
-                    if (currentField != newField)
+                    var vehicleOnCrossRoad = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
+                    if (vehicleOnCrossRoad != null)
                     {
-
                         vehicle.ChangeCurrentSpeed(0);
                     }
-                    else //if they are on the same field
+                }
+                else
+                {
+                    //if the next field has another vehicle on it, the current vehicle should slow down to the speed of that vehicle, or stop if the other vehicle is on a different field (to avoid collisions)
+                    if (nextVehicle != null)
                     {
-                        vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
+                        bool isOppositeDirection = (vehicle.Direction == Direction.Up && nextVehicle.Direction == Direction.Down) ||
+                            (vehicle.Direction == Direction.Down && nextVehicle.Direction == Direction.Up) ||
+                            (vehicle.Direction == Direction.Left && nextVehicle.Direction == Direction.Right) ||
+                            (vehicle.Direction == Direction.Right && nextVehicle.Direction == Direction.Left);
+
+                        if (!isOppositeDirection)
+                        {
+                            //if the next vehicle is on a different field
+                            if (currentField != newField)
+                            {
+                                vehicle.ChangeCurrentSpeed(0);
+                            }
+                            else //if they are on the same field
+                            {
+                                vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
+                            }
+                        }
                     }
                 }
-
             }
+
+
         }
         #endregion
 

@@ -268,6 +268,12 @@ namespace TransportTycoon.Model
                 if (CurrentRoute != null && _currentEdgeIdx < CurrentRoute.Count)
                 {
                     _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
+
+                    //if we reach a crossroad we should move to the next tile
+                    if (_currentEdgeTiles.Count > 0 && _currentEdgeTiles[0].X == this.MapX && _currentEdgeTiles[0].Y == this.MapY)
+                    {
+                        _currentEdgeTiles.RemoveAt(0);
+                    }
                 }
                 else //if its the last edge, we reached the Stop
                 {
