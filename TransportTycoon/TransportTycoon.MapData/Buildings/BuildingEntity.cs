@@ -7,7 +7,7 @@
         /// <summary>
         /// Mennyit tud tárolni
         /// </summary>
-        public int MaxCapacity { protected set; get; } = 1000;
+        public int MaxCapacity { private set; get; } = 1000;
 
         /// <summary>
         /// Jelenleg mennyit termelt
@@ -66,11 +66,13 @@
         /// <summary>
         /// The production itself
         /// </summary>
-        protected virtual void Production()
+        public virtual void Production()
         {
-            int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
-
-            CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
+            if (CurrentCapacity < MaxCapacity)
+            {
+                int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
+                CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
+            }
         }
         #endregion
 
@@ -227,8 +229,8 @@
     public abstract class IndustryEntity : BuildingEntity
     {
         #region Properties
-        public int ConsumeOccupancy { protected set; get; }
-        public int MaxConsumeCapacity => 100;
+        public int MaxConsumeCapacity { private set; get; } = 1000;
+        public int ConsumeCapacity { private set; get; } = 0;
         #endregion
 
         #region Constructors
@@ -239,27 +241,30 @@
         #endregion
 
         #region Protected methods
-        protected override void Production()
+        public override void Production()
         {
-            double multiplier = GetMultiplier();
-            int production = (int)Math.Round(Scaler * ConsumeOccupancy * Productivity * multiplier);
+            if (ConsumeCapacity == 0 || CurrentCapacity == MaxCapacity) return;
+
+            int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
+
+            if (ConsumeCapacity < production) production = ConsumeCapacity;
 
             if (CurrentCapacity + production > MaxCapacity)
             {
+                ConsumeCapacity -= MaxCapacity - CurrentCapacity;
                 CurrentCapacity = MaxCapacity;
-                ConsumeOccupancy = (int)Math.Round((production / Scaler) / (Productivity * multiplier));
             }
             else
             {
+                ConsumeCapacity -= production;
                 CurrentCapacity += production;
-                ConsumeOccupancy = 0;
             }
         }
-        public void SetConsumeOccupancy(int value)
+        public void SetConsumeCapacity(int value)
         {
             if (value >= 0)
             {
-                ConsumeOccupancy = value;
+                ConsumeCapacity = value;
             }
 
         }

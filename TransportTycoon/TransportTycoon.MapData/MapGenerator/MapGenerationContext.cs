@@ -7,6 +7,7 @@
         public readonly int Height;
         public readonly int Seed;
         public readonly MapGenerationSettings Settings;
+
         public float[,] NoiseMap { get; }
         public int[,] HeightMap { get; }
         public bool[,] WaterMap { get; }
@@ -40,6 +41,27 @@
         }
 
         public MapGenerationContext() : this(100, 100, 0, new MapGenerationSettings()) { }
+        public MapGenerationContext(MapGenerationContextData data) : this(data.Width, data.Height, data.Seed, data.Settings) { }
         #endregion
     };
+
+    /// <summary>
+    /// A DTO object for MapGenerationContext, used for serialization and deserialization of map generation context data.
+    /// </summary>
+    /// <param name="Width"></param>
+    /// <param name="Height"></param>
+    /// <param name="Seed"></param>
+    /// <param name="Settings"></param>
+
+    public readonly record struct MapGenerationContextData(
+        int Width,
+        int Height,
+        int Seed,
+        MapGenerationSettings Settings
+    )
+    {
+        #region Constructors
+        public MapGenerationContextData(MapGenerationContext context) : this(context.Width, context.Height, context.Seed, context.Settings) { }
+        #endregion
+    }
 }
