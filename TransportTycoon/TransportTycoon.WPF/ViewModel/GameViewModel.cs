@@ -128,17 +128,10 @@ namespace TransportTycoon.WPF.ViewModel
 
             tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
         }
-        private void Model_VehicleChanged(object? _1, (int oldX, int oldY, int newX, int newY) e)
+        private void Model_VehicleChanged(object? _1, Vehicle e)
         {
-            var vehicle = Vehicles.FirstOrDefault(v => v.MapX == e.oldX && v.MapY == e.oldY);
-            if (vehicle is not null)
-            {
-                var newVehicle = Model.GetVehicleAt(e.newX, e.newY);
-                if (newVehicle is not null)
-                {
-                    vehicle.RefreshVehicle(newVehicle);
-                }
-            }
+            var vehicle = Vehicles.FirstOrDefault(v => v.Vehicle == e);
+            vehicle?.RefreshVehicle(e);
         }
 
         private void Model_InfrastructureBuilt(object? _1, List<(int, int)> changedFields)

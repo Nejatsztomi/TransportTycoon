@@ -112,7 +112,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
-        public event EventHandler<(int oldX, int oldY, int newX, int newY)>? VehicleChanged;
+        public event EventHandler<Vehicle>? VehicleChanged;
         public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;
         #endregion
 
@@ -717,7 +717,7 @@ namespace TransportTycoon.Model
             if (vehicle.CurrentSpeed > 0)
             {
                 vehicle.Step();
-                VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
+                VehicleChanged?.Invoke(this, vehicle);
             }
         }
 
