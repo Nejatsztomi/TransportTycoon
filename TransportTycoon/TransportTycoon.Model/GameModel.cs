@@ -827,7 +827,7 @@ namespace TransportTycoon.Model
         {
             foreach (var vehicle in Vehicles)
             {
-                if (IsCarOnStop(vehicle))
+                if (IsCarOnStop(vehicle) && vehicle.CurrentRoute == null && vehicle.Prouth != null)
                 {
                     Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
@@ -860,7 +860,6 @@ namespace TransportTycoon.Model
                                             industry.SetConsumeCapacity(buildingNewCapacity);
                                             vehicle.SetCurrentCapacity(0);
                                             vehicle.SetCurrentLoad(null);
-
                                             break;
                                         }
                                         else
@@ -876,14 +875,11 @@ namespace TransportTycoon.Model
                                 else if (building.BuildingEntity is CityEntity city)
                                 {
                                     vehicleCanGive = vehicle.CurrentCapacity;
-                                    if (vehicleLoad == city.GetConsumeLoad()?.LoadType)
-                                    {
-                                        Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
-                                        BalanceChanged?.Invoke(this, EventArgs.Empty);
-                                        vehicle.SetCurrentCapacity(0);
-                                        vehicle.SetCurrentLoad(null);
-                                        break;
-                                    }
+                                    Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
+                                    BalanceChanged?.Invoke(this, EventArgs.Empty);
+                                    vehicle.SetCurrentCapacity(0);
+                                    vehicle.SetCurrentLoad(null);
+                                    break;
                                 }
                             }
                         }
@@ -936,7 +932,7 @@ namespace TransportTycoon.Model
         {
             int x = v.MapX;
             int y = v.MapY;
-            if (0 > x || x >= Map.Width || 0 > y || y >= Map.Height) return false;
+            if (0 > x || x >= Map.Height || 0 > y || y >= Map.Width) return false;
             Field currentField = Map[x, y];
             if (currentField is Stop)
             {

@@ -20,6 +20,7 @@
         public Wheat()
         {
             Price = 150;
+            LoadType = LoadType.Wheat;
         }
     }
 
@@ -28,6 +29,7 @@
         public Oil()
         {
             Price = 200;
+            LoadType = LoadType.Oil;
         }
     }
 
@@ -36,6 +38,7 @@
         public Wood()
         {
             Price = 130;
+            LoadType = LoadType.Wood;
         }
     }
 
@@ -44,7 +47,7 @@
         public Flour()
         {
             Price = 400;
-
+            LoadType = LoadType.Flour;
         }
     }
 
@@ -53,6 +56,7 @@
         public Rubber()
         {
             Price = 260;
+            LoadType = LoadType.Rubber;
         }
     }
 
@@ -61,6 +65,7 @@
         public Paper()
         {
             Price = 300;
+            LoadType = LoadType.Paper;
         }
     }
 }
