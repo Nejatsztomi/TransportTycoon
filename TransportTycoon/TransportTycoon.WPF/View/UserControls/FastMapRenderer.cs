@@ -446,20 +446,18 @@ namespace TransportTycoon.WPF.View.UserControls
                     BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => "yellow",
                     _ => null
                 };
+
                 if (bridgeType is not null && _bridgeTextures.TryGetValue(bridgeType, out BitmapImage? texture))
                 {
-                    int rotaion = bridge.BridgeType switch
+                    if (bridge.BridgeType == BridgeType.HorizontalGreenBridge
+                        || bridge.BridgeType == BridgeType.HorizontalYellowBridge
+                        || bridge.BridgeType == BridgeType.HorizontalRedBridge)
                     {
-                        BridgeType.HorizontalGreenBridge or BridgeType.HorizontalYellowBridge or BridgeType.HorizontalRedBridge => 0,
-                        _ => 90
-                    };
-                    if (rotaion != 0)
-                    {
-                        // Calculate the rotaion center, match the size to the given rectangle
+                        // Calculate the rotation center, match the size to the given rectangle
                         double centerX = baseRect.X + (baseRect.Width / 2);
                         double centerY = baseRect.Y + (baseRect.Height / 2);
                         // Add the rotation
-                        ctx.PushTransform(new RotateTransform(rotaion, centerX, centerY));
+                        ctx.PushTransform(new RotateTransform(90, centerX, centerY));
                         ctx.DrawImage(texture, baseRect);
                         // Remove the rotation
                         ctx.Pop();
@@ -508,9 +506,22 @@ namespace TransportTycoon.WPF.View.UserControls
 
                 if (_vehicleTextures.TryGetValue(vehicle.Type, out BitmapImage? texture))
                 {
-                    // If vehicles need rotation (like trains turning), you'll use 
-                    // ctx.PushTransform(new RotateTransform(...)) here just like you did with roads!
+                    int rotation = vehicle.Direction switch
+                    {
+                        Direction.Right => 0,
+                        Direction.Left => 180,
+                        Direction.Down => 270,
+                        _ => 90
+                    };
+
+                    // Calculate the rotation center, match the size to the given rectangle
+                    double centerX = vehicleRect.X + (vehicleRect.Width / 2);
+                    double centerY = vehicleRect.Y + (vehicleRect.Height / 2);
+                    ctx.PushTransform(new RotateTransform(rotation, centerX, centerY));
+
                     ctx.DrawImage(texture, vehicleRect);
+
+                    ctx.Pop();
                 }
             }
         }
