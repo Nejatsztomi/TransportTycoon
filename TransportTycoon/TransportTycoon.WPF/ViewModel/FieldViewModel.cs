@@ -19,7 +19,7 @@ namespace TransportTycoon.WPF.ViewModel
         [ObservableProperty]
         private bool _isSelected;
         [ObservableProperty]
-        private int _selectedOrder;
+        private int? _selectedOrder;
         public SolidColorBrush MinimapColor
         {
             get
