@@ -17,10 +17,9 @@ namespace TransportTycoon.MapData
 
         public List<BuildingEntity> BuildingEntities { get; private set; }
 
-        public IField this[int x, int y]
+        public ref IField this[int x, int y]
         {
-            get => Table[x, y];
-            set => Table[x, y] = value;
+            get => ref Table[x, y];
         }
 
         /// <summary>
@@ -46,6 +45,11 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Public methods
+        public void UpdateTable(int x, int y, IField field)
+        {
+            Table[x, y] = field;
+        }
+
         /// <summary>
         /// Determines whether the specified coordinates are within the valid bounds defined by the current height and
         /// width.
@@ -95,6 +99,7 @@ namespace TransportTycoon.MapData
 
             return true;
         }
+
         public List<IField?> NeighboursOfRoadsAndStops(int x, int y)
         {
             List<IField?> result = [null, null, null, null];
@@ -120,10 +125,12 @@ namespace TransportTycoon.MapData
             }
             return result;
         }
+
         public bool HeightCheck(IField a, IField b)
         {
             return Math.Abs(a.Height - b.Height) <= 1;
         }
+
         public RoadType CalculateRoadType(int x, int y)
         {
             List<IField?> neighbourRoads = NeighboursOfRoadsAndStops(x, y);
@@ -168,6 +175,7 @@ namespace TransportTycoon.MapData
             }
             return type;
         }
+
         public BridgeType CalculateBridgeType(int dif, string dir)
         {
             if (dir == "horizontal")
@@ -185,72 +193,76 @@ namespace TransportTycoon.MapData
                 else return BridgeType.Null;
             }
         }
+
         public int CreateHorizontalBridge(int x, int a, int b, BridgeType b_type, ref List<(int, int)> changedFields)
         {
             int cost = 0;
             for (int i = a; i <= b; i++)
             {
-                switch (b_type)
+                IBridge bridge = b_type
+                switch
                 {
-                    case BridgeType.HorizontalYellowBridge:
-                        Table[x, i] = new YellowBridge(x, i, b_type, Table[x, i].Height);
-                        break;
-                    case BridgeType.HorizontalGreenBridge:
-                        Table[x, i] = new GreenBridge(x, i, b_type, Table[x, i].Height);
-                        break;
-                    case BridgeType.HorizontalRedBridge:
-                        Table[x, i] = new RedBridge(x, i, b_type, Table[x, i].Height);
-                        break;
-                }
+                    BridgeType.HorizontalYellowBridge => new YellowBridge(x, i, b_type, Table[x, i].Height),
+                    BridgeType.HorizontalGreenBridge => new GreenBridge(x, i, b_type, Table[x, i].Height),
+                    BridgeType.HorizontalRedBridge => new RedBridge(x, i, b_type, Table[x, i].Height),
+                    _ => new RedBridge(x, i, b_type, Table[x, i].Height)
+                };
+
+                UpdateTable(x, i, bridge);
                 changedFields.Add((x, i));
-                cost += ((IBridge)Table[x, i]).Price;
+                cost += bridge.Price;
             }
+
             if (Table[x, a - 1] is Road road1)
             {
                 road1.ChangeType(CalculateRoadType(x, a - 1));
+                UpdateTable(x, a - 1, road1);
                 changedFields.Add((x, a - 1));
             }
+
             if (Table[x, b + 1] is Road road2)
             {
                 road2.ChangeType(CalculateRoadType(x, b + 1));
+                UpdateTable(x, b + 1, road2);
                 changedFields.Add((x, b + 1));
             }
+
             return cost;
         }
+
         public int CreateVerticalBridge(int y, int a, int b, BridgeType b_type, ref List<(int, int)> changedFields)
         {
             int cost = 0;
             for (int i = a; i <= b; i++)
             {
-                switch (b_type)
+                IBridge bridge = b_type
+                switch
                 {
-                    case BridgeType.VerticalYellowBridge:
-                        Table[i, y] = new YellowBridge(i, y, b_type, Table[i, y].Height);
-                        break;
-                    case BridgeType.VerticalGreenBridge:
-                        Table[i, y] = new GreenBridge(i, y, b_type, Table[i, y].Height);
-                        break;
-                    case BridgeType.VerticalRedBridge:
-                        Table[i, y] = new RedBridge(i, y, b_type, Table[i, y].Height);
-                        break;
-                    default:
-                        break;
-                }
+                    BridgeType.HorizontalYellowBridge => new YellowBridge(i, y, b_type, Table[i, y].Height),
+                    BridgeType.HorizontalGreenBridge => new GreenBridge(i, y, b_type, Table[i, y].Height),
+                    BridgeType.HorizontalRedBridge => new RedBridge(i, y, b_type, Table[i, y].Height),
+                    _ => new RedBridge(i, y, b_type, Table[i, y].Height)
+                };
+
+                UpdateTable(i, y, bridge);
                 changedFields.Add((i, y));
-                cost += ((IBridge)Table[i, y]).Price;
+                cost += bridge.Price;
             }
             if (Table[a - 1, y] is Road road1)
             {
                 road1.ChangeType(CalculateRoadType(a - 1, y));
+                UpdateTable(a - 1, y, road1);
                 changedFields.Add((a - 1, y));
             }
             if (Table[b + 1, y] is Road road2)
             {
                 road2.ChangeType(CalculateRoadType(b + 1, y));
+                UpdateTable(b + 1, y, road2);
                 changedFields.Add((b + 1, y));
             }
             return cost;
         }
+
         public int CreateShortBridge(int x, int y, ref List<(int, int)> changedFields)
         {
             int cost = 0;
@@ -275,6 +287,14 @@ namespace TransportTycoon.MapData
             }
             return cost;
         }
+
+        //private void CreateAndSetStopWithBuildingBlock(int x, int y, IBuildingBlocks block)
+        //{
+        //    Stop stop = new(x, y, Table[x, y].Height);
+        //    stop.SetBuildingBlocks(block);
+        //    Table[x, y] = stop;
+        //}
+
         public bool StopEnvironment(int x, int y)
         {
             bool result = false;
@@ -283,6 +303,7 @@ namespace TransportTycoon.MapData
                 Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 result = true;
             }
+
             if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]) && Table[x - 1, y] is IBuildingBlocks blocks)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
@@ -309,6 +330,7 @@ namespace TransportTycoon.MapData
             }
             return result;
         }
+
         public void DestroyBridge(int x, int y, ref List<(int, int)> changedFields)
         {
             if (Table[x, y] is IBridge bridge)
@@ -324,7 +346,14 @@ namespace TransportTycoon.MapData
                         changedFields.Add((x, left));
                         left--;
                     }
-                    if (Table[x, left] is Road rl) { rl.ChangeType(CalculateRoadType(x, left)); changedFields.Add((x, left)); }
+
+                    if (Table[x, left] is Road rl)
+                    {
+                        rl.ChangeType(CalculateRoadType(x, left));
+                        UpdateTable(x, left, rl);
+                        changedFields.Add((x, left));
+                    }
+
                     int right = y + 1;
                     while (Table[x, right] is IBridge)
                     {
@@ -332,7 +361,13 @@ namespace TransportTycoon.MapData
                         changedFields.Add((x, right));
                         right++;
                     }
-                    if (Table[x, right] is Road rr) { rr.ChangeType(CalculateRoadType(x, right)); changedFields.Add((x, right)); }
+
+                    if (Table[x, right] is Road rr)
+                    {
+                        rr.ChangeType(CalculateRoadType(x, right));
+                        UpdateTable(x, right, rr);
+                        changedFields.Add((x, right));
+                    }
                 }
                 else
                 {
@@ -343,7 +378,12 @@ namespace TransportTycoon.MapData
                         changedFields.Add((up, y));
                         up--;
                     }
-                    if (Table[up, y] is Road ru) { ru.ChangeType(CalculateRoadType(up, y)); changedFields.Add((up, y)); }
+                    if (Table[up, y] is Road ru)
+                    {
+                        ru.ChangeType(CalculateRoadType(up, y));
+                        UpdateTable(up, y, ru);
+                        changedFields.Add((up, y));
+                    }
                     int down = x + 1;
                     while (Table[down, y] is IBridge)
                     {
@@ -351,7 +391,12 @@ namespace TransportTycoon.MapData
                         changedFields.Add((down, y));
                         down++;
                     }
-                    if (Table[down, y] is Road rd) { rd.ChangeType(CalculateRoadType(down, y)); changedFields.Add((down, y)); }
+                    if (Table[down, y] is Road rd)
+                    {
+                        rd.ChangeType(CalculateRoadType(down, y));
+                        UpdateTable(down, y, rd);
+                        changedFields.Add((down, y));
+                    }
                 }
             }
         }

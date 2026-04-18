@@ -71,7 +71,6 @@ namespace TransportTycoon.WPF.ViewModel
         }
         #endregion
 
-
         #region Public methods
         public void PauseGame()
         {
