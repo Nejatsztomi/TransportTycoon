@@ -4,6 +4,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TransportTycoon.MapData;
 using TransportTycoon.Model;
+using TransportTycoon.WPF.Utils;
 
 namespace TransportTycoon.WPF.View.UserControls
 {
@@ -64,6 +65,21 @@ namespace TransportTycoon.WPF.View.UserControls
         /// A cached pen for highlighting (adding border) the selected (left-clicked) tile.
         /// </summary>
         private readonly Pen _selectionPen = new(new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)), 2.0);
+
+        /// <summary>
+        /// The font type for writing.
+        /// </summary>
+        private readonly Typeface _stopTextTypeface = new("Arial");
+
+        /// <summary>
+        /// The color for writing the stop order on the stop tiles.
+        /// </summary>
+        private readonly Brush _stopTextBrush = Brushes.White;
+
+        /// <summary>
+        /// The border pen for the stop tiles when they are part of the route.
+        /// </summary>
+        private readonly Pen _stopBorderPen = new(new SolidColorBrush(Color.FromArgb(255, 255, 165, 0)), 3.0);
         #endregion
 
         #region Bindings
@@ -166,6 +182,16 @@ namespace TransportTycoon.WPF.View.UserControls
                 typeof(int),
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty RouteStopsProperty =
+            DependencyProperty.Register(
+            nameof(RouteStops),
+            typeof(IEnumerable<StopData>),
+            typeof(FastMapRenderer),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
         #endregion
 
         #region Properties
@@ -182,7 +208,7 @@ namespace TransportTycoon.WPF.View.UserControls
         }
 
         /// <summary>
-        /// 
+        /// The underlying property for <see cref="VehiclesProperty"/>.
         /// </summary>
         public IEnumerable<Vehicle> Vehicles
         {
@@ -252,6 +278,15 @@ namespace TransportTycoon.WPF.View.UserControls
             get => (int)GetValue(SelectedYProperty);
             set => SetValue(SelectedYProperty, value);
         }
+
+        /// <summary>
+        /// The underlying property for <see cref="RouteStopsProperty"/>.
+        /// </summary>
+        public IEnumerable<StopData> RouteStops
+        {
+            get => (IEnumerable<StopData>)GetValue(RouteStopsProperty);
+            set => SetValue(RouteStopsProperty, value);
+        }
         #endregion
 
         #region Constructors
@@ -266,6 +301,7 @@ namespace TransportTycoon.WPF.View.UserControls
             _highlightBrush.Freeze();
             _highlightPen.Freeze();
             _selectionPen.Freeze();
+            _stopBorderPen.Freeze();
 
             // TODO: Later maybe JSON or .rex format
             _terrainTextures = new Dictionary<FieldType, BitmapImage>
@@ -508,10 +544,11 @@ namespace TransportTycoon.WPF.View.UserControls
                 {
                     int rotation = vehicle.Direction switch
                     {
-                        Direction.Right => 0,
-                        Direction.Left => 180,
-                        Direction.Down => 270,
-                        _ => 90
+                        Direction.Up => 0,
+                        Direction.Down => 180,
+                        Direction.Right => 90,
+                        Direction.Left => 270,
+                        _ => throw new NotImplementedException(),
                     };
 
                     // Calculate the rotation center, match the size to the given rectangle
@@ -555,6 +592,43 @@ namespace TransportTycoon.WPF.View.UserControls
             selectionRect.Inflate(-penThickness, -penThickness);
             ctx.DrawRectangle(null, _selectionPen, selectionRect);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void DrawRouteStopsLayer(DrawingContext ctx)
+        {
+            if (RouteStops == null) return;
+
+            //Debug.WriteLineIf(RouteStops.Count() == 0, "Empty stops");
+
+            foreach (var stop in RouteStops)
+            {
+                //Debug.WriteLine("Teszt");
+                double pixelX = stop.X * TileSize;
+                double pixelY = stop.Y * TileSize;
+                Rect stopRect = new(pixelX, pixelY, TileSize, TileSize);
+
+                ctx.DrawRectangle(null, _stopBorderPen, stopRect);
+
+                // The text
+                FormattedText text = new(
+                    textToFormat: stop.Order.ToString(),
+                    culture: System.Globalization.CultureInfo.CurrentCulture,
+                    flowDirection: FlowDirection.LeftToRight,
+                    typeface: _stopTextTypeface,
+                    emSize: 24,
+                    foreground: _stopTextBrush,
+                    pixelsPerDip: VisualTreeHelper.GetDpi(this).PixelsPerDip);
+
+                // Center the text inside the tile
+                double textX = pixelX + (TileSize / 2.0) - (text.Width / 2.0);
+                double textY = pixelY + (TileSize / 2.0) - (text.Height / 2.0);
+
+                ctx.DrawText(text, new Point(textX, textY));
+            }
+        }
         #endregion
 
         #region Protected methods
@@ -596,6 +670,8 @@ namespace TransportTycoon.WPF.View.UserControls
                     DrawRoadLayer(ctx, currentField, baseRect);
                     DrawBridgeLayer(ctx, currentField, baseRect);
                     DrawTreesLayer(ctx, currentField, baseRect);
+
+                    DrawRouteStopsLayer(ctx);
 
                     // Hover effect
                     if (x == HoverX && y == HoverY)

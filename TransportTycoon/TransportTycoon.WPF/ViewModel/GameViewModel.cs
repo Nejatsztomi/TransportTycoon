@@ -22,6 +22,7 @@ namespace TransportTycoon.WPF.ViewModel
         public GameModel Model { get; init; }
 
         public List<Vehicle> Vehicles => Model.Vehicles;
+        public List<StopData> Stops { get; private set; } = [];
 
         public int Balance => Model.Balance;
         public ulong GameTime => Model.GameTime;
@@ -51,6 +52,8 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Constructors
+        public GameViewModel() { }
+
         public GameViewModel(GameModel model)
         {
             Model = model;
@@ -179,24 +182,6 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private methods
-        //private void ShowRoute(HashSet<(int X, int Y)>? roads)
-        //{
-        //    if (roads is null) return;
-        //    foreach (var (x, y) in roads)
-        //    {
-        //        var tile = Tiles[x, y];
-        //        tile?.IsPath = true;
-        //    }
-        //}
-
-        //private void RemoveRoutes()
-        //{
-        //    foreach (var item in Tiles)
-        //    {
-        //        item.IsPath = false;
-        //    }
-        //}
-
         /// <summary>
         /// Convert's a tile's <see cref="FieldType"/> to a color for the minimap.
         /// </summary>
@@ -344,11 +329,13 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_SelectedStopFieldsChanged(object? _1, List<Stop> list)
         {
-            //foreach (var tile in Tiles)
-            //{
-            //    tile.IsSelected = list.Any(t => t.X == tile.X && t.Y == tile.Y);
-            //    tile.SelectedOrder = list.FindIndex(t => t.X == tile.X && t.Y == tile.Y) + 1;
-            //}
+            Stops = [.. list.Select((stop, index) => new StopData(stop.X, stop.Y, index + 1))];
+            Debug.WriteLine("Got {0} of stops to show! These are at:", Stops.Count);
+            Stops.ForEach(stop =>
+            {
+                Debug.WriteLine("Stop at X={0}, Y={1} with order number: {2}", stop.X, stop.Y, stop.Order);
+            });
+            OnPropertyChanged(nameof(Stops));
         }
 
         private void Model_SelectedFieldChanged(object? _1, (int, int) e)
