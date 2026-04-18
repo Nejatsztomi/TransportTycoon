@@ -5,7 +5,7 @@ namespace TransportTycoon.Persistence
 {
     public class GameSaveData
     {
-        public MapGenerationContext MapContext { get; set; }
+        public MapGenerationContextData MapContextData { get; set; }
         public ulong GameTime { get; set; }
         public int PlayerBalance { get; set; }
 
