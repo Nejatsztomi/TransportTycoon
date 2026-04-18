@@ -8,7 +8,7 @@
     public abstract class Bridge : Infrastructure
     {
         #region Fields
-        public int SpeedLimit { get; protected set; }
+        public double SpeedLimit { get; protected set; }
         public int Range { get; protected set; }
         public BridgeType BridgeType { get; protected set; }
         #endregion
@@ -19,7 +19,7 @@
         #region Constructor
         public YellowBridge(int x, int y, BridgeType type, int height)
         {
-            SpeedLimit = 100;
+            SpeedLimit = 0.8;
             Range = 13;
             X = x;
             Y = y;
@@ -36,7 +36,7 @@
         #region Constructor
         public GreenBridge(int x, int y, BridgeType type, int height)
         {
-            SpeedLimit = 100;
+            SpeedLimit = 0.8;
             Range = 15;
             X = x;
             Y = y;
@@ -53,7 +53,7 @@
         #region Constructor
         public RedBridge(int x, int y, BridgeType type, int height)
         {
-            SpeedLimit = 100;
+            SpeedLimit = 0.8;
             Range = 17;
             X = x;
             Y = y;

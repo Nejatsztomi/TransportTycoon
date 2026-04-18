@@ -1,5 +1,6 @@
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
+using TransportTycoon.Model.Graph;
 using TransportTycoon.Persistence;
 namespace TransportTycoon.Model
 {
@@ -43,6 +44,7 @@ namespace TransportTycoon.Model
         private readonly ITimer _timer;
         private readonly IPersistence _persistence;
         private readonly Dictionary<(int X, int Y), Field> _modifiedFields = [];
+        private IPathFinder _pathFinder;
         #endregion
 
         #region Properties
@@ -110,7 +112,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
-        public event EventHandler<(int oldX, int oldY, int newX, int newY)>? VehicleChanged;
+        public event EventHandler<Vehicle>? VehicleChanged;
         public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;
         #endregion
 
@@ -131,6 +133,7 @@ namespace TransportTycoon.Model
 
             // We create an empty graph
             GraphNetwork = new([], []);
+            _pathFinder = new AStarPathfinder(GraphNetwork);
         }
         #endregion
 
@@ -537,12 +540,12 @@ namespace TransportTycoon.Model
         /// </summary>
         /// <remarks>This method iterates through the collection of vehicles and updates each one by
         /// invoking the step operation. No action is taken if the game mode is not set to run.</remarks>
-        public void StepAllVehicles(Direction dir = Direction.Up)
+        public void StepAllVehicles()
         {
             if (Mode != GameMode.Run) return;
             foreach (Vehicle vehicle in Vehicles)
             {
-                Step(vehicle, dir);
+                Step(vehicle);
             }
         }
         public void DefineRoute(int x, int y)
@@ -602,6 +605,17 @@ namespace TransportTycoon.Model
                 return;
             }
             GraphNetwork = Graph.GraphBuilder.BuildGraph(Map);
+
+            foreach (Vehicle vehicle in Vehicles)
+            {
+                if (vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
+                {
+                    List<Stop> stopFields = ProuthUtil.ConvertNodestoStopTiles(vehicle.Prouth.Stops, Map);
+
+                    vehicle.Prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stopFields, GraphNetwork));
+                }
+            }
+            _pathFinder = new AStarPathfinder(GraphNetwork);
         }
 
         private void SetTax()
@@ -669,65 +683,42 @@ namespace TransportTycoon.Model
         /// the vehicle can move to the new position, which must be an infrastructure. If the game is not in Run mode,
         /// the vehicle does not move.</remarks>
         /// <param name="vehicle">The vehicle to be moved, which influences its new position based on its direction and speed.</param>
-        private void Step(Vehicle vehicle, Direction direction = Direction.Up)
+        private void Step(Vehicle vehicle)
         {
             //if the game is not in Run mode, the vehicles should not move
             if (Mode != GameMode.Run) return;
 
             vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
 
-            //Calculates the new coordinates of the vehicle based on its current direction and speed.
-            Direction dir = vehicle.Direction;
-            double x = vehicle.X;
-            double y = vehicle.Y;
-            double speed = vehicle.CurrentSpeed;
-            switch (direction)
+            //the vehicle should start
+            if (vehicle.CurrentRoute == null && vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
             {
-                case Direction.Up:
-                    x -= speed;
-                    break;
-                case Direction.Down:
-                    x += speed;
-                    break;
-                case Direction.Left:
-                    y -= speed;
-                    break;
-                case Direction.Right:
-                    y += speed;
-                    break;
-                default:
-                    break;
+                vehicle.GetNextRoute(_pathFinder);
+
+                if (vehicle.CurrentRoute == null) return;
             }
-            int newX = (int)Math.Floor(x);
-            int newY = (int)Math.Floor(y);
 
-            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height) return;
+            Field? newField = vehicle.TargetTile;
 
-
-            //Checks if the new coordinates are within the map boundaries and if the vehicle can move to the new position (i.e., it must be an infrastructure).
-            if (0 > newX || newX >= Map.Width || 0 > newY || newY >= Map.Height)
-            {
-                vehicle.ChangeCurrentSpeed(0);
-                return;
-            }
-            Field newField = Map[newX, newY];
-            if (newField is not Infrastructure)
+            //if the target field is out of bounds or not an infrastructure, the vehicle should stop and not move
+            if (newField == null ||
+                0 > newField.X || newField.X >= Map.Height ||
+                0 > newField.Y || newField.Y >= Map.Width ||
+                newField is not Infrastructure)
             {
                 vehicle.ChangeCurrentSpeed(0);
                 return;
             }
 
             Field currentField = Map[vehicle.MapX, vehicle.MapY];
-            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newX && v.MapY == newY);
+            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
 
             SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
             if (vehicle.CurrentSpeed > 0)
             {
-                vehicle.Step(direction);
-                VehicleChanged?.Invoke(this, (currentField.X, currentField.Y, vehicle.MapX, vehicle.MapY));
+                vehicle.Step();
+                VehicleChanged?.Invoke(this, vehicle);
             }
-
-            //vehicle.UpdateDirection();
         }
 
         /// <summary>
@@ -749,34 +740,50 @@ namespace TransportTycoon.Model
             }
 
             //if the newField is Incline, the vehicle should slow down to half of its current speed
-            if (newField.Height > currentField.Height)
+            if (newField.Height > currentField.Height && currentField is not Water)
             {
                 vehicle.ChangeCurrentSpeed(vehicle.CurrentSpeed / 2);
             }
 
-            //if the next field has another vehicle on it, the current vehicle should slow down to the speed of that vehicle, or stop if the other vehicle is on a different field (to avoid collisions)
-            if (nextVehicle != null)
+
+            if (newField is Road road)
             {
-                bool isOppositeDirection = (vehicle.Direction == Direction.Up && nextVehicle.Direction == Direction.Down) ||
-                    (vehicle.Direction == Direction.Down && nextVehicle.Direction == Direction.Up) ||
-                    (vehicle.Direction == Direction.Left && nextVehicle.Direction == Direction.Right) ||
-                    (vehicle.Direction == Direction.Right && nextVehicle.Direction == Direction.Left);
-
-                if (!isOppositeDirection)
+                if (road.RoadType == RoadType.LeftTRoad || road.RoadType == RoadType.UpperTRoad ||
+                    road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad || road.RoadType == RoadType.XRoad)
                 {
-                    //if the next vehicle is on a different field
-                    if (currentField != newField)
+                    var vehicleOnCrossRoad = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
+                    if (vehicleOnCrossRoad != null)
                     {
-
                         vehicle.ChangeCurrentSpeed(0);
                     }
-                    else //if they are on the same field
+                }
+                else
+                {
+                    //if the next field has another vehicle on it, the current vehicle should slow down to the speed of that vehicle, or stop if the other vehicle is on a different field (to avoid collisions)
+                    if (nextVehicle != null)
                     {
-                        vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
+                        bool isOppositeDirection = (vehicle.Direction == Direction.Up && nextVehicle.Direction == Direction.Down) ||
+                            (vehicle.Direction == Direction.Down && nextVehicle.Direction == Direction.Up) ||
+                            (vehicle.Direction == Direction.Left && nextVehicle.Direction == Direction.Right) ||
+                            (vehicle.Direction == Direction.Right && nextVehicle.Direction == Direction.Left);
+
+                        if (!isOppositeDirection)
+                        {
+                            //if the next vehicle is on a different field
+                            if (currentField != newField)
+                            {
+                                vehicle.ChangeCurrentSpeed(0);
+                            }
+                            else //if they are on the same field
+                            {
+                                vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
+                            }
+                        }
                     }
                 }
-
             }
+
+
         }
         #endregion
 
@@ -928,7 +935,7 @@ namespace TransportTycoon.Model
                 return;
             }
             GameTime++;
-            //TODO: AllVehiclesStep() comes here
+            StepAllVehicles();
             AllVehiclesDoTheTransport();
             if (GameTime > 0 && GameTime % 10 == 0)
             {

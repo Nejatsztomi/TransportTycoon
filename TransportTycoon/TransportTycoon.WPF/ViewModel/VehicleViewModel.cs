@@ -5,7 +5,7 @@ namespace TransportTycoon.WPF.ViewModel
     public sealed class VehicleViewModel : ViewModelBase
     {
         #region Properties
-        private Vehicle Vehicle { get; set; }
+        public Vehicle Vehicle { get; private set; }
         public int MapX { get; set; }
         public int MapY { get; set; }
         public double X => Vehicle.X;
@@ -73,7 +73,6 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private Methods
         private void DeterminePixels()
         {
-            //TODO: change mapY -> Y and mapX -> X, but for testing purposes only, 
             PixelX = 50 * Y;
             PixelY = 50 * X;
             switch (Direction)

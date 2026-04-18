@@ -128,17 +128,10 @@ namespace TransportTycoon.WPF.ViewModel
 
             tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
         }
-        private void Model_VehicleChanged(object? _1, (int oldX, int oldY, int newX, int newY) e)
+        private void Model_VehicleChanged(object? _1, Vehicle e)
         {
-            var vehicle = Vehicles.FirstOrDefault(v => v.MapX == e.oldX && v.MapY == e.oldY);
-            if (vehicle is not null)
-            {
-                var newVehicle = Model.GetVehicleAt(e.newX, e.newY);
-                if (newVehicle is not null)
-                {
-                    vehicle.RefreshVehicle(newVehicle);
-                }
-            }
+            var vehicle = Vehicles.FirstOrDefault(v => v.Vehicle == e);
+            vehicle?.RefreshVehicle(e);
         }
 
         private void Model_InfrastructureBuilt(object? _1, List<(int, int)> changedFields)
@@ -166,9 +159,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void RefreshTable()
         {
-#pragma warning disable IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             List<FieldViewModel> tempList = new(Model.Map.Width * Model.Map.Height + 1);
-#pragma warning restore IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             for (int x = 0; x < Model.Map.Width; x++)
             {
                 for (int y = 0; y < Model.Map.Height; y++)
@@ -177,9 +168,7 @@ namespace TransportTycoon.WPF.ViewModel
                 }
             }
 
-#pragma warning disable IDE0028 // Simplify collection initialization, not yet supported in .NET 10
             Tiles = new(tempList);
-#pragma warning restore IDE0028 // Simplify collection initialization, not yet supported in .NET 10
         }
 
         partial void OnSelectedTabIndexChanged(int value)
@@ -259,27 +248,6 @@ namespace TransportTycoon.WPF.ViewModel
             else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton != 22 && Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
             else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
-        [RelayCommand]
-        private void OnVehicleStepUp()
-        {
-            Model.StepAllVehicles(Direction.Up);
-        }
-        [RelayCommand]
-        private void OnVehicleStepDown()
-        {
-            Model.StepAllVehicles(Direction.Down);
-        }
-        [RelayCommand]
-        private void OnVehicleStepLeft()
-        {
-            Model.StepAllVehicles(Direction.Left);
-        }
-        [RelayCommand]
-        private void OnVehicleStepRight()
-        {
-            Model.StepAllVehicles(Direction.Right);
-        }
-
 
         [RelayCommand(CanExecute = nameof(IsEditorMode))]
         private void OnTileLeftClick(FieldViewModel? tile)

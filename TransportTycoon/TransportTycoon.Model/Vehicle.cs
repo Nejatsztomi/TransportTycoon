@@ -31,7 +31,8 @@ namespace TransportTycoon.Model
         /// <summary>
         /// The current tile's progress.
         /// </summary>
-        private double _tileProgress = 0.0;
+        /// //TODO: maybe we can use this to make the movement smoother, instead of just moving from tile to tile, we can move smoothly between them based on the current speed and the distance to the next tile.
+        //private double _tileProgress = 0.0;
         /// <summary>
         /// The current edge's tiles.
         /// </summary>
@@ -58,8 +59,8 @@ namespace TransportTycoon.Model
         public int Price { get; protected set; }
         public int Maintance { get; protected set; }
 
-        public int MapX => (int)Math.Floor(X);
-        public int MapY => (int)Math.Floor(Y);
+        public int MapX => (int)Math.Round(X);
+        public int MapY => (int)Math.Round(Y);
         public List<LoadType>? AcceptedGoods { get; protected set; } = [];
 
         /// <summary>
@@ -68,32 +69,61 @@ namespace TransportTycoon.Model
         /// When a vehicle is marked as lost, it may require intervention to be moved back onto a valid path or to be removed from the game if it cannot be recovered.
         /// </summary>
         public bool IsLost { get; private set; } = false;
+        public Field? TargetTile
+        {
+            get
+            {
+                if (_currentEdgeTiles is null || _currentTileIdx >= _currentEdgeTiles.Count) return null;
+                return _currentEdgeTiles[_currentTileIdx];
+            }
+        }
         #endregion
 
         #region Public methods
-        public void Step(Direction dir = Direction.Up)
+        /// <summary>
+        /// Advances the entity along its current route by moving it one step toward the next target tile, updating its
+        /// position and direction as needed.
+        /// </summary>
+        /// <remarks>This method performs a single movement operation for the entity. If the entity is
+        /// close enough to the target tile or can reach it within the current speed, it advances to the next tile in
+        /// the route. The method has no effect if there is no active route or target tile.</remarks>
+        public void Step()
         {
-            switch (dir)
+            if (CurrentRoute is null) return;
+
+            Field? targetTile = TargetTile;
+            if (targetTile == null) return;
+
+            //update the direction
+            UpdateDirection(targetTile);
+
+            //check if we have arrived at the target tile
+            double distanceToTarget = Math.Sqrt(Math.Pow(X - targetTile.X, 2) + Math.Pow(Y - targetTile.Y, 2));
+            if (distanceToTarget < 0.1 || distanceToTarget <= CurrentSpeed) //if we are close enough to the target tile, we consider that we have arrived
             {
-                case Direction.Up:
-                    X -= CurrentSpeed;
-                    Direction = Direction.Up;
-                    break;
-                case Direction.Down:
-                    X += CurrentSpeed;
-                    Direction = Direction.Down;
-                    break;
-                case Direction.Left:
-                    Y -= CurrentSpeed;
-                    Direction = Direction.Left;
-                    break;
-                case Direction.Right:
-                    Y += CurrentSpeed;
-                    Direction = Direction.Right;
-                    break;
-                default:
-                    break;
+                X = targetTile.X;
+                Y = targetTile.Y;
+                AdvanceToNextTile();
+
+                targetTile = TargetTile;
+                if (targetTile == null) return;
+
+                //update the direction
+                UpdateDirection(targetTile);
+
+                return;
             }
+
+            //take the step
+            MoveTowardsTarget(targetTile);
+
+            targetTile = TargetTile;
+            if (targetTile == null) return;
+
+            //update the direction
+            UpdateDirection(targetTile);
+
+
         }
         /// <summary>
         /// Sets the current capacity of the vehicle, if the given quantity is between 0 and the maximum capacity of the vehicle. If the quantity is set to 0, the current load is also set to null.
@@ -119,7 +149,21 @@ namespace TransportTycoon.Model
                 if (CurrentLoad is null) CurrentCapacity = 0;
             }
         }
+        /// <summary>
+        /// Sets the current route of the vehicle to the specified list of edges and initializes the indices for tracking the current edge and tile.
+        /// </summary>
+        public void StartDriving(List<Edge> route)
+        {
+            CurrentRoute = route;
+            _currentEdgeIdx = 0;
+            _currentTileIdx = 0;
+            //_tileProgress = 0.0;
 
+            if (CurrentRoute.Count > 0)
+            {
+                _currentEdgeTiles = [.. CurrentRoute[0].Roads];
+            }
+        }
         /// <summary>
         /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
         /// </summary>
@@ -127,63 +171,6 @@ namespace TransportTycoon.Model
         public void ChangeCurrentSpeed(double speed)
         {
             if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
-        }
-
-
-        public int Load(int quantity, Load load) //returns leftover
-        {
-            if (CurrentLoad != load) return quantity;
-            else if (CurrentLoad is null)
-            {
-                CurrentLoad = load;
-                if (quantity <= MaxCapacity)
-                {
-                    CurrentCapacity = quantity;
-                    return 0;
-                }
-                else
-                {
-                    CurrentCapacity = MaxCapacity;
-                    return quantity - MaxCapacity;
-                }
-            }
-            else
-            {
-                if (CurrentCapacity + quantity <= MaxCapacity)
-                {
-                    CurrentCapacity = quantity;
-                    return 0;
-                }
-                else
-                {
-                    CurrentCapacity = MaxCapacity;
-                    return quantity - (MaxCapacity - CurrentCapacity);
-                }
-            }
-        }
-
-        public int UnLoad(int quantity, Load load) //returns unloaded quantity
-        {
-            if (CurrentLoad is null || CurrentLoad != load) return 0;
-            else if (quantity < CurrentCapacity)
-            {
-                CurrentCapacity -= quantity;
-                return quantity;
-            }
-            else if (quantity == CurrentCapacity)
-            {
-                CurrentCapacity -= quantity;
-                CurrentLoad = null;
-                return quantity;
-            }
-            else if (quantity > CurrentCapacity)
-            {
-                int tmp = CurrentCapacity;
-                CurrentCapacity = 0;
-                CurrentLoad = null;
-                return tmp;
-            }
-            return 0;
         }
 
         /// <summary>
@@ -197,7 +184,7 @@ namespace TransportTycoon.Model
             {
                 CurrentRoute = pathFinder.FindPath(start, end);
             }
-
+            StartDriving(CurrentRoute ?? []);
         }
 
         /// <summary>
@@ -247,6 +234,75 @@ namespace TransportTycoon.Model
             _currentEdgeTiles = null;
             AdvanceProuth();
         }
+        /// <summary>
+        /// if the target tile is in a different direction than the current one, it updates the direction to face towards the target tile.
+        /// </summary>
+        /// <param name="target"></param>
+        private void UpdateDirection(Field target)
+        {
+            if (target.X < MapX) Direction = Direction.Up;
+            else if (target.X > MapX) Direction = Direction.Down;
+            else if (target.Y < MapY) Direction = Direction.Left;
+            else if (target.Y > MapY) Direction = Direction.Right;
+        }
+        /// <summary>
+        /// Moves the object toward the specified target field based on the current direction and speed.
+        /// </summary>
+        /// <remarks>The method updates the object's position by adjusting its coordinates according to
+        /// the current direction and speed. The direction is determined by the Direction property, which can be set to
+        /// Up, Down, Left, or Right.</remarks>
+        /// <param name="target">The field that the object is moving toward. This parameter determines the destination used to update the
+        /// object's direction and position.</param>
+        private void MoveTowardsTarget(Field target)
+        {
+            UpdateDirection(target);
+            switch (Direction)
+            {
+                case Direction.Up:
+                    X -= CurrentSpeed;
+                    break;
+                case Direction.Down:
+                    X += CurrentSpeed;
+                    break;
+                case Direction.Right:
+                    Y += CurrentSpeed;
+                    break;
+                case Direction.Left:
+                    Y -= CurrentSpeed;
+                    break;
+            }
+        }
+        /// <summary>
+        /// advances the current tile index to the next tile in the current edge.
+        /// </summary>
+        private void AdvanceToNextTile()
+        {
+            if (_currentEdgeTiles == null) return;
+
+            _currentTileIdx++;
+
+            if (_currentTileIdx >= _currentEdgeTiles.Count)
+            {
+                _currentEdgeIdx++;
+                _currentTileIdx = 0;
+
+                //check if we have more edges in the current route
+                if (CurrentRoute != null && _currentEdgeIdx < CurrentRoute.Count)
+                {
+                    _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
+
+                    //if we reach a crossroad we should move to the next tile
+                    if (_currentEdgeTiles.Count > 0 && _currentEdgeTiles[0].X == this.MapX && _currentEdgeTiles[0].Y == this.MapY)
+                    {
+                        _currentEdgeTiles.RemoveAt(0);
+                    }
+                }
+                else //if its the last edge, we reached the Stop
+                {
+                    ArriveAtStop();
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the next pair of nodes representing the start and end stops for the next route.
@@ -275,8 +331,10 @@ namespace TransportTycoon.Model
         {
             if (Prouth is null || Prouth.Stops.Count == 0) return;
 
-            _currentEdgeIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
+            _currentStopIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
         }
+
+
         #endregion
     }
 }
