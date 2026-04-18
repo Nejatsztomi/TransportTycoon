@@ -153,7 +153,7 @@ namespace TransportTycoon.Model
             if (CurrentRoute.Count > 0)
             {
                 // Cache the tiles for the very first edge
-                _currentEdgeTiles= CurrentRoute[0].Roads.ToList();
+                _currentEdgeTiles= [.. CurrentRoute[0].Roads];
             }
         }
         /// <summary>
@@ -176,7 +176,7 @@ namespace TransportTycoon.Model
             {
                 CurrentRoute = pathFinder.FindPath(start, end);
             }
-            StartDriving(CurrentRoute ?? new List<Edge>());
+            StartDriving(CurrentRoute ?? []);
         }
         
         /// <summary>
@@ -267,7 +267,7 @@ namespace TransportTycoon.Model
                 //check if we have more edges in the current route
                 if (CurrentRoute != null && _currentEdgeIdx< CurrentRoute.Count)
                 {
-                    _currentEdgeTiles = CurrentRoute[_currentEdgeIdx].Roads.ToList();
+                    _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
                 }
                 else //if its the last edge, we reached the Stop
                 {
