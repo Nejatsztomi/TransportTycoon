@@ -693,7 +693,6 @@ namespace TransportTycoon.Model
             //the vehicle should start
             if (vehicle.CurrentRoute == null && vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
             {
-                vehicle.SetPathFinder(_pathFinder);
                 vehicle.GetNextRoute(_pathFinder);
 
                 if (vehicle.CurrentRoute == null) return;

@@ -31,7 +31,8 @@ namespace TransportTycoon.Model
         /// <summary>
         /// The current tile's progress.
         /// </summary>
-        private double _tileProgress = 0.0;
+        /// //TODO: maybe we can use this to make the movement smoother, instead of just moving from tile to tile, we can move smoothly between them based on the current speed and the distance to the next tile.
+        //private double _tileProgress = 0.0;
         /// <summary>
         /// The current edge's tiles.
         /// </summary>
@@ -147,7 +148,7 @@ namespace TransportTycoon.Model
             CurrentRoute = route;
             _currentEdgeIdx = 0;
             _currentTileIdx = 0;
-            _tileProgress = 0.0;
+            //_tileProgress = 0.0;
 
             if (CurrentRoute.Count > 0)
             {
