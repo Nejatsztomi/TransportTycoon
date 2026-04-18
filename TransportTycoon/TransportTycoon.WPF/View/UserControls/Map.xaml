@@ -12,6 +12,7 @@
     <Grid>
         <usercontrols:FastMapRenderer x:Name="InternalGameMapRenderer"
                                       Map="{Binding Tiles}"
+                                      Vehicles="{Binding Vehicles}"
                                       ClipToBounds="True"
                                       PreviewMouseRightButtonDown="GameMapRenderer_PreviewMouseRightButtonDown"
                                       PreviewMouseMove="GameMapRenderer_PreviewMouseMove"

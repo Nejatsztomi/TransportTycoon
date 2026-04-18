@@ -371,6 +371,7 @@ namespace TransportTycoon.Model
                 }
             }
         }
+
         public void BuildRoad(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Terrain || Map[x, y].Height > 3) return;

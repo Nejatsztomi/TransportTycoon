@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,7 +20,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public GameModel Model { get; init; }
 
-        public ObservableCollection<VehicleViewModel> Vehicles { get; private set; }
+        public List<Vehicle> Vehicles => Model.Vehicles;
 
         public int Balance => Model.Balance;
         public ulong GameTime => Model.GameTime;
@@ -64,7 +63,6 @@ namespace TransportTycoon.WPF.ViewModel
             model.VehicleChanged += Model_VehicleChanged;
             model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
 
-            Vehicles = [];
             Tiles = model.Map.Table;
             MinimapImage = new(Width, Height, 96, 96, PixelFormats.Bgra32, null);
             GenerateMinimap();
@@ -150,18 +148,10 @@ namespace TransportTycoon.WPF.ViewModel
                     Model.Destroy(tile.X, tile.Y);
                     break;
                 case 31:
-                    Vehicle? vehicle = Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
-                    if (vehicle is not null)
-                    {
-                        Vehicles.Add(new VehicleViewModel(vehicle));
-                    }
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
                     break;
                 case 32:
-                    Vehicle? vehicle2 = Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
-                    if (vehicle2 is not null)
-                    {
-                        Vehicles.Add(new VehicleViewModel(vehicle2));
-                    }
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
                     break;
                 case 41:
                     Model.DefineRoute(tile.X, tile.Y);
@@ -384,8 +374,9 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_VehicleChanged(object? _1, Vehicle e)
         {
-            var vehicle = Vehicles.FirstOrDefault(v => v.Vehicle == e);
-            vehicle?.RefreshVehicle(e);
+            //var vehicle = Vehicles.FirstOrDefault(v => v.Vehicle == e);
+            //vehicle?.RefreshVehicle(e);
+            OnPropertyChanged(nameof(Vehicles));
         }
 
         // TODO: hídak esetén minden Minimapbeli pontot frissíteni ez alapján

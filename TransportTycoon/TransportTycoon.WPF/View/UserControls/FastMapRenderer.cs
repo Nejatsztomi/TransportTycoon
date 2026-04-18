@@ -1,7 +1,9 @@
-﻿using System.Windows;
+﻿using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TransportTycoon.MapData;
+using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.View.UserControls
 {
@@ -46,7 +48,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// A dictionary that link each vehicle type to their image.
         /// </summary>
         /// <remarks>Must be set manually for each vehicle type. Not currently implemented.</remarks>
-        private readonly Dictionary<object, BitmapImage> _vehicleTextures;
+        private readonly Dictionary<VehicleType, BitmapImage> _vehicleTextures;
 
         /// <summary>
         /// A cached brush for highlighting (adding occupancy effect) the hovered tile.
@@ -75,6 +77,16 @@ namespace TransportTycoon.WPF.View.UserControls
                 typeof(IField[,]),
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static readonly DependencyProperty VehiclesProperty =
+            DependencyProperty.Register(
+            nameof(Vehicles),
+            typeof(IEnumerable<Vehicle>), // Assuming you have a base interface for vehicles
+            typeof(FastMapRenderer),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
         /// <summary>
         /// A depedency property for the camera's X position.
@@ -135,6 +147,9 @@ namespace TransportTycoon.WPF.View.UserControls
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly DependencyProperty SelectedXProperty =
             DependencyProperty.Register(
                 nameof(SelectedX),
@@ -142,6 +157,9 @@ namespace TransportTycoon.WPF.View.UserControls
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly DependencyProperty SelectedYProperty =
             DependencyProperty.Register(
                 nameof(SelectedY),
@@ -161,6 +179,15 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 SetValue(MapProperty, value);
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public IEnumerable<Vehicle> Vehicles
+        {
+            get => (IEnumerable<Vehicle>)GetValue(VehiclesProperty);
+            set => SetValue(VehiclesProperty, value);
         }
 
         /// <summary>
@@ -285,7 +312,11 @@ namespace TransportTycoon.WPF.View.UserControls
                 { "yellow", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/yellowBridge.png")) },
             };
 
-            _vehicleTextures = [];
+            _vehicleTextures = new Dictionary<VehicleType, BitmapImage>
+            {
+                { VehicleType.SmallBus, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/smallBus.png")) },
+                { VehicleType.BigBus, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/largeBus.png")) },
+            };
         }
         #endregion
 
@@ -318,6 +349,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
         /// <param name="field">The <see cref="IField"/> object, which we want to draw.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawTerrainLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (_terrainTextures.TryGetValue((FieldType)field.Height, out BitmapImage? texture))
@@ -335,6 +367,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
         /// <param name="field">The <see cref="IField"/> object, which we want to draw.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawStructureLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (_structureTextures.TryGetValue(field.FieldType, out BitmapImage? texture))
@@ -352,6 +385,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
         /// <param name="field">The <see cref="IField"/> object, that contains the road and it's rotataion.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawRoadLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (field is not null && field.FieldType == FieldType.Road && field is Road road)
@@ -400,6 +434,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
         /// <param name="field">The <see cref="IField"/> object, that contains the bridge and it's rotation.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawBridgeLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (field is not null && field.FieldType == FieldType.Bridge && field is IBridge bridge)
@@ -447,11 +482,36 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
         /// <param name="field">The <see cref="IField"/> object, that contains the tree count.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawTreesLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
             if (field.GetTrees() > 0 && _treesTextures.TryGetValue(field.GetTrees(), out BitmapImage? texture))
             {
                 ctx.DrawImage(texture, baseRect);
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ctx"></param>
+        private void DrawVehiclesLayer(DrawingContext ctx, Rect visibleWorldRect)
+        {
+            if (Vehicles == null) return;
+
+            foreach (Vehicle vehicle in Vehicles)
+            {
+                Rect vehicleRect = new(vehicle.X * TileSize, vehicle.Y * TileSize, TileSize, TileSize);
+
+                // Culling check
+                if (!visibleWorldRect.IntersectsWith(vehicleRect)) return;
+
+                if (_vehicleTextures.TryGetValue(vehicle.Type, out BitmapImage? texture))
+                {
+                    // If vehicles need rotation (like trains turning), you'll use 
+                    // ctx.PushTransform(new RotateTransform(...)) here just like you did with roads!
+                    ctx.DrawImage(texture, vehicleRect);
+                }
             }
         }
 
@@ -472,6 +532,11 @@ namespace TransportTycoon.WPF.View.UserControls
             ctx.DrawRectangle(_highlightBrush, _highlightPen, hoverRect);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="baseRect"></param>
         private void AddSelectionEffectLayer(DrawingContext ctx, Rect baseRect)
         {
             Rect selectionRect = baseRect;
@@ -486,22 +551,22 @@ namespace TransportTycoon.WPF.View.UserControls
         /// The render action that WPF calls whenever the control needs to be redrawn.
         /// It loops through the map and draws each tile at the correct position.
         /// </summary>
-        protected override void OnRender(DrawingContext drawingContext)
+        protected override void OnRender(DrawingContext ctx)
         {
-            base.OnRender(drawingContext);
+            base.OnRender(ctx);
             // Cache the map reference for performance
-            IField[,] currentMap = this.Map;
-            if (Map == null) return;
+            IField[,] currentMap = Map;
+            if (currentMap is null) return;
 
             int width = currentMap.GetLength(0);
             int height = currentMap.GetLength(1);
 
             // GPU transformations for zooming and panning
-            drawingContext.PushTransform(new ScaleTransform(ZoomLevel, ZoomLevel));
-            drawingContext.PushTransform(new TranslateTransform(-CameraX, -CameraY));
+            ctx.PushTransform(new ScaleTransform(ZoomLevel, ZoomLevel));
+            ctx.PushTransform(new TranslateTransform(-CameraX, -CameraY));
 
-            double visibleWorldWidth = this.ActualWidth / ZoomLevel;
-            double visibleWorldHeight = this.ActualHeight / ZoomLevel;
+            double visibleWorldWidth = ActualWidth / ZoomLevel;
+            double visibleWorldHeight = ActualHeight / ZoomLevel;
 
             int startCol = Math.Max(0, (int)(CameraX / TileSize));
             int startRow = Math.Max(0, (int)(CameraY / TileSize));
@@ -515,28 +580,33 @@ namespace TransportTycoon.WPF.View.UserControls
                 {
                     IField currentField = currentMap[x, y];
                     Rect baseRect = new(x * TileSize, y * TileSize, TileSize, TileSize);
-                    DrawTerrainLayer(drawingContext, currentField, baseRect);
-                    DrawStructureLayer(drawingContext, currentField, baseRect);
-                    DrawRoadLayer(drawingContext, currentField, baseRect);
-                    DrawBridgeLayer(drawingContext, currentField, baseRect);
-                    DrawTreesLayer(drawingContext, currentField, baseRect);
+                    DrawTerrainLayer(ctx, currentField, baseRect);
+                    DrawStructureLayer(ctx, currentField, baseRect);
+                    DrawRoadLayer(ctx, currentField, baseRect);
+                    DrawBridgeLayer(ctx, currentField, baseRect);
+                    DrawTreesLayer(ctx, currentField, baseRect);
 
                     // Hover effect
                     if (x == HoverX && y == HoverY)
                     {
-                        AddHoverEffectLayer(drawingContext, baseRect);
+                        AddHoverEffectLayer(ctx, baseRect);
                     }
 
                     // Selection effect
                     if (x == SelectedX && y == SelectedY)
                     {
-                        AddSelectionEffectLayer(drawingContext, baseRect);
+                        AddSelectionEffectLayer(ctx, baseRect);
                     }
                 }
             }
 
-            drawingContext.Pop();
-            drawingContext.Pop();
+            Rect visibleWorldRect = new(CameraX, CameraY, visibleWorldWidth, visibleWorldHeight);
+
+            // Vehicle layer
+            DrawVehiclesLayer(ctx, visibleWorldRect);
+
+            ctx.Pop();
+            ctx.Pop();
         }
         #endregion
 
