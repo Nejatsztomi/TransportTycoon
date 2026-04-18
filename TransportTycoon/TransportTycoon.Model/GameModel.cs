@@ -551,8 +551,11 @@ namespace TransportTycoon.Model
         public void DefineRoute(int x, int y)
         {
             if (Map[x, y] is not Stop stop) return;
-            SelectedStopFields.Add(stop);
-            SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
+            if (!SelectedStopFields.Contains(stop))
+            {
+                SelectedStopFields.Add(stop);
+                SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
+            }
         }
         public void QueryRoute(int x, int y)
         {
