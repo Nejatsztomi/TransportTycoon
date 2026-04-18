@@ -1,8 +1,44 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using TransportTycoon.MapData.MapGenerator;
+using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.Persistence
 {
+    /// <summary>
+    /// A <see cref="IBiome"/> object to JSON conververt (works also backwards).
+    /// </summary>
+    internal class BiomeJsonConverter : JsonConverter<IBiome>
+    {
+        public override IBiome Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            string value = reader.GetString() ?? throw new JsonException();
+            return Biomes.GetById(value) ?? throw new JsonException($"Unknown biome id: {value}");
+        }
+
+        public override void Write(Utf8JsonWriter writer, IBiome value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.Id);
+        }
+    }
+
+    /// <summary>
+    /// A <see cref="IWaterBiome"/> object to JSON conververt (works also backwards).
+    /// </summary>
+    internal class WaterBiomeJsonConverter : JsonConverter<IWaterBiome>
+    {
+        public override IWaterBiome Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            string value = reader.GetString() ?? throw new JsonException();
+            return WaterBiomes.GetById(value) ?? throw new JsonException($"Unknown biome id: {value}");
+        }
+
+        public override void Write(Utf8JsonWriter writer, IWaterBiome value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.Id);
+        }
+    }
+
 
     public static class JsonSaveManagerFactory
     {
@@ -17,7 +53,9 @@ namespace TransportTycoon.Persistence
             IndentSize = 4,
             Converters =
             {
-                new JsonStringEnumConverter()
+                new JsonStringEnumConverter(),
+                new BiomeJsonConverter(),
+                new WaterBiomeJsonConverter(),
             },
         };
 
