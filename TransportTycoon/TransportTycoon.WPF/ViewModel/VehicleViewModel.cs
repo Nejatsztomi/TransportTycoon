@@ -73,7 +73,6 @@ namespace TransportTycoon.WPF.ViewModel
         #region Private Methods
         private void DeterminePixels()
         {
-            //TODO: change mapY -> Y and mapX -> X, but for testing purposes only, 
             PixelX = 50 * Y;
             PixelY = 50 * X;
             switch (Direction)

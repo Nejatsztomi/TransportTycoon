@@ -87,6 +87,9 @@ namespace TransportTycoon.Model
             Field? targetTile = TargetTile;
             if (targetTile == null) return;
 
+            //update the direction
+            UpdateDirection(targetTile);
+
             //check if we have arrived at the target tile
             double distanceToTarget = Math.Sqrt(Math.Pow(X - targetTile.X, 2) + Math.Pow(Y - targetTile.Y, 2));
             if (distanceToTarget < 0.1 || distanceToTarget <=CurrentSpeed) //if we are close enough to the target tile, we consider that we have arrived
@@ -97,9 +100,6 @@ namespace TransportTycoon.Model
 
                 return;
             }
-
-            //update the direction
-            UpdateDirection(targetTile);
 
             //take the step
             MoveTowardsTarget(targetTile);
@@ -217,10 +217,10 @@ namespace TransportTycoon.Model
         }
         private void UpdateDirection(Field target) 
         {
-            if(target.Y<MapY) Direction = Direction.Up;
-            else if(target.Y>MapY) Direction = Direction.Down;
-            else if(target.X<MapX) Direction = Direction.Left;
-            else if(target.X>MapX) Direction = Direction.Right;
+            if(target.X<MapX) Direction = Direction.Up;
+            else if(target.X>MapX) Direction = Direction.Down;
+            else if(target.Y<MapY) Direction = Direction.Left;
+            else if(target.Y>MapY) Direction = Direction.Right;
         }
 
         private void MoveTowardsTarget(Field target) 
@@ -229,16 +229,16 @@ namespace TransportTycoon.Model
             switch (Direction)
             {
                 case Direction.Up:
-                    Y -= CurrentSpeed;
+                    X -= CurrentSpeed;
                     break;
                 case Direction.Down:
-                    Y += CurrentSpeed;
-                    break;
-                case Direction.Right:
                     X += CurrentSpeed;
                     break;
+                case Direction.Right:
+                    Y += CurrentSpeed;
+                    break;
                 case Direction.Left:
-                    X -= CurrentSpeed;
+                    Y -= CurrentSpeed;
                     break;
             }
         }
