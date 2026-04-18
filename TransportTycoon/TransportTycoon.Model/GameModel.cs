@@ -740,7 +740,7 @@ namespace TransportTycoon.Model
             }
 
             //if the newField is Incline, the vehicle should slow down to half of its current speed
-            if (newField.Height > currentField.Height)
+            if (newField.Height > currentField.Height && currentField is not Water)
             {
                 vehicle.ChangeCurrentSpeed(vehicle.CurrentSpeed / 2);
             }
