@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TransportTycoon.WPF.View.UserControls"
              xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel"
-             xmlns:usercontrols="clr-namespace:TransportTycoon.WPF.View.UserControls"
+             xmlns:usercontrols="clr-namespace:TransportTycoon.WPF.View.UserControls" d:DataContext="{d:DesignInstance Type=viewmodel:GameViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              >
