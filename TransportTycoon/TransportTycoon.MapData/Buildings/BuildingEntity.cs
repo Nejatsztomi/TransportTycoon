@@ -7,7 +7,7 @@
         /// <summary>
         /// Mennyit tud tárolni
         /// </summary>
-        public int MaxCapacity { protected set; get; } = 1000;
+        public int MaxCapacity { private set; get; } = 1000;
 
         /// <summary>
         /// Jelenleg mennyit termelt
@@ -227,8 +227,8 @@
     public abstract class IndustryEntity : BuildingEntity
     {
         #region Properties
-        public int MaxConsumeCapacity => 100;
-        public int ConsumeCapacity { protected set; get; }
+        public int MaxConsumeCapacity { private set; get; } = 1000;
+        public int ConsumeCapacity { private set; get; } = 0;
         #endregion
 
         #region Constructors
