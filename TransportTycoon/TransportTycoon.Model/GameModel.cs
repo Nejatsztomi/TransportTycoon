@@ -788,6 +788,11 @@ namespace TransportTycoon.Model
 
 
         }
+
+        private void AllProduction()
+        {
+
+        }
         #endregion
 
         #region Private event Methods
@@ -940,6 +945,7 @@ namespace TransportTycoon.Model
             GameTime++;
             StepAllVehicles();
             AllVehiclesDoTheTransport();
+            AllProduction();
             if (GameTime > 0 && GameTime % 10 == 0)
             {
                 var grownTrees = ForestGrowing();
