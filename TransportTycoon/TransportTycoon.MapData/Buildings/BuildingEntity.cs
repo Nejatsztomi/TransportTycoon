@@ -66,11 +66,13 @@
         /// <summary>
         /// The production itself
         /// </summary>
-        protected virtual void Production()
+        public virtual void Production()
         {
-            int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
-
-            CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
+            if(CurrentCapacity < MaxCapacity)
+            {
+                int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
+                CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
+            }       
         }
         #endregion
 
