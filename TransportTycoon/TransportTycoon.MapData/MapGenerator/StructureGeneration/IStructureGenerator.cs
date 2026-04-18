@@ -2,7 +2,7 @@
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
-    public interface IStructureGenerator
+    public interface IStructureGenerator : IMapPluginGenerator
     {
         /// <summary>
         /// Tries to place a structure of the given type on the map.

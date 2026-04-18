@@ -8,11 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+	  <!-- We don't need add all the packages one-by-one this handles all the dependencies for MSTest -->
+    <PackageReference Include="MSTest" Version="4.2.1" />
+    <PackageReference Include="coverlet.collector" Version="8.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="ELTE.FI.SARuleSet" Version="3.2.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="MSTest" Version="4.0.1" />
+    <PackageReference Include="JunitXml.TestLogger" Version="8.0.0" />
     <PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
       <PrivateAssets>all</PrivateAssets>

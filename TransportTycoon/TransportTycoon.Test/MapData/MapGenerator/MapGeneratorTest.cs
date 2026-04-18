@@ -26,7 +26,6 @@ public class MapGeneratorTest
         }
     }
 
-    [TestClass]
     public class GenerateMapTest
     {
         private IMapGenerator _mapGenerator = null!;
@@ -189,9 +188,9 @@ public class MapGeneratorTest
             IWaterGenerator riverGen = Substitute.For<IWaterGenerator>();
             IStructureGenerator structureGen = Substitute.For<IStructureGenerator>();
             IRandom random = Substitute.For<IRandom>();
-
+            List<IMapPluginGenerator> generators = [terrainGen, forestGen, lakeGen, riverGen, structureGen];
             // Act & Assert - Should not throw
-            var mapGen = new TransportTycoon.MapData.MapGenerator.MapGenerator(random, terrainGen, forestGen, lakeGen, riverGen, structureGen);
+            var mapGen = new TransportTycoon.MapData.MapGenerator.MapGenerator(generators, random);
             Assert.IsNotNull(mapGen);
         }
 

@@ -1,6 +1,6 @@
 ﻿namespace TransportTycoon.MapData.MapGenerator
 {
-    public class SystemRandomWrapper : IRandom
+    public sealed class SystemRandomWrapper : IRandom
     {
         #region Private fields
         private readonly Random _random;

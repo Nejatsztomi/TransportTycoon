@@ -9,11 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Fonts\PressStart2P.ttf" />
     <None Remove="Assets\Images\Bridge\greenBridge.png" />
     <None Remove="Assets\Images\Bridge\redBridge.png" />
     <None Remove="Assets\Images\Bridge\yellowBridge.png" />
     <None Remove="Assets\Images\Buttons\minus.png" />
     <None Remove="Assets\Images\Buttons\plus.png" />
+    <None Remove="Assets\Images\Buttons\pull.png" />
+    <None Remove="Assets\Images\Buttons\push.png" />
+    <None Remove="Assets\Images\Buttons\route.png" />
+    <None Remove="Assets\Images\Buttons\x.png" />
     <None Remove="Assets\Images\Road\crossT.png" />
     <None Remove="Assets\Images\Road\crossX.png" />
     <None Remove="Assets\Images\Road\road.png" />
@@ -41,6 +46,16 @@
     <None Remove="Assets\Images\Trees\tree3.png" />
     <None Remove="Assets\Images\Trees\tree4.png" />
     <None Remove="Assets\Images\Vehicle\largeBus.png" />
+    <None Remove="Assets\Images\Vehicle\largeBus2.png" />
+    <None Remove="Assets\Images\Vehicle\largeBusDown.png" />
+    <None Remove="Assets\Images\Vehicle\largeBusLeft.png" />
+    <None Remove="Assets\Images\Vehicle\largeBusRight.png" />
+    <None Remove="Assets\Images\Vehicle\largeBusUp.png" />
+    <None Remove="Assets\Images\Vehicle\smallBus.png" />
+    <None Remove="Assets\Images\Vehicle\smallBusDown.png" />
+    <None Remove="Assets\Images\Vehicle\smallBusLeft.png" />
+    <None Remove="Assets\Images\Vehicle\smallBusRight.png" />
+    <None Remove="Assets\Images\Vehicle\smallBusUp.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,7 +85,19 @@
     <Resource Include="Assets\Images\Bridge\redBridge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Bridge\yellowBridge.png">
+    <Resource Include="Assets\Images\Buttons\pull.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\push.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\route.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Road\crossT.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Road\crossT.png">
@@ -145,9 +172,9 @@
     <Resource Include="Assets\Images\Trees\tree4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Content Include="Assets\Images\Vehicle\largeBus.png">
+    <Resource Include="Assets\Images\Vehicle\largeBus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -161,6 +188,42 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Terrain\mountain.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBus2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBusDown.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBusLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBusRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBusUp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBusDown.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBusLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBusRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBusUp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Fonts\PressStart2P.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

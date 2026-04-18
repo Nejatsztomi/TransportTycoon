@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF
@@ -27,7 +17,7 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Private event methods
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private void Window_Closing(object? _1, CancelEventArgs e)
         {
             if (DataContext is MainViewModel mainViewModel)
             {

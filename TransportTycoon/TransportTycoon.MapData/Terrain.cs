@@ -21,7 +21,6 @@
             SetFieldType();
         }
 
-
         #region Public methods
         public void IncreaseHeight()
         {
@@ -60,6 +59,4 @@
         }
         #endregion
     }
-
-
 }

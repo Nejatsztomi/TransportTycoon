@@ -2,10 +2,11 @@
 using System.Windows;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
+using TransportTycoon.Persistence;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class MainViewModel : ViewModelViewConstraintBase
+    public sealed partial class MainViewModel : ViewModelViewConstraintBase
     {
         #region Private fields
         [ObservableProperty]
@@ -15,10 +16,12 @@ namespace TransportTycoon.WPF.ViewModel
         private readonly StartMenuViewModel _startMenuViewModel;
 
         #endregion
+
+        #region Properties
+        #region IViewConstraints
         public override double? MinimumWidth => 800;
         public override double? MinimumHeight => 450;
-        #region Properties
-
+        #endregion
         #endregion
 
         #region Constructors
@@ -40,7 +43,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             MapGenerationContext context = new();
 
-            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer());
+            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
             _model.GameOver += Model_GameOver;
             _model.NewGame();
 
@@ -59,9 +62,9 @@ namespace TransportTycoon.WPF.ViewModel
             CurrentView = createGameViewModel;
         }
 
-        private void CreateGameViewModel_CreateGame(object? _, MapGenerationContext context)
+        private void CreateGameViewModel_CreateGame(object? _1, MapGenerationContext context)
         {
-            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer());
+            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
             _model.GameOver += Model_GameOver;
             _model.NewGame();
 
@@ -70,9 +73,25 @@ namespace TransportTycoon.WPF.ViewModel
             CurrentView = gameViewModel;
         }
 
-        private void StartMenuViewModel_LoadingGame(object? _1, string _2)
+        private async void StartMenuViewModel_LoadingGame(object? _1, string uri)
         {
-            throw new NotImplementedException("Load game functionality is not implemented yet!");
+            try
+            {
+                MapGenerationContext context = new();
+
+                _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
+                _model.GameOver += Model_GameOver;
+
+                await _model.LoadGame(uri);
+
+                GameViewModel gameViewModel = new(_model);
+                CurrentView = gameViewModel;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to load the game. The file might be corrupted or incompatible." + Environment.NewLine +
+                                "Error details: " + ex.Message, "TransportTycoon", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void StartMenuViewModel_ExitingGame(object? _1, EventArgs _2)
@@ -88,7 +107,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Private event methods
-        private void Model_GameOver(object? sender, TransportTycoonEventArgs e)
+        private void Model_GameOver(object? _1, TransportTycoonEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("Unfortunately, you lost!" + Environment.NewLine +
                                                         "Fate has a cruel sense of humor." + Environment.NewLine +

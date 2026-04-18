@@ -2,7 +2,9 @@ using NSubstitute;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
+using TransportTycoon.Persistence;
 using ITimer = TransportTycoon.Model.ITimer;
+using VehicleType = TransportTycoon.Model.VehicleType;
 
 namespace TransportTycoon.Test.Model;
 
@@ -12,6 +14,7 @@ public class GameModelTest
     public class ConstructorTest
     {
         private ITimer _mockTimer = null!;
+        private IPersistence _mockPersistence = null!;
         private GameTable _mockMap = null!;
 
         [TestInitialize]
@@ -22,6 +25,7 @@ public class GameModelTest
 
             _mockTimer = Substitute.For<ITimer>();
             _mockMap = Substitute.For<GameTable>(mockMapGenerator, context);
+            _mockPersistence = Substitute.For<IPersistence>();
         }
 
         [TestMethod]
@@ -29,13 +33,13 @@ public class GameModelTest
         {
             Difficulty difficulty = Difficulty.Hard;
             int balance = 5_000;
-            GameModel gameModel = new(_mockMap, _mockTimer, difficulty, balance);
+            GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence, difficulty, balance);
 
             Assert.AreEqual(difficulty, gameModel.Difficulty, "Difficulty should match");
             Assert.AreEqual(balance, gameModel.Balance, "Balance should match");
 
             Assert.AreEqual(GameMode.Run, gameModel.Mode, "GameMode should be Run");
-            Assert.AreEqual(0, gameModel.GameTime, "GameTime should be 0");
+            Assert.AreEqual(0UL, gameModel.GameTime, "GameTime should be 0");
 
             // Timer mock tesztek
             // Feliratkoztak az Elapsed eseményre
@@ -45,7 +49,7 @@ public class GameModelTest
         [TestMethod]
         public void Constructor_WithDefaultValues()
         {
-            GameModel gameModel = new(_mockMap, _mockTimer);
+            GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
 
             Assert.AreEqual(GameModel.DefaultDifficulty, gameModel.Difficulty, "Difficulty should be DefaultDifficulty");
             Assert.AreEqual(GameModel.DefaultBalance, gameModel.Balance, "Balance should be DefaultBalance");
@@ -75,6 +79,7 @@ public class GameModelTest
         {
             private GameModel _gameModel = null!;
             private ITimer _mockTimer = null!;
+            private IPersistence _mockPersistence = null!;
 
             [TestInitialize]
             public void Initialize()
@@ -84,7 +89,8 @@ public class GameModelTest
                 var mockGameTable = Substitute.For<GameTable>(mockMapGenerator, context);
 
                 _mockTimer = Substitute.For<ITimer>();
-                _gameModel = new(mockGameTable, _mockTimer);
+                _mockPersistence = Substitute.For<IPersistence>();
+                _gameModel = new(mockGameTable, _mockTimer, _mockPersistence);
             }
 
             [TestMethod]
@@ -92,20 +98,20 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler handler = (sender, args) =>
+                void Handler(object? _1, EventArgs _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.NewGameCreated += handler;
+                    _gameModel.NewGameCreated += Handler;
                     _gameModel.NewGame();
                     Assert.IsTrue(raised, "NewGameCreated should be raised after creating a new game");
                 }
                 finally
                 {
-                    _gameModel.NewGameCreated -= handler;
+                    _gameModel.NewGameCreated -= Handler;
                 }
             }
 
@@ -115,20 +121,20 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler<GameMode> handler = (_, _) =>
+                void Handler(object? _1, GameMode _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.GameModeChanged += handler;
+                    _gameModel.GameModeChanged += Handler;
                     _gameModel.Mode = gameMode;
                     Assert.IsTrue(raised, "GameModeChanged should be raised after changing the game mode");
                 }
                 finally
                 {
-                    _gameModel.GameModeChanged -= handler;
+                    _gameModel.GameModeChanged -= Handler;
                 }
             }
 
@@ -138,20 +144,20 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler<TimeSpeed> handler = (_, _) =>
+                void Handler(object? _1, TimeSpeed _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.TimeSpeedChanged += handler;
+                    _gameModel.TimeSpeedChanged += Handler;
                     _gameModel.TimeSpeed = timeSpeed;
                     Assert.IsTrue(raised, "TimeSpeedChanged should be raised after changing the game speed");
                 }
                 finally
                 {
-                    _gameModel.TimeSpeedChanged -= handler;
+                    _gameModel.TimeSpeedChanged -= Handler;
                 }
             }
 
@@ -160,14 +166,14 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler<List<Tuple<int, int>>> handler = (_, _) =>
+                void Handler(object? _1, List<Tuple<int, int>> _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.GameAdvanced += handler;
+                    _gameModel.GameAdvanced += Handler;
                     // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
                     for (int i = 0; i < 10; i++)
                     {
@@ -177,7 +183,7 @@ public class GameModelTest
                 }
                 finally
                 {
-                    _gameModel.GameAdvanced -= handler;
+                    _gameModel.GameAdvanced -= Handler;
                 }
             }
 
@@ -186,21 +192,21 @@ public class GameModelTest
             {
                 bool raised = false;
 
-                EventHandler handler = (_, _) =>
+                void Handler(object? _1, EventArgs _2)
                 {
                     raised = true;
-                };
+                }
 
                 try
                 {
-                    _gameModel.GameTicked += handler;
+                    _gameModel.GameTicked += Handler;
                     // Szimuláljuk a timer tick eseményét
                     _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
                     Assert.IsTrue(raised, "GameTicked should be raised after 1 timer tick");
                 }
                 finally
                 {
-                    _gameModel.GameTicked -= handler;
+                    _gameModel.GameTicked -= Handler;
                 }
             }
 
@@ -214,9 +220,10 @@ public class GameModelTest
         [TestClass]
         public class EventArgumentTest
         {
-            private static GameModel _gameModel = null!;
-            private static ITimer _mockTimer = null!;
-            private static GameTable _mockMap = null!;
+            private GameModel _gameModel = null!;
+            private ITimer _mockTimer = null!;
+            private GameTable _mockMap = null!;
+            private IPersistence _mockPersistence = null!;
 
             [TestInitialize]
             public void Initialize()
@@ -226,30 +233,31 @@ public class GameModelTest
 
                 _mockMap = Substitute.For<GameTable>(mockGenerator, context);
                 _mockTimer = Substitute.For<ITimer>();
-                _gameModel = new(_mockMap, _mockTimer);
+                _mockPersistence = Substitute.For<IPersistence>();
+                _gameModel = new(_mockMap, _mockTimer, _mockPersistence);
             }
 
             [TestMethod]
             [DynamicData(nameof(GetAllGameModes), typeof(EventTest))]
             public void GameModeChanged_EventArgumentIsCorrect(GameMode expectedGameMode)
             {
-                GameModel gameModel = new(_mockMap, _mockTimer);
+                GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
                 GameMode actualGameMode = GameMode.Run;
 
-                EventHandler<GameMode> handler = (_, e) =>
+                void Handler(object? _1, GameMode e)
                 {
                     actualGameMode = e;
-                };
+                }
 
                 try
                 {
-                    gameModel.GameModeChanged += handler;
+                    gameModel.GameModeChanged += Handler;
                     gameModel.Mode = expectedGameMode;
                     Assert.AreEqual(expectedGameMode, actualGameMode, "GameModeChanged event should have correct argument");
                 }
                 finally
                 {
-                    gameModel.GameModeChanged -= handler;
+                    gameModel.GameModeChanged -= Handler;
                 }
             }
 
@@ -257,23 +265,23 @@ public class GameModelTest
             [DynamicData(nameof(GetAllTimeSpeeds), typeof(EventTest))]
             public void TimeSpeedChanged_EventArgumentIsCorrect(TimeSpeed expectedTimeSpeed)
             {
-                GameModel gameModel = new(_mockMap, _mockTimer);
+                GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
                 TimeSpeed actualTimeSpeed = TimeSpeed.Normal;
 
-                EventHandler<TimeSpeed> handler = (_, e) =>
+                void Handler(object? _1, TimeSpeed e)
                 {
                     actualTimeSpeed = e;
-                };
+                }
 
                 try
                 {
-                    gameModel.TimeSpeedChanged += handler;
+                    gameModel.TimeSpeedChanged += Handler;
                     gameModel.TimeSpeed = expectedTimeSpeed;
                     Assert.AreEqual(expectedTimeSpeed, actualTimeSpeed, "TimeSpeedChanged event should have correct argument");
                 }
                 finally
                 {
-                    gameModel.TimeSpeedChanged -= handler;
+                    gameModel.TimeSpeedChanged -= Handler;
                 }
             }
 
@@ -314,4 +322,120 @@ public class GameModelTest
             public void InfrastructureBuilt_EventArgumentIsCorrect() { }
         }
     }
+    [TestClass]
+    public class VehicleTests
+    {
+        private GameModel _gameModel = null!;
+        private GameTable _mockMap = null!;
+        private ITimer _mockTimer = null!;
+        private IPersistence _mockPersistence = null!;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            var mockMapGenerator = Substitute.For<IMapGenerator>();
+            MapGenerationContext context = new();
+
+            _mockTimer = Substitute.For<ITimer>();
+            _mockMap = Substitute.For<GameTable>(mockMapGenerator, context);
+            _mockPersistence = Substitute.For<IPersistence>();
+
+            // Initialize GameModel with a default high balance for tests
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
+        }
+
+        [TestMethod]
+        public void BuyVehicle_LocationIsNotStop_ReturnsNullAndDoesNotChangeBalance()
+        {
+            // Arrange
+            int x = 0, y = 0;
+            // Mock the map to return a regular Terrain (not a Stop) at the given coordinates
+            _mockMap[x, y] = new Terrain(x, y, 1);
+
+            // Re-initialize GameModel to strictly control the starting balance
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
+            int initialVehiclesCount = _gameModel.Vehicles.Count;
+
+            // Act
+            var result = _gameModel.BuyVehicle(x, y, VehicleType.Van);
+
+            // Assert
+            Assert.IsNull(result, "Should return null because the location is not a Stop.");
+            Assert.AreEqual(10000, _gameModel.Balance, "Balance should remain unchanged.");
+            Assert.HasCount(initialVehiclesCount, _gameModel.Vehicles, "No vehicle should be added to the list.");
+        }
+
+        [TestMethod]
+        public void BuyVehicle_SufficientBalance_DeductsBalanceAddsToVehiclesAndRaisesEvent()
+        {
+            // Arrange
+            int x = 1, y = 1;
+            // Mock the map to return a Stop at the given coordinates
+            _mockMap[x, y] = new Stop(x, y, 1);
+
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 5000);
+
+            bool eventRaised = false;
+            _gameModel.BalanceChanged += (sender, args) => { eventRaised = true; };
+
+            // Act
+            var result = _gameModel.BuyVehicle(x, y, VehicleType.Van);
+
+            // Assert
+            Assert.IsNotNull(result, "Vehicle should be created and returned.");
+            // We assume Van is a valid class derived from Vehicle
+            Assert.AreEqual(typeof(Van).Name, result.GetType().Name, "Created vehicle should be a Van.");
+
+            Assert.AreEqual(5000 - result.Price, _gameModel.Balance, "Balance should be deducted by the vehicle's price.");
+            Assert.Contains(result, _gameModel.Vehicles, "Vehicle should be added to the Vehicles list.");
+            Assert.IsTrue(eventRaised, "BalanceChanged event should be invoked.");
+        }
+
+        [TestMethod]
+        public void BuyVehicle_InsufficientBalance_DoesNotDeductBalanceOrAddToList()
+        {
+            // Arrange
+            int x = 2, y = 2;
+            _mockMap[x, y] = new Stop(x, y, 1);
+
+            // Initialize with 0 balance
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 0);
+
+            bool eventRaised = false;
+            _gameModel.BalanceChanged += (sender, args) => { eventRaised = true; };
+
+            // Act
+            var result = _gameModel.BuyVehicle(x, y, VehicleType.Truck);
+
+            // Assert
+            // Note: Based on the current implementation in GameModel, it STILL returns the instantiated vehicle object, 
+            // but does not deduct balance or add it to the list.
+            Assert.IsNotNull(result, "Current logic returns the vehicle object even if funds are insufficient.");
+            Assert.AreEqual(typeof(Truck).Name, result.GetType().Name);
+
+            Assert.AreEqual(0, _gameModel.Balance, "Balance should remain unchanged due to insufficient funds.");
+            Assert.DoesNotContain(result, _gameModel.Vehicles, "Vehicle should NOT be added to the list.");
+            Assert.IsFalse(eventRaised, "BalanceChanged event should NOT be invoked.");
+        }
+
+        [TestMethod]
+        public void BuyVehicle_DifferentVehicleType_CreatesCorrectInstance()
+        {
+            // Arrange
+            int x = 3, y = 3;
+            _mockMap[x, y] = new Stop(x, y, 1);
+
+            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 100000);
+
+            // Act
+            var result = _gameModel.BuyVehicle(x, y, VehicleType.BigBus);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(typeof(BigBus).Name, result.GetType().Name, "Should create a BigBus when requested.");
+        }
+
+
+    }
 }
+

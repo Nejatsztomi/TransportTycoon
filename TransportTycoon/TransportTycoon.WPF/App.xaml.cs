@@ -1,7 +1,5 @@
-using System.ComponentModel;
 using System.Windows;
 using TransportTycoon.Model;
-using TransportTycoon.WPF.View;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF
@@ -46,7 +44,7 @@ namespace TransportTycoon.WPF
         #endregion
 
         #region Private event methods
-        private void ShowStartMenu(object? sender, StartupEventArgs e)
+        private void ShowStartMenu(object? _1, StartupEventArgs _2)
         {
             MainViewModel = new();
 

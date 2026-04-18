@@ -14,11 +14,15 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         private readonly IRandom _random;
         #endregion
 
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.Structures;
+        #endregion
+
         #region Constructors
         public StructureGenerator(ICityGenerator cityGenerator, IRandomProvider randomProvider, MapGenerationContext context)
         {
             _cityGenerator = cityGenerator;
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Structures);
+            _random = randomProvider.GetRandom(context.Seed, "BaseGame.Structures");
         }
         #endregion
 
@@ -62,16 +66,39 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 return;
             }
 
-            while (true)
-            {
-                int startX = _random.Next(0, context.Width - buildingEntity.Width);
-                int startY = _random.Next(0, context.Height - buildingEntity.Height);
 
-                if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap, context))
+#pragma warning disable IDE0028 // Simplify collection initialization
+            List<(int X, int Y)> validPoints = new(context.Width * context.Height);
+#pragma warning restore IDE0028 // Simplify collection initialization
+
+            int structureWidth = buildingEntity.Width;
+            int structureHeight = buildingEntity.Height;
+
+            for (int i = 0; i < context.Width - structureWidth; i++)
+            {
+                for (int j = 0; j < context.Height - structureHeight; j++)
+                {
+                    if (waterMap[i, j] || structureMap[i, j]) continue;
+                    if (heightMap[i, j] >= 4) continue;
+                    validPoints.Add((i, j));
+                }
+            }
+
+            while (validPoints.Count > 0)
+            {
+                int randomIndex = _random.Next(0, validPoints.Count);
+                (int x, int y) = validPoints[randomIndex];
+
+                if (TryTerraformAndPlace(x, y, buildingEntity, heightMap, waterMap, structureMap, context))
                 {
                     return;
                 }
+
+                // validPoints[^1] == validPoints[validPoints.Count - 1]
+                validPoints[randomIndex] = validPoints[^1];
+                validPoints.RemoveAt(validPoints.Count - 1);
             }
+            throw new Exception("Failed to generate structure!");
         }
         #endregion
 

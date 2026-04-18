@@ -1,8 +1,9 @@
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class StartMenuViewModel : ViewModelViewConstraintBase
+    public sealed partial class StartMenuViewModel : ViewModelViewConstraintBase
     {
         #region Properties
         #region IViewConstraints
@@ -32,7 +33,20 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void LoadGame()
         {
-            LoadingGame?.Invoke(this, String.Empty);
+            var fileDiag = new OpenFileDialog
+            {
+                Title = "Choose a save location",
+                Filter = "JSON files|*.json|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Multiselect = false,
+                RestoreDirectory = true,
+            };
+
+            bool? result = fileDiag.ShowDialog();
+            if (result is null || result == false) return;
+
+            var uri = fileDiag.FileName;
+            LoadingGame?.Invoke(this, uri);
         }
 
         [RelayCommand]

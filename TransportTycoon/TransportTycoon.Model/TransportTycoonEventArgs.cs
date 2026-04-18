@@ -1,27 +1,27 @@
 ﻿namespace TransportTycoon.Model
 {
-    public class TransportTycoonEventArgs : EventArgs
+    public sealed class TransportTycoonEventArgs : EventArgs
     {
         #region Fields
-        private int gameTime;
-        private int maintance;
-        private int numberOfVehicles;
+        private readonly ulong _gameTime;
+        private readonly int _maintance;
+        private readonly int _numberOfVehicles;
         #endregion
 
         #region Properties
-        public int GameTime => gameTime;
+        public ulong GameTime => _gameTime;
 
-        public int Maintance => maintance;
+        public int Maintance => _maintance;
 
-        public int NumberOfVehicles => numberOfVehicles;
+        public int NumberOfVehicles => _numberOfVehicles;
         #endregion
 
         #region Constructors
-        public TransportTycoonEventArgs(int gameTime, int numberOfVehicles, int maintance)
+        public TransportTycoonEventArgs(ulong gameTime, int numberOfVehicles, int maintance)
         {
-            this.gameTime = gameTime;
-            this.numberOfVehicles = numberOfVehicles;
-            this.maintance = maintance;
+            this._gameTime = gameTime;
+            this._numberOfVehicles = numberOfVehicles;
+            this._maintance = maintance;
         }
         #endregion
     }

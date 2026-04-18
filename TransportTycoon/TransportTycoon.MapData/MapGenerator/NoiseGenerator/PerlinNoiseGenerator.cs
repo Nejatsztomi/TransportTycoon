@@ -2,9 +2,11 @@
 {
     public static class PerlinNoiseGeneratorFactory
     {
+        [Obsolete]
         public static INoiseGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new PerlinNoiseGenerator(randomProvider, context);
     }
 
+    [Obsolete]
     internal class PerlinNoiseGenerator : INoiseGenerator
     {
         #region Private fields
@@ -14,10 +16,14 @@
         private readonly float _noiseScale = 0.05f;
         #endregion
 
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.Noise;
+        #endregion
+
         #region Constructors
         public PerlinNoiseGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Noise);
+            _random = randomProvider.GetRandom(context.Seed, "BaseGame.Noise");
             _offsetX = _random.Next(-10000, 10000);
             _offsetY = _random.Next(-10000, 10000);
         }
@@ -28,6 +34,19 @@
         {
             // Calculate normalized noise (0.0 to 1.0)
             return CalculateNoise((x + _offsetX) * _noiseScale, (y + _offsetY) * _noiseScale);
+        }
+
+        public float[,] GenerateNoiseMap(int width, int height, int seed)
+        {
+            float[,] noiseMap = new float[width, height];
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    noiseMap[i, j] = GenerateNoise(i, j, seed);
+                }
+            }
+            return noiseMap;
         }
         #endregion
 

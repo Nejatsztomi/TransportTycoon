@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData.MapGenerator.CoordinateHasher
+﻿using System.Runtime.CompilerServices;
+
+namespace TransportTycoon.MapData.MapGenerator.CoordinateHasher
 {
     public class BasicCoordinateHasher : ICoordinateHasher
     {
@@ -16,6 +18,7 @@
         /// <param name="y">The Y coordinate to hash.</param>
         /// <param name="seed">The seed used to vary the generated hash.</param>
         /// <returns>A pseudo-random floating-point value in the range <c>0.0f</c> to <c>1.0f</c>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public float Hash2D(int x, int y, int seed)
         {
             unchecked
@@ -48,11 +51,12 @@
         /// and <paramref name="seed"/>, mapped to the range from <paramref name="min"/> to
         /// <paramref name="max"/> (upper bound exclusive).
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Hash2DRange(int x, int y, int seed, int min, int max)
         {
             float hashFloat = Hash2D(x, y, seed);
             return min + (int)(hashFloat * (max - min));
         }
     }
-        #endregion
+    #endregion
 }

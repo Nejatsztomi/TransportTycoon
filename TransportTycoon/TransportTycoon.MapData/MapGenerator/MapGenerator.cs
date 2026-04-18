@@ -15,63 +15,108 @@ namespace TransportTycoon.MapData.MapGenerator
             INoiseGenerator noiseGenerator = ValueNoiseGeneratorFactory.Create(0.05f);
             ICityGenerator cityGenerator = CityGeneratorFactory.Create(randomProvider, context);
 
-            ITerrainGenerator terrainGenerator = TerraingGeneratorFactory.Create(noiseGenerator);
+            ITerrainGenerator terrainGenerator = TerraingGeneratorFactory.Create();
             IForestGenerator forestGenerator = ForestGeneratorFactory.Create(noiseGenerator);
-            IWaterGenerator lakeGenerator = LakeGeneratorFactory.Create(noiseGenerator);
             IWaterGenerator riverGenerator = RiverGeneratorFactory.Create(randomProvider, context);
             IStructureGenerator structureGenerator = StructureGeneratorFactory.Create(cityGenerator, randomProvider, context);
-            return new MapGenerator(randomProvider.GetRandom(context.Seed, GenerationDomain.Map), terrainGenerator, forestGenerator, lakeGenerator, riverGenerator, structureGenerator);
+            List<IMapPluginGenerator> generators = [noiseGenerator, terrainGenerator, forestGenerator, riverGenerator, structureGenerator];
+            return new MapGenerator(generators, randomProvider.GetRandom(context.Seed, "BaseGame.Map"));
         }
     }
 
-    internal class MapGenerator : IMapGenerator
+    internal sealed class MapGenerator : IMapGenerator
     {
         #region Private fields
-        private readonly ITerrainGenerator _terrainGenerator;
-        private readonly IForestGenerator _forestGenerator;
-        private readonly IWaterGenerator _lakeGenerator;
-        private readonly IWaterGenerator _riverGenerator;
-        private readonly IStructureGenerator _structureGenerator;
+        private readonly IEnumerable<IMapPluginGenerator> _generators;
         private readonly IRandom _random;
         #endregion
 
+        #region Debug
+        private readonly Stopwatch _stopwatch = new();
+        #endregion
+
         #region Constructors
-        public MapGenerator(IRandom random, ITerrainGenerator terrainGenerator, IForestGenerator forestGenerator, IWaterGenerator lakeGenerator, IWaterGenerator riverGenerator, IStructureGenerator structureGenerator)
+        public MapGenerator(
+            IEnumerable<IMapPluginGenerator> generators,
+            IRandom random
+            )
         {
-            _terrainGenerator = terrainGenerator;
-            _forestGenerator = forestGenerator;
-            _lakeGenerator = lakeGenerator;
-            _riverGenerator = riverGenerator;
-            _structureGenerator = structureGenerator;
+            _generators = generators;
             _random = random;
         }
         #endregion
 
         #region Public methods
-        public IField[,] GenerateMap(MapGenerationContext context)
+        public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
         {
-            int[,] heightMap = _terrainGenerator.GenerateTerrain(context);
-            bool[,] waterMap = new bool[context.Width, context.Height];
-            for (int i = 0; i < context.Width; i++)
+            var sortedGenerators = _generators.OrderBy(g => g.Phase).ToList();
+#pragma warning disable IDE0028 // Simplify collection initialization
+            List<BuildingEntity> structures = new(context.Settings.MaxCities + context.Settings.MaxStructure);
+#pragma warning restore IDE0028 // Simplify collection initialization
+
+            foreach (var generator in sortedGenerators)
             {
-                for (int j = 0; j < context.Height; j++)
+                _stopwatch.Restart();
+                if (generator is INoiseGenerator noiseGen)
                 {
-                    waterMap[i, j] = heightMap[i, j] == 0;
+                    var noiseMap = noiseGen.GenerateNoiseMap(context.Width, context.Height, context.Seed);
+                    Array2DCopy(noiseMap, context.NoiseMap, sizeof(float));
                 }
+                else if (generator is ITerrainGenerator terrainGen)
+                {
+                    var heightMap = terrainGen.GenerateTerrain(context.NoiseMap, context);
+                    Array2DCopy(heightMap, context.HeightMap, sizeof(int));
+                    for (int x = 0; x < context.Width; x++)
+                    {
+                        for (int y = 0; y < context.Height; y++)
+                        {
+                            if (heightMap[x, y] == 0)
+                            {
+                                context.WaterMap[x, y] = true;
+                            }
+                        }
+                    }
+                }
+                else if (generator is IWaterGenerator waterGen)
+                {
+                    var waterMap = waterGen.GenerateWaterMap(context.NoiseMap, context.WaterMap, context);
+                    Array2DCopy(waterMap, context.WaterMap, sizeof(bool));
+                }
+                else if (generator is IForestGenerator forestGen)
+                {
+                    var forestMap = forestGen.GenerateForests(context.HeightMap, context);
+                    Array2DCopy(forestMap, context.ForestMap, sizeof(int));
+                }
+                else if (generator is IStructureGenerator structureGen)
+                {
+                    HandleStructureGeneration(context, structureGen, ref structures);
+                }
+                _stopwatch.Stop();
+                Debug.WriteLine($"{generator.GetType().Name} took: {_stopwatch.ElapsedMilliseconds} ms");
             }
-            //waterMap = _lakeGenerator.GenerateWaterMap(heightMap, waterMap, context);
-            waterMap = _riverGenerator.GenerateWaterMap(heightMap, waterMap, context);
 
-            int[,] forestMap = _forestGenerator.GenerateForests(heightMap, context);
-            bool[,] structureMap = GenerateEmptyStructureMap(context.Width, context.Height);
+            _stopwatch.Restart();
+            IField[,] map = ConvertHeightMapToFields(context);
+            _stopwatch.Stop();
+            Debug.WriteLine($"Map conversion took: {_stopwatch.ElapsedMilliseconds} ms");
 
-            List<BuildingEntity> structures = [];
+            // Generate structures
+            _stopwatch.Restart();
+            PlaceDownStructuresOnMap(map, structures);
+            _stopwatch.Stop();
+            Debug.WriteLine($"Placing structures time: {_stopwatch.ElapsedMilliseconds} ms");
 
-            // Force generates N cities
+            return (map, structures);
+        }
+        #endregion
+
+        #region Private methods
+        private void HandleStructureGeneration(MapGenerationContext context, IStructureGenerator structureGenerator, ref List<BuildingEntity> structures)
+        {
             for (int i = 0; i < context.Settings.MinCities; i++)
             {
                 CityEntity city = new(context.Settings.CityWidth, context.Settings.CityHeight);
-                _structureGenerator.ForcePlace(heightMap, waterMap, structureMap, city, context, -1, -1);
+                structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, city, context, -1, -1);
                 structures.Add(city);
             }
 
@@ -79,17 +124,16 @@ namespace TransportTycoon.MapData.MapGenerator
             for (int i = context.Settings.MinCities; i < context.Settings.MaxCities; i++)
             {
                 CityEntity city = new(context.Settings.CityWidth, context.Settings.CityHeight);
-                _structureGenerator.TryPlace(heightMap, waterMap, structureMap, city, context, -1, -1);
+                structureGenerator.TryPlace(context.HeightMap, context.WaterMap, context.StructureMap, city, context, -1, -1);
                 structures.Add(city);
             }
 
-            // Force place other structures in pairs
             for (int i = 1; i < context.Settings.MinStructure; i += 2)
             {
                 (SiteEntity se, IndustryEntity ie) = GenerateRandomEntityPair();
-                _structureGenerator.ForcePlace(heightMap, waterMap, structureMap, se, context, -1, -1);
+                structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, se, context, -1, -1);
                 (int x, int y) = se.TopLeftPoints;
-                _structureGenerator.ForcePlace(heightMap, waterMap, structureMap, ie, context, x, y);
+                structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, ie, context, x, y);
 
                 structures.Add(se);
                 structures.Add(ie);
@@ -99,66 +143,54 @@ namespace TransportTycoon.MapData.MapGenerator
             if (context.Settings.MinStructure % 2 != 0)
             {
                 BuildingEntity be = GenerateRandomEntity();
-                _structureGenerator.ForcePlace(heightMap, waterMap, structureMap, be, context, -1, -1);
+                structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, be, context, -1, -1);
                 structures.Add(be);
             }
 
             for (int i = context.Settings.MinStructure; i < context.Settings.MaxStructure; i++)
             {
                 BuildingEntity be = GenerateRandomEntity();
-                _structureGenerator.ForcePlace(heightMap, waterMap, structureMap, be, context, -1, -1);
+                structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, be, context, -1, -1);
                 structures.Add(be);
             }
+        }
 
-            // Generate terrain
-            IField[,] map = new IField[context.Width, context.Height];
-            for (int x = 0; x < context.Width; x++)
-            {
-                for (int y = 0; y < context.Height; y++)
-                {
-                    if (waterMap[x, y])
-                    {
-                        map[x, y] = new Water(x, y);
-                    }
-                    else
-                    {
-                        Terrain terrain = new(x, y, heightMap[x, y])
-                        {
-                            Trees = forestMap[x, y]
-                        };
-                        map[x, y] = terrain;
-                    }
-                }
-            }
-
-            // Generate structures
+        private void PlaceDownStructuresOnMap(IField[,] map, List<BuildingEntity> structures)
+        {
             structures.ForEach(structure =>
             {
                 structure.MapPoints.ToList()
                 .ForEach(kv =>
                 {
                     map[kv.Key.X, kv.Key.Y] = kv.Value;
-                    Debug.WriteLine($"Placing {kv.Value.FieldType} at ({kv.Key.X}, {kv.Key.Y})");
+                    //Debug.WriteLine($"Placing {kv.Value.FieldType} at ({kv.Key.X}, {kv.Key.Y})");
                 });
-                Debug.WriteLine($"Placed {structure.GetType().Name} at ({structure.MapPoints.Keys.First().X}, {structure.MapPoints.Keys.First().Y})");
+                //Debug.WriteLine($"Placed {structure.GetType().Name} at ({structure.MapPoints.Keys.First().X}, {structure.MapPoints.Keys.First().Y})");
             });
-
-            return map;
         }
-        #endregion
 
-        #region Private methods
-        private bool[,] GenerateEmptyStructureMap(int width, int height)
+        private IField[,] ConvertHeightMapToFields(MapGenerationContext context)
         {
-            bool[,] structureMap = new bool[width, height];
-            for (int i = 0; i < width; i++)
+            IField[,] map = new IField[context.Width, context.Height];
+            for (int x = 0; x < context.Width; x++)
             {
-                for (int j = 0; j < height; j++)
+                for (int y = 0; y < context.Height; y++)
                 {
-                    structureMap[i, j] = false;
+                    if (context.WaterMap[x, y] || context.HeightMap[x, y] == 0)
+                    {
+                        map[x, y] = new Water(x, y);
+                    }
+                    else
+                    {
+                        Terrain terrain = new(x, y, context.HeightMap[x, y])
+                        {
+                            Trees = context.ForestMap[x, y]
+                        };
+                        map[x, y] = terrain;
+                    }
                 }
             }
-            return structureMap;
+            return map;
         }
 
         private (SiteEntity se, IndustryEntity ie) GenerateRandomEntityPair()
@@ -177,6 +209,12 @@ namespace TransportTycoon.MapData.MapGenerator
             {
                 (SiteEntity se, IndustryEntity ie) => _random.Next(0, 2) == 0 ? se : ie
             };
+        }
+
+        private void Array2DCopy<T>(T[,] source, T[,] destination, int size)
+        {
+            int totalBytes = source.Length * size;
+            Buffer.BlockCopy(source, 0, destination, 0, totalBytes);
         }
         #endregion
     }

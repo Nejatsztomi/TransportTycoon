@@ -5,17 +5,20 @@ namespace TransportTycoon.Model
     public abstract class Bus : Vehicle
     {
         #region Field
-        public static LoadType AcceptedLoad { get; } = LoadType.People;
+        protected Bus()
+        {
+            AcceptedGoods = [LoadType.People];
+        }
         #endregion 
     }
 
-    public class SmallBus : Bus
+    public sealed class SmallBus : Bus
     {
         #region Constructor
-        public SmallBus(Prouth route, int x, int y, Direction direction)
+        public SmallBus(int x, int y, Direction direction, Prouth route = null!) : base()
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 1;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
@@ -25,21 +28,21 @@ namespace TransportTycoon.Model
             CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
-            Route = route;
+            Prouth = route;
             X = x;
             Y = y;
-            Direction = direction; //get info from route?      
+            Direction = direction; //get info from route?
         }
         #endregion
     }
 
-    public class BigBus : Bus
+    public sealed class BigBus : Bus
     {
         #region Constructor
-        public BigBus(Prouth route, int x, int y, Direction direction)
+        public BigBus(int x, int y, Direction direction, Prouth route = null!) : base()
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 1;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
@@ -49,7 +52,7 @@ namespace TransportTycoon.Model
             CurrentSpeed = TopSpeed;
             CurrentLoad = null;
             CurrentCapacity = 0;
-            Route = route;
+            Prouth = route;
             X = x;
             Y = y;
             Direction = direction; //get info from route?      
