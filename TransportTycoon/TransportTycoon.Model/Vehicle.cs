@@ -83,7 +83,7 @@ namespace TransportTycoon.Model
 
         public void Step()
         {
-            if(CurrentRoute is null) return;
+            if (CurrentRoute is null) return;
 
             Field? targetTile = TargetTile;
             if (targetTile == null) return;
@@ -93,7 +93,7 @@ namespace TransportTycoon.Model
 
             //check if we have arrived at the target tile
             double distanceToTarget = Math.Sqrt(Math.Pow(X - targetTile.X, 2) + Math.Pow(Y - targetTile.Y, 2));
-            if (distanceToTarget < 0.1 || distanceToTarget <=CurrentSpeed) //if we are close enough to the target tile, we consider that we have arrived
+            if (distanceToTarget < 0.1 || distanceToTarget <= CurrentSpeed) //if we are close enough to the target tile, we consider that we have arrived
             {
                 X = targetTile.X;
                 Y = targetTile.Y;
@@ -153,7 +153,7 @@ namespace TransportTycoon.Model
             if (CurrentRoute.Count > 0)
             {
                 // Cache the tiles for the very first edge
-                _currentEdgeTiles= [.. CurrentRoute[0].Roads];
+                _currentEdgeTiles = [.. CurrentRoute[0].Roads];
             }
         }
         /// <summary>
@@ -178,7 +178,7 @@ namespace TransportTycoon.Model
             }
             StartDriving(CurrentRoute ?? []);
         }
-        
+
         /// <summary>
         /// Recalculates the current route.
         /// </summary>
@@ -226,15 +226,15 @@ namespace TransportTycoon.Model
             _currentEdgeTiles = null;
             AdvanceProuth();
         }
-        private void UpdateDirection(Field target) 
+        private void UpdateDirection(Field target)
         {
-            if(target.X<MapX) Direction = Direction.Up;
-            else if(target.X>MapX) Direction = Direction.Down;
-            else if(target.Y<MapY) Direction = Direction.Left;
-            else if(target.Y>MapY) Direction = Direction.Right;
+            if (target.X < MapX) Direction = Direction.Up;
+            else if (target.X > MapX) Direction = Direction.Down;
+            else if (target.Y < MapY) Direction = Direction.Left;
+            else if (target.Y > MapY) Direction = Direction.Right;
         }
 
-        private void MoveTowardsTarget(Field target) 
+        private void MoveTowardsTarget(Field target)
         {
             UpdateDirection(target);
             switch (Direction)
@@ -265,7 +265,7 @@ namespace TransportTycoon.Model
                 _currentTileIdx = 0;
 
                 //check if we have more edges in the current route
-                if (CurrentRoute != null && _currentEdgeIdx< CurrentRoute.Count)
+                if (CurrentRoute != null && _currentEdgeIdx < CurrentRoute.Count)
                 {
                     _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
                 }
@@ -275,7 +275,7 @@ namespace TransportTycoon.Model
                 }
             }
         }
-        
+
         /// <summary>
         /// Gets the next pair of nodes representing the start and end stops for the next route.
         /// </summary>
@@ -306,7 +306,7 @@ namespace TransportTycoon.Model
             _currentStopIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
         }
 
-        
+
         #endregion
     }
 }

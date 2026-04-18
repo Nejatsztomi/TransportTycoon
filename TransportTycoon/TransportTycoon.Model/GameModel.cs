@@ -701,8 +701,8 @@ namespace TransportTycoon.Model
             Field? newField = vehicle.TargetTile;
 
             //if the target field is out of bounds or not an infrastructure, the vehicle should stop and not move
-            if (newField == null||
-                0> newField.X || newField.X >=Map.Height ||
+            if (newField == null ||
+                0 > newField.X || newField.X >= Map.Height ||
                 0 > newField.Y || newField.Y >= Map.Width ||
                 newField is not Infrastructure)
             {
