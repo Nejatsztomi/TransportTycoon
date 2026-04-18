@@ -245,18 +245,19 @@
         {
             if (ConsumeCapacity == 0 || CurrentCapacity == MaxCapacity) return;
 
-            double multiplier = GetMultiplier();
-            int production = (int)Math.Round(Scaler * ConsumeCapacity * Productivity * multiplier);
+            int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
+
+            if (ConsumeCapacity < production) production = ConsumeCapacity;
 
             if (CurrentCapacity + production > MaxCapacity)
             {
+                ConsumeCapacity -= MaxCapacity - CurrentCapacity;
                 CurrentCapacity = MaxCapacity;
-                ConsumeCapacity = (int)Math.Round((production / Scaler) / (Productivity * multiplier));
             }
             else
             {
+                ConsumeCapacity -= production;
                 CurrentCapacity += production;
-                ConsumeCapacity = 0;
             }
         }
         public void SetConsumeCapacity(int value)
