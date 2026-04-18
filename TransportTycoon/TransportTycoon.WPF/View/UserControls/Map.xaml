@@ -129,7 +129,7 @@
                                                 </Style>
                                             </Border.Style>
 
-                                            <TextBlock Text="{Binding SelectedOrder}"
+                                            <TextBlock Text="{Binding SelectedOrder, TargetNullValue=''}"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"
                                                        FontWeight="Bold" FontSize="32"/>
                                         </Border>

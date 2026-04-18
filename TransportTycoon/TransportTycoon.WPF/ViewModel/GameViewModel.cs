@@ -95,7 +95,6 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_SelectedStopFieldsChanged(object? _1, List<Stop> list)
         {
-            //if (list is null) return;
             foreach (var tile in Tiles)
             {
                 tile.IsSelected = list.Any(t => t.X == tile.X && t.Y == tile.Y);
