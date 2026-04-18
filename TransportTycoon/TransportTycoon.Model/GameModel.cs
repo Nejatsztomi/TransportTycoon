@@ -187,9 +187,10 @@ namespace TransportTycoon.Model
                 }
                 )];
 
+
             GameSaveData data = new()
             {
-                MapContext = Map.Context,
+                MapContextData = new(Map.Context),
                 GameTime = GameTime,
                 PlayerBalance = Balance,
 
@@ -209,7 +210,7 @@ namespace TransportTycoon.Model
             Balance = data.PlayerBalance;
             GameTime = data.GameTime;
 
-            Map.Context = data.MapContext;
+            Map.Context = new(data.MapContextData);
             Map.GenerateMap();
 
             data.ModifiedTiles.ForEach(tile =>

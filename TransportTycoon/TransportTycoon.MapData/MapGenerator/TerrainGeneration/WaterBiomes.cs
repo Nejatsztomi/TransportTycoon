@@ -2,31 +2,53 @@
 {
     public static class WaterBiomes
     {
-        #region Biomes
-        public static IWaterBiome Wet { get; } = new Wet();
-        public static IWaterBiome Normal { get; } = new Normal();
-        public static IWaterBiome Dry { get; } = new Dry();
+        #region Public fields
+        public readonly static IWaterBiome Wet = new Wet();
+        public readonly static IWaterBiome Normal = new Normal();
+        public readonly static IWaterBiome Dry = new Dry();
+        #endregion
+
+        #region Private fields
+        private static readonly Dictionary<string, IWaterBiome> _registry = new()
+        {
+            { Wet.Id, Wet },
+            { Normal.Id, Normal },
+            { Dry.Id, Dry }
+        };
+        #endregion
+
+        #region Public methods
+        public static IWaterBiome GetById(string id)
+        {
+            if (_registry.TryGetValue(id, out var biome))
+                return biome;
+
+            return Normal;
+        }
         #endregion
     }
 
-    internal class Wet : IWaterBiome
+    internal readonly record struct Wet : IWaterBiome
     {
         #region Properties
-        public float WaterLevel { get; } = 0.75f;
+        public readonly string Id => nameof(Wet);
+        public readonly float WaterLevel => 0.75f;
         #endregion
     }
 
-    internal class Normal : IWaterBiome
+    internal readonly record struct Normal : IWaterBiome
     {
         #region Properties
-        public float WaterLevel { get; } = 0.5f;
+        public readonly string Id => nameof(Normal);
+        public readonly float WaterLevel => 0.5f;
         #endregion
     }
 
-    internal class Dry : IWaterBiome
+    internal readonly record struct Dry : IWaterBiome
     {
         #region Properties
-        public float WaterLevel { get; } = 0.25f;
+        public readonly string Id => nameof(Dry);
+        public readonly float WaterLevel => 0.25f;
         #endregion
     }
 }
