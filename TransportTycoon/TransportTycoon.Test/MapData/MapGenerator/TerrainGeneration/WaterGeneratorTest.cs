@@ -30,7 +30,7 @@ public class WaterGeneratorTest
     {
         private IWaterGenerator _waterGenerator = null!;
         private MapGenerationContext _context = default;
-        private int[,] _heightMap = null!;
+        private float[,] _heightMap = null!;
         private bool[,] _waterMap = null!;
 
         private INoiseGenerator GetMockedNoiseGenerator()
@@ -47,15 +47,15 @@ public class WaterGeneratorTest
             return noiseGenerator_mock;
         }
 
-        private int[,] GenerateHeightMap(int width, int height, int extraHeight = 1)
+        private float[,] GenerateHeightMap(int width, int height, int extraHeight = 1)
         {
-            int[,] heightMap = new int[width, height];
+            float[,] heightMap = new float[width, height];
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
                     // With ExtraHeight, we can create some higher terrain for testing (e.g., all heights = 4, when extraHeight = 4)
-                    heightMap[x, y] = 4 - (extraHeight * (x + y)) % 4; // Heights 1-4
+                    heightMap[x, y] = (4 - (extraHeight * (x + y)) % 4) / 4f; // Heights 1-4
                 }
             }
             return heightMap;
@@ -89,7 +89,7 @@ public class WaterGeneratorTest
         {
             // Arrange - Create a height map with all high terrain (height >= 2)
             MapGenerationContext smallContext = new(10, 10, 42, new MapGenerationSettings());
-            int[,] highHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height, extraHeight: 3); // All heights will be 3 or 4
+            float[,] highHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height, extraHeight: 4); // All heights will be 3 or 4
             bool[,] waterMap = new bool[smallContext.Width, smallContext.Height];
 
             // Act
@@ -112,7 +112,7 @@ public class WaterGeneratorTest
         {
             // Arrange - Create height map with clear terrain height variation
             MapGenerationContext smallContext = new(10, 10, 42, new MapGenerationSettings());
-            int[,] variableHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height);
+            float[,] variableHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height);
             bool[,] waterMap = new bool[smallContext.Width, smallContext.Height];
 
             // Act

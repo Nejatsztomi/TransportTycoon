@@ -2,7 +2,7 @@
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
-    public interface ICityGenerator
+    public interface ICityGenerator : IMapPluginGenerator
     {
         public void GenerateCity(BuildingEntity city, MapGenerationContext context);
     }

@@ -5,7 +5,7 @@ namespace TransportTycoon.MapData.MapGenerator
     public static class MapGenerationSettingsDefaults
     {
         // Water generation
-        public const int RiverCount = 3;
+        public const int RiverCount = 10;
         public const int MinRiverWidth = 2;
         public const int MaxRiverWidth = 5;
         public static readonly IWaterBiome WaterBiome = WaterBiomes.Normal;

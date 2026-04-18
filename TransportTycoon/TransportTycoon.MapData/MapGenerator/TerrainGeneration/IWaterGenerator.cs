@@ -1,7 +1,7 @@
 ﻿namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
-    public interface IWaterGenerator
+    public interface IWaterGenerator : IMapPluginGenerator
     {
-        public bool[,] GenerateWaterMap(int[,] heightMap, bool[,] waterMap, MapGenerationContext context);
+        public bool[,] GenerateWaterMap(float[,] noiseMap, bool[,] waterMap, MapGenerationContext context);
     }
 }

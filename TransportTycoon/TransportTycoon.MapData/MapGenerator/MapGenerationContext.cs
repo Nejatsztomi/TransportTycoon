@@ -3,10 +3,15 @@
     public readonly record struct MapGenerationContext
     {
         #region Properties
-        public int Width { get; }
-        public int Height { get; }
-        public int Seed { get; }
-        public MapGenerationSettings Settings { get; }
+        public readonly int Width;
+        public readonly int Height;
+        public readonly int Seed;
+        public readonly MapGenerationSettings Settings;
+        public float[,] NoiseMap { get; }
+        public int[,] HeightMap { get; }
+        public bool[,] WaterMap { get; }
+        public int[,] ForestMap { get; }
+        public bool[,] StructureMap { get; }
         #endregion
 
         #region Constructors
@@ -26,15 +31,15 @@
             Height = height;
             Seed = seed;
             Settings = settings;
+
+            NoiseMap = new float[width, height];
+            HeightMap = new int[width, height];
+            WaterMap = new bool[width, height];
+            ForestMap = new int[width, height];
+            StructureMap = new bool[width, height];
         }
 
-        public MapGenerationContext()
-        {
-            Width = 100;
-            Height = 100;
-            Seed = 0;
-            Settings = new();
-        }
+        public MapGenerationContext() : this(100, 100, 0, new MapGenerationSettings()) { }
         #endregion
     };
 }

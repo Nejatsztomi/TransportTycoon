@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData.MapGenerator.CoordinateHasher;
+﻿using System.Runtime.CompilerServices;
+using TransportTycoon.MapData.MapGenerator.CoordinateHasher;
 
 namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
 {
@@ -14,6 +15,10 @@ namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
         private readonly ICoordinateHasher _hasher = new BasicCoordinateHasher();
         #endregion
 
+        #region Properties
+        public GenerationPhase Phase => GenerationPhase.Noise;
+        #endregion
+
         #region Constructors
         public ValueNoiseGenerator(float frequency = 0.05f)
         {
@@ -23,6 +28,27 @@ namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
 
         #region Public methods
         public float GenerateNoise(float x, float y, int seed)
+        {
+            return CalculateNoise(x, y, seed);
+        }
+
+        public float[,] GenerateNoiseMap(int width, int height, int seed)
+        {
+            float[,] noiseMap = new float[width, height];
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    noiseMap[i, j] = CalculateNoise(i, j, seed);
+                }
+            }
+            return noiseMap;
+        }
+        #endregion
+
+        #region Private methods
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private float CalculateNoise(float x, float y, int seed)
         {
             float scaledX = x * _frequency;
             float scaledY = y * _frequency;
@@ -46,11 +72,11 @@ namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
 
             return Lerp(top_blend, bottom_blend, v);
         }
-        #endregion
 
-        #region Private methods
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private float Lerp(float a, float b, float t) => a + t * (b - a);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private float Fade(float t) => t * t * (3f - 2f * t);
         #endregion
     }
