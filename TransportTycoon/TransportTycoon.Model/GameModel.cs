@@ -791,7 +791,18 @@ namespace TransportTycoon.Model
 
         private void AllProduction()
         {
-
+            HashSet<BuildingEntity> buildingEntities = [];
+            for (int i = 0; i < Map.Height; i++)
+            {
+                for (int j = 0; j < Map.Width; j++)
+                {
+                    if (Map[i, j] is BuildingBlocks b) buildingEntities.Add(b.BuildingEntity);
+                }
+            }
+            foreach (var item in buildingEntities)
+            {
+                item.Production();
+            }
         }
         #endregion
 
