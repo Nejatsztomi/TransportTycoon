@@ -610,10 +610,8 @@ namespace TransportTycoon.Model
             {
                 if (vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
                 {
-                    // 1. A régi csomópontok alapján lekérjük a fizikai Stop mezőket a térképről
                     List<Stop> stopFields = ProuthUtil.ConvertNodestoStopTiles(vehicle.Prouth.Stops, Map);
 
-                    // 2. Készítünk egy új útvonalat, ami már az ÚJ GraphNetwork csomópontjait használja
                     vehicle.Prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stopFields, GraphNetwork));
                 }
             }
@@ -695,7 +693,7 @@ namespace TransportTycoon.Model
             //the vehicle should start
             if (vehicle.CurrentRoute == null && vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
             {
-                
+                vehicle.SetPathFinder(_pathFinder);
                 vehicle.GetNextRoute(_pathFinder);
 
                 if (vehicle.CurrentRoute == null) return;

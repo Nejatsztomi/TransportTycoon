@@ -36,6 +36,7 @@ namespace TransportTycoon.Model
         /// The current edge's tiles.
         /// </summary>
         private List<Field>? _currentEdgeTiles = null;
+        private IPathFinder? _pathFinder;
         #endregion
 
         #region Properties
@@ -98,8 +99,8 @@ namespace TransportTycoon.Model
                 Y = targetTile.Y;
                 AdvanceToNextTile();
 
-                Field? targetTile3 = TargetTile;
-                if (targetTile3 == null) return;
+                targetTile = TargetTile;
+                if (targetTile == null) return;
 
                 //update the direction
                 UpdateDirection(targetTile);
@@ -110,8 +111,8 @@ namespace TransportTycoon.Model
             //take the step
             MoveTowardsTarget(targetTile);
 
-            Field? targetTile2 = TargetTile;
-            if (targetTile2 == null) return;
+            targetTile = TargetTile;
+            if (targetTile == null) return;
 
             //update the direction
             UpdateDirection(targetTile);
@@ -177,7 +178,7 @@ namespace TransportTycoon.Model
             }
             StartDriving(CurrentRoute ?? new List<Edge>());
         }
-
+        
         /// <summary>
         /// Recalculates the current route.
         /// </summary>
@@ -212,7 +213,10 @@ namespace TransportTycoon.Model
             CurrentRoute = newRoute;
         }
         
-        
+        public void SetPathFinder(IPathFinder pathFinder)
+        {
+            _pathFinder = pathFinder;
+        }
         #endregion
 
         #region Private method
@@ -254,31 +258,29 @@ namespace TransportTycoon.Model
                     break;
             }
         }
-        private void AdvanceToNextTile() 
+        private void AdvanceToNextTile()
         {
             if (_currentEdgeTiles == null) return;
 
             _currentTileIdx++;
 
-            if(_currentTileIdx>= _currentEdgeTiles.Count)
+            if (_currentTileIdx >= _currentEdgeTiles.Count)
             {
                 _currentEdgeIdx++;
-                if (CurrentRoute != null && _currentEdgeIdx + 1 < CurrentRoute.Count)
+                _currentTileIdx = 0;
+
+                //check if we have more edges in the current route
+                if (CurrentRoute != null && _currentEdgeIdx< CurrentRoute.Count)
+                {
+                    _currentEdgeTiles = CurrentRoute[_currentEdgeIdx].Roads.ToList();
+                }
+                else //if its the last edge, we reached the Stop
                 {
                     ArriveAtStop();
                 }
-                else //if its the last edge, but there are more stops in the prouth, we need to get the next route
-                {
-                    _currentEdgeIdx++;
-                    _currentTileIdx = 0;
-                    if (CurrentRoute != null) 
-                    {
-                        _currentEdgeTiles = CurrentRoute[_currentEdgeIdx].Roads.ToList();
-                    }
-                }
             }
         }
-
+        
         /// <summary>
         /// Gets the next pair of nodes representing the start and end stops for the next route.
         /// </summary>
