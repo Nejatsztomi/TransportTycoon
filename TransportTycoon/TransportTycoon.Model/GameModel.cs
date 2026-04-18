@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 using TransportTycoon.Model.Graph;
@@ -633,10 +634,21 @@ namespace TransportTycoon.Model
 
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
             if (selectedVehcile is null) return;
+            Debug.WriteLine("Vehicle candiate found at X={0}, Y={1}", x, y);
+            Debug.WriteLine("The select stop are located at:");
+            foreach (var stop in SelectedStopFields)
+            {
+                Debug.WriteLine("Stop at X={0}, Y={1}", x, y);
+            }
 
+            Debug.WriteLine("Converting stop tiles to nodes then creating Prouth...");
             Prouth prouth = new(ProuthUtil.ConvertStopTilesToNodes(SelectedStopFields, GraphNetwork));
+            Debug.WriteLine("Done!");
+
+            Debug.WriteLine("Assigned prouth with {0} stops to the vehicle.", prouth.Stops.Count);
             selectedVehcile.Prouth = prouth;
 
+            Debug.WriteLine("Resetting stop list and inkoving event");
             SelectedStopFields = [];
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }

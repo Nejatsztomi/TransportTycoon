@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -149,18 +150,22 @@ namespace TransportTycoon.WPF.ViewModel
                     break;
                 case 31:
                     Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
+                    Debug.WriteLine("Vehicle bought!");
                     break;
                 case 32:
                     Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
+                    Debug.WriteLine("Vehicle bought!");
                     break;
                 case 41:
                     Model.DefineRoute(tile.X, tile.Y);
+                    Debug.WriteLine("Route defined!");
                     break;
                 case 42:
                     Model.QueryRoute(tile.X, tile.Y);
                     break;
                 case 43:
                     Model.AssignRoute(tile.X, tile.Y);
+                    Debug.WriteLine("Route assigned!");
                     break;
                 case 44:
                     Model.DeleteRoute(tile.X, tile.Y);
