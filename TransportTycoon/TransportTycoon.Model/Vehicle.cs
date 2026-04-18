@@ -98,13 +98,25 @@ namespace TransportTycoon.Model
                 Y = targetTile.Y;
                 AdvanceToNextTile();
 
+                Field? targetTile3 = TargetTile;
+                if (targetTile3 == null) return;
+
+                //update the direction
+                UpdateDirection(targetTile);
+
                 return;
             }
 
             //take the step
             MoveTowardsTarget(targetTile);
 
-            
+            Field? targetTile2 = TargetTile;
+            if (targetTile2 == null) return;
+
+            //update the direction
+            UpdateDirection(targetTile);
+
+
         }
         /// <summary>
         /// Sets the current capacity of the vehicle, if the given quantity is between 0 and the maximum capacity of the vehicle. If the quantity is set to 0, the current load is also set to null.
