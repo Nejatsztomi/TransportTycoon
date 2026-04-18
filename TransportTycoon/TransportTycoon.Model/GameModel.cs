@@ -834,13 +834,13 @@ namespace TransportTycoon.Model
                                     if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
                                     {
                                         vehicleCanGive = vehicle.CurrentCapacity;
-                                        int buildingCanTake = industry.MaxConsumeCapacity - industry.ConsumeOccupancy;
+                                        int buildingCanTake = industry.MaxConsumeCapacity - industry.ConsumeCapacity;
                                         if (buildingCanTake >= vehicleCanGive)
                                         {
-                                            int buildingNewCapacity = industry.ConsumeOccupancy + vehicleCanGive;
+                                            int buildingNewCapacity = industry.ConsumeCapacity + vehicleCanGive;
                                             Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
-                                            industry.SetConsumeOccupancy(buildingNewCapacity);
+                                            industry.SetConsumeCapacity(buildingNewCapacity);
                                             vehicle.SetCurrentCapacity(0);
                                             vehicle.SetCurrentLoad(null);
 
@@ -851,7 +851,7 @@ namespace TransportTycoon.Model
                                             vehicleCanGive -= buildingCanTake;
                                             Balance += buildingCanTake * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
-                                            industry.SetConsumeOccupancy(industry.MaxConsumeCapacity);
+                                            industry.SetConsumeCapacity(industry.MaxConsumeCapacity);
                                             vehicle.SetCurrentCapacity(vehicleCanGive);
                                         }
                                     }

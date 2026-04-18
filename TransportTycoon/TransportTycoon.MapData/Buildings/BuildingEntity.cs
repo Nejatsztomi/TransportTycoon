@@ -227,8 +227,8 @@
     public abstract class IndustryEntity : BuildingEntity
     {
         #region Properties
-        public int ConsumeOccupancy { protected set; get; }
         public int MaxConsumeCapacity => 100;
+        public int ConsumeCapacity { protected set; get; }
         #endregion
 
         #region Constructors
@@ -242,24 +242,24 @@
         protected override void Production()
         {
             double multiplier = GetMultiplier();
-            int production = (int)Math.Round(Scaler * ConsumeOccupancy * Productivity * multiplier);
+            int production = (int)Math.Round(Scaler * ConsumeCapacity * Productivity * multiplier);
 
             if (CurrentCapacity + production > MaxCapacity)
             {
                 CurrentCapacity = MaxCapacity;
-                ConsumeOccupancy = (int)Math.Round((production / Scaler) / (Productivity * multiplier));
+                ConsumeCapacity = (int)Math.Round((production / Scaler) / (Productivity * multiplier));
             }
             else
             {
                 CurrentCapacity += production;
-                ConsumeOccupancy = 0;
+                ConsumeCapacity = 0;
             }
         }
-        public void SetConsumeOccupancy(int value)
+        public void SetConsumeCapacity(int value)
         {
             if (value >= 0)
             {
-                ConsumeOccupancy = value;
+                ConsumeCapacity = value;
             }
 
         }
