@@ -494,9 +494,9 @@ namespace TransportTycoon.WPF.View.UserControls
 
                 if (bridgeType is not null && _bridgeTextures.TryGetValue(bridgeType, out BitmapImage? texture))
                 {
-                    if (bridge.BridgeType == BridgeType.HorizontalGreenBridge
-                        || bridge.BridgeType == BridgeType.HorizontalYellowBridge
-                        || bridge.BridgeType == BridgeType.HorizontalRedBridge)
+                    if (bridge.BridgeType == BridgeType.VerticalGreenBridge
+                        || bridge.BridgeType == BridgeType.VerticalYellowBridge
+                        || bridge.BridgeType == BridgeType.VerticalRedBridge)
                     {
                         // Calculate the rotation center, match the size to the given rectangle
                         double centerX = baseRect.X + (baseRect.Width / 2);
