@@ -538,11 +538,11 @@ namespace TransportTycoon.WPF.View.UserControls
                 {
                     int rotation = vehicle.Direction switch
                     {
-                        Direction.Up => 0,
-                        Direction.Down => 180,
-                        Direction.Right => 90,
-                        Direction.Left => 270,
-                        _ => throw new NotImplementedException(),
+                        Direction.Down => 90, // balra
+                        Direction.Up => 270, // jobbra
+                        Direction.Right => 180, // fel
+                        Direction.Left => 0, // le
+                        _ => 0,
                     };
 
                     // Calculate the rotation center, match the size to the given rectangle
