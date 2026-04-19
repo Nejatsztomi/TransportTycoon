@@ -525,11 +525,37 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <param name="visibleWorldRect">The visible area of the world, used for culling.</param>
         private void DrawVehiclesLayer(DrawingContext ctx, Rect visibleWorldRect)
         {
-            if (Vehicles == null) return;
+            if (Vehicles is null) return;
+
+            const double LaneOffsetPixels = 10.0;
 
             foreach (Vehicle vehicle in Vehicles)
             {
-                Rect vehicleRect = new(vehicle.X * TileSize, vehicle.Y * TileSize, TileSize, TileSize);
+                double shiftX = 0.0;
+                double shiftY = 0.0;
+
+                switch (vehicle.Direction)
+                {
+                    case Direction.Right: // fel
+                        shiftX = -LaneOffsetPixels;
+                        break;
+                    case Direction.Left: // le
+                        shiftX = LaneOffsetPixels;
+                        break;
+                    case Direction.Down: // balra
+                        shiftY = LaneOffsetPixels;
+                        break;
+                    case Direction.Up: // jobbra
+                        shiftY = -LaneOffsetPixels;
+                        break;
+                    default:
+                        break;
+                }
+
+                double pixelX = vehicle.X * TileSize + shiftX;
+                double pixelY = vehicle.Y * TileSize + shiftY;
+
+                Rect vehicleRect = new(pixelX, pixelY, TileSize, TileSize);
 
                 // Culling check
                 if (!visibleWorldRect.IntersectsWith(vehicleRect)) return;
