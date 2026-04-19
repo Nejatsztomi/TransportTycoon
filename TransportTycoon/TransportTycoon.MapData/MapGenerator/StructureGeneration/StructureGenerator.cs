@@ -134,7 +134,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             {
                 for (int j = 0; j < buildingEntity.Height; j++)
                 {
-                    sumHeight = heightMap[startX + i, startY + j];
+                    sumHeight += heightMap[startX + i, startY + j];
                 }
             }
 
