@@ -365,14 +365,11 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs e)
         {
             //var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
-
             //tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
         }
 
         private void Model_VehicleChanged(object? _1, Vehicle e)
         {
-            //var vehicle = Vehicles.FirstOrDefault(v => v.Vehicle == e);
-            //vehicle?.RefreshVehicle(e);
             OnPropertyChanged(nameof(Vehicles));
         }
 
