@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData.Buildings;
+﻿using System.Diagnostics;
+using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
@@ -42,7 +43,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
                 if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
                 {
-                    buildingEntity.GenerateBuildingPoints(startX, startY);
+                    buildingEntity.GenerateBuildingPoints(startX, startY, heightMap);
 
                     FillStructureMap(structureMap, startX, startY, buildingEntity);
 
@@ -60,6 +61,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
         public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY)
         {
+            Debug.WriteLine($"Force placing {buildingEntity.GetType().Name} at ({centerX}, {centerY})");
             if (centerX >= 0 && centerY >= 0 && context.Settings.MaxCityRange > 0)
             {
                 ForcePlaceNear(buildingEntity, heightMap, waterMap, structureMap, centerX, centerY, context);
@@ -145,7 +147,10 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                     heightMap[startX + i, startY + j] = targetHeight;
                 }
             }
-            buildingEntity.GenerateBuildingPoints(startX, startY);
+
+            Debug.WriteLine($"Force placing {buildingEntity.GetType().Name} at ({startX}, {startY}) with terraforming to height {targetHeight}");
+
+            buildingEntity.GenerateBuildingPoints(startX, startY, heightMap);
             FillStructureMap(structureMap, startX, startY, buildingEntity);
 
             _cityGenerator.GenerateCity(buildingEntity, context);
@@ -217,7 +222,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
                 if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
                 {
-                    buildingEntity.GenerateBuildingPoints(startX, startY);
+                    buildingEntity.GenerateBuildingPoints(startX, startY, heightMap);
                     FillStructureMap(structureMap, startX, startY, buildingEntity);
                     return true;
                 }
