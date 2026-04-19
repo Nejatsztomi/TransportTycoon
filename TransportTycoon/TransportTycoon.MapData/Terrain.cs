@@ -1,10 +1,15 @@
 ﻿namespace TransportTycoon.MapData
 {
-    public sealed class Terrain : Field
+    public struct Terrain : IField
     {
         #region Fields
         public int Trees { set; get; }
-        public override bool Modifiable { get; protected set; }
+        public readonly bool Modifiable => true;
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Height { get; set; }
+        public FieldType FieldType { get; set; }
+        public readonly bool IsFull => Trees == 4;
         #endregion
 
         public Terrain(int x, int y, int height)
@@ -14,7 +19,6 @@
             Height = height;
             Trees = 0;
             SetFieldType();
-            Modifiable = true;
         }
 
         #region Public methods
@@ -37,14 +41,12 @@
             return true;
         }
 
-        public bool IsFull => Trees == 4;
-
         public void SpreadForest()
         {
             Trees = 1;
         }
 
-        public override int GetTrees() => Trees;
+        public readonly int GetTrees() => Trees;
         #endregion
 
         #region Private methods

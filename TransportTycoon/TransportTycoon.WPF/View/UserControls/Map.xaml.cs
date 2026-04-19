@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF.View.UserControls
@@ -10,70 +11,260 @@ namespace TransportTycoon.WPF.View.UserControls
     /// </summary>
     public partial class Map : UserControl
     {
+        #region Private fields
+        private Point? _dragStartPoint = null;
+        private Point _dragStartCamera;
+        #endregion
+
+        #region Bindings
+        /// <summary>
+        /// A binding for the viewmodel.
+        /// </summary>
+        /// <remarks>
+        /// This is need properly linking the <see cref="GameViewModel"/> to this UserControl.
+        /// We need to subscribe to the <see cref="GameViewModel.MapUpdated"/> event to know when to redraw the map.
+        /// </remarks>
+        public static readonly DependencyProperty ViewModelProperty =
+            DependencyProperty.Register(
+                nameof(ViewModel),
+                typeof(GameViewModel),
+                typeof(Map),
+                new PropertyMetadata(null, OnViewModelChanged));
+        #endregion
+
         #region Properties
-        private Point? DragStartPoint { get; set; } = null;
-        private Point? DragStartOffset { get; set; } = null;
+        /// <summary>
+        /// The underlying property for the <see cref="ViewModelProperty"/>.
+        /// </summary>
+        public GameViewModel? ViewModel
+        {
+            get => (GameViewModel?)GetValue(ViewModelProperty);
+            set => SetValue(ViewModelProperty, value);
+        }
+
+        /// <summary>
+        /// Exposes the internal <see cref="FastMapRenderer"/> to allow other controls (like the minimap) to link to it.
+        /// </summary>
+        public FastMapRenderer GameMapRenderer => InternalGameMapRenderer;
         #endregion
 
         #region Constructors
         public Map()
         {
             InitializeComponent();
+
+            CompositionTarget.Rendering += OnFrameRendered;
+        }
+        #endregion
+
+        #region Private methods
+        /// <summary>
+        /// Calculates the tile coordinates corresponding to the specified mouse position in screen space.
+        /// </summary>
+        /// <param name="mousePos">The mouse position in screen coordinates for which to determine the tile coordinates.</param>
+        /// <returns>A tuple containing the X and Y indices of the tile at the specified mouse position.</returns>
+        private (int tileX, int tileY) GetTileCoordinatesFromMousePosition(Point mousePos)
+        {
+            (double worldX, double worldY) = GetWorldCoordinatesFromMousePosition(mousePos);
+            int tileX = (int)worldX / FastMapRenderer.TileSize;
+            int tileY = (int)worldY / FastMapRenderer.TileSize;
+            return (tileX, tileY);
+        }
+
+        /// <summary>
+        /// Calculates the world coordinates corresponding to the specified mouse position on the screen.
+        /// </summary>
+        /// <param name="mousePos">The position of the mouse pointer in screen coordinates, relative to the top-left corner of the viewport.</param>
+        /// <returns>A tuple containing the X and Y coordinates in world space that correspond to the given mouse position.</returns>
+        private (double worldX, double worldY) GetWorldCoordinatesFromMousePosition(Point mousePos)
+        {
+            double worldX = InternalGameMapRenderer.CameraX + (mousePos.X / InternalGameMapRenderer.ZoomLevel);
+            double worldY = InternalGameMapRenderer.CameraY + (mousePos.Y / InternalGameMapRenderer.ZoomLevel);
+            return (worldX, worldY);
+        }
+
+        /// <summary>
+        /// Determines whether the specified tile coordinates are within the bounds of the current game map.
+        /// </summary>
+        /// <param name="tileX">The tile's X-coordinate to check.</param>
+        /// <param name="tileY">The tile's Y-coordiante to check.</param>
+        /// <returns><see langword="true"/> if both tileX and tileY are within the valid range of the map; otherwise, <see langword="false"/>.</returns>
+        private bool IsInMapBounds(int tileX, int tileY)
+        {
+            int mapWidth = InternalGameMapRenderer.Map.GetLength(0);
+            int mapHeight = InternalGameMapRenderer.Map.GetLength(1);
+            return (0 <= tileX && tileX < mapWidth) && (0 <= tileY && tileY < mapHeight);
         }
         #endregion
 
         #region Private event methods
-        private void MapScrollViewer_PreviewMouseWheel(object? _1, MouseWheelEventArgs e)
+        /// <summary>
+        /// WPF's game loop event. We use it to trigger redraws of the map.
+        /// </summary>
+        /// <param name="_1"></param>
+        /// <param name="_2"></param>
+        private void OnFrameRendered(object? _1, EventArgs _2)
         {
-            e.Handled = true;
-            // Zoom with touchpad: Pinch-to-zoom
-            // Zoom with mouse: Ctrl+Scroll wheel
-            if (Keyboard.Modifiers == ModifierKeys.Control)
-            {
-                e.Handled = true;
+            InternalGameMapRenderer.Redraw();
+        }
 
-                if (DataContext is GameViewModel vm)
+        /// <summary>
+        /// Unload event to prevent memory leaks.
+        /// </summary>
+        /// <param name="_1"></param>
+        /// <param name="_2"></param>
+        private void UserControl_Unloaded(object? _1, EventArgs _2)
+        {
+            CompositionTarget.Rendering -= OnFrameRendered;
+        }
+
+        /// <summary>
+        /// The method which is triggered when the <see cref="ViewModel"/> property changes.
+        /// It is responsible for subscribing to the new viewmodel's events and unsubscribing from the old one.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var map = (Map)d;
+            GameViewModel? oldVm = e.OldValue as GameViewModel;
+            GameViewModel? newVm = e.NewValue as GameViewModel;
+
+            oldVm?.MapUpdated -= map.GameViewModel_MapUpdated;
+            newVm?.MapUpdated += map.GameViewModel_MapUpdated;
+        }
+
+        /// <summary>
+        /// An eventhandler to issue a map redraw.
+        /// </summary>
+        private void GameViewModel_MapUpdated()
+        {
+            InternalGameMapRenderer.Redraw();
+        }
+
+        /// <summary>
+        /// Eventhandler for Mouse Right Button press.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseRightButtonDown(object? _, MouseButtonEventArgs e)
+        {
+            _dragStartPoint = e.GetPosition(this);
+            _dragStartCamera = new(InternalGameMapRenderer.CameraX, InternalGameMapRenderer.CameraY);
+            InternalGameMapRenderer.CaptureMouse();
+        }
+
+        /// <summary>
+        /// An eventhandler for Mouse Movement.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseMove(object? _, MouseEventArgs e)
+        {
+            if (_dragStartPoint.HasValue)
+            {
+                Point screenMousePos = e.GetPosition(this);
+
+                // Calculate how much the mouse has moved in world coordinates
+                double deltaX = (screenMousePos.X - _dragStartPoint.Value.X) / InternalGameMapRenderer.ZoomLevel;
+                double deltaY = (screenMousePos.Y - _dragStartPoint.Value.Y) / InternalGameMapRenderer.ZoomLevel;
+
+                //// Calculate camera position based on the mouse movement
+                double desiredCameraX = _dragStartCamera.X - deltaX;
+                double desiredCameraY = _dragStartCamera.Y - deltaY;
+
+                InternalGameMapRenderer.SetCameraView(desiredCameraX, desiredCameraY, InternalGameMapRenderer.ZoomLevel);
+            }
+            else
+            {
+                Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
+
+                (int tileX, int tileY) = GetTileCoordinatesFromMousePosition(screenMousePos);
+
+                if (IsInMapBounds(tileX, tileY))
                 {
-                    if (e.Delta > 0 && vm.ZoomLevel < 3.0)
+                    if (InternalGameMapRenderer.HoverX != tileX || InternalGameMapRenderer.HoverY != tileY)
                     {
-                        vm.ZoomLevel += 0.1;
+                        InternalGameMapRenderer.HoverX = tileX;
+                        InternalGameMapRenderer.HoverY = tileY;
                     }
-                    else if (e.Delta < 0 && vm.ZoomLevel > 0.4)
+                }
+                else
+                {
+                    if (InternalGameMapRenderer.HoverX != -1)
                     {
-                        vm.ZoomLevel -= 0.1;
+                        InternalGameMapRenderer.HoverX = -1;
+                        InternalGameMapRenderer.HoverY = -1;
                     }
                 }
             }
         }
 
-        private void MapScrollViewer_PreviewMouseRightButtonDown(object? _1, MouseButtonEventArgs e)
+        /// <summary>
+        /// An eventhandler for Mouse Right Button release.
+        /// </summary>
+        /// <param name="_1"></param>
+        /// <param name="_2"></param>
+        private void GameMapRenderer_PreviewMouseRightButtonUp(object? _1, MouseButtonEventArgs _2)
         {
-            DragStartPoint = e.GetPosition(MapScrollViewer);
-            DragStartOffset = new(MapScrollViewer.HorizontalOffset, MapScrollViewer.VerticalOffset);
-            MapScrollViewer.CaptureMouse();
-        }
-
-        private void MapScrollViewer_PreviewMouseMove(object? _1, MouseEventArgs e)
-        {
-            if (DragStartPoint.HasValue && DragStartOffset.HasValue)
+            if (_dragStartPoint.HasValue)
             {
-                Point currentPoint = e.GetPosition(MapScrollViewer);
-
-                double deltaX = currentPoint.X - DragStartPoint.Value.X;
-                double deltaY = currentPoint.Y - DragStartPoint.Value.Y;
-
-                MapScrollViewer.ScrollToHorizontalOffset(DragStartOffset.Value.X - deltaX);
-                MapScrollViewer.ScrollToVerticalOffset(DragStartOffset.Value.Y - deltaY);
+                InternalGameMapRenderer.ReleaseMouseCapture();
+                _dragStartPoint = null;
             }
         }
 
-        private void MapScrollViewer_PreviewMouseRightButtonUp(object? _1, MouseButtonEventArgs _2)
+        /// <summary>
+        /// An eventhandler for Mouse Wheel Scrolling.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseWheel(object? _, MouseWheelEventArgs e)
         {
-            if (DragStartPoint.HasValue)
+            const double ZOOM_IN_STEP = 1.1;
+            const double ZOOM_OUT_STEP = 1 / 1.1;
+
+            double zoomFactor = e.Delta > 0 ? ZOOM_IN_STEP : ZOOM_OUT_STEP;
+            double newZoomLevel = InternalGameMapRenderer.ZoomLevel * zoomFactor;
+
+            // Get mouse position
+            Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
+
+            (double wordX, double wordY) = GetWorldCoordinatesFromMousePosition(screenMousePos);
+
+            double desiredCameraX = wordX - (screenMousePos.X / newZoomLevel);
+            double desiredCameraY = wordY - (screenMousePos.Y / newZoomLevel);
+
+            InternalGameMapRenderer.SetCameraView(desiredCameraX, desiredCameraY, newZoomLevel);
+        }
+
+        /// <summary>
+        /// An eventhandler Left Mouse Button press.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseLeftButtonDown(object? _, MouseButtonEventArgs e)
+        {
+            Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
+
+            (int tileX, int tileY) = GetTileCoordinatesFromMousePosition(screenMousePos);
+
+            if (IsInMapBounds(tileX, tileY))
             {
-                MapScrollViewer.ReleaseMouseCapture();
-                DragStartPoint = null;
+                //InternalGameMapRenderer.SelectedTile = tileX;
+                //InternalGameMapRenderer.SelectedY = tileY;
+
+                if (DataContext is GameViewModel viewModel)
+                {
+                    viewModel.OnTileLeftClick(tileX, tileY);
+                }
             }
+            //else
+            //{
+            //    InternalGameMapRenderer.SelectedTile = -1;
+            //    InternalGameMapRenderer.SelectedY = -1;
+            //}
+        }
+
+        /// <summary>
+        /// An eventhandler Left Mouse Button release.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseLeftButtonUp(object? _1, MouseButtonEventArgs _2)
+        {
+            //InternalGameMapRenderer.SelectedTile = -1;
+            //InternalGameMapRenderer.SelectedY = -1;
         }
         #endregion
     }

@@ -2,6 +2,7 @@
 
 namespace TransportTycoon.WPF.ViewModel
 {
+    [Obsolete]
     public sealed class VehicleViewModel : ViewModelBase
     {
         #region Properties

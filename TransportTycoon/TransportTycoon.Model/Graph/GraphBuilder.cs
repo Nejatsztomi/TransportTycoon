@@ -20,7 +20,7 @@ namespace TransportTycoon.Model.Graph
             {
                 for (int y = 0; y < table.Height; y++)
                 {
-                    Field middleField = table[x, y];
+                    IField middleField = table[x, y];
 
                     if (middleField.FieldType == FieldType.Stop && !visitedFields.Contains((x, y)))
                     {
@@ -33,7 +33,7 @@ namespace TransportTycoon.Model.Graph
                         {
                             if (table.IsInBounds(x + dirx, y + diry))
                             {
-                                Field neighbourField = table[x + dirx, y + diry];
+                                IField neighbourField = table[x + dirx, y + diry];
                                 if (neighbourField.FieldType == FieldType.Road
                                     || neighbourField.FieldType == FieldType.Bridge
                                     || neighbourField.FieldType == FieldType.Stop)

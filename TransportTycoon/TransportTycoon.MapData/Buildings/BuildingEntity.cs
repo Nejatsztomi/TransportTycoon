@@ -28,7 +28,7 @@
         /// <summary>
         /// Stores the coordinates of the building on map
         /// </summary>
-        public Dictionary<(int X, int Y), Field> MapPoints { protected set; get; } = [];
+        public Dictionary<(int X, int Y), IField> MapPoints { protected set; get; } = [];
 
         public int Width { get; }
         public int Height { get; }

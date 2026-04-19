@@ -65,9 +65,18 @@
                 <usercontrols:LeftPanel Grid.Column="0"/>
 
                 <!-- Right panel -->
-                <usercontrols:Map Focusable="True" Grid.Column="2"/>
+                <usercontrols:Map x:Name="MainMapRenderer"
+                              ViewModel="{Binding}"
+                              Grid.Column="2"
+                              />
+                <usercontrols:MinimapControl
+                Grid.Column="2"
+                Margin="10"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                TargetRenderer="{Binding GameMapRenderer, ElementName=MainMapRenderer}"
+                />
             </Grid>
         </DockPanel>
     </Grid>
-
 </UserControl>

@@ -27,7 +27,7 @@ namespace TransportTycoon.Model.Graph
         /// </summary>
         /// <param name="currentVehicleTile">The current tile of the vehicle.</param>
         /// <returns>A tuple containing the <see cref="Node"/> to use and a <see langword="bool"> indicating if it is a ghost node.</returns>
-        public (Node? nodeToUse, bool isGhost) GetOrInjectGhostNode(Field currentVehicleTile)
+        public (Node? nodeToUse, bool isGhost) GetOrInjectGhostNode(IField currentVehicleTile)
         {
             if (_graph.GetNodeAt(currentVehicleTile.X, currentVehicleTile.Y) is Node realNode)
             {
@@ -39,7 +39,7 @@ namespace TransportTycoon.Model.Graph
             List<(int X, int Y)> validExits = GetValidExits(currentVehicleTile);
             foreach ((int x, int y) exit in validExits)
             {
-                (Node? hitNode, List<Field> pathTaken) = WalkToNextJunction(currentVehicleTile, exit);
+                (Node? hitNode, List<IField> pathTaken) = WalkToNextJunction(currentVehicleTile, exit);
 
                 if (hitNode is not null)
                 {
@@ -65,7 +65,7 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Private methods
-        private List<(int X, int Y)> GetValidExits(Field currentVehichleTile)
+        private List<(int X, int Y)> GetValidExits(IField currentVehichleTile)
         {
             (int dx, int dy)[] directions = [(0, -1), (0, 1), (-1, 0), (1, 0)];
             List<(int X, int Y)> validExits = [];
@@ -81,10 +81,10 @@ namespace TransportTycoon.Model.Graph
             return validExits;
         }
 
-        private (Node? endNode, List<Field> path) WalkToNextJunction(Field startTile, (int X, int Y) initialMomentum)
+        private (Node? endNode, List<IField> path) WalkToNextJunction(IField startTile, (int X, int Y) initialMomentum)
         {
-            List<Field> pathTaken = [startTile];
-            Field currentTile = startTile;
+            List<IField> pathTaken = [startTile];
+            IField currentTile = startTile;
             (int dx, int dy) momentum = initialMomentum;
 
             while (true)

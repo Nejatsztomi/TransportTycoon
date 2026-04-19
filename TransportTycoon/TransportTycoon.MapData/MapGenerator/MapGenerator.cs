@@ -47,7 +47,7 @@ namespace TransportTycoon.MapData.MapGenerator
         #endregion
 
         #region Public methods
-        public (Field[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
+        public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
         {
             var sortedGenerators = _generators.OrderBy(g => g.Phase).ToList();
 #pragma warning disable IDE0028 // Simplify collection initialization
@@ -96,7 +96,7 @@ namespace TransportTycoon.MapData.MapGenerator
             }
 
             _stopwatch.Restart();
-            Field[,] map = ConvertHeightMapToFields(context);
+            IField[,] map = ConvertHeightMapToFields(context);
             _stopwatch.Stop();
             Debug.WriteLine($"Map conversion took: {_stopwatch.ElapsedMilliseconds} ms");
 
@@ -155,7 +155,7 @@ namespace TransportTycoon.MapData.MapGenerator
             }
         }
 
-        private void PlaceDownStructuresOnMap(Field[,] map, List<BuildingEntity> structures)
+        private void PlaceDownStructuresOnMap(IField[,] map, List<BuildingEntity> structures)
         {
             structures.ForEach(structure =>
             {
@@ -169,9 +169,9 @@ namespace TransportTycoon.MapData.MapGenerator
             });
         }
 
-        private Field[,] ConvertHeightMapToFields(MapGenerationContext context)
+        private IField[,] ConvertHeightMapToFields(MapGenerationContext context)
         {
-            Field[,] map = new Field[context.Width, context.Height];
+            IField[,] map = new IField[context.Width, context.Height];
             for (int x = 0; x < context.Width; x++)
             {
                 for (int y = 0; y < context.Height; y++)

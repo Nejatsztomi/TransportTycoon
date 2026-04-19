@@ -36,7 +36,7 @@ namespace TransportTycoon.Model
         /// <summary>
         /// The current edge's tiles.
         /// </summary>
-        private List<Field>? _currentEdgeTiles = null;
+        private List<IField>? _currentEdgeTiles = null;
         #endregion
 
         #region Properties
@@ -69,7 +69,7 @@ namespace TransportTycoon.Model
         /// When a vehicle is marked as lost, it may require intervention to be moved back onto a valid path or to be removed from the game if it cannot be recovered.
         /// </summary>
         public bool IsLost { get; private set; } = false;
-        public Field? TargetTile
+        public IField? TargetTile
         {
             get
             {
@@ -91,7 +91,7 @@ namespace TransportTycoon.Model
         {
             if (CurrentRoute is null) return;
 
-            Field? targetTile = TargetTile;
+            IField? targetTile = TargetTile;
             if (targetTile == null) return;
 
             //update the direction
@@ -201,7 +201,7 @@ namespace TransportTycoon.Model
             if (CurrentRoute is null || _currentEdgeTiles is null) return;
             if (GetNextStopNodePair() is not (Node _, Node end)) return;
 
-            Field currentTile = _currentEdgeTiles[_currentTileIdx];
+            IField currentTile = _currentEdgeTiles[_currentTileIdx];
 
             (Node? startNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
 
@@ -238,7 +238,7 @@ namespace TransportTycoon.Model
         /// if the target tile is in a different direction than the current one, it updates the direction to face towards the target tile.
         /// </summary>
         /// <param name="target"></param>
-        private void UpdateDirection(Field target)
+        private void UpdateDirection(IField target)
         {
             if (target.X < MapX) Direction = Direction.Up;
             else if (target.X > MapX) Direction = Direction.Down;
@@ -253,7 +253,7 @@ namespace TransportTycoon.Model
         /// Up, Down, Left, or Right.</remarks>
         /// <param name="target">The field that the object is moving toward. This parameter determines the destination used to update the
         /// object's direction and position.</param>
-        private void MoveTowardsTarget(Field target)
+        private void MoveTowardsTarget(IField target)
         {
             UpdateDirection(target);
             switch (Direction)

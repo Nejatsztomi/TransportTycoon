@@ -18,7 +18,7 @@ namespace TransportTycoon.Model.Graph
         /// Also including the <see cref="StartNode"/> and <see cref="EndNode"/>.
         /// It is ordered from <see cref="StartNode"/> to <see cref="EndNode"/>.
         /// </summary>
-        public IEnumerable<Field> Roads { get; private set; }
+        public IEnumerable<IField> Roads { get; private set; }
         /// <summary>
         /// Gives the cost of the edge.
         /// </summary>
@@ -26,7 +26,7 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Constructors
-        public Edge(Node startNode, Node endNode, IEnumerable<Field> roads, double cost)
+        public Edge(Node startNode, Node endNode, IEnumerable<IField> roads, double cost)
         {
             StartNode = startNode;
             EndNode = endNode;

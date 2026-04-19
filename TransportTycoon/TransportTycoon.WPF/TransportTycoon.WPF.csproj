@@ -73,158 +73,158 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Images\Buttons\minus.png">
+    <Resource Include="Assets\Images\Buttons\minus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buttons\minus3.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Bridge\greenBridge.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\minus3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Bridge\redBridge.png">
+    </Resource>
+    <Resource Include="Assets\Images\Bridge\yellowBridge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Bridge\yellowBridge.png">
+    </Resource>
+    <Resource Include="Assets\Images\Bridge\greenBridge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buttons\pull.png">
+    </Resource>
+    <Resource Include="Assets\Images\Bridge\redBridge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buttons\push.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\pull.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buttons\route.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\push.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buttons\x.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\route.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Road\crossT.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Road\crossX.png">
+    </Resource>
+    <Resource Include="Assets\Images\Road\crossT.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Road\road.png">
+    </Resource>
+    <Resource Include="Assets\Images\Road\crossX.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Road\turn.png">
+    </Resource>
+    <Resource Include="Assets\Images\Road\road.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Stop\stop.png">
+    </Resource>
+    <Resource Include="Assets\Images\Road\turn.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\factory.png">
+    </Resource>
+    <Resource Include="Assets\Images\Stop\stop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\farm.png">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\factory.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\house.jpg">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\farm.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\lumbercamp.png">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\house.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\mill.png">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\lumbercamp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\oil.jpg">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\mill.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Structures\rubber.jpg">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\oil.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\field.png">
+    </Resource>
+    <Resource Include="Assets\Images\Structures\rubber.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\highmountain2.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\field.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\highmountain3.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\highmountain2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\hill.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\highmountain3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\mountain2.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\hill.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\mountain3.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\mountain2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\plain.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\mountain3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\water2.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\plain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Trees\tree1.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\water2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Trees\tree2.png">
+    </Resource>
+    <Resource Include="Assets\Images\Trees\tree1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Trees\tree3.png">
+    </Resource>
+    <Resource Include="Assets\Images\Trees\tree2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Trees\tree4.png">
+    </Resource>
+    <Resource Include="Assets\Images\Trees\tree3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\largeBus.png">
+    </Resource>
+    <Resource Include="Assets\Images\Trees\tree4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBus.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Images\Buttons\minus2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buttons\plus.png">
+    <Resource Include="Assets\Images\Buttons\minus2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\highmountain.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buttons\plus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Terrain\mountain.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\highmountain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\largeBus2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\largeBusDown.png">
+    </Resource>
+    <Resource Include="Assets\Images\Terrain\mountain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\largeBusLeft.png">
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBus2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\largeBusRight.png">
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBusDown.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\largeBusUp.png">
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBusLeft.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\smallBus.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\smallBusDown.png">
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBusRight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\smallBusLeft.png">
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\largeBusUp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\smallBusRight.png">
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Vehicle\smallBusUp.png">
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBusDown.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBusLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBusRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\Images\Vehicle\smallBusUp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\Fonts\PressStart2P.ttf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 

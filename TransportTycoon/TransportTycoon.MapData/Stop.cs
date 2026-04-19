@@ -1,19 +1,24 @@
-﻿using TransportTycoon.MapData.Buildings;
+using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData
 {
-    public sealed class Stop : Infrastructure
+    public struct Stop : IInfrastructure
     {
         #region Fields
-        public List<BuildingBlocks> Connenctions { get; private set; } = [];
+        public int X { get; set; }
+        public int Y { get; set; }
+        public int Height { get; set; }
+        public readonly int Price => 200;
+        public readonly FieldType FieldType => FieldType.Stop;
+        public List<IBuildingBlocks>? Connenctions { get; private set; } = [];
         #endregion
 
         #region Constructors
         public Stop(int x, int y, int height)
         {
-            X = x; Y = y; Height = height;
-            FieldType = FieldType.Stop;
-            Price = 200;
+            X = x;
+            Y = y;
+            Height = height;
         }
         #endregion
 
@@ -23,9 +28,9 @@ namespace TransportTycoon.MapData
         /// </summary>
         /// <param name="vehicleAcceptedGoods"></param>
         /// <returns></returns>
-        public List<BuildingBlocks> ShowWhatTheBuildingsCanGet(List<LoadType> vehicleAcceptedGoods)
+        public readonly List<IBuildingBlocks> ShowWhatTheBuildingsCanGet(List<LoadType> vehicleAcceptedGoods)
         {
-            List<BuildingBlocks> buildings = [];
+            List<IBuildingBlocks> buildings = [];
             if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
@@ -48,6 +53,7 @@ namespace TransportTycoon.MapData
             }
             return buildings;
         }
+
         /// <summary>
         /// Retrieves a list of building blocks that can provide goods accepted by the specified vehicles.
         /// </summary>
@@ -57,9 +63,9 @@ namespace TransportTycoon.MapData
         /// these load types are included in the result.</param>
         /// <returns>A list of BuildingBlocks that can provide goods matching the specified vehicle accepted goods. The list is
         /// empty if no buildings match the criteria or if there are no connections.</returns>
-        public List<BuildingBlocks> ShowWhatTheBuildingsCanGive(List<LoadType> vehicleAcceptedGoods)
+        public readonly List<IBuildingBlocks> ShowWhatTheBuildingsCanGive(List<LoadType> vehicleAcceptedGoods)
         {
-            List<BuildingBlocks> buildings = [];
+            List<IBuildingBlocks> buildings = [];
             if (Connenctions is null) return buildings;
             foreach (var building in Connenctions)
             {
@@ -68,7 +74,6 @@ namespace TransportTycoon.MapData
                 {
                     buildings.Add(building);
                 }
-
             }
             return buildings;
         }
@@ -140,18 +145,12 @@ namespace TransportTycoon.MapData
         //        {
         //            buildings.Add(building);
         //        }
-
         //    }
-
-
         //}
-        public void SetBuildingBlocks(BuildingBlocks buildingBlock)
+        public readonly void SetBuildingBlocks(IBuildingBlocks buildingBlock)
         {
             Connenctions?.Add(buildingBlock);
         }
-        #endregion
-
-        #region Private Methods
         #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
 
 namespace TransportTycoon.WPF.View.UserControls
 {
@@ -7,9 +8,20 @@ namespace TransportTycoon.WPF.View.UserControls
     /// </summary>
     public partial class LeftPanel : UserControl
     {
+        #region Constructors
         public LeftPanel()
         {
-            InitializeComponent();
+            try
+            {
+                InitializeComponent();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.StackTrace);
+                Debug.WriteLine(ex.InnerException);
+            }
         }
+        #endregion
     }
 }
