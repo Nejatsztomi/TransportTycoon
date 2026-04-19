@@ -755,6 +755,32 @@ namespace TransportTycoon.WPF.View.UserControls
         #endregion
 
         #region Public methods
+        public void SetCameraView(double desiredX, double desiredY, double desiredZoom)
+        {
+            if (Map is null || ActualWidth <= 0.0 || ActualHeight <= 0.0) return;
+
+            const double MAX_ZOOM = 4.0;
+
+            double totalWorldWidth = Map.GetLength(0) * TileSize;
+            double totalWorldHeight = Map.GetLength(1) * TileSize;
+
+            double minZoomX = ActualWidth / totalWorldWidth;
+            double minZoomY = ActualHeight / totalWorldHeight;
+
+            double dynamicMinZoom = Math.Max(minZoomX, minZoomY);
+
+            ZoomLevel = Math.Clamp(desiredZoom, dynamicMinZoom, MAX_ZOOM);
+
+            double visibleWorldWidth = ActualWidth / ZoomLevel;
+            double visibleWorldHeight = ActualHeight / ZoomLevel;
+
+            double maxCameraX = Math.Max(0, (Map.GetLength(0) * TileSize) - visibleWorldWidth);
+            double maxCameraY = Math.Max(0, (Map.GetLength(1) * TileSize) - visibleWorldHeight);
+
+            CameraX = Math.Clamp(desiredX, 0, maxCameraX);
+            CameraY = Math.Clamp(desiredY, 0, maxCameraY);
+        }
+
         /// <summary>
         /// This method forces a redraw.
         /// </summary>

@@ -100,10 +100,7 @@ namespace TransportTycoon.WPF.View.UserControls
             double desiredCameraX = targetWorldX - (visibleWorldWidth / 2);
             double desiredCameraY = targetWorldY - (visibleWorldHeight / 2);
 
-            TargetRenderer.CameraX = desiredCameraX;
-            TargetRenderer.CameraY = desiredCameraY;
-
-            UpdateMinimapViewport();
+            TargetRenderer.SetCameraView(desiredCameraX, desiredCameraY, TargetRenderer.ZoomLevel);
         }
         #endregion
 

@@ -59,38 +59,6 @@ namespace TransportTycoon.WPF.View.UserControls
 
         #region Private methods
         /// <summary>
-        /// Updates the camera position and zoom level to display the specified region of the map.
-        /// </summary>
-        /// <remarks>
-        /// If the requested camera position would cause the viewport to extend beyond the map
-        /// boundaries, the position is automatically adjusted to keep the camera within valid bounds.
-        /// </remarks>
-        /// <param name="desiredCameraX">The desired horizontal position of the camera in world coordinates.
-        /// Values outside the map bounds are clamped to the valid range.</param>
-        /// <param name="desiredCameraY">The desired vertical position of the camera in world coordinates.
-        /// Values outside the map bounds are clamped to the valid range.</param>
-        /// <param name="zoomLevel">The zoom level to apply to the camera. Higher values zoom in, lower zoom out.</param>
-        private void UpdateCamera(double desiredCameraX, double desiredCameraY, double zoomLevel)
-        {
-            double visibleWorldWidth = InternalGameMapRenderer.ActualWidth / zoomLevel;
-            double visibleWorldHeight = InternalGameMapRenderer.ActualHeight / zoomLevel;
-
-            // Max bounds (right and bottom side)
-            double maxCameraX = (InternalGameMapRenderer.Map.GetLength(0) * FastMapRenderer.TileSize) - visibleWorldWidth;
-            double maxCameraY = (InternalGameMapRenderer.Map.GetLength(1) * FastMapRenderer.TileSize) - visibleWorldHeight;
-
-            // Min bounds (left and top side)
-            maxCameraX = Math.Max(0.0, maxCameraX);
-            maxCameraY = Math.Max(0.0, maxCameraY);
-
-            // Apply the changes
-            // We don't have to worry about multiple redraw calls.
-            InternalGameMapRenderer.ZoomLevel = zoomLevel;
-            InternalGameMapRenderer.CameraX = Math.Clamp(desiredCameraX, 0.0, maxCameraX);
-            InternalGameMapRenderer.CameraY = Math.Clamp(desiredCameraY, 0.0, maxCameraY);
-        }
-
-        /// <summary>
         /// Calculates the tile coordinates corresponding to the specified mouse position in screen space.
         /// </summary>
         /// <param name="mousePos">The mouse position in screen coordinates for which to determine the tile coordinates.</param>
@@ -201,7 +169,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 double desiredCameraX = _dragStartCamera.X - deltaX;
                 double desiredCameraY = _dragStartCamera.Y - deltaY;
 
-                UpdateCamera(desiredCameraX, desiredCameraY, InternalGameMapRenderer.ZoomLevel);
+                InternalGameMapRenderer.SetCameraView(desiredCameraX, desiredCameraY, InternalGameMapRenderer.ZoomLevel);
             }
             else
             {
@@ -247,15 +215,11 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseWheel(object? _, MouseWheelEventArgs e)
         {
-            // TODO: Move to class, calculate max zoom based on map size and tile size
             const double ZOOM_IN_STEP = 1.1;
             const double ZOOM_OUT_STEP = 1 / 1.1;
-            const double MIN_ZOOM = 0.2;
-            const double MAX_ZOOM = 3.0;
 
             double zoomFactor = e.Delta > 0 ? ZOOM_IN_STEP : ZOOM_OUT_STEP;
-
-            double newZoomLevel = Math.Clamp(InternalGameMapRenderer.ZoomLevel * zoomFactor, MIN_ZOOM, MAX_ZOOM);
+            double newZoomLevel = InternalGameMapRenderer.ZoomLevel * zoomFactor;
 
             // Get mouse position
             Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
@@ -265,7 +229,7 @@ namespace TransportTycoon.WPF.View.UserControls
             double desiredCameraX = wordX - (screenMousePos.X / newZoomLevel);
             double desiredCameraY = wordY - (screenMousePos.Y / newZoomLevel);
 
-            UpdateCamera(desiredCameraX, desiredCameraY, newZoomLevel);
+            InternalGameMapRenderer.SetCameraView(desiredCameraX, desiredCameraY, newZoomLevel);
         }
 
         /// <summary>
