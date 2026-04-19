@@ -52,7 +52,12 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Constructors
-        public GameViewModel() { }
+        public GameViewModel()
+        {
+            Model = null!;
+            Tiles = null!;
+            MinimapImage = null!;
+        }
 
         public GameViewModel(GameModel model)
         {
@@ -371,21 +376,13 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(Vehicles));
         }
 
-        // TODO: hídak esetén minden Minimapbeli pontot frissíteni ez alapján
-        // TODO2: esetleg egy olyan Minimap frissítő ami listával végzi el
-        private void Model_InfrastructureBuilt(object? _1, List<(int x, int y)> _2)
+        private void Model_InfrastructureBuilt(object? _1, List<(int X, int Y)> changedFields)
         {
-            //foreach (var (x, y) in changedFields)
-            //{
-            //    FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
-            //    if (tile != null)
-            //    {
-            //        string oldPath = tile.ImagePath;
-            //        int index = Tiles.IndexOf(tile);
-            //        Tiles[index] = new(Model.Map[x, y], oldPath);
-            //        tile.RefreshInfrastructure();
-            //    }
-            //}
+            foreach (var (x, y) in changedFields)
+            {
+                IField tile = Tiles[x, y];
+                UpdateMinimapTile(x, y, ConvertTileToColor(tile));
+            }
         }
 
         // Ez is felesleges lesz, össze kell vonni majd az eventeket, hogy csak globális frissítő event legyen
