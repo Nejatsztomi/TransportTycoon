@@ -1004,7 +1004,7 @@ namespace TransportTycoon.Model
         {
             int x = v.MapX;
             int y = v.MapY;
-            
+
             if (0 > x || x >= Map.Height || 0 > y || y >= Map.Width) return false;
             IField currentField = Map[x, y];
 
