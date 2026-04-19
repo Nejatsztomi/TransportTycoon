@@ -35,6 +35,7 @@ namespace TransportTycoon.WPF.ViewModel
         public int Height => Model.Map.Height;
         public IField[,] Tiles { get; }
         public WriteableBitmap MinimapImage { get; set; }
+        public IField? SelectedField => Model.SelectedField;
         #endregion
 
         [ObservableProperty]
@@ -343,7 +344,7 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(Stops));
         }
 
-        private void Model_SelectedFieldChanged(object? _1, (int, int) e)
+        private void Model_SelectedFieldChanged(object? _1, (int, int) _2)
         {
             //if (Model.SelectedField is null)
             //{
@@ -352,9 +353,10 @@ namespace TransportTycoon.WPF.ViewModel
             //}
             //else
             //{
-            //    var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
-            //    tile?.IsSelected = true;
+            //        var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
+            //        tile?.IsSelected = true;
             //}
+            OnPropertyChanged(nameof(SelectedField));
         }
 
         private void Model_BalanceChanged(object? _1, EventArgs _2)

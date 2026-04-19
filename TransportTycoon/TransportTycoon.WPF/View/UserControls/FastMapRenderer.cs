@@ -168,22 +168,12 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <summary>
         /// 
         /// </summary>
-        public static readonly DependencyProperty SelectedXProperty =
+        public static readonly DependencyProperty SelectedTileProperty =
             DependencyProperty.Register(
-                nameof(SelectedX),
-                typeof(int),
+                nameof(SelectedTile),
+                typeof(IField),
                 typeof(FastMapRenderer),
-                new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public static readonly DependencyProperty SelectedYProperty =
-            DependencyProperty.Register(
-                nameof(SelectedY),
-                typeof(int),
-                typeof(FastMapRenderer),
-                new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.AffectsRender));
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
         /// <summary>
         /// 
@@ -264,21 +254,12 @@ namespace TransportTycoon.WPF.View.UserControls
         }
 
         /// <summary>
-        /// The underlying property for <see cref="SelectedXProperty"/>.
+        /// The underlying property for <see cref="SelectedTileProperty"/>.
         /// </summary>
-        public int SelectedX
+        public IField? SelectedTile
         {
-            get => (int)GetValue(SelectedXProperty);
-            set => SetValue(SelectedXProperty, value);
-        }
-
-        /// <summary>
-        /// The underlying property for <see cref="SelectedYProperty"/>.
-        /// </summary>
-        public int SelectedY
-        {
-            get => (int)GetValue(SelectedYProperty);
-            set => SetValue(SelectedYProperty, value);
+            get => (IField?)GetValue(SelectedTileProperty);
+            set => SetValue(SelectedTileProperty, value);
         }
 
         /// <summary>
@@ -535,9 +516,13 @@ namespace TransportTycoon.WPF.View.UserControls
         }
 
         /// <summary>
-        /// 
+        /// Helper method to draw the vehicle layer of a tile.
         /// </summary>
-        /// <param name="ctx"></param>
+        /// <remarks>
+        /// Rendering remains efficient to JIT inlining.
+        /// </remarks>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
+        /// <param name="visibleWorldRect">The visible area of the world, used for culling.</param>
         private void DrawVehiclesLayer(DrawingContext ctx, Rect visibleWorldRect)
         {
             if (Vehicles == null) return;
@@ -580,6 +565,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddHoverEffectLayer(DrawingContext ctx, Rect baseRect)
         {
             // Don't modify outer state (maybe it is not needed because Rect is a struct)
@@ -594,6 +580,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="baseRect"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddSelectionEffectLayer(DrawingContext ctx, Rect baseRect)
         {
             Rect selectionRect = baseRect;
@@ -603,18 +590,16 @@ namespace TransportTycoon.WPF.View.UserControls
         }
 
         /// <summary>
-        /// 
+        /// Draws the route stops layer on the given <see cref="DrawingContext"/>.
         /// </summary>
-        /// <param name="ctx"></param>
+        /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawRouteStopsLayer(DrawingContext ctx)
         {
-            if (RouteStops == null) return;
-
-            //Debug.WriteLineIf(RouteStops.Count() == 0, "Empty stops");
+            if (RouteStops is null) return;
 
             foreach (var stop in RouteStops)
             {
-                //Debug.WriteLine("Teszt");
                 double pixelX = stop.X * TileSize;
                 double pixelY = stop.Y * TileSize;
                 Rect stopRect = new(pixelX, pixelY, TileSize, TileSize);
@@ -634,6 +619,11 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        /// <summary>
+        /// Generate a texture for a route stop tile with the given order number.
+        /// </summary>
+        /// <param name="order">The order number of the route stop.</param>
+        /// <returns>A <see cref="BitmapSource"/> representing the route stop tile.</returns>
         private BitmapSource GenerateRouteStopTexture(int order)
         {
             // Standard WPF DPI
@@ -677,7 +667,7 @@ namespace TransportTycoon.WPF.View.UserControls
         }
 
         /// <summary>
-        /// 
+        /// Generate textures for route stop tiles with order numbers in the given range and cache them.
         /// </summary>
         private void GenerateRouteStopTextures(int start, int end)
         {
@@ -737,7 +727,7 @@ namespace TransportTycoon.WPF.View.UserControls
                     }
 
                     // Selection effect
-                    if (x == SelectedX && y == SelectedY)
+                    if (currentField.X == SelectedTile?.X && currentField.Y == SelectedTile?.Y)
                     {
                         AddSelectionEffectLayer(ctx, baseRect);
                     }

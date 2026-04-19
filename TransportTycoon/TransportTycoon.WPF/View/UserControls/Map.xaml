@@ -15,6 +15,7 @@
                                       Map="{Binding Tiles}"
                                       Vehicles="{Binding Vehicles}"
                                       RouteStops="{Binding Stops}"
+                                      SelectedTile="{Binding SelectedField}"
                                       ClipToBounds="True"
                                       PreviewMouseRightButtonDown="GameMapRenderer_PreviewMouseRightButtonDown"
                                       PreviewMouseMove="GameMapRenderer_PreviewMouseMove"

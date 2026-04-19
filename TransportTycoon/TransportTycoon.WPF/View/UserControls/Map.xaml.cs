@@ -243,19 +243,19 @@ namespace TransportTycoon.WPF.View.UserControls
 
             if (IsInMapBounds(tileX, tileY))
             {
-                InternalGameMapRenderer.SelectedX = tileX;
-                InternalGameMapRenderer.SelectedY = tileY;
+                //InternalGameMapRenderer.SelectedTile = tileX;
+                //InternalGameMapRenderer.SelectedY = tileY;
 
                 if (DataContext is GameViewModel viewModel)
                 {
                     viewModel.OnTileLeftClick(tileX, tileY);
                 }
             }
-            else
-            {
-                InternalGameMapRenderer.SelectedX = -1;
-                InternalGameMapRenderer.SelectedY = -1;
-            }
+            //else
+            //{
+            //    InternalGameMapRenderer.SelectedTile = -1;
+            //    InternalGameMapRenderer.SelectedY = -1;
+            //}
         }
 
         /// <summary>
@@ -263,8 +263,8 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseLeftButtonUp(object? _1, MouseButtonEventArgs _2)
         {
-            InternalGameMapRenderer.SelectedX = -1;
-            InternalGameMapRenderer.SelectedY = -1;
+            //InternalGameMapRenderer.SelectedTile = -1;
+            //InternalGameMapRenderer.SelectedY = -1;
         }
         #endregion
     }
