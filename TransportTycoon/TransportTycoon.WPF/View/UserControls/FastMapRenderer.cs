@@ -467,9 +467,9 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 string? bridgeType = bridge.BridgeType switch
                 {
-                    BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => "green",
-                    BridgeType.VerticalGreenBridge or BridgeType.HorizontalGreenBridge => "red",
-                    BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => "yellow",
+                    BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => "yellow",
+                    BridgeType.VerticalGreenBridge or BridgeType.HorizontalGreenBridge => "green",
+                    BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => "red",
                     _ => null
                 };
 
