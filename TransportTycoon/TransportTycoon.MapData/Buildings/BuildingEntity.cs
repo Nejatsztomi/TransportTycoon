@@ -59,7 +59,7 @@
         /// </summary>
         /// <returns>The load type</returns>
         public abstract Load GetProvideLoad();
-        public abstract void GenerateBuildingPoints(int startX, int startY);
+        public abstract void GenerateBuildingPoints(int startX, int startY, int[,] heightMap);
         #endregion
 
         #region Virtual methods
@@ -125,13 +125,18 @@
         #region Overrides
         public override Load? GetConsumeLoad() => null;
         public override Load GetProvideLoad() => new Load.People();
-        public override void GenerateBuildingPoints(int startX, int startY)
+        public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    MapPoints.Add((startX + i, startY + j), new House(startX + i, startY + j, this));
+                    House tile = new(startX + i, startY + j, this)
+                    {
+                        Height = heightMap[startX + i, startY + j]
+                    };
+                    MapPoints.Add((startX + i, startY + j), tile);
+
                 }
             }
         }
@@ -141,8 +146,6 @@
 
     public abstract class SiteEntity : BuildingEntity
     {
-
-
         #region Constructors
         protected SiteEntity()
         {
@@ -163,13 +166,17 @@
         #region Public methods
         public override Load? GetConsumeLoad() => null;
         public override Load GetProvideLoad() => new Wood();
-        public override void GenerateBuildingPoints(int startX, int startY)
+        public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    MapPoints.Add((startX + i, startY + j), new LumberCamp(startX + i, startY + j, this));
+                    LumberCamp tile = new(startX + i, startY + j, this)
+                    {
+                        Height = heightMap[startX + i, startY + j]
+                    };
+                    MapPoints.Add((startX + i, startY + j), tile);
                 }
             }
         }
@@ -188,13 +195,17 @@
         #region Public methods
         public override Load? GetConsumeLoad() => null;
         public override Load GetProvideLoad() => new Oil();
-        public override void GenerateBuildingPoints(int startX, int startY)
+        public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    MapPoints.Add((startX + i, startY + j), new Mine(startX + i, startY + j, this));
+                    Mine tile = new(startX + i, startY + j, this)
+                    {
+                        Height = heightMap[startX + i, startY + j]
+                    };
+                    MapPoints.Add((startX + i, startY + j), tile);
                 }
             }
         }
@@ -213,13 +224,17 @@
         #region Public methods
         public override Load? GetConsumeLoad() => null;
         public override Load GetProvideLoad() => new Wheat();
-        public override void GenerateBuildingPoints(int startX, int startY)
+        public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    MapPoints.Add((startX + i, startY + j), new Farm(startX + i, startY + j, this));
+                    Farm tile = new(startX + i, startY + j, this)
+                    {
+                        Height = heightMap[startX + i, startY + j]
+                    };
+                    MapPoints.Add((startX + i, startY + j), tile);
                 }
             }
         }
@@ -279,16 +294,21 @@
             Offset = 70;
         }
         #endregion
+
         #region Public methods
         public override Load? GetConsumeLoad() => new Wheat();
         public override Load GetProvideLoad() => new Flour();
-        public override void GenerateBuildingPoints(int startX, int startY)
+        public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    MapPoints.Add((startX + i, startY + j), new Mill(startX + i, startY + j, this));
+                    Mill tile = new(startX + i, startY + j, this)
+                    {
+                        Height = heightMap[startX + i, startY + j]
+                    };
+                    MapPoints.Add((startX + i, startY + j), tile);
                 }
             }
         }
@@ -307,13 +327,17 @@
         #region Public methods
         public override Load? GetConsumeLoad() => new Wood();
         public override Load GetProvideLoad() => new Paper();
-        public override void GenerateBuildingPoints(int startX, int startY)
+        public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    MapPoints.Add((startX + i, startY + j), new Plant(startX + i, startY + j, this));
+                    Plant tile = new(startX + i, startY + j, this)
+                    {
+                        Height = heightMap[startX + i, startY + j]
+                    };
+                    MapPoints.Add((startX + i, startY + j), tile);
                 }
             }
         }
@@ -332,13 +356,17 @@
         #region Public methods
         public override Load? GetConsumeLoad() => new Oil();
         public override Load GetProvideLoad() => new Rubber();
-        public override void GenerateBuildingPoints(int startX, int startY)
+        public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    MapPoints.Add((startX + i, startY + j), new Factory(startX + i, startY + j, this));
+                    Factory tile = new(startX + i, startY + j, this)
+                    {
+                        Height = heightMap[startX + i, startY + j]
+                    };
+                    MapPoints.Add((startX + i, startY + j), tile);
                 }
             }
         }
