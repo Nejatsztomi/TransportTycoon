@@ -1,5 +1,4 @@
-﻿using TransportTycoon.MapData;
-using TransportTycoon.MapData.MapGenerator;
+﻿using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.Persistence
 {
@@ -19,7 +18,7 @@ namespace TransportTycoon.Persistence
     public readonly record struct TileSaveData(
         int X,
         int Y,
-        SaveFieldType Type
+        Persistence.SaveFieldType Type
         );
 
     public readonly record struct TreeSaveData(
@@ -29,10 +28,10 @@ namespace TransportTycoon.Persistence
         );
 
     public readonly record struct VehicleSaveData(
-        VehicleType Type,
+        Persistence.VehicleType Type,
         int CurrentX,
         int CurrentY,
-        LoadType CurrentLoad,
+        Persistence.LoadType CurrentLoad,
         int CurrentCapacity
         );
 
@@ -43,12 +42,17 @@ namespace TransportTycoon.Persistence
         int Productivity
         );
 
-    public enum VehicleType
+    public enum VehicleType : byte
     {
-        Van = 0, Pickup = 1, Truck = 2, LiquidTruck = 3, SmallBus = 4, BigBus = 5
+        Van = 0,
+        Pickup = 1,
+        Truck = 2,
+        LiquidTruck = 3,
+        SmallBus = 4,
+        BigBus = 5,
     }
 
-    public enum SaveFieldType
+    public enum SaveFieldType : byte
     {
         Terrain,
         Road,
@@ -61,8 +65,26 @@ namespace TransportTycoon.Persistence
         VerticalRedBridge,
     }
 
-    public enum BuildingEntityType
+    public enum BuildingEntityType : byte
     {
-        House = 0, Farm = 1, Mine = 2, LumberCamp = 3, Mill = 4, Factory = 5, Plant = 6
+        House = 0,
+        Farm = 1,
+        Mine = 2,
+        LumberCamp = 3,
+        Mill = 4,
+        Factory = 5,
+        Plant = 6,
+    }
+
+    public enum LoadType : byte
+    {
+        None,
+        Wheat,
+        Oil,
+        Wood,
+        Flour,
+        Rubber,
+        Paper,
+        People,
     }
 }

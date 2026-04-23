@@ -18,16 +18,16 @@
         public int Price { get; protected set; }
         public LoadType LoadType { get; set; }
         #endregion
+    }
 
-        public sealed class People : Load
+    public sealed class People : Load
+    {
+        #region Constructors
+        public People()
         {
-            #region Constructors
-            public People()
-            {
-                Price = 120;
-                LoadType = LoadType.People;
-            }
-            #endregion
+            Price = 120;
+            LoadType = LoadType.People;
         }
+        #endregion
     }
 }
