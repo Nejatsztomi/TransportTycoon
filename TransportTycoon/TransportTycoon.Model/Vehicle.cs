@@ -15,6 +15,10 @@ namespace TransportTycoon.Model
 
     public abstract class Vehicle
     {
+        #region Private static fields
+        private static UInt64 _globalIdCounter = 0;
+        #endregion
+
         #region Private fields
         /// <summary>
         /// The prouth's stop index.
@@ -40,6 +44,7 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Properties
+        public UInt64 Id { get; private set; }
         public double TopSpeed { get; protected set; }
         public double CurrentSpeed { get; protected set; }
         public Load? CurrentLoad { get; protected set; }
@@ -79,6 +84,13 @@ namespace TransportTycoon.Model
         }
         #endregion
 
+        #region Protected constructor
+        protected Vehicle()
+        {
+            Id = _globalIdCounter++;
+        }
+        #endregion
+
         #region Public methods
         /// <summary>
         /// Advances the entity along its current route by moving it one step toward the next target tile, updating its
@@ -92,7 +104,7 @@ namespace TransportTycoon.Model
             if (CurrentRoute is null) return;
 
             IField? targetTile = TargetTile;
-            if (targetTile == null) return;
+            if (targetTile is null) return;
 
             //update the direction
             UpdateDirection(targetTile);
@@ -106,7 +118,7 @@ namespace TransportTycoon.Model
                 AdvanceToNextTile();
 
                 targetTile = TargetTile;
-                if (targetTile == null) return;
+                if (targetTile is null) return;
 
                 //update the direction
                 UpdateDirection(targetTile);
@@ -118,13 +130,12 @@ namespace TransportTycoon.Model
             MoveTowardsTarget(targetTile);
 
             targetTile = TargetTile;
-            if (targetTile == null) return;
+            if (targetTile is null) return;
 
             //update the direction
             UpdateDirection(targetTile);
-
-
         }
+
         /// <summary>
         /// Sets the current capacity of the vehicle, if the given quantity is between 0 and the maximum capacity of the vehicle. If the quantity is set to 0, the current load is also set to null.
         /// </summary>
@@ -135,6 +146,7 @@ namespace TransportTycoon.Model
 
             if (CurrentCapacity == 0) CurrentLoad = null;
         }
+
         /// <summary>
         /// Sets the current load to the specified value if it is valid and accepted by the vehicle.
         /// </summary>
@@ -149,6 +161,7 @@ namespace TransportTycoon.Model
                 if (CurrentLoad is null) CurrentCapacity = 0;
             }
         }
+
         /// <summary>
         /// Sets the current route of the vehicle to the specified list of edges and initializes the indices for tracking the current edge and tile.
         /// </summary>
@@ -164,6 +177,7 @@ namespace TransportTycoon.Model
                 _currentEdgeTiles = [.. CurrentRoute[0].Roads];
             }
         }
+
         /// <summary>
         /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
         /// </summary>
@@ -234,6 +248,7 @@ namespace TransportTycoon.Model
             _currentEdgeTiles = null;
             AdvanceProuth();
         }
+
         /// <summary>
         /// if the target tile is in a different direction than the current one, it updates the direction to face towards the target tile.
         /// </summary>
@@ -245,6 +260,7 @@ namespace TransportTycoon.Model
             else if (target.Y < MapY) Direction = Direction.Left;
             else if (target.Y > MapY) Direction = Direction.Right;
         }
+
         /// <summary>
         /// Moves the object toward the specified target field based on the current direction and speed.
         /// </summary>
@@ -272,6 +288,7 @@ namespace TransportTycoon.Model
                     break;
             }
         }
+
         /// <summary>
         /// advances the current tile index to the next tile in the current edge.
         /// </summary>
@@ -333,8 +350,6 @@ namespace TransportTycoon.Model
 
             _currentStopIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
         }
-
-
         #endregion
     }
 }
