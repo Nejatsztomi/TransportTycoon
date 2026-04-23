@@ -3,6 +3,7 @@ using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 using TransportTycoon.Model.Graph;
 using TransportTycoon.Persistence;
+using LoadType = TransportTycoon.MapData.LoadType;
 namespace TransportTycoon.Model
 {
     public enum GameMode { Run, Paused, Editor }
@@ -175,7 +176,20 @@ namespace TransportTycoon.Model
                 Type = (Persistence.VehicleType)v.Type,
                 CurrentX = (int)v.X,
                 CurrentY = (int)v.Y,
-                CurrentLoad = v.CurrentLoad?.LoadType ?? LoadType.None,
+                CurrentLoad = v.CurrentLoad?.LoadType switch {
+                    MapData.LoadType.Wheat => Persistence.LoadType.Wheat,
+                    MapData.LoadType.Oil => Persistence.LoadType.Oil,
+                    MapData.LoadType.Wood => Persistence.LoadType.Wood,
+                    MapData.LoadType.Flour => Persistence.LoadType.Flour,
+                    MapData.LoadType.Rubber => Persistence.LoadType.Rubber,
+                    MapData.LoadType.Paper => Persistence.LoadType.Paper,
+                    MapData.LoadType.People => Persistence.LoadType.People,
+                    MapData.LoadType.None => Persistence.LoadType.None,
+
+                    null => Persistence.LoadType.None,
+
+                    _ => throw new Exception($"Invalid load type for vehicle at ({v.X}, {v.Y})")
+                },
                 CurrentCapacity = v.CurrentCapacity
             })];
 
@@ -263,6 +277,23 @@ namespace TransportTycoon.Model
                     Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
                     _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
                 };
+                vehicle.SetCurrentCapacity(vehicleData.CurrentCapacity);
+
+                Load? load = vehicleData.CurrentLoad switch
+                {
+                    Persistence.LoadType.Wheat => new Wheat(),
+                    Persistence.LoadType.Oil => new Oil(),
+                    Persistence.LoadType.Wood => new Wood(),
+                    Persistence.LoadType.Flour => new Flour(),
+                    Persistence.LoadType.Rubber => new Rubber(),
+                    Persistence.LoadType.Paper => new Paper(),
+                    Persistence.LoadType.People => new People(),
+                    Persistence.LoadType.None => null,
+
+                    _ => throw new ArgumentException("Invalid load type in save data", nameof(vehicleData.CurrentLoad)),
+                };
+                vehicle.SetCurrentLoad(load);
+
                 Vehicles.Add(vehicle);
             });
 
