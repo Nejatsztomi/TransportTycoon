@@ -54,6 +54,18 @@ namespace TransportTycoon.WPF.View.UserControls
         LeftTRoad = 9,
         XRoad = 10,
     }
+
+    internal enum BridgeType : byte
+    {
+        HorizontalGreenBridge = 0,
+        VerticalGreenBridge = 1,
+        HorizontalYellowBridge = 2,
+        VerticalYellowBridge = 3,
+        HorizontalRedBridge = 4,
+        VerticalRedBridge = 5,
+        Null = 6,
+
+    }
     #endregion
 
     public class FastMapRenderer : FrameworkElement
@@ -85,7 +97,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// A dictionary that link each <see cref="BridgeType"/> to their bridge image.
         /// </summary>
         /// <remarks>Must be set manually for each <see cref="BridgeType"/>.</remarks>
-        private readonly Dictionary<string, ImageSource> _bridgeTextures;
+        private readonly Dictionary<BridgeType, ImageSource> _bridgeTextures;
 
         /// <summary>
         /// A dictionary that link integers 1 to 4 to their tree image.
@@ -380,22 +392,6 @@ namespace TransportTycoon.WPF.View.UserControls
                 {4, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Trees/tree4.png")) },
             };
 
-            //    Horizontal = 0,
-            //    Vertical = 1,
-            //    RightTurn = 2,
-            //    LeftTurn = 3,
-            //    UpperRightTurn = 4,
-            //    UpperLeftTurn = 5,
-            //    UpperTRoad = 6,
-            //    DownTRoad = 7,
-            //    RightTRoad = 8,
-            //    LeftTRoad = 9,
-            //    XRoad = 10,
-            //    RoadType.Vertical or RoadType.UpperTRoad or RoadType.UpperRightTurn => 90,
-            //            RoadType.LeftTRoad or RoadType.UpperLeftTurn => 180,
-            //            RoadType.DownTRoad or RoadType.LeftTurn => 270,
-            //            _ => 0
-
             var straightRoadTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/road.png"));
             var turnRoadTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/turn.png"));
             var crossTRoadTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/crossT.png"));
@@ -422,11 +418,18 @@ namespace TransportTycoon.WPF.View.UserControls
                 { RoadType.XRoad, crossXRoadTexture },
             };
 
+            var greenBridgeTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/greenBridge.png"));
+            var redBridgeTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/redBridge.png"));
+            var yellowBridgeTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/yellowBridge.png"));
             _bridgeTextures = new()
             {
-                { "green", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/greenBridge.png")) },
-                { "red", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/redBridge.png")) },
-                { "yellow", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/yellowBridge.png")) },
+                { BridgeType.HorizontalGreenBridge, greenBridgeTexture },
+                { BridgeType.HorizontalRedBridge, redBridgeTexture },
+                { BridgeType.HorizontalYellowBridge, yellowBridgeTexture },
+
+                { BridgeType.VerticalGreenBridge, RotateTexture(greenBridgeTexture, 90.0) },
+                { BridgeType.VerticalRedBridge, RotateTexture(redBridgeTexture, 90.0) },
+                { BridgeType.VerticalYellowBridge, RotateTexture(yellowBridgeTexture, 90.0) },
             };
 
             _vehicleTextures = new()
@@ -611,6 +614,31 @@ namespace TransportTycoon.WPF.View.UserControls
                 _ => throw new NotImplementedException($"Unsupported road type: {type}"),
             };
         }
+
+        /// <summary>
+        /// Converts a <see cref="MapData.BridgeType"/>  to the corresponding <see cref="BridgeType"/> for texture lookup.
+        /// </summary>
+        /// <remarks>
+        /// This method uses AggriessiveInlining to ensure that the conversion is as fast as possible, since it may be called frequently during rendering.
+        /// </remarks>
+        /// <param name="type">The <see cref="MapData.BridgeType"/> to convert.</param>
+        /// <returns>The corresponding <see cref="BridgeType"/>.</returns>
+        /// <exception cref="NotImplementedException">Thrown if the <paramref name="type"/> is not supported.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private BridgeType ConvertBridgeType(MapData.BridgeType type)
+        {
+            return type switch
+            {
+                MapData.BridgeType.HorizontalGreenBridge => BridgeType.HorizontalGreenBridge,
+                MapData.BridgeType.VerticalGreenBridge => BridgeType.VerticalGreenBridge,
+                MapData.BridgeType.HorizontalYellowBridge => BridgeType.HorizontalYellowBridge,
+                MapData.BridgeType.VerticalYellowBridge => BridgeType.VerticalYellowBridge,
+                MapData.BridgeType.HorizontalRedBridge => BridgeType.HorizontalRedBridge,
+                MapData.BridgeType.VerticalRedBridge => BridgeType.VerticalRedBridge,
+                MapData.BridgeType.Null => BridgeType.Null,
+                _ => throw new NotImplementedException($"Unsupported bridge type: {type}"),
+            };
+        }
         #endregion
         #endregion
 
@@ -684,39 +712,12 @@ namespace TransportTycoon.WPF.View.UserControls
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawBridgeLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (field is not null && ConvertFieldType(field) == FieldType.Bridge && field is IBridge bridge)
+            if (field is not null &&
+                ConvertFieldType(field) == FieldType.Bridge &&
+                field is IBridge bridge
+                && _bridgeTextures.TryGetValue(ConvertBridgeType(bridge.BridgeType), out var texture))
             {
-                string? bridgeType = bridge.BridgeType switch
-                {
-                    BridgeType.VerticalYellowBridge or BridgeType.HorizontalYellowBridge => "yellow",
-                    BridgeType.VerticalGreenBridge or BridgeType.HorizontalGreenBridge => "green",
-                    BridgeType.VerticalRedBridge or BridgeType.HorizontalRedBridge => "red",
-                    _ => null
-                };
-
-                if (bridgeType is not null && _bridgeTextures.TryGetValue(bridgeType, out var texture))
-                {
-                    if (bridge.BridgeType == BridgeType.VerticalGreenBridge
-                        || bridge.BridgeType == BridgeType.VerticalYellowBridge
-                        || bridge.BridgeType == BridgeType.VerticalRedBridge)
-                    {
-                        // Calculate the rotation center, match the size to the given rectangle
-                        double centerX = baseRect.X + (baseRect.Width / 2);
-                        double centerY = baseRect.Y + (baseRect.Height / 2);
-                        // Add the rotation
-                        _rotateTransform.Angle = 90;
-                        _rotateTransform.CenterX = centerX;
-                        _rotateTransform.CenterY = centerY;
-                        ctx.PushTransform(_rotateTransform);
-                        ctx.DrawImage(texture, baseRect);
-                        // Remove the rotation
-                        ctx.Pop();
-                    }
-                    else
-                    {
-                        ctx.DrawImage(texture, baseRect);
-                    }
-                }
+                ctx.DrawImage(texture, baseRect);
             }
         }
 
