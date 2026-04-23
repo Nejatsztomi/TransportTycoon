@@ -34,7 +34,7 @@ namespace TransportTycoon.Model.Graph
                 return (realNode, false);
             }
 
-            Node ghostNode = new(currentVehicleTile.X, currentVehicleTile.Y, currentVehicleTile.FieldType);
+            Node ghostNode = new(currentVehicleTile.X, currentVehicleTile.Y, currentVehicleTile.GetType());
             _graph.AddNode(ghostNode);
             List<(int X, int Y)> validExits = GetValidExits(currentVehicleTile);
             foreach ((int x, int y) exit in validExits)

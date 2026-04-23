@@ -1,5 +1,9 @@
 ﻿namespace TransportTycoon.MapData
 {
+    public enum TerrainType
+    {
+        Plain = 1, Hill = 2, Mountain = 3, HighMountain = 4
+    }
     public struct Terrain : IField
     {
         #region Fields
@@ -8,7 +12,8 @@
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public FieldType FieldType { get; set; }
+        //public FieldType FieldType { get; set; }
+        public TerrainType TerrainType { get; set; }
         public readonly bool IsFull => Trees == 4;
         #endregion
 
@@ -52,10 +57,10 @@
         #region Private methods
         private void SetFieldType()
         {
-            if (Height == 1) FieldType = FieldType.Plain;
-            else if (Height == 2) FieldType = FieldType.Hill;
-            else if (Height == 3) FieldType = FieldType.Mountain;
-            else FieldType = FieldType.HighMountain;
+            if (Height == 1) TerrainType = TerrainType.Plain;
+            else if (Height == 2) TerrainType = TerrainType.Hill;
+            else if (Height == 3) TerrainType = TerrainType.Mountain;
+            else TerrainType = TerrainType.HighMountain;
         }
         #endregion
     }

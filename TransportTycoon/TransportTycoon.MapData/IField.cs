@@ -25,7 +25,7 @@
         public int X { get; protected set; }
         public int Y { get; protected set; }
         public int Height { get; protected set; }
-        public FieldType FieldType { get; }
+        //public FieldType FieldType { get; }
 
         public virtual bool Modifiable
         {
