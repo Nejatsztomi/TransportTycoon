@@ -87,16 +87,4 @@ namespace TransportTycoon.Persistence
         Paper,
         People,
     }
-    public enum LoadType : byte
-    {
-        None,
-        Wheat,
-        Oil,
-        Wood,
-        Flour,
-        Rubber,
-        Paper,
-        People,
-    }
-
 }
