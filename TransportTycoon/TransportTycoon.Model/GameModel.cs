@@ -3,7 +3,6 @@ using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 using TransportTycoon.Model.Graph;
 using TransportTycoon.Persistence;
-using static TransportTycoon.MapData.Load;
 using LoadType = TransportTycoon.MapData.LoadType;
 namespace TransportTycoon.Model
 {
@@ -191,7 +190,6 @@ namespace TransportTycoon.Model
 
                     _ => throw new Exception($"Invalid load type for vehicle at ({v.X}, {v.Y})")
                 },
-
                 CurrentCapacity = v.CurrentCapacity
             })];
 

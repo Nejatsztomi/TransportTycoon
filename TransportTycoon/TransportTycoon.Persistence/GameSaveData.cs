@@ -1,5 +1,4 @@
-﻿using TransportTycoon.MapData;
-using TransportTycoon.MapData.MapGenerator;
+﻿using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.Persistence
 {
@@ -74,7 +73,19 @@ namespace TransportTycoon.Persistence
         LumberCamp = 3,
         Mill = 4,
         Factory = 5,
-        Plant = 6
+        Plant = 6,
+    }
+
+    public enum LoadType : byte
+    {
+        None,
+        Wheat,
+        Oil,
+        Wood,
+        Flour,
+        Rubber,
+        Paper,
+        People,
     }
     public enum LoadType : byte
     {
