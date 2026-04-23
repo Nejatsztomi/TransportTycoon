@@ -67,37 +67,37 @@ namespace TransportTycoon.WPF.View.UserControls
         /// A dictionary that link each <see cref="FieldType"/> to their corresponding terrain image.
         /// </summary>
         /// <remarks>Must be set manually for each <see cref="FieldType"/>.</remarks>
-        private readonly Dictionary<FieldType, BitmapImage> _terrainTextures;
+        private readonly Dictionary<FieldType, ImageSource> _terrainTextures;
 
         /// <summary>
         /// A dictionary that link each <see cref="FieldType"/> to their structure image.
         /// </summary>
         /// <remarks>Must be set manually for each <see cref="FieldType"/>.</remarks>
-        private readonly Dictionary<FieldType, BitmapImage> _structureTextures;
+        private readonly Dictionary<FieldType, ImageSource> _structureTextures;
 
         /// <summary>
         /// A dictionary that link each <see cref="RoadType"/> to their road image.
         /// </summary>
         /// <remarks>Must be set manually for each <see cref="RoadType"/>.</remarks>
-        private readonly Dictionary<string, BitmapImage> _roadTextures;
+        private readonly Dictionary<RoadType, ImageSource> _roadTextures;
 
         /// <summary>
         /// A dictionary that link each <see cref="BridgeType"/> to their bridge image.
         /// </summary>
         /// <remarks>Must be set manually for each <see cref="BridgeType"/>.</remarks>
-        private readonly Dictionary<string, BitmapImage> _bridgeTextures;
+        private readonly Dictionary<string, ImageSource> _bridgeTextures;
 
         /// <summary>
         /// A dictionary that link integers 1 to 4 to their tree image.
         /// </summary>
         /// <remarks>Must be set manually for each tree type.</remarks>
-        private readonly Dictionary<int, BitmapImage> _treesTextures;
+        private readonly Dictionary<int, ImageSource> _treesTextures;
 
         /// <summary>
         /// A dictionary that link each vehicle type to their image.
         /// </summary>
         /// <remarks>Must be set manually for each vehicle type. Not currently implemented.</remarks>
-        private readonly Dictionary<VehicleType, BitmapImage> _vehicleTextures;
+        private readonly Dictionary<VehicleType, ImageSource> _vehicleTextures;
 
         /// <summary>
         /// A cached brush for highlighting (adding occupancy effect) the hovered tile.
@@ -130,6 +130,11 @@ namespace TransportTycoon.WPF.View.UserControls
         /// The border pen for the stop tiles when they are part of the route.
         /// </summary>
         private readonly Pen _stopBorderPen = new(new SolidColorBrush(Color.FromArgb(255, 255, 165, 0)), 3.0);
+
+        private readonly TranslateTransform _cameraTransform = new();
+        private readonly ScaleTransform _zoomTransform = new();
+        private readonly TransformGroup _cameraTransformGroup = new();
+        private readonly RotateTransform _rotateTransform = new();
         #endregion
 
         #region Bindings
@@ -335,6 +340,10 @@ namespace TransportTycoon.WPF.View.UserControls
             if (_stopBorderPen.CanFreeze) _stopBorderPen.Freeze();
             if (_stopTextBrush.CanFreeze) _stopTextBrush.Freeze();
 
+            // Setup the transform group for camera movement and zooming
+            _cameraTransformGroup.Children.Add(_cameraTransform);
+            _cameraTransformGroup.Children.Add(_zoomTransform);
+
             // Generate the stop textures
 #pragma warning disable IDE0028 // Simplify collection initialization
             _stopTextures = new(20);
@@ -342,7 +351,7 @@ namespace TransportTycoon.WPF.View.UserControls
             GenerateRouteStopTextures(0, 20);
 
             // TODO: Later maybe JSON or .rex format
-            _terrainTextures = new Dictionary<FieldType, BitmapImage>
+            _terrainTextures = new()
             {
                 { FieldType.Water, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/water2.png")) },
                 { FieldType.Plain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/plain.png")) },
@@ -351,7 +360,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 { FieldType.HighMountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/highmountain3.png")) },
             };
 
-            _structureTextures = new Dictionary<FieldType, BitmapImage>
+            _structureTextures = new()
             {
                 { FieldType.Farm, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/farm.png")) },
                 { FieldType.LumberCamp, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/lumbercamp.png")) },
@@ -363,7 +372,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 { FieldType.Stop, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Stop/stop.png")) },
             };
 
-            _treesTextures = new Dictionary<int, BitmapImage>
+            _treesTextures = new()
             {
                 {1, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Trees/tree1.png"))  },
                 {2, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Trees/tree2.png")) },
@@ -371,22 +380,56 @@ namespace TransportTycoon.WPF.View.UserControls
                 {4, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Trees/tree4.png")) },
             };
 
-            _roadTextures = new Dictionary<string, BitmapImage>
+            //    Horizontal = 0,
+            //    Vertical = 1,
+            //    RightTurn = 2,
+            //    LeftTurn = 3,
+            //    UpperRightTurn = 4,
+            //    UpperLeftTurn = 5,
+            //    UpperTRoad = 6,
+            //    DownTRoad = 7,
+            //    RightTRoad = 8,
+            //    LeftTRoad = 9,
+            //    XRoad = 10,
+            //    RoadType.Vertical or RoadType.UpperTRoad or RoadType.UpperRightTurn => 90,
+            //            RoadType.LeftTRoad or RoadType.UpperLeftTurn => 180,
+            //            RoadType.DownTRoad or RoadType.LeftTurn => 270,
+            //            _ => 0
+
+            var straightRoadTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/road.png"));
+            var turnRoadTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/turn.png"));
+            var crossTRoadTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/crossT.png"));
+            var crossXRoadTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/crossX.png"));
+            _roadTextures = new()
             {
-                { "crossX", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/crossX.png")) },
-                { "crossT", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/crossT.png")) },
-                { "road", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/road.png")) },
-                { "turn", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Road/turn.png")) },
+                // Straight
+                { RoadType.Horizontal, straightRoadTexture },
+                { RoadType.Vertical, RotateTexture(straightRoadTexture, 90.0) },
+                
+                // Turn
+                { RoadType.RightTurn, turnRoadTexture },
+                { RoadType.UpperRightTurn, RotateTexture(turnRoadTexture, 90.0) },
+                { RoadType.UpperLeftTurn, RotateTexture(turnRoadTexture, 180.0) },
+                { RoadType.LeftTurn, RotateTexture(turnRoadTexture, 270.0) },
+                
+                // Cross T
+                { RoadType.RightTRoad, crossTRoadTexture },
+                { RoadType.UpperTRoad, RotateTexture(crossTRoadTexture, 90.0) },
+                { RoadType.LeftTRoad, RotateTexture(crossTRoadTexture, 180.0) },
+                { RoadType.DownTRoad, RotateTexture(crossTRoadTexture, 270.0) },
+                
+                // Cross X
+                { RoadType.XRoad, crossXRoadTexture },
             };
 
-            _bridgeTextures = new Dictionary<string, BitmapImage>
+            _bridgeTextures = new()
             {
                 { "green", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/greenBridge.png")) },
                 { "red", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/redBridge.png")) },
                 { "yellow", LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/yellowBridge.png")) },
             };
 
-            _vehicleTextures = new Dictionary<VehicleType, BitmapImage>
+            _vehicleTextures = new()
             {
                 { VehicleType.SmallBus, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/smallBus.png")) },
                 { VehicleType.BigBus, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/largeBus.png")) },
@@ -401,8 +444,8 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Forces the size to <see cref="TileSize"/> x <see cref="TileSize"/> and freezes the bitmap for performance."/>
         /// </summary>
         /// <param name="uri">The URI to load the picture from.</param>
-        /// <returns>The loaded <see cref="BitmapImage"/> object.</returns>
-        private BitmapImage LoadTexture(Uri uri)
+        /// <returns>The loaded <see cref="BitmapSource"/> object.</returns>
+        private BitmapSource LoadTexture(Uri uri)
         {
             BitmapImage bitmap = new();
             bitmap.BeginInit();
@@ -413,6 +456,19 @@ namespace TransportTycoon.WPF.View.UserControls
             bitmap.EndInit();
             bitmap.Freeze();
             return bitmap;
+        }
+
+        /// <summary>
+        /// Rotates a given <see cref="BitmapSource"/> by the specified angle and returns the rotated image as a new <see cref="BitmapSource"/>.
+        /// </summary>
+        /// <param name="source">The source <see cref="BitmapSource"/> to rotate.</param>
+        /// <param name="angle">The angle in degrees to rotate the image.</param>
+        /// <returns>A new <see cref="BitmapSource"/> representing the rotated image.</returns>
+        private BitmapSource RotateTexture(BitmapSource source, double angle)
+        {
+            var rotated = new TransformedBitmap(source, new RotateTransform(angle));
+            rotated.Freeze();
+            return rotated;
         }
 
         /// <summary>
@@ -571,7 +627,7 @@ namespace TransportTycoon.WPF.View.UserControls
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawTerrainLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (_terrainTextures.TryGetValue((FieldType)field.Height, out BitmapImage? texture))
+            if (_terrainTextures.TryGetValue((FieldType)field.Height, out var texture))
             {
                 ctx.DrawImage(texture, baseRect);
             }
@@ -589,7 +645,7 @@ namespace TransportTycoon.WPF.View.UserControls
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawStructureLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (ConvertFieldType(field) is FieldType fieldType && _structureTextures.TryGetValue(fieldType, out BitmapImage? texture))
+            if (ConvertFieldType(field) is FieldType fieldType && _structureTextures.TryGetValue(fieldType, out var texture))
             {
                 ctx.DrawImage(texture, baseRect);
             }
@@ -609,38 +665,9 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             if (field is not null && ConvertFieldType(field) == FieldType.Road && field is Road road)
             {
-                string roadType = "road";
-                RoadType convertedRoadType = ConvertRoadType(road.RoadType);
-                if (convertedRoadType == RoadType.RightTurn || convertedRoadType == RoadType.LeftTurn || convertedRoadType == RoadType.UpperRightTurn || convertedRoadType == RoadType.UpperLeftTurn)
-                    roadType = "turn";
-                else if (convertedRoadType == RoadType.UpperTRoad || convertedRoadType == RoadType.RightTRoad || convertedRoadType == RoadType.DownTRoad || convertedRoadType == RoadType.LeftTRoad)
-                    roadType = "crossT";
-                else if (convertedRoadType == RoadType.XRoad)
-                    roadType = "crossX";
-                if (_roadTextures.TryGetValue(roadType, out BitmapImage? texture))
+                if (_roadTextures.TryGetValue(ConvertRoadType(road.RoadType), out var texture))
                 {
-                    int rotaion = convertedRoadType switch
-                    {
-                        RoadType.Vertical or RoadType.UpperTRoad or RoadType.UpperRightTurn => 90,
-                        RoadType.LeftTRoad or RoadType.UpperLeftTurn => 180,
-                        RoadType.DownTRoad or RoadType.LeftTurn => 270,
-                        _ => 0
-                    };
-                    if (rotaion != 0)
-                    {
-                        // Calculate the rotaion center, match the size to the given rectangle
-                        double centerX = baseRect.X + (baseRect.Width / 2);
-                        double centerY = baseRect.Y + (baseRect.Height / 2);
-                        // Add the rotation
-                        ctx.PushTransform(new RotateTransform(rotaion, centerX, centerY));
-                        ctx.DrawImage(texture, baseRect);
-                        // Remove the rotation
-                        ctx.Pop();
-                    }
-                    else
-                    {
-                        ctx.DrawImage(texture, baseRect);
-                    }
+                    ctx.DrawImage(texture, baseRect);
                 }
             }
         }
@@ -667,7 +694,7 @@ namespace TransportTycoon.WPF.View.UserControls
                     _ => null
                 };
 
-                if (bridgeType is not null && _bridgeTextures.TryGetValue(bridgeType, out BitmapImage? texture))
+                if (bridgeType is not null && _bridgeTextures.TryGetValue(bridgeType, out var texture))
                 {
                     if (bridge.BridgeType == BridgeType.VerticalGreenBridge
                         || bridge.BridgeType == BridgeType.VerticalYellowBridge
@@ -677,7 +704,10 @@ namespace TransportTycoon.WPF.View.UserControls
                         double centerX = baseRect.X + (baseRect.Width / 2);
                         double centerY = baseRect.Y + (baseRect.Height / 2);
                         // Add the rotation
-                        ctx.PushTransform(new RotateTransform(90, centerX, centerY));
+                        _rotateTransform.Angle = 90;
+                        _rotateTransform.CenterX = centerX;
+                        _rotateTransform.CenterY = centerY;
+                        ctx.PushTransform(_rotateTransform);
                         ctx.DrawImage(texture, baseRect);
                         // Remove the rotation
                         ctx.Pop();
@@ -703,7 +733,7 @@ namespace TransportTycoon.WPF.View.UserControls
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawTreesLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (field.GetTrees() > 0 && _treesTextures.TryGetValue(field.GetTrees(), out BitmapImage? texture))
+            if (field.GetTrees() > 0 && _treesTextures.TryGetValue(field.GetTrees(), out var texture))
             {
                 ctx.DrawImage(texture, baseRect);
             }
@@ -754,7 +784,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 // Culling check
                 if (!visibleWorldRect.IntersectsWith(vehicleRect)) return;
 
-                if (_vehicleTextures.TryGetValue(ConvertVehicleType(vehicle.Type), out BitmapImage? texture))
+                if (_vehicleTextures.TryGetValue(ConvertVehicleType(vehicle.Type), out var texture))
                 {
                     int rotation = vehicle.Direction switch
                     {
@@ -768,7 +798,10 @@ namespace TransportTycoon.WPF.View.UserControls
                     // Calculate the rotation center, match the size to the given rectangle
                     double centerX = vehicleRect.X + (vehicleRect.Width / 2);
                     double centerY = vehicleRect.Y + (vehicleRect.Height / 2);
-                    ctx.PushTransform(new RotateTransform(rotation, centerX, centerY));
+                    _rotateTransform.Angle = rotation;
+                    _rotateTransform.CenterX = centerX;
+                    _rotateTransform.CenterY = centerY;
+                    ctx.PushTransform(_rotateTransform);
 
                     ctx.DrawImage(texture, vehicleRect);
 
@@ -857,8 +890,7 @@ namespace TransportTycoon.WPF.View.UserControls
             int height = currentMap.GetLength(1);
 
             // GPU transformations for zooming and panning
-            ctx.PushTransform(new ScaleTransform(ZoomLevel, ZoomLevel));
-            ctx.PushTransform(new TranslateTransform(-CameraX, -CameraY));
+            ctx.PushTransform(_cameraTransformGroup);
 
             double visibleWorldWidth = ActualWidth / ZoomLevel;
             double visibleWorldHeight = ActualHeight / ZoomLevel;
@@ -903,7 +935,6 @@ namespace TransportTycoon.WPF.View.UserControls
             DrawVehiclesLayer(ctx, visibleWorldRect);
 
             ctx.Pop();
-            ctx.Pop();
         }
         #endregion
 
@@ -932,6 +963,12 @@ namespace TransportTycoon.WPF.View.UserControls
 
             CameraX = Math.Clamp(desiredX, 0, maxCameraX);
             CameraY = Math.Clamp(desiredY, 0, maxCameraY);
+
+            _cameraTransform.X = -CameraX;
+            _cameraTransform.Y = -CameraY;
+
+            _zoomTransform.ScaleX = ZoomLevel;
+            _zoomTransform.ScaleY = ZoomLevel;
         }
 
         /// <summary>
