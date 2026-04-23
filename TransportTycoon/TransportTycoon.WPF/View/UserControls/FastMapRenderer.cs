@@ -3,11 +3,59 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
 using TransportTycoon.Model;
 using TransportTycoon.WPF.Utils;
 
 namespace TransportTycoon.WPF.View.UserControls
 {
+    #region Internal enums
+    internal enum FieldType : byte
+    {
+        Water = 0,
+        Plain = 1,
+        Hill = 2,
+        Mountain = 3,
+        HighMountain = 4,
+
+        House,
+        Farm,
+        Mine,
+        LumberCamp,
+        Mill,
+        Factory,
+        Plant,
+        Road,
+        Bridge,
+        Stop,
+    }
+
+    internal enum VehicleType : byte
+    {
+        Van = 0,
+        Pickup = 1,
+        Truck = 2,
+        LiquidTruck = 3,
+        SmallBus = 4,
+        BigBus = 5,
+    }
+
+    internal enum RoadType : byte
+    {
+        Horizontal = 0,
+        Vertical = 1,
+        RightTurn = 2,
+        LeftTurn = 3,
+        UpperRightTurn = 4,
+        UpperLeftTurn = 5,
+        UpperTRoad = 6,
+        DownTRoad = 7,
+        RightTRoad = 8,
+        LeftTRoad = 9,
+        XRoad = 10,
+    }
+    #endregion
+
     public class FastMapRenderer : FrameworkElement
     {
         #region Constants
@@ -347,6 +395,7 @@ namespace TransportTycoon.WPF.View.UserControls
         #endregion
 
         #region Private methods
+        #region Helper methods
         /// <summary>
         /// Loads an image from an <see cref="Uri"/> and prepares it for rendering as a tile.
         /// Forces the size to <see cref="TileSize"/> x <see cref="TileSize"/> and freezes the bitmap for performance."/>
@@ -366,6 +415,150 @@ namespace TransportTycoon.WPF.View.UserControls
             return bitmap;
         }
 
+        /// <summary>
+        /// Generate a texture for a route stop tile with the given order number.
+        /// </summary>
+        /// <param name="order">The order number of the route stop.</param>
+        /// <returns>A <see cref="BitmapSource"/> representing the route stop tile.</returns>
+        private BitmapSource GenerateRouteStopTexture(int order)
+        {
+            // Standard WPF DPI
+            const double DPI = 96.0;
+            DrawingVisual visual = new();
+
+            using (DrawingContext ctx = visual.RenderOpen())
+            {
+                Rect tileRect = new(0, 0, TileSize, TileSize);
+
+                ctx.DrawRectangle(null, _stopBorderPen, tileRect);
+
+                FormattedText text = new(
+                    textToFormat: order.ToString(),
+                    culture: System.Globalization.CultureInfo.CurrentCulture,
+                    flowDirection: FlowDirection.LeftToRight,
+                    typeface: _stopTextTypeface,
+                    emSize: 24,
+                    foreground: _stopTextBrush,
+                    pixelsPerDip: DPI / 96.0);
+
+                // Center the text
+                double textX = (TileSize / 2.0) - (text.Width / 2.0);
+                double textY = (TileSize / 2.0) - (text.Height / 2.0);
+
+                ctx.DrawText(text, new Point(textX, textY));
+            }
+
+            RenderTargetBitmap bmp = new(
+                TileSize,
+                TileSize,
+                DPI,
+                DPI,
+                PixelFormats.Pbgra32
+                );
+
+            bmp.Render(visual);
+            bmp.Freeze();
+
+            return bmp;
+        }
+
+        /// <summary>
+        /// Generate textures for route stop tiles with order numbers in the given range and cache them.
+        /// </summary>
+        private void GenerateRouteStopTextures(int start, int end)
+        {
+            for (int i = start; i <= end; i++)
+            {
+                _stopTextures[i] = GenerateRouteStopTexture(i);
+            }
+        }
+
+        #region Enum converters
+        /// <summary>
+        /// Converts a <see cref="MapData.FieldType"/> to the corresponding <see cref="FieldType"/> for texture lookup.
+        /// </summary>
+        /// <remarks>
+        /// This method uses AggriessiveInlining to ensure that the conversion is as fast as possible, since it may be called frequently during rendering.
+        /// </remarks>
+        /// <param name="type">The <see cref="MapData.FieldType"/> to convert.</param>
+        /// <returns>The corresponding <see cref="FieldType"/>.</returns>
+        /// <exception cref="NotImplementedException">Thrown if the <paramref name="type"/> is not supported.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private FieldType? ConvertFieldType(IField type)
+        {
+            return type switch
+            {
+                House => FieldType.House,
+                Farm => FieldType.Farm,
+                Mine => FieldType.Mine,
+                LumberCamp => FieldType.LumberCamp,
+                Mill => FieldType.Mill,
+                Factory => FieldType.Factory,
+                Plant => FieldType.Plant,
+                Road => FieldType.Road,
+                Stop => FieldType.Stop,
+                IBridge => FieldType.Bridge,
+                IField => null,
+                _ => throw new NotImplementedException($"Unsupported field type: {type}"),
+            };
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Model.VehicleType"/>  to the corresponding <see cref="VehicleType"/> for texture lookup.
+        /// </summary>
+        /// <remarks>
+        /// This method uses AggriessiveInlining to ensure that the conversion is as fast as possible, since it may be called frequently during rendering.
+        /// </remarks>
+        /// <param name="type">The <see cref="Model.VehicleType"/> to convert.</param>
+        /// <returns>The corresponding <see cref="VehicleType"/>.</returns>
+        /// <exception cref="NotImplementedException">Thrown if the <paramref name="type"/> is not supported.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private VehicleType ConvertVehicleType(Model.VehicleType type)
+        {
+            return type switch
+            {
+                Model.VehicleType.Van => VehicleType.Van,
+                Model.VehicleType.Pickup => VehicleType.Pickup,
+                Model.VehicleType.Truck => VehicleType.Truck,
+                Model.VehicleType.LiquidTruck => VehicleType.LiquidTruck,
+                Model.VehicleType.SmallBus => VehicleType.SmallBus,
+                Model.VehicleType.BigBus => VehicleType.BigBus,
+                _ => throw new NotImplementedException($"Unsupported vehicle type: {type}"),
+            };
+        }
+
+        /// <summary>
+        /// Converts a <see cref="MapData.RoadType"/>  to the corresponding <see cref="RoadType"/> for texture lookup.
+        /// </summary>
+        /// <remarks>
+        /// This method uses AggriessiveInlining to ensure that the conversion is as fast as possible, since it may be called frequently during rendering.
+        /// </remarks>
+        /// <param name="type">The <see cref="MapData.RoadType"/> to convert.</param>
+        /// <returns>The corresponding <see cref="RoadType"/>.</returns>
+        /// <exception cref="NotImplementedException">Thrown if the <paramref name="type"/> is not supported.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private RoadType ConvertRoadType(MapData.RoadType type)
+        {
+            return type switch
+            {
+                MapData.RoadType.Horizontal => RoadType.Horizontal,
+                MapData.RoadType.Vertical => RoadType.Vertical,
+                MapData.RoadType.RightTurn => RoadType.RightTurn,
+                MapData.RoadType.LeftTurn => RoadType.LeftTurn,
+                MapData.RoadType.UpperRightTurn => RoadType.UpperRightTurn,
+                MapData.RoadType.UpperLeftTurn => RoadType.UpperLeftTurn,
+                MapData.RoadType.UpperTRoad => RoadType.UpperTRoad,
+                MapData.RoadType.DownTRoad => RoadType.DownTRoad,
+                MapData.RoadType.RightTRoad => RoadType.RightTRoad,
+                MapData.RoadType.LeftTRoad => RoadType.LeftTRoad,
+                MapData.RoadType.XRoad => RoadType.XRoad,
+                _ => throw new NotImplementedException($"Unsupported road type: {type}"),
+            };
+        }
+        #endregion
+        #endregion
+
+        #region Layer drawing methods
         /// <summary>
         /// Helper method to draw the terrain layer of a tile.
         /// </summary>
@@ -396,7 +589,7 @@ namespace TransportTycoon.WPF.View.UserControls
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawStructureLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (_structureTextures.TryGetValue(field.FieldType, out BitmapImage? texture))
+            if (ConvertFieldType(field) is FieldType fieldType && _structureTextures.TryGetValue(fieldType, out BitmapImage? texture))
             {
                 ctx.DrawImage(texture, baseRect);
             }
@@ -414,18 +607,19 @@ namespace TransportTycoon.WPF.View.UserControls
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawRoadLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (field is not null && field.FieldType == FieldType.Road && field is Road road)
+            if (field is not null && ConvertFieldType(field) == FieldType.Road && field is Road road)
             {
                 string roadType = "road";
-                if (road.RoadType == RoadType.RightTurn || road.RoadType == RoadType.LeftTurn || road.RoadType == RoadType.UpperRightTurn || road.RoadType == RoadType.UpperLeftTurn)
+                RoadType convertedRoadType = ConvertRoadType(road.RoadType);
+                if (convertedRoadType == RoadType.RightTurn || convertedRoadType == RoadType.LeftTurn || convertedRoadType == RoadType.UpperRightTurn || convertedRoadType == RoadType.UpperLeftTurn)
                     roadType = "turn";
-                else if (road.RoadType == RoadType.UpperTRoad || road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad || road.RoadType == RoadType.LeftTRoad)
+                else if (convertedRoadType == RoadType.UpperTRoad || convertedRoadType == RoadType.RightTRoad || convertedRoadType == RoadType.DownTRoad || convertedRoadType == RoadType.LeftTRoad)
                     roadType = "crossT";
-                else if (road.RoadType == RoadType.XRoad)
+                else if (convertedRoadType == RoadType.XRoad)
                     roadType = "crossX";
                 if (_roadTextures.TryGetValue(roadType, out BitmapImage? texture))
                 {
-                    int rotaion = road.RoadType switch
+                    int rotaion = convertedRoadType switch
                     {
                         RoadType.Vertical or RoadType.UpperTRoad or RoadType.UpperRightTurn => 90,
                         RoadType.LeftTRoad or RoadType.UpperLeftTurn => 180,
@@ -463,7 +657,7 @@ namespace TransportTycoon.WPF.View.UserControls
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawBridgeLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (field is not null && field.FieldType == FieldType.Bridge && field is IBridge bridge)
+            if (field is not null && ConvertFieldType(field) == FieldType.Bridge && field is IBridge bridge)
             {
                 string? bridgeType = bridge.BridgeType switch
                 {
@@ -560,7 +754,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 // Culling check
                 if (!visibleWorldRect.IntersectsWith(vehicleRect)) return;
 
-                if (_vehicleTextures.TryGetValue(vehicle.Type, out BitmapImage? texture))
+                if (_vehicleTextures.TryGetValue(ConvertVehicleType(vehicle.Type), out BitmapImage? texture))
                 {
                     int rotation = vehicle.Direction switch
                     {
@@ -644,64 +838,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 }
             }
         }
-
-        /// <summary>
-        /// Generate a texture for a route stop tile with the given order number.
-        /// </summary>
-        /// <param name="order">The order number of the route stop.</param>
-        /// <returns>A <see cref="BitmapSource"/> representing the route stop tile.</returns>
-        private BitmapSource GenerateRouteStopTexture(int order)
-        {
-            // Standard WPF DPI
-            const double DPI = 96.0;
-            DrawingVisual visual = new();
-
-            using (DrawingContext ctx = visual.RenderOpen())
-            {
-                Rect tileRect = new(0, 0, TileSize, TileSize);
-
-                ctx.DrawRectangle(null, _stopBorderPen, tileRect);
-
-                FormattedText text = new(
-                    textToFormat: order.ToString(),
-                    culture: System.Globalization.CultureInfo.CurrentCulture,
-                    flowDirection: FlowDirection.LeftToRight,
-                    typeface: _stopTextTypeface,
-                    emSize: 24,
-                    foreground: _stopTextBrush,
-                    pixelsPerDip: DPI / 96.0);
-
-                // Center the text
-                double textX = (TileSize / 2.0) - (text.Width / 2.0);
-                double textY = (TileSize / 2.0) - (text.Height / 2.0);
-
-                ctx.DrawText(text, new Point(textX, textY));
-            }
-
-            RenderTargetBitmap bmp = new(
-                TileSize,
-                TileSize,
-                DPI,
-                DPI,
-                PixelFormats.Pbgra32
-                );
-
-            bmp.Render(visual);
-            bmp.Freeze();
-
-            return bmp;
-        }
-
-        /// <summary>
-        /// Generate textures for route stop tiles with order numbers in the given range and cache them.
-        /// </summary>
-        private void GenerateRouteStopTextures(int start, int end)
-        {
-            for (int i = start; i <= end; i++)
-            {
-                _stopTextures[i] = GenerateRouteStopTexture(i);
-            }
-        }
+        #endregion
         #endregion
 
         #region Protected methods
