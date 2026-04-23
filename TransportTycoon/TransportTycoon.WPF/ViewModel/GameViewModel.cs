@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
 using TransportTycoon.Model;
 using TransportTycoon.WPF.Utils;
 
@@ -196,27 +197,31 @@ namespace TransportTycoon.WPF.ViewModel
         private uint ConvertTileToColor(IField tile)
         {
             // Moved from FieldViewModel
-            Color colorName = tile.FieldType switch
+            Color colorName = tile switch
             {
                 // Structures
-                FieldType.House => Colors.Yellow,
-                FieldType.Farm => Colors.LightGreen,
-                FieldType.Mine => Colors.DarkOrange,
-                FieldType.LumberCamp => Colors.SaddleBrown,
-                FieldType.Mill => Colors.LightGray,
-                FieldType.Factory => Colors.DimGray,
+                House _ => Colors.Yellow,
+                Farm => Colors.LightGreen,
+                Mine => Colors.DarkOrange,
+                LumberCamp => Colors.SaddleBrown,
+                Mill => Colors.LightGray,
+                Factory => Colors.DimGray,
 
                 // Infrastructure
-                FieldType.Road => Colors.DarkGray,
-                FieldType.Bridge => Colors.Red,
-                FieldType.Stop => Colors.Red,
+                Road => Colors.DarkGray,
+                IBridge => Colors.Red,
+                Stop => Colors.Red,
 
                 // Terrain
-                FieldType.Water => Colors.Blue,
-                FieldType.Plain => Colors.Green,
-                FieldType.Hill => Colors.DarkGreen,
-                FieldType.Mountain => Colors.Gray,
-                FieldType.HighMountain => Colors.DarkGreen,
+                Water => Colors.Blue,
+                Terrain t => t.TerrainType switch
+                {
+                    TerrainType.Plain => Colors.Green,
+                    TerrainType.Hill => Colors.DarkGreen,
+                    TerrainType.Mountain => Colors.Gray,
+                    TerrainType.HighMountain => Colors.DarkGreen,
+                    _ => Colors.Black
+                },
 
                 _ => Colors.Black,
             };

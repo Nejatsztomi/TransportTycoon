@@ -12,7 +12,6 @@
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public readonly FieldType FieldType => FieldType.Road;
         public readonly int Price => 100;
         #endregion
 

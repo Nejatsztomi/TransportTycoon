@@ -161,7 +161,7 @@ namespace TransportTycoon.Model.Graph
 
             if (IsTerminatingField(nextField))
             {
-                return new Node(nextField.X, nextField.Y, nextField.FieldType);
+                return new Node(nextField.X, nextField.Y, nextField.GetType());
             }
 
             _previousFieldCoords = (_currentField.X, _currentField.Y);

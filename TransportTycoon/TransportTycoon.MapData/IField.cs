@@ -1,23 +1,23 @@
 ﻿namespace TransportTycoon.MapData
 {
-    public enum FieldType
-    {
-        Water,
-        Plain,
-        Hill,
-        Mountain,
-        HighMountain,
-        House,
-        Farm,
-        Mine,
-        LumberCamp,
-        Mill,
-        Factory,
-        Plant,
-        Road,
-        Bridge,
-        Stop,
-    }
+    //public enum FieldType
+    //{ 
+    //    Water,
+    //    Plain,
+    //    Hill,
+    //    Mountain,
+    //    HighMountain,
+    //    House,
+    //    Farm,
+    //    Mine,
+    //    LumberCamp,
+    //    Mill,
+    //    Factory,
+    //    Plant,
+    //    Road,
+    //    Bridge,
+    //    Stop,
+    //}
 
     public interface IField
     {
@@ -49,8 +49,6 @@
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public readonly FieldType FieldType => FieldType.Water;
-
         public readonly bool Modifiable => false;
         #endregion
 

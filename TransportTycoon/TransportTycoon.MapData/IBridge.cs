@@ -24,7 +24,6 @@
         public readonly int Price => 50;
         public readonly int SpeedLimit => 100;
         public readonly int Range => 13;
-        public readonly FieldType FieldType => FieldType.Bridge;
         #endregion
 
         #region Constructor
@@ -48,7 +47,6 @@
         public readonly int Price => 100;
         public readonly int SpeedLimit => 100;
         public readonly int Range => 15;
-        public readonly FieldType FieldType => FieldType.Bridge;
         #endregion
 
         #region Constructor
@@ -72,7 +70,6 @@
         public readonly int Price => 150;
         public readonly int SpeedLimit => 100;
         public readonly int Range => 17;
-        public readonly FieldType FieldType => FieldType.Bridge;
         #endregion
 
         #region Constructor

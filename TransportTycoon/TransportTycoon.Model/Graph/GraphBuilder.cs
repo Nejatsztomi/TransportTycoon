@@ -24,7 +24,7 @@ namespace TransportTycoon.Model.Graph
 
                     if (middleField is Stop && !visitedFields.Contains((x, y)))
                     {
-                        Node startNode = new(x, y, middleField.FieldType);
+                        Node startNode = new(x, y, middleField.GetType());
                         nodes.Add(startNode);
                         visitedJunctions.Add((x, y));
 

@@ -14,7 +14,6 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BuildingEntity BuildingEntity { get; set; }
-        public readonly FieldType FieldType => FieldType.House;
         #endregion
 
         #region Constructors
