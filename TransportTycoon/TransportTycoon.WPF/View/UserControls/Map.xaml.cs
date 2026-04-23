@@ -130,16 +130,14 @@ namespace TransportTycoon.WPF.View.UserControls
             GameViewModel? oldVm = e.OldValue as GameViewModel;
             GameViewModel? newVm = e.NewValue as GameViewModel;
 
-            oldVm?.MapUpdated -= map.GameViewModel_MapUpdated;
-            newVm?.MapUpdated += map.GameViewModel_MapUpdated;
+            oldVm?.VehicleDestroyed -= map.GameViewModel_OnVehichleDestroyed;
+
+            newVm?.VehicleDestroyed += map.GameViewModel_OnVehichleDestroyed;
         }
 
-        /// <summary>
-        /// An eventhandler to issue a map redraw.
-        /// </summary>
-        private void GameViewModel_MapUpdated()
+        private void GameViewModel_OnVehichleDestroyed(UInt64 vehicleId)
         {
-            InternalGameMapRenderer.Redraw();
+            GameMapRenderer.RemoveVehicleFromCache(vehicleId);
         }
 
         /// <summary>

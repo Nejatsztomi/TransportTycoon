@@ -146,7 +146,8 @@ namespace TransportTycoon.WPF.View.UserControls
         private readonly TranslateTransform _cameraTransform = new();
         private readonly ScaleTransform _zoomTransform = new();
         private readonly TransformGroup _cameraTransformGroup = new();
-        private readonly RotateTransform _rotateTransform = new();
+
+        private readonly Dictionary<UInt64, RotateTransform> _vehicleRotationCache = new(100);
         #endregion
 
         #region Bindings
@@ -532,6 +533,24 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        /// <summary>
+        /// Converts a vehicle's movement direction to its corresponding rotation angle in degrees.
+        /// </summary>
+        /// <param name="direction">The direction in which the vehicle is moving.</param>
+        /// <returns>An <see langword="double"/> representing the rotation angle in degrees that corresponds to the specified direction.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private double VehicleDirectionToRotation(Direction direction)
+        {
+            return direction switch
+            {
+                Direction.Down => 90.0, // balra
+                Direction.Up => 270.0, // jobbra
+                Direction.Right => 180.0, // fel
+                Direction.Left => 0.0, // le
+                _ => 0.0,
+            };
+        }
+
         #region Enum converters
         /// <summary>
         /// Converts a <see cref="MapData.FieldType"/> to the corresponding <see cref="FieldType"/> for texture lookup.
@@ -787,22 +806,21 @@ namespace TransportTycoon.WPF.View.UserControls
 
                 if (_vehicleTextures.TryGetValue(ConvertVehicleType(vehicle.Type), out var texture))
                 {
-                    int rotation = vehicle.Direction switch
-                    {
-                        Direction.Down => 90, // balra
-                        Direction.Up => 270, // jobbra
-                        Direction.Right => 180, // fel
-                        Direction.Left => 0, // le
-                        _ => 0,
-                    };
-
                     // Calculate the rotation center, match the size to the given rectangle
                     double centerX = vehicleRect.X + (vehicleRect.Width / 2);
                     double centerY = vehicleRect.Y + (vehicleRect.Height / 2);
-                    _rotateTransform.Angle = rotation;
-                    _rotateTransform.CenterX = centerX;
-                    _rotateTransform.CenterY = centerY;
-                    ctx.PushTransform(_rotateTransform);
+
+                    if (!_vehicleRotationCache.TryGetValue(vehicle.Id, out var transform))
+                    {
+                        transform = new RotateTransform(VehicleDirectionToRotation(vehicle.Direction), centerX, centerY);
+                        _vehicleRotationCache[vehicle.Id] = transform;
+                    }
+
+                    transform.CenterX = centerX;
+                    transform.CenterY = centerY;
+                    transform.Angle = VehicleDirectionToRotation(vehicle.Direction);
+
+                    ctx.PushTransform(transform);
 
                     ctx.DrawImage(texture, vehicleRect);
 
@@ -940,6 +958,15 @@ namespace TransportTycoon.WPF.View.UserControls
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Removes the cached rotation for a vehicle with the given ID, if it exists.
+        /// </summary>
+        /// <param name="vehicleId">The ID of the vehicle whose cached rotation should be removed.</param>
+        public void RemoveVehicleFromCache(UInt64 vehicleId)
+        {
+            _vehicleRotationCache.Remove(vehicleId);
+        }
+
         public void SetCameraView(double desiredX, double desiredY, double desiredZoom)
         {
             if (Map is null || ActualWidth <= 0.0 || ActualHeight <= 0.0) return;

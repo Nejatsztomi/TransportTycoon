@@ -50,6 +50,8 @@ namespace TransportTycoon.WPF.ViewModel
         /// This is needed because some changes to the map (like tree growth) don't trigger any of the other events, but they still require a redraw.
         /// </summary>
         public event Action? MapUpdated;
+
+        public event Action<UInt64>? VehicleDestroyed;
         #endregion
 
         #region Constructors
@@ -128,7 +130,6 @@ namespace TransportTycoon.WPF.ViewModel
             Int32Rect updateRect = new(x, y, 1, 1);
             MinimapImage.WritePixels(updateRect, colorData, 4, 0);
         }
-
 
         public void OnTileLeftClick(int x, int y)
         {
@@ -364,7 +365,7 @@ namespace TransportTycoon.WPF.ViewModel
             OnPropertyChanged(nameof(Balance));
         }
 
-        private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs e)
+        private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs _2)
         {
             //var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
             //tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
