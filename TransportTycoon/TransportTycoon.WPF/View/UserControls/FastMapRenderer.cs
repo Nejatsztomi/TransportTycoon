@@ -691,12 +691,12 @@ namespace TransportTycoon.WPF.View.UserControls
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void DrawRoadLayer(DrawingContext ctx, IField field, Rect baseRect)
         {
-            if (field is not null && ConvertFieldType(field) == FieldType.Road && field is Road road)
+            if (field is not null &&
+                ConvertFieldType(field) == FieldType.Road &&
+                field is Road road &&
+                _roadTextures.TryGetValue(ConvertRoadType(road.RoadType), out var texture))
             {
-                if (_roadTextures.TryGetValue(ConvertRoadType(road.RoadType), out var texture))
-                {
-                    ctx.DrawImage(texture, baseRect);
-                }
+                ctx.DrawImage(texture, baseRect);
             }
         }
 
