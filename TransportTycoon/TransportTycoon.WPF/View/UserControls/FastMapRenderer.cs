@@ -783,7 +783,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 Rect vehicleRect = new(pixelX, pixelY, TileSize, TileSize);
 
                 // Culling check
-                if (!visibleWorldRect.IntersectsWith(vehicleRect)) return;
+                if (!visibleWorldRect.IntersectsWith(vehicleRect)) continue;
 
                 if (_vehicleTextures.TryGetValue(ConvertVehicleType(vehicle.Type), out var texture))
                 {
