@@ -9,7 +9,6 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BuildingEntity BuildingEntity { get; set; }
-        public readonly FieldType FieldType => FieldType.Mill;
         #endregion
 
         #region Constructors
@@ -30,7 +29,6 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BuildingEntity BuildingEntity { get; set; }
-        public readonly FieldType FieldType => FieldType.Plant;
         #endregion
 
         #region Constructors
@@ -51,7 +49,6 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BuildingEntity BuildingEntity { get; set; }
-        public readonly FieldType FieldType => FieldType.Factory;
         #endregion
 
         #region Constructors

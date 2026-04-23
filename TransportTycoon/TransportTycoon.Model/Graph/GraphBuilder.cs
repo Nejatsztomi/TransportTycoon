@@ -22,9 +22,9 @@ namespace TransportTycoon.Model.Graph
                 {
                     IField middleField = table[x, y];
 
-                    if (middleField.FieldType == FieldType.Stop && !visitedFields.Contains((x, y)))
+                    if (middleField is Stop && !visitedFields.Contains((x, y)))
                     {
-                        Node startNode = new(x, y, middleField.FieldType);
+                        Node startNode = new(x, y, middleField.GetType());
                         nodes.Add(startNode);
                         visitedJunctions.Add((x, y));
 
@@ -34,9 +34,9 @@ namespace TransportTycoon.Model.Graph
                             if (table.IsInBounds(x + dirx, y + diry))
                             {
                                 IField neighbourField = table[x + dirx, y + diry];
-                                if (neighbourField.FieldType == FieldType.Road
-                                    || neighbourField.FieldType == FieldType.Bridge
-                                    || neighbourField.FieldType == FieldType.Stop)
+                                if (neighbourField is Road
+                                    || neighbourField is IBridge
+                                    || neighbourField is Stop)
                                 {
                                     Walker walker = new(startNode, neighbourField, table, visitedFields, visitedJunctions);
                                     walkersQ.Enqueue(walker);

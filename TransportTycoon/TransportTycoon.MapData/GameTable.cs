@@ -277,11 +277,11 @@ namespace TransportTycoon.MapData
             {
                 cost = CreateVerticalBridge(y, x, x, BridgeType.VerticalYellowBridge, ref changedFields);
             }
-            else if (Table[x, y - 1].FieldType == FieldType.Plain && Table[x, y + 1].FieldType == FieldType.Plain)
+            else if (Table[x, y - 1] is Terrain terrain && terrain.TerrainType == TerrainType.Plain && Table[x, y + 1] is Terrain terrain2 && terrain2.TerrainType == TerrainType.Plain)
             {
                 cost = CreateHorizontalBridge(x, y, y, BridgeType.HorizontalYellowBridge, ref changedFields);
             }
-            else if (Table[x - 1, y].FieldType == FieldType.Plain && Table[x + 1, y].FieldType == FieldType.Plain)
+            else if (Table[x - 1, y] is Terrain terrain3 && terrain3.TerrainType == TerrainType.Plain && Table[x + 1, y] is Terrain terrain4 && terrain4.TerrainType == TerrainType.Plain)
             {
                 cost = CreateVerticalBridge(y, x, x, BridgeType.VerticalYellowBridge, ref changedFields);
             }

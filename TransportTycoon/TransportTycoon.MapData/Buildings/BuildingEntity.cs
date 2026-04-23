@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData.Buildings
+﻿using static TransportTycoon.MapData.Load;
+
+namespace TransportTycoon.MapData.Buildings
 
 {
     public abstract class BuildingEntity

@@ -20,16 +20,16 @@ namespace TransportTycoon.Model.Graph
         /// The node's fieldtype on the map.
         /// </summary>
         /// <remarks>
-        /// Can be either <see cref="FieldType.Stop"/> or <see cref="FieldType.Road"/>.
+        /// Can be either <see cref="Stop"/> or <see cref="Road"/>.
         /// </remarks>
-        public FieldType Type { get; private set; }
+        public Type Type { get; private set; }
         /// <summary>
         /// Gets a value indicating whether this field is a valid destination for a vehicle.
         /// </summary>
         /// <remarks>
         /// This indicates that the path finding algorithms can consider this node as a valid destination for a vehicle.
         /// </remarks>
-        public bool IsValidDestination => Type == FieldType.Stop;
+        public bool IsValidDestination => Type == typeof(Stop);
         #endregion
 
         #region Constructors
@@ -39,7 +39,7 @@ namespace TransportTycoon.Model.Graph
         /// <param name="x">The X coordinate of the node.</param>
         /// <param name="y">The Y coordinate of the node.</param>
         /// <param name="type">The type of field represented by the node.</param>
-        public Node(int x, int y, FieldType type)
+        public Node(int x, int y, Type type)
         {
             X = x;
             Y = y;

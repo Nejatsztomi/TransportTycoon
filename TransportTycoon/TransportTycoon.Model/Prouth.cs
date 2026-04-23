@@ -54,7 +54,7 @@ namespace TransportTycoon.Model
         {
             return [.. nodes
                 .Select(node => game.Table[node.X, node.Y])
-                .Where(field => field is not null && field.FieldType == FieldType.Stop)
+                .Where(field => field is not null && field is Stop)
                 .Cast<Stop>()
                 ];
         }

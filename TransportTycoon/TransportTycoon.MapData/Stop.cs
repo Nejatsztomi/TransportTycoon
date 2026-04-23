@@ -9,7 +9,6 @@ namespace TransportTycoon.MapData
         public int Y { get; set; }
         public int Height { get; set; }
         public readonly int Price => 200;
-        public readonly FieldType FieldType => FieldType.Stop;
         public List<IBuildingBlocks>? Connenctions { get; private set; } = [];
         #endregion
 

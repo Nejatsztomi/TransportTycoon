@@ -9,7 +9,6 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BuildingEntity BuildingEntity { get; set; }
-        public readonly FieldType FieldType => FieldType.LumberCamp;
         #endregion
 
         #region Constructor
@@ -30,7 +29,6 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BuildingEntity BuildingEntity { get; set; }
-        public readonly FieldType FieldType => FieldType.Mine;
         #endregion
 
         #region Constructor
@@ -51,7 +49,6 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BuildingEntity BuildingEntity { get; set; }
-        public readonly FieldType FieldType => FieldType.Farm;
         #endregion
 
         #region Constructor

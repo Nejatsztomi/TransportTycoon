@@ -49,7 +49,7 @@ namespace TransportTycoon.Persistence
         Truck = 2,
         LiquidTruck = 3,
         SmallBus = 4,
-        BigBus = 5,
+        BigBus = 5
     }
 
     public enum SaveFieldType : byte

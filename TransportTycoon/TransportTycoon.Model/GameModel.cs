@@ -277,6 +277,7 @@ namespace TransportTycoon.Model
                     Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
                     _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
                 };
+
                 vehicle.SetCurrentCapacity(vehicleData.CurrentCapacity);
 
                 Load? load = vehicleData.CurrentLoad switch
@@ -339,7 +340,7 @@ namespace TransportTycoon.Model
                 {
                     int nextHeight = terrain.Height + 1;
 
-                    if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
+                    if (Map.IsTileHeightPossible(x, y, nextHeight))
                     {
                         if (field.Height == 4) return;
                         if (terrain.Trees > 0)
@@ -376,7 +377,7 @@ namespace TransportTycoon.Model
                 {
                     int nextHeight = terrain.Height - 1;
 
-                    if (Map.IsTileHeightPossible(x, y, nextHeight) && terrain.FieldType != FieldType.Road)
+                    if (Map.IsTileHeightPossible(x, y, nextHeight))
                     {
                         if (field.Height == 1) return;
                         if (terrain.Trees > 0)

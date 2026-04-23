@@ -161,7 +161,7 @@ namespace TransportTycoon.Model.Graph
 
             if (IsTerminatingField(nextField))
             {
-                return new Node(nextField.X, nextField.Y, nextField.FieldType);
+                return new Node(nextField.X, nextField.Y, nextField.GetType());
             }
 
             _previousFieldCoords = (_currentField.X, _currentField.Y);
@@ -172,9 +172,9 @@ namespace TransportTycoon.Model.Graph
         /// <summary>
         /// Determines whether the specified field type is a valid type for processing.
         /// </summary>
-        /// <param name="fieldType">The field type to validate. Only certain field types are considered valid.</param>
+        /// <param name="field">The field type to validate. Only certain field types are considered valid.</param>
         /// <returns><see langword="true"/> if the specified field type is valid; otherwise, <see langword="false"/>.</returns>
-        private bool IsValidFieldType(FieldType fieldType) => fieldType == FieldType.Road || fieldType == FieldType.Bridge || fieldType == FieldType.Stop;
+        private bool IsValidFieldType(IField field) => field is Road || field is IBridge || field is Stop;
 
         /// <summary>
         /// Calculates and updates the forward and backward road costs based on the specified height difference.
@@ -215,7 +215,7 @@ namespace TransportTycoon.Model.Graph
                 return null;
             }
             IField nextField = _gameTable.Table[x, y];
-            if (!IsValidFieldType(nextField.FieldType))
+            if (!IsValidFieldType(nextField))
             {
                 return null;
             }
@@ -249,7 +249,7 @@ namespace TransportTycoon.Model.Graph
         /// <returns><see langword="true"/> if the field is a road and its road type represents a junction; otherwise, <see langword="false"/>.</returns>
         private bool IsJunction(IField field)
         {
-            if (field.FieldType != FieldType.Road || field is not Road road)
+            if (field is not Road road)
             {
                 return false;
             }
@@ -267,7 +267,7 @@ namespace TransportTycoon.Model.Graph
         /// <returns><see langword="true"/> if the field is a stop or a junction; otherwise, <see langword="false"/>.</returns>
         private bool IsTerminatingField(IField field)
         {
-            return field.FieldType == FieldType.Stop || IsJunction(field);
+            return field is Stop || IsJunction(field);
         }
         #endregion
     }
