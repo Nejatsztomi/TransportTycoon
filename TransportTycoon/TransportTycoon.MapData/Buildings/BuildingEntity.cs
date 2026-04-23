@@ -124,7 +124,7 @@
         #region Public methods
         #region Overrides
         public override Load? GetConsumeLoad() => null;
-        public override Load GetProvideLoad() => new Load.People();
+        public override Load GetProvideLoad() => new People();
         public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
