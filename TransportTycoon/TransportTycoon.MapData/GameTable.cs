@@ -238,9 +238,9 @@ namespace TransportTycoon.MapData
                 IBridge bridge = b_type
                 switch
                 {
-                    BridgeType.HorizontalYellowBridge => new YellowBridge(i, y, b_type, Table[i, y].Height),
-                    BridgeType.HorizontalGreenBridge => new GreenBridge(i, y, b_type, Table[i, y].Height),
-                    BridgeType.HorizontalRedBridge => new RedBridge(i, y, b_type, Table[i, y].Height),
+                    BridgeType.VerticalYellowBridge => new YellowBridge(i, y, b_type, Table[i, y].Height),
+                    BridgeType.VerticalGreenBridge => new GreenBridge(i, y, b_type, Table[i, y].Height),
+                    BridgeType.VerticalRedBridge => new RedBridge(i, y, b_type, Table[i, y].Height),
                     _ => new RedBridge(i, y, b_type, Table[i, y].Height)
                 };
 
