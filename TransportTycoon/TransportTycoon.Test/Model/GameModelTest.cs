@@ -10,15 +10,13 @@ namespace TransportTycoon.Test.Model;
 
 public class GameModelTest
 {
-    [TestClass]
     public class ConstructorTest
     {
-        private ITimer _mockTimer = null!;
-        private IPersistence _mockPersistence = null!;
-        private GameTable _mockMap = null!;
+        private readonly ITimer _mockTimer;
+        private readonly IPersistence _mockPersistence;
+        private readonly GameTable _mockMap;
 
-        [TestInitialize]
-        public void Initialize()
+        public ConstructorTest()
         {
             var mockMapGenerator = Substitute.For<IMapGenerator>();
             MapGenerationContext context = new();
@@ -28,61 +26,69 @@ public class GameModelTest
             _mockPersistence = Substitute.For<IPersistence>();
         }
 
-        [TestMethod]
+        [Fact]
         public void Constructor_WithAllParameters()
         {
             Difficulty difficulty = Difficulty.Hard;
             int balance = 5_000;
             GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence, difficulty, balance);
 
-            Assert.AreEqual(difficulty, gameModel.Difficulty, "Difficulty should match");
-            Assert.AreEqual(balance, gameModel.Balance, "Balance should match");
+            Assert.Equal(difficulty, gameModel.Difficulty);
+            Assert.Equal(balance, gameModel.Balance);
 
-            Assert.AreEqual(GameMode.Run, gameModel.Mode, "GameMode should be Run");
-            Assert.AreEqual(0UL, gameModel.GameTime, "GameTime should be 0");
+            Assert.Equal(GameMode.Run, gameModel.Mode);
+            Assert.Equal(0UL, gameModel.GameTime);
 
             // Timer mock tesztek
             // Feliratkoztak az Elapsed eseményre
             _mockTimer.Received().Elapsed += Arg.Any<EventHandler>();
         }
 
-        [TestMethod]
+        [Fact]
         public void Constructor_WithDefaultValues()
         {
             GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
 
-            Assert.AreEqual(GameModel.DefaultDifficulty, gameModel.Difficulty, "Difficulty should be DefaultDifficulty");
-            Assert.AreEqual(GameModel.DefaultBalance, gameModel.Balance, "Balance should be DefaultBalance");
+            Assert.Equal(GameModel.DefaultDifficulty, gameModel.Difficulty);
+            Assert.Equal(GameModel.DefaultBalance, gameModel.Balance);
         }
     }
 
     public class EventTest
     {
-        private static IEnumerable<object[]> GetAllGameModes()
+        //public class EnumEnumerable<T> : IEnumerable<T[]> where T : struct, Enum
+        //{
+        //    private readonly List<T[]> _data = [.. Enum.GetValues<T>().Select(v => new T[] { v })];
+
+        //    public IEnumerator<T[]> GetEnumerator() => _data.GetEnumerator();
+        //    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        //}
+
+        /// <summary>
+        /// A helper class that generates test data for all values of a given enum type <typeparamref name="T"/>.
+        /// It inherits from <see cref="TheoryData{T}"/>, which is a convenient way to provide data for xUnit theories.
+        /// The constructor populates the data by iterating over all values of the enum <typeparamref name="T"/> and adding them to the theory data.
+        /// This allows us to easily run parameterized tests for each value of the enum without manually specifying them.
+        /// </summary>
+        /// <typeparam name="T">The enum type for which to generate test data.</typeparam>
+        public class EnumEnumerable<T> : TheoryData<T> where T : struct, Enum
         {
-            foreach (var role in Enum.GetValues<GameMode>())
+            public EnumEnumerable()
             {
-                yield return new object[] { role };
+                foreach (var value in Enum.GetValues<T>())
+                {
+                    Add(value);
+                }
             }
         }
 
-        private static IEnumerable<object[]> GetAllTimeSpeeds()
-        {
-            foreach (var role in Enum.GetValues<TimeSpeed>())
-            {
-                yield return new object[] { role };
-            }
-        }
-
-        [TestClass]
         public class EventRaisedTest
         {
-            private GameModel _gameModel = null!;
-            private ITimer _mockTimer = null!;
-            private IPersistence _mockPersistence = null!;
+            private readonly GameModel _gameModel;
+            private readonly ITimer _mockTimer;
+            private readonly IPersistence _mockPersistence;
 
-            [TestInitialize]
-            public void Initialize()
+            public EventRaisedTest()
             {
                 var mockMapGenerator = Substitute.For<IMapGenerator>();
                 MapGenerationContext context = new();
@@ -93,7 +99,7 @@ public class GameModelTest
                 _gameModel = new(mockGameTable, _mockTimer, _mockPersistence);
             }
 
-            [TestMethod]
+            [Fact]
             public void NewGameCreated_EventIsRaised()
             {
                 bool raised = false;
@@ -107,7 +113,7 @@ public class GameModelTest
                 {
                     _gameModel.NewGameCreated += Handler;
                     _gameModel.NewGame();
-                    Assert.IsTrue(raised, "NewGameCreated should be raised after creating a new game");
+                    Assert.True(raised, "NewGameCreated should be raised after creating a new game");
                 }
                 finally
                 {
@@ -115,8 +121,8 @@ public class GameModelTest
                 }
             }
 
-            [TestMethod]
-            [DynamicData(nameof(GetAllGameModes), typeof(EventTest))]
+            [Theory]
+            [ClassData(typeof(EnumEnumerable<GameMode>))]
             public void GameModeChanged_EventIsRaised(GameMode gameMode)
             {
                 bool raised = false;
@@ -130,7 +136,7 @@ public class GameModelTest
                 {
                     _gameModel.GameModeChanged += Handler;
                     _gameModel.Mode = gameMode;
-                    Assert.IsTrue(raised, "GameModeChanged should be raised after changing the game mode");
+                    Assert.True(raised, "GameModeChanged should be raised after changing the game mode");
                 }
                 finally
                 {
@@ -138,8 +144,8 @@ public class GameModelTest
                 }
             }
 
-            [TestMethod]
-            [DynamicData(nameof(GetAllTimeSpeeds), typeof(EventTest))]
+            [Theory]
+            [ClassData(typeof(EnumEnumerable<TimeSpeed>))]
             public void TimeSpeedChanged_EventIsRaised(TimeSpeed timeSpeed)
             {
                 bool raised = false;
@@ -153,7 +159,7 @@ public class GameModelTest
                 {
                     _gameModel.TimeSpeedChanged += Handler;
                     _gameModel.TimeSpeed = timeSpeed;
-                    Assert.IsTrue(raised, "TimeSpeedChanged should be raised after changing the game speed");
+                    Assert.True(raised, "TimeSpeedChanged should be raised after changing the game speed");
                 }
                 finally
                 {
@@ -161,7 +167,7 @@ public class GameModelTest
                 }
             }
 
-            [TestMethod]
+            [Fact]
             public void GameOver_EventIsRaised()
             {
                 bool raised = false;
@@ -179,7 +185,7 @@ public class GameModelTest
                     {
                         _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
                     }
-                    Assert.IsTrue(raised, "GameAdvanced event should be raised after 10 timer ticks");
+                    Assert.True(raised, "GameAdvanced event should be raised after 10 timer ticks");
                 }
                 finally
                 {
@@ -187,7 +193,7 @@ public class GameModelTest
                 }
             }
 
-            [TestMethod]
+            [Fact]
             public void GameTicked_EventIsRaised()
             {
                 bool raised = false;
@@ -202,7 +208,7 @@ public class GameModelTest
                     _gameModel.GameTicked += Handler;
                     // Szimuláljuk a timer tick eseményét
                     _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
-                    Assert.IsTrue(raised, "GameTicked should be raised after 1 timer tick");
+                    Assert.True(raised, "GameTicked should be raised after 1 timer tick");
                 }
                 finally
                 {
@@ -210,23 +216,21 @@ public class GameModelTest
                 }
             }
 
-            [TestMethod]
+            [Fact]
             public void GameAdvanced_EventIsRaised() { }
 
-            [TestMethod]
+            [Fact]
             public void InfrastructureBuilt_EventIsRaised() { }
         }
 
-        [TestClass]
         public class EventArgumentTest
         {
-            private GameModel _gameModel = null!;
-            private ITimer _mockTimer = null!;
-            private GameTable _mockMap = null!;
-            private IPersistence _mockPersistence = null!;
+            private readonly GameModel _gameModel;
+            private readonly ITimer _mockTimer;
+            private readonly GameTable _mockMap;
+            private readonly IPersistence _mockPersistence;
 
-            [TestInitialize]
-            public void Initialize()
+            public EventArgumentTest()
             {
                 IMapGenerator mockGenerator = Substitute.For<IMapGenerator>();
                 MapGenerationContext context = new();
@@ -237,8 +241,8 @@ public class GameModelTest
                 _gameModel = new(_mockMap, _mockTimer, _mockPersistence);
             }
 
-            [TestMethod]
-            [DynamicData(nameof(GetAllGameModes), typeof(EventTest))]
+            [Theory]
+            [ClassData(typeof(EnumEnumerable<GameMode>))]
             public void GameModeChanged_EventArgumentIsCorrect(GameMode expectedGameMode)
             {
                 GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
@@ -253,7 +257,7 @@ public class GameModelTest
                 {
                     gameModel.GameModeChanged += Handler;
                     gameModel.Mode = expectedGameMode;
-                    Assert.AreEqual(expectedGameMode, actualGameMode, "GameModeChanged event should have correct argument");
+                    Assert.Equal(expectedGameMode, actualGameMode);
                 }
                 finally
                 {
@@ -261,8 +265,8 @@ public class GameModelTest
                 }
             }
 
-            [TestMethod]
-            [DynamicData(nameof(GetAllTimeSpeeds), typeof(EventTest))]
+            [Theory]
+            [ClassData(typeof(EnumEnumerable<TimeSpeed>))]
             public void TimeSpeedChanged_EventArgumentIsCorrect(TimeSpeed expectedTimeSpeed)
             {
                 GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
@@ -277,7 +281,7 @@ public class GameModelTest
                 {
                     gameModel.TimeSpeedChanged += Handler;
                     gameModel.TimeSpeed = expectedTimeSpeed;
-                    Assert.AreEqual(expectedTimeSpeed, actualTimeSpeed, "TimeSpeedChanged event should have correct argument");
+                    Assert.Equal(expectedTimeSpeed, actualTimeSpeed);
                 }
                 finally
                 {
@@ -285,7 +289,7 @@ public class GameModelTest
                 }
             }
 
-            [TestMethod]
+            [Fact]
             public void GameOver_EventArgumentIsCorrect() { }
 
             // TODO: reimplement this with mocking in the future
@@ -318,20 +322,19 @@ public class GameModelTest
             //    }
             //}
 
-            [TestMethod]
+            [Fact]
             public void InfrastructureBuilt_EventArgumentIsCorrect() { }
         }
     }
-    [TestClass]
+
     public class VehicleTests
     {
-        private GameModel _gameModel = null!;
-        private GameTable _mockMap = null!;
-        private ITimer _mockTimer = null!;
-        private IPersistence _mockPersistence = null!;
+        private GameModel _gameModel;
+        private readonly GameTable _mockMap;
+        private readonly ITimer _mockTimer;
+        private readonly IPersistence _mockPersistence;
 
-        [TestInitialize]
-        public void Initialize()
+        public VehicleTests()
         {
             var mockMapGenerator = Substitute.For<IMapGenerator>();
             MapGenerationContext context = new();
@@ -341,10 +344,10 @@ public class GameModelTest
             _mockPersistence = Substitute.For<IPersistence>();
 
             // Initialize GameModel with a default high balance for tests
-            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
+            _gameModel = new(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
         }
 
-        [TestMethod]
+        [Fact]
         public void BuyVehicle_LocationIsNotStop_ReturnsNullAndDoesNotChangeBalance()
         {
             // Arrange
@@ -353,19 +356,19 @@ public class GameModelTest
             _mockMap[x, y] = new Terrain(x, y, 1);
 
             // Re-initialize GameModel to strictly control the starting balance
-            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
+            _gameModel = new(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
             int initialVehiclesCount = _gameModel.Vehicles.Count;
 
             // Act
             var result = _gameModel.BuyVehicle(x, y, VehicleType.Van);
 
             // Assert
-            Assert.IsNull(result, "Should return null because the location is not a Stop.");
-            Assert.AreEqual(10000, _gameModel.Balance, "Balance should remain unchanged.");
-            Assert.HasCount(initialVehiclesCount, _gameModel.Vehicles, "No vehicle should be added to the list.");
+            Assert.Null(result);
+            Assert.Equal(10000, _gameModel.Balance);
+            Assert.Equal(initialVehiclesCount, _gameModel.Vehicles.Count);
         }
 
-        [TestMethod]
+        [Fact]
         public void BuyVehicle_SufficientBalance_DeductsBalanceAddsToVehiclesAndRaisesEvent()
         {
             // Arrange
@@ -382,16 +385,16 @@ public class GameModelTest
             var result = _gameModel.BuyVehicle(x, y, VehicleType.Van);
 
             // Assert
-            Assert.IsNotNull(result, "Vehicle should be created and returned.");
+            Assert.NotNull(result);
             // We assume Van is a valid class derived from Vehicle
-            Assert.AreEqual(typeof(Van).Name, result.GetType().Name, "Created vehicle should be a Van.");
+            Assert.Equal(typeof(Van).Name, result.GetType().Name);
 
-            Assert.AreEqual(5000 - result.Price, _gameModel.Balance, "Balance should be deducted by the vehicle's price.");
-            Assert.Contains(result, _gameModel.Vehicles, "Vehicle should be added to the Vehicles list.");
-            Assert.IsTrue(eventRaised, "BalanceChanged event should be invoked.");
+            Assert.Equal(5000 - result.Price, _gameModel.Balance);
+            Assert.Contains(result, _gameModel.Vehicles);
+            Assert.True(eventRaised, "BalanceChanged event should be invoked.");
         }
 
-        [TestMethod]
+        [Fact]
         public void BuyVehicle_InsufficientBalance_DoesNotDeductBalanceOrAddToList()
         {
             // Arrange
@@ -410,15 +413,15 @@ public class GameModelTest
             // Assert
             // Note: Based on the current implementation in GameModel, it STILL returns the instantiated vehicle object, 
             // but does not deduct balance or add it to the list.
-            Assert.IsNotNull(result, "Current logic returns the vehicle object even if funds are insufficient.");
-            Assert.AreEqual(typeof(Truck).Name, result.GetType().Name);
+            Assert.NotNull(result);
+            Assert.Equal(typeof(Truck).Name, result.GetType().Name);
 
-            Assert.AreEqual(0, _gameModel.Balance, "Balance should remain unchanged due to insufficient funds.");
-            Assert.DoesNotContain(result, _gameModel.Vehicles, "Vehicle should NOT be added to the list.");
-            Assert.IsFalse(eventRaised, "BalanceChanged event should NOT be invoked.");
+            Assert.Equal(0, _gameModel.Balance);
+            Assert.DoesNotContain(result, _gameModel.Vehicles);
+            Assert.False(eventRaised);
         }
 
-        [TestMethod]
+        [Fact]
         public void BuyVehicle_DifferentVehicleType_CreatesCorrectInstance()
         {
             // Arrange
@@ -431,11 +434,8 @@ public class GameModelTest
             var result = _gameModel.BuyVehicle(x, y, VehicleType.BigBus);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(typeof(BigBus).Name, result.GetType().Name, "Should create a BigBus when requested.");
+            Assert.NotNull(result);
+            Assert.Equal(typeof(BigBus).Name, result.GetType().Name);
         }
-
-
     }
 }
-

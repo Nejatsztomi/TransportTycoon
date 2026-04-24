@@ -7,10 +7,9 @@ namespace TransportTycoon.Test.MapData.MapGenerator;
 
 public class MapGeneratorTest
 {
-    [TestClass]
     public class FactoryCreateTest
     {
-        [TestMethod]
+        [Fact]
         public void MapGeneratorFactory_CreateMapGenerator_WithValidContext()
         {
             // Arrange
@@ -20,36 +19,35 @@ public class MapGeneratorTest
             IMapGenerator result = MapGeneratorFactory.CreateMapGenerator(context);
 
             // Assert
-            Assert.IsNotNull(result);
+            Assert.NotNull(result);
             // To avoid namespace problems
-            Assert.IsInstanceOfType<TransportTycoon.MapData.MapGenerator.MapGenerator>(result);
+            Assert.IsType<TransportTycoon.MapData.MapGenerator.MapGenerator>(result);
         }
     }
 
     public class GenerateMapTest
     {
-        private IMapGenerator _mapGenerator = null!;
-        private MapGenerationContext _context;
+        private readonly IMapGenerator _mapGenerator;
+        private readonly MapGenerationContext _context;
 
-        [TestInitialize]
-        public void Initialize()
+        public GenerateMapTest()
         {
             _context = new(15, 15, 42, new());
             _mapGenerator = MapGeneratorFactory.CreateMapGenerator(_context);
         }
 
-        //[TestMethod]
+        //[Fact]
         //public void GenerateMap_ReturnsCorrectDimensions()
         //{
         //    // Act
         //    Field[,] map = _mapGenerator.GenerateMap(_context);
 
         //    // Assert
-        //    Assert.AreEqual(_context.Width, map.GetLength(0), "Map width should match context");
-        //    Assert.AreEqual(_context.Height, map.GetLength(1), "Map height should match context");
+        //    Assert.Equal(_context.Width, map.GetLength(0));
+        //    Assert.Equal(_context.Height, map.GetLength(1));
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public void GenerateMap_AllCellsContainValidFieldType()
         //{
         //    // Act
@@ -68,7 +66,7 @@ public class MapGeneratorTest
         //    }
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public void GenerateMap_WaterCellsHaveCorrectData()
         //{
         //    // Act
@@ -87,10 +85,10 @@ public class MapGeneratorTest
         //            }
         //        }
         //    }
-        //    Assert.IsFalse(hasInvalidWaterCells, "All water cells should have correct coordinates");
+        //    Assert.False(hasInvalidWaterCells, "All water cells should have correct coordinates");
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public void GenerateMap_TerrainCellsHaveCorrectData()
         //{
         //    // Act
@@ -111,10 +109,10 @@ public class MapGeneratorTest
         //            }
         //        }
         //    }
-        //    Assert.IsFalse(hasInvalidTerrainCells, "All terrain cells should have correct coordinates, valid height and valid tree count");
+        //    Assert.False(hasInvalidTerrainCells, "All terrain cells should have correct coordinates, valid height and valid tree count");
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public void GenerateMap_SameSeedProducesSameResult()
         //{
         //    // Arrange
@@ -141,10 +139,10 @@ public class MapGeneratorTest
         //        }
         //    }
 
-        //    Assert.IsFalse(hasDifferentCells, "Same seed should produce identical maps");
+        //    Assert.False(hasDifferentCells, "Same seed should produce identical maps");
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public void GenerateMap_DifferentSeedsProduceDifferentMaps()
         //{
         //    // Arrange
@@ -171,14 +169,13 @@ public class MapGeneratorTest
         //        }
         //    }
 
-        //    Assert.IsTrue(hasDifferentCells, "Different seeds should produce different maps");
+        //    Assert.True(hasDifferentCells, "Different seeds should produce different maps");
         //}
     }
 
-    [TestClass]
     public class MapGeneratorWithMocksTest
     {
-        [TestMethod]
+        [Fact]
         public void MapGenerator_Constructor_WithMockedDependencies()
         {
             // Arrange
@@ -191,10 +188,10 @@ public class MapGeneratorTest
             List<IMapPluginGenerator> generators = [terrainGen, forestGen, lakeGen, riverGen, structureGen];
             // Act & Assert - Should not throw
             var mapGen = new TransportTycoon.MapData.MapGenerator.MapGenerator(generators, random);
-            Assert.IsNotNull(mapGen);
+            Assert.NotNull(mapGen);
         }
 
-        //[TestMethod]
+        //[Fact]
         //public void MapGenerator_GenerateMap_CallsAllGenerators()
         //{
         //    // Arrange
@@ -224,7 +221,7 @@ public class MapGeneratorTest
         //    waterGen.Received(1).GenerateWaterMap(heightMap, context);
         //}
 
-        //[TestMethod]
+        //[Fact]
         //public void MapGenerator_GenerateMap_ReturnsFieldsWithCorrectDimensions()
         //{
         //    // Arrange
@@ -252,8 +249,8 @@ public class MapGeneratorTest
         //    Field[,] result = mapGen.GenerateMap(context);
 
         //    // Assert
-        //    Assert.AreEqual(width, result.GetLength(0));
-        //    Assert.AreEqual(height, result.GetLength(1));
+        //    Assert.Equal(width, result.GetLength(0));
+        //    Assert.Equal(height, result.GetLength(1));
         //}
     }
 }

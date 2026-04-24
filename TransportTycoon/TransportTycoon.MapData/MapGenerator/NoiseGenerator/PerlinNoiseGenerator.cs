@@ -1,5 +1,6 @@
 ﻿namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
 {
+    [Obsolete]
     public static class PerlinNoiseGeneratorFactory
     {
         [Obsolete]

@@ -7,10 +7,9 @@ namespace TransportTycoon.Test.MapData.MapGenerator.TerrainGeneration;
 
 public class WaterGeneratorTest
 {
-    [TestClass]
     public class FactoryCreateTest
     {
-        [TestMethod]
+        [Fact]
         public void WaterGeneratorFactory_Create_WithValidParameters()
         {
             // Arrange
@@ -20,18 +19,17 @@ public class WaterGeneratorTest
             IWaterGenerator result = LakeGeneratorFactory.Create(noiseGenerator);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<LakeGenerator>(result);
+            Assert.NotNull(result);
+            Assert.IsType<LakeGenerator>(result);
         }
     }
 
-    [TestClass]
     public class GenerateWaterMapTest
     {
-        private IWaterGenerator _waterGenerator = null!;
-        private MapGenerationContext _context = default;
-        private float[,] _heightMap = null!;
-        private bool[,] _waterMap = null!;
+        private readonly IWaterGenerator _waterGenerator;
+        private readonly MapGenerationContext _context;
+        private readonly float[,] _heightMap;
+        private readonly bool[,] _waterMap;
 
         private INoiseGenerator GetMockedNoiseGenerator()
         {
@@ -61,8 +59,7 @@ public class WaterGeneratorTest
             return heightMap;
         }
 
-        [TestInitialize]
-        public void Initialize()
+        public GenerateWaterMapTest()
         {
             INoiseGenerator noiseGenerator = GetMockedNoiseGenerator();
             _context = new MapGenerationContext(20, 20, 42, new MapGenerationSettings());
@@ -73,18 +70,18 @@ public class WaterGeneratorTest
             _waterMap = new bool[_context.Width, _context.Height];
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateWaterMap_ReturnsCorrectDimensions()
         {
             // Act
             bool[,] waterMap = _waterGenerator.GenerateWaterMap(_heightMap, _waterMap, _context);
 
             // Assert
-            Assert.AreEqual(_context.Width, waterMap.GetLength(0), "Water map width should match context");
-            Assert.AreEqual(_context.Height, waterMap.GetLength(1), "Water map height should match context");
+            Assert.Equal(_context.Width, waterMap.GetLength(0));
+            Assert.Equal(_context.Height, waterMap.GetLength(1));
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateWaterMap_NoWaterOnHighTerrain()
         {
             // Arrange - Create a height map with all high terrain (height >= 2)
@@ -104,10 +101,10 @@ public class WaterGeneratorTest
                     hasWaterCells = waterMap[x, y];
                 }
             }
-            Assert.IsFalse(hasWaterCells, "Water should not appear on high terrain");
+            Assert.False(hasWaterCells, "Water should not appear on high terrain");
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateWaterMap_WaterOnlyOnLowTerrain()
         {
             // Arrange - Create height map with clear terrain height variation
@@ -128,7 +125,7 @@ public class WaterGeneratorTest
                 }
             }
 
-            Assert.IsFalse(hasWaterOnHighTerrain, "Water should only exist on low terrain (height < 2)");
+            Assert.False(hasWaterOnHighTerrain, "Water should only exist on low terrain (height < 2)");
         }
     }
 }
