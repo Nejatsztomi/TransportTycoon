@@ -8,12 +8,12 @@ namespace TransportTycoon.Persistence
     /// <summary>
     /// A <see cref="IBiome"/> object to JSON conververt (works also backwards).
     /// </summary>
-    internal class BiomeJsonConverter : JsonConverter<IBiome>
+    public class BiomeJsonConverter : JsonConverter<IBiome>
     {
         public override IBiome Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             string value = reader.GetString() ?? throw new JsonException();
-            return Biomes.GetById(value) ?? throw new JsonException($"Unknown biome id: {value}");
+            return Biomes.GetById(value);
         }
 
         public override void Write(Utf8JsonWriter writer, IBiome value, JsonSerializerOptions options)
@@ -25,12 +25,12 @@ namespace TransportTycoon.Persistence
     /// <summary>
     /// A <see cref="IWaterBiome"/> object to JSON conververt (works also backwards).
     /// </summary>
-    internal class WaterBiomeJsonConverter : JsonConverter<IWaterBiome>
+    public class WaterBiomeJsonConverter : JsonConverter<IWaterBiome>
     {
         public override IWaterBiome Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             string value = reader.GetString() ?? throw new JsonException();
-            return WaterBiomes.GetById(value) ?? throw new JsonException($"Unknown biome id: {value}");
+            return WaterBiomes.GetById(value);
         }
 
         public override void Write(Utf8JsonWriter writer, IWaterBiome value, JsonSerializerOptions options)
