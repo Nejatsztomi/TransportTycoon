@@ -375,13 +375,13 @@ namespace TransportTycoon.WPF.View.UserControls
 
             _structureTextures = new()
             {
-                { FieldType.Farm, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/farm.png")) },
-                { FieldType.LumberCamp, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/lumbercamp.png")) },
-                { FieldType.Mine, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/oil.jpg")) },
-                { FieldType.Mill, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/mill.png")) },
-                { FieldType.Plant, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/rubber.jpg")) },
-                { FieldType.Factory, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/factory.png")) },
-                { FieldType.House, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Structures/house.jpg")) },
+                { FieldType.Farm, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/farm.png")) },
+                { FieldType.LumberCamp, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/lumbercamp.png")) },
+                { FieldType.Mine, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/mine.jpg")) },
+                { FieldType.Mill, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/mill.png")) },
+                { FieldType.Plant, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/plant.png")) },
+                { FieldType.Factory, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/factory.png")) },
+                { FieldType.House, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/house.png")) },
                 { FieldType.Stop, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Stop/stop.png")) },
             };
 

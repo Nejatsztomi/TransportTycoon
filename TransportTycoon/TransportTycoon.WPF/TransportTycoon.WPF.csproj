@@ -13,6 +13,12 @@
     <None Remove="Assets\Images\Bridge\greenBridge.png" />
     <None Remove="Assets\Images\Bridge\redBridge.png" />
     <None Remove="Assets\Images\Bridge\yellowBridge.png" />
+    <None Remove="Assets\Images\Buildings\factory.png" />
+    <None Remove="Assets\Images\Buildings\farm.png" />
+    <None Remove="Assets\Images\Buildings\house.png" />
+    <None Remove="Assets\Images\Buildings\lumbercamp.png" />
+    <None Remove="Assets\Images\Buildings\mill.png" />
+    <None Remove="Assets\Images\Buildings\plant.png" />
     <None Remove="Assets\Images\Buttons\minus.png" />
     <None Remove="Assets\Images\Buttons\plus.png" />
     <None Remove="Assets\Images\Buttons\pull.png" />
@@ -24,13 +30,6 @@
     <None Remove="Assets\Images\Road\road.png" />
     <None Remove="Assets\Images\Road\turn.png" />
     <None Remove="Assets\Images\Stop\stop.png" />
-    <None Remove="Assets\Images\Structures\factory.png" />
-    <None Remove="Assets\Images\Structures\farm.png" />
-    <None Remove="Assets\Images\Structures\house.jpg" />
-    <None Remove="Assets\Images\Structures\lumbercamp.png" />
-    <None Remove="Assets\Images\Structures\mill.png" />
-    <None Remove="Assets\Images\Structures\oil.jpg" />
-    <None Remove="Assets\Images\Structures\rubber.jpg" />
     <None Remove="Assets\Images\Terrain\field.png" />
     <None Remove="Assets\Images\Terrain\highmountain.png" />
     <None Remove="Assets\Images\Terrain\highmountain2.png" />
@@ -56,6 +55,27 @@
     <None Remove="Assets\Images\Vehicle\smallBusLeft.png" />
     <None Remove="Assets\Images\Vehicle\smallBusRight.png" />
     <None Remove="Assets\Images\Vehicle\smallBusUp.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Images\Buildings\factory.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Buildings\farm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Buildings\house.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Buildings\lumbercamp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Buildings\mill.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Buildings\plant.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -115,25 +135,7 @@
     <Resource Include="Assets\Images\Stop\stop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Structures\factory.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Structures\farm.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Structures\house.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Structures\lumbercamp.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Structures\mill.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Structures\oil.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Structures\rubber.jpg">
+    <Resource Include="Assets\Images\Buildings\mine.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Terrain\field.png">
