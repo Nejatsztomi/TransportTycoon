@@ -230,6 +230,7 @@ publish/
 PublishScripts/
 
 # NuGet Packages
+.nuget
 *.nupkg
 # NuGet Symbol Packages
 *.snupkg
@@ -434,3 +435,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# XUnit relatead files
+!global.json
+!xunit.runner.json
+!xunit*

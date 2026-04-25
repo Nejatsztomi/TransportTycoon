@@ -19,8 +19,8 @@ namespace TransportTycoon.MapData.MapGenerator
             IForestGenerator forestGenerator = ForestGeneratorFactory.Create(noiseGenerator);
             IWaterGenerator riverGenerator = RiverGeneratorFactory.Create(randomProvider, context);
             IStructureGenerator structureGenerator = StructureGeneratorFactory.Create(cityGenerator, randomProvider, context);
-            List<IMapPluginGenerator> generators = [noiseGenerator, terrainGenerator, forestGenerator, riverGenerator, structureGenerator];
-            return new MapGenerator(generators, randomProvider.GetRandom(context.Seed, "BaseGame.Map"));
+            List<IMapPluginGenerator> generators = [noiseGenerator, terrainGenerator, riverGenerator, structureGenerator, forestGenerator];
+            return new MapGenerator(generators, randomProvider);
         }
     }
 
@@ -28,7 +28,8 @@ namespace TransportTycoon.MapData.MapGenerator
     {
         #region Private fields
         private readonly IEnumerable<IMapPluginGenerator> _generators;
-        private readonly IRandom _random;
+        private readonly IRandomProvider _random;
+        private const string PluginId = "BaseGame.Map";
         #endregion
 
         #region Debug
@@ -36,19 +37,18 @@ namespace TransportTycoon.MapData.MapGenerator
         #endregion
 
         #region Constructors
-        public MapGenerator(
-            IEnumerable<IMapPluginGenerator> generators,
-            IRandom random
-            )
+        public MapGenerator(IEnumerable<IMapPluginGenerator> generators, IRandomProvider randomProvider)
         {
             _generators = generators;
-            _random = random;
+            _random = randomProvider;
         }
         #endregion
 
         #region Public methods
         public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
         {
+            IRandom random = _random.GetRandom(context.Seed, PluginId);
+
             var sortedGenerators = _generators.OrderBy(g => g.Phase).ToList();
 #pragma warning disable IDE0028 // Simplify collection initialization
             List<BuildingEntity> structures = new(context.Settings.MaxCities + context.Settings.MaxStructure);
@@ -89,7 +89,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 else if (generator is IStructureGenerator structureGen)
                 {
-                    HandleStructureGeneration(context, structureGen, ref structures);
+                    HandleStructureGeneration(context, structureGen, ref structures, random);
                 }
                 _stopwatch.Stop();
                 Debug.WriteLine($"{generator.GetType().Name} took: {_stopwatch.ElapsedMilliseconds} ms");
@@ -111,7 +111,7 @@ namespace TransportTycoon.MapData.MapGenerator
         #endregion
 
         #region Private methods
-        private void HandleStructureGeneration(MapGenerationContext context, IStructureGenerator structureGenerator, ref List<BuildingEntity> structures)
+        private void HandleStructureGeneration(MapGenerationContext context, IStructureGenerator structureGenerator, ref List<BuildingEntity> structures, IRandom random)
         {
             for (int i = 0; i < context.Settings.MinCities; i++)
             {
@@ -130,7 +130,7 @@ namespace TransportTycoon.MapData.MapGenerator
 
             for (int i = 1; i < context.Settings.MinStructure; i += 2)
             {
-                (SiteEntity se, IndustryEntity ie) = GenerateRandomEntityPair();
+                (SiteEntity se, IndustryEntity ie) = GenerateRandomEntityPair(random);
                 structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, se, context, -1, -1);
                 (int x, int y) = se.TopLeftPoints;
                 structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, ie, context, x, y);
@@ -142,14 +142,14 @@ namespace TransportTycoon.MapData.MapGenerator
             // Handle odd number of structures if necessary
             if (context.Settings.MinStructure % 2 != 0)
             {
-                BuildingEntity be = GenerateRandomEntity();
+                BuildingEntity be = GenerateRandomEntity(random);
                 structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, be, context, -1, -1);
                 structures.Add(be);
             }
 
             for (int i = context.Settings.MinStructure; i < context.Settings.MaxStructure; i++)
             {
-                BuildingEntity be = GenerateRandomEntity();
+                BuildingEntity be = GenerateRandomEntity(random);
                 structureGenerator.ForcePlace(context.HeightMap, context.WaterMap, context.StructureMap, be, context, -1, -1);
                 structures.Add(be);
             }
@@ -193,9 +193,9 @@ namespace TransportTycoon.MapData.MapGenerator
             return map;
         }
 
-        private (SiteEntity se, IndustryEntity ie) GenerateRandomEntityPair()
+        private (SiteEntity se, IndustryEntity ie) GenerateRandomEntityPair(IRandom random)
         {
-            return _random.Next(0, 3) switch
+            return random.Next(0, 3) switch
             {
                 0 => (new FarmEntity(), new MillEntity()),
                 1 => (new MineEntity(), new PlantEntity()),
@@ -203,11 +203,11 @@ namespace TransportTycoon.MapData.MapGenerator
             };
         }
 
-        private BuildingEntity GenerateRandomEntity()
+        private BuildingEntity GenerateRandomEntity(IRandom random)
         {
-            return GenerateRandomEntityPair() switch
+            return GenerateRandomEntityPair(random) switch
             {
-                (SiteEntity se, IndustryEntity ie) => _random.Next(0, 2) == 0 ? se : ie
+                (SiteEntity se, IndustryEntity ie) => random.Next(0, 2) == 0 ? se : ie
             };
         }
 

@@ -7,10 +7,9 @@ namespace TransportTycoon.Test.MapData.MapGenerator.TerrainGeneration;
 
 public class TerrainGeneratorTest
 {
-    [TestClass]
     public class FactoryCreateTest
     {
-        [TestMethod]
+        [Fact]
         public void TerraingGeneratorFactory_Create_WithValidParameters()
         {
             // Arrange
@@ -18,16 +17,15 @@ public class TerrainGeneratorTest
             ITerrainGenerator result = TerraingGeneratorFactory.Create();
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<TerrainGenerator>(result);
+            Assert.NotNull(result);
+            Assert.IsType<TerrainGenerator>(result);
         }
     }
 
-    [TestClass]
     public class GenerateTerrainTest
     {
-        private ITerrainGenerator _terrainGenerator = null!;
-        private MapGenerationContext _context = default;
+        private readonly ITerrainGenerator _terrainGenerator;
+        private readonly MapGenerationContext _context;
 
         private INoiseGenerator GetMockedNoiseGenerator()
         {
@@ -64,14 +62,13 @@ public class TerrainGeneratorTest
             return biome_mock;
         }
 
-        [TestInitialize]
-        public void Initialize()
+        public GenerateTerrainTest()
         {
             _context = new(20, 20, 42, new MapGenerationSettings { Biome = GetMockedBiome() });
             _terrainGenerator = TerraingGeneratorFactory.Create();
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateTerrain_ReturnsCorrectDimensions()
         {
             // Act
@@ -79,11 +76,11 @@ public class TerrainGeneratorTest
             int[,] terrain = _terrainGenerator.GenerateTerrain(noiseMap, _context);
 
             // Assert
-            Assert.AreEqual(_context.Width, terrain.GetLength(0), "Terrain width should match context");
-            Assert.AreEqual(_context.Height, terrain.GetLength(1), "Terrain height should match context");
+            Assert.Equal(_context.Width, terrain.GetLength(0));
+            Assert.Equal(_context.Height, terrain.GetLength(1));
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateTerrain_AllValuesAreValidTerrainHeights()
         {
             // Arrange
@@ -108,10 +105,10 @@ public class TerrainGeneratorTest
                     }
                 }
             }
-            Assert.IsTrue(hasValidHeights, "All terrain heights should be valid");
+            Assert.True(hasValidHeights, "All terrain heights should be valid");
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateTerrain_SameSeedProducesSameResult()
         {
             // Arrange
@@ -140,10 +137,10 @@ public class TerrainGeneratorTest
                     }
                 }
             }
-            Assert.IsFalse(differentTerrains, "Same seeds should produce same terrains");
+            Assert.False(differentTerrains, "Same seeds should produce same terrains");
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateTerrain_DifferentSeedProducesDifferentResult()
         {
             // Arrange
@@ -172,7 +169,7 @@ public class TerrainGeneratorTest
                     }
                 }
             }
-            Assert.IsTrue(hasDifferentTerrains, "Different seeds should produce different terrains");
+            Assert.True(hasDifferentTerrains, "Different seeds should produce different terrains");
         }
     }
 }

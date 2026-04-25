@@ -109,9 +109,9 @@ test_model:
     # 1) log test result in JUnit format, so GitLab web UI can diplay them;
     # 2) collect code coverage statistics.
     - > 
-      dotnet test ${TEST_PATH} --no-restore
-      --logger:"junit;MethodFormat=Class;FailureBodyFormat=Verbose"
-      --collect="XPlat Code Coverage"
+      dotnet test --solution ${SOLUTION_PATH} --no-restore
+      --report-spekt-junit "MethodFormat=Class;FailureBodyFormat=Verbose"
+      -- --coverage --coverage-output-format cobertura --coverage-output coverage.cobertura.xml --results-directory ./TestResults
     # Install tools for code coverage extraction from Cobertura XML files
     - apt-get update -yqq
     - apt-get install -yqq bc
@@ -119,7 +119,7 @@ test_model:
     # Compute code coverage percentage from Cobertura XML files through merging them with ReportGenerator
     # This is useful when you have multiple test projects in a repository
     # https://github.com/danielpalme/ReportGenerator
-    - ./reportgenerator "-reports:${TEST_PATH}/TestResults/*/coverage.cobertura.xml" "-targetdir:report"   "-reporttypes:Cobertura"
+    - ./reportgenerator "-reports:./TestResults/coverage.cobertura.xml" "-targetdir:report"   "-reporttypes:Cobertura"
     # The generated Cobertura.xml file contains the overall code coverage in a format like this:
     # <coverage line-rate="..." ...>
     # Let's get that with the powers of sed :)
@@ -132,18 +132,18 @@ test_model:
     #- ./ci/coverage-percentage.sh .
     artifacts:
         paths:
-        - ${TEST_PATH}/TestResults/TestResults.xml
-        - ${TEST_PATH}/TestResults/*/coverage.cobertura.xml
+        - ./TestResults/TestResults.xml
+        - ./TestResults/coverage.cobertura.xml
         reports:
         # Publish unit test results to GitLab UI
         # https://docs.gitlab.com/ci/testing/unit_test_reports/
             junit:
-                - ${TEST_PATH}/TestResults/TestResults.xml
+                - ./TestResults/TestResults.xml
             # Test coverage visualization on GitLab UI
             # https://docs.gitlab.com/ci/testing/code_coverage/
             coverage_report:
                 coverage_format: cobertura
-                path: ${TEST_PATH}/TestResults/*/coverage.cobertura.xml
+                path: ./TestResults/coverage.cobertura.xml
         expire_in: 30 days
     # Report code coverage for GitLab
     # https://docs.gitlab.com/ci/testing/code_coverage/

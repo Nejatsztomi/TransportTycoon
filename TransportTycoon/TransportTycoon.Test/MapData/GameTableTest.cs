@@ -6,10 +6,9 @@ namespace TransportTycoon.Test.MapData;
 
 public class GameTableTest
 {
-    [TestClass]
     public class ConstructorTest
     {
-        [TestMethod]
+        [Fact]
         public void Constructor_WithAllParameters()
         {
             int width = 50;
@@ -21,29 +20,26 @@ public class GameTableTest
 
             GameTable gameTable = new(mockGenerator, context);
 
-            Assert.IsNotNull(gameTable.Table, "GameTable should initialize the Table array");
-            Assert.AreEqual(width, gameTable.Table.GetLength(0), "GameTable's Table should have the correct width");
-            Assert.AreEqual(height, gameTable.Table.GetLength(1), "GameTable's Table should have the correct height");
+            Assert.NotNull(gameTable.Table);
+            Assert.Equal(width, gameTable.Table.GetLength(0));
+            Assert.Equal(height, gameTable.Table.GetLength(1));
         }
     }
 
-    //[TestClass]
     //public class MapGenerationTest
     //{
     //    private GameTable _gameTable = null!;
 
-    //    [TestInitialize]
-    //    public void Initialize()
+    //    public MapGenerationTest
     //    {
     //        _gameTable = new(5, 5);
     //    }
 
-    //    //[TestMethod]
+    //    //[Fact]
     //    //public void GenerateMap_MapIsGenerated()
     //    //{
     //    //    _gameTable.GenerateMap();
-    //    //    Assert.IsNotEmpty(_gameTable.Table, "GameTable should generate a non-empty map");
-
+    //    //    Assert.NotEmpty(_gameTable.Table);
     //    //    bool hasInvalidField = false;
     //    //    foreach (var field in _gameTable.Table)
     //    //    {
@@ -59,10 +55,10 @@ public class GameTableTest
     //    //        }
     //    //    }
 
-    //    //    Assert.IsFalse(hasInvalidField, "All fields in the map should be either Water or Terrain");
+    //    //    Assert.False(hasInvalidField, "All fields in the map should be either Water or Terrain");
     //    //}
 
-    //    //[TestMethod]
+    //    //[Fact]
     //    //public void GenerateMap_MapHasValidFields()
     //    //{
     //    //    _gameTable.GenerateMap();
@@ -84,11 +80,11 @@ public class GameTableTest
     //    //        }
     //    //    }
 
-    //    //    Assert.IsFalse(hasFieldNotInRange, "Each field should have height between 0 and 4");
-    //    //    Assert.IsFalse(hasInvalidField, "Each field should have a possible height respecting neighbouring tiles");
+    //    //    Assert.False(hasFieldNotInRange, "Each field should have height between 0 and 4");
+    //    //    Assert.False(hasInvalidField, "Each field should have a possible height respecting neighbouring tiles");
     //    //}
 
-    //    //[TestMethod]
+    //    //[Fact]
     //    //public void GenerateMap_MapHasTrees()
     //    //{
     //    //    _gameTable.GenerateMap();
@@ -99,10 +95,10 @@ public class GameTableTest
     //    //        treeCount += field.GetTrees();
     //    //    }
 
-    //    //    Assert.IsGreaterThan(0, treeCount, "Generated map should contain trees");
+    //    //    Assert.True(treeCount > 0, "Generated map should contain trees");
     //    //}
 
-    //    //[TestMethod]
+    //    //[Fact]
     //    //public void GenerateMap_MapHasValidTrees()
     //    //{
     //    //    _gameTable.GenerateMap();
@@ -117,7 +113,7 @@ public class GameTableTest
     //    //        }
     //    //    }
 
-    //    //    Assert.IsFalse(hasFieldWithInvalidTrees, "Each field should have a valid number of trees between 0 and 4");
+    //    //    Assert.False(hasFieldWithInvalidTrees, "Each field should have a valid number of trees between 0 and 4");
     //    //}
     //}
 }

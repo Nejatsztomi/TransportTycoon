@@ -10,7 +10,9 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
     internal class RiverGenerator : IWaterGenerator
     {
         #region Private fields
-        private readonly IRandom _random;
+        private readonly IRandomProvider _randomProvider;
+        private readonly MapGenerationContext _context;
+        private const string PluginId = "BaseGame.Rivers";
         #endregion
 
         #region Public properties
@@ -20,16 +22,19 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         #region Constructors
         public RiverGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {
-            _random = randomProvider.GetRandom(context.Seed, "BaseGame.Rivers");
+            _randomProvider = randomProvider;
+            _context = context;
         }
         #endregion
 
         #region Public methods
         public bool[,] GenerateWaterMap(float[,] noiseMap, bool[,] waterMap, MapGenerationContext context)
         {
+            IRandom random = _randomProvider.GetRandom(context.Seed, PluginId);
+
             for (int i = 0; i < context.Settings.RiverCount; i++)
             {
-                SpawnRiver(noiseMap, waterMap, context);
+                SpawnRiver(noiseMap, waterMap, context, random);
             }
 
             return waterMap;
@@ -37,10 +42,10 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         #endregion
 
         #region Private methods
-        private void SpawnRiver(float[,] noiseMap, bool[,] waterMap, MapGenerationContext context)
+        private void SpawnRiver(float[,] noiseMap, bool[,] waterMap, MapGenerationContext context, IRandom random)
         {
-            int currentX = _random.Next(5, context.Width - 5);
-            int currentY = _random.Next(5, context.Height - 5);
+            int currentX = random.Next(5, context.Width - 5);
+            int currentY = random.Next(5, context.Height - 5);
 
             if (waterMap[currentX, currentY]) return;
             bool[,] preexistingWaterMap = (bool[,])waterMap.Clone();
@@ -48,7 +53,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
             // Width = sqrt(radius)
             float minRadius = (float)Math.Sqrt(context.Settings.MinRiverWidth);
             float maxRadius = (float)Math.Sqrt(context.Settings.MaxRiverWidth);
-            float currentRadius = (float)Math.Sqrt(_random.Next(context.Settings.MinRiverWidth, context.Settings.MaxRiverWidth));
+            float currentRadius = (float)Math.Sqrt(random.Next(context.Settings.MinRiverWidth, context.Settings.MaxRiverWidth));
 
             HashSet<(int X, int Y)> alreadyVisited = [];
 
@@ -58,7 +63,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 
                 PaintWaterBrush(noiseMap, waterMap, currentX, currentY, currentRadius, context);
 
-                float widthChange = (_random.NextSingle() * 0.4f) - 0.2f;
+                float widthChange = (random.NextSingle() * 0.4f) - 0.2f;
                 currentRadius = Math.Clamp(currentRadius + widthChange, minRadius, maxRadius);
 
                 // Go downhill
@@ -69,7 +74,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 
                 while (directions.Count > 0)
                 {
-                    int idx = _random.Next(directions.Count);
+                    int idx = random.Next(directions.Count);
                     (int dx, int dy) = directions[idx];
                     directions.RemoveAt(idx);
 
