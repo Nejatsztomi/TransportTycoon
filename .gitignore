@@ -434,3 +434,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# XUnit relatead files
+!global.json
+!xunit.runner.json
+!xunit*
