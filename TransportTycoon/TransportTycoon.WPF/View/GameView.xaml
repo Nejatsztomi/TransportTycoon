@@ -22,7 +22,21 @@
              Panel.ZIndex="100"
              />
         <DockPanel>
-            <StatusBar DockPanel.Dock="Bottom" Height="50" Margin="10,0,10,10">
+            <StatusBar DockPanel.Dock="Bottom" Height="50" Margin="10,0,10,10" 
+                       Background="OrangeRed" BorderBrush="Black" BorderThickness="2"
+                       Foreground="White" FontSize="15" FontFamily="/Assets/Fonts/#Press Start 2P">
+
+                <StatusBar.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="FontSize" Value="13"/>
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="BorderBrush" Value="Black"/>
+                        <Setter Property="BorderThickness" Value="2"/>
+                        <Setter Property="Height" Value="35"/>
+                    </Style>
+                </StatusBar.Resources>
+
                 <StatusBar.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Grid>
@@ -35,12 +49,18 @@
                     </ItemsPanelTemplate>
                 </StatusBar.ItemsPanel>
 
+                <StatusBarItem Grid.Column="0" Margin="80,0,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="1x" Command="{Binding NormalSpeedCommand}" Margin="3,0" Width="35"/>
+                        <Button Content="2x" Command="{Binding FastSpeedCommand}" Margin="3,0" Width="35"/>
+                        <Button Content="4x" Command="{Binding SuperFastSpeedCommand}" Margin="3,0" Width="35"/>
+                    </StackPanel>
+                </StatusBarItem>
+
                 <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <Button Content="EDIT" Command="{Binding EditorModeCommand}" Margin="2,0" Padding="10,2" Height="35"/>
-                        <Button Content="1x" Command="{Binding NormalSpeedCommand}" Margin="2,0" Padding="10,2" />
-                        <Button Content="2x" Command="{Binding FastSpeedCommand}" Margin="2,0" Padding="10,2" />
-                        <Button Content="4x" Command="{Binding SuperFastSpeedCommand}" Margin="2,0" Padding="10,2" />
+                        <Button Content="EDIT" Command="{Binding EditorModeCommand}" Margin="2,0" Padding="10,2"/>
+                        <Button Content="||" Command="{Binding EditorModeCommand}" Margin="2,0" Padding="10,2"/>
                     </StackPanel>
                 </StatusBarItem>
 
