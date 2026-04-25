@@ -27,6 +27,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public int Balance => Model.Balance;
         public ulong GameTime => Model.GameTime;
+        public DateTime GameDate => new DateTime(1970, 1, 1).AddDays(GameTime);
         public bool IsPaused => Model.Mode == GameMode.Paused;
         public bool IsEditorMode => Model.Mode == GameMode.Editor;
 
@@ -337,6 +338,7 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_GameTicked(object? _1, EventArgs _2)
         {
             OnPropertyChanged(nameof(GameTime));
+            OnPropertyChanged(nameof(GameDate));
         }
 
         private void Model_SelectedStopFieldsChanged(object? _1, List<Stop> list)
