@@ -1,5 +1,6 @@
 using NSubstitute;
 using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
 using TransportTycoon.Model.Graph;
@@ -697,6 +698,320 @@ public class GameModelTest
 
             // Assert
             Assert.Empty(_model.SelectedStopFields);
+        }
+    }
+    public class GameModelHeightTests
+    {
+        // Segédmetódus egy alap GameModel és egy 3x3-as tesztpálya létrehozásához
+        private GameModel CreateTestModel(int initialBalance = 1000, int initialHeight = 2)
+        {
+            var timerMock = Substitute.For<ITimer>();
+            var persistenceMock = Substitute.For<IPersistence>();
+            var mapGenMock = Substitute.For<IMapGenerator>();
+
+            var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
+            var table = new GameTable(mapGenMock, context);
+
+            // 3x3-as pálya feltöltése Terrain-ekkel
+            var fields = new IField[3, 3];
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    fields[i, j] = new Terrain(i, j, initialHeight);
+                }
+            }
+
+            mapGenMock.GenerateMap(context).Returns((fields, new List<BuildingEntity>()));
+            table.GenerateMap();
+
+            var model = new GameModel(table, timerMock, persistenceMock, Difficulty.Medium, initialBalance)
+            {
+                Mode = GameMode.Editor // A metódusok csak Editor módban működnek
+            };
+
+            return model;
+        }
+
+        [Fact]
+        public void IncreaseHeight_ValidTerrain_IncreasesHeightAndDeducts100Balance()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 2);
+            int startBalance = model.Balance;
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(3, model.Map[1, 1].Height);
+            Assert.Equal(startBalance - 100, model.Balance);
+        }
+
+        [Fact]
+        public void IncreaseHeight_WithTrees_Deducts150Balance()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 2);
+            var terrain = (Terrain)model.Map[1, 1];
+            terrain.Trees = 2; // Fákat adunk a területhez
+            model.Map.UpdateTable(1, 1, terrain);
+            int startBalance = model.Balance;
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(3, model.Map[1, 1].Height);
+            Assert.Equal(startBalance - 150, model.Balance);
+        }
+
+        [Fact]
+        public void IncreaseHeight_NotEditorMode_DoesNothing()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 2);
+            model.Mode = GameMode.Run; // Átállítjuk futás módba
+            int startBalance = model.Balance;
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(2, model.Map[1, 1].Height);
+            Assert.Equal(startBalance, model.Balance); // A pénz nem változhatott
+        }
+
+        [Fact]
+        public void IncreaseHeight_MaxHeight_DoesNothing()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 4); // Max magasság
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(4, model.Map[1, 1].Height); // Nem nőhet 5-re
+        }
+
+        [Fact]
+        public void DecreaseHeight_ValidTerrain_DecreasesHeightAndDeducts100Balance()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 3);
+            int startBalance = model.Balance;
+
+            // Act
+            model.DecreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(2, model.Map[1, 1].Height);
+            Assert.Equal(startBalance - 100, model.Balance);
+        }
+
+        [Fact]
+        public void DecreaseHeight_MinHeight_DoesNothing()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 1); // Min magasság
+
+            // Act
+            model.DecreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(1, model.Map[1, 1].Height); // Nem mehet 0-ra
+        }
+
+        [Fact]
+        public void IncreaseHeight_FiresFieldAndBalanceChangedEvents()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 2);
+            bool fieldChangedFired = false;
+            bool balanceChangedFired = false;
+
+            model.FieldChanged += (sender, args) => fieldChangedFired = true;
+            model.BalanceChanged += (sender, args) => balanceChangedFired = true;
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.True(fieldChangedFired);
+            Assert.True(balanceChangedFired);
+        }
+
+        [Fact]
+        public void DecreaseHeight_CausesGameOver_WhenBalanceDropsBelowZero()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 50, initialHeight: 3); // 50 a kezdeti egyenleg, a módosítás 100-ba kerül
+            bool gameOverFired = false;
+
+            model.GameOver += (sender, args) => gameOverFired = true;
+
+            // Act
+            model.DecreaseHeight(1, 1);
+
+            // Assert
+            Assert.True(gameOverFired);
+            Assert.True(model.IsGameOver);
+            Assert.Equal(GameMode.Paused, model.Mode); // A GameMode.Paused állapotba kell váltania a játéknak
+        }
+    }
+    public class GameModelInfrastructureTests
+    {
+        private GameModel CreateTestModelWithMap(int initialBalance = 1000)
+        {
+            var timerMock = Substitute.For<ITimer>();
+            var persistenceMock = Substitute.For<IPersistence>();
+            var mapGenMock = Substitute.For<IMapGenerator>();
+
+            var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
+            var table = new GameTable(mapGenMock, context);
+
+            // 3x3-as pálya feltöltése Terrain-ekkel (Magasság: 2)
+            var fields = new IField[3, 3];
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    fields[i, j] = new Terrain(i, j, 2);
+                }
+            }
+
+            mapGenMock.GenerateMap(context).Returns((fields, new List<TransportTycoon.MapData.Buildings.BuildingEntity>()));
+            table.GenerateMap();
+
+            var model = new GameModel(table, timerMock, persistenceMock, Difficulty.Medium, initialBalance)
+            {
+                Mode = GameMode.Editor // Editor mód az építésekhez
+            };
+
+            return model;
+        }
+
+        [Fact]
+        public void BuildStop_NotEditorMode_DoesNothing()
+        {
+            // Arrange
+            var model = CreateTestModelWithMap();
+            model.Mode = GameMode.Run;
+            int startBalance = model.Balance;
+
+            // Act
+            model.BuildStop(1, 1);
+
+            // Assert
+            Assert.Equal(startBalance, model.Balance);
+            Assert.IsType<Terrain>(model.Map[1, 1]); // Maradt Terrain
+        }
+
+        [Fact]
+        public void BuildStop_NoValidEnvironment_DoesNothing()
+        {
+            // Arrange
+            var model = CreateTestModelWithMap();
+            // Nincs út vagy épület a szomszédban, ezért a StopEnvironment false lesz
+
+            // Act
+            model.BuildStop(1, 1);
+
+            // Assert
+            Assert.IsType<Terrain>(model.Map[1, 1]); // Nem épült meg
+        }
+
+        [Fact]
+        public void Destroy_ValidInfrastructure_ReplacesWithTerrainAndFiresEvent()
+        {
+            // Arrange
+            var model = CreateTestModelWithMap();
+            // Teszünk egy utat a pályára
+            model.Map.UpdateTable(1, 1, new Road(1, 1, RoadType.Horizontal, 2));
+
+            bool infrastructureBuiltFired = false;
+            model.InfrastructureBuilt += (s, e) => infrastructureBuiltFired = true;
+
+            // Act
+            model.Destroy(1, 1);
+
+            // Assert
+            Assert.IsType<Terrain>(model.Map[1, 1]); // Visszaalakult Terrain-né
+            Assert.True(infrastructureBuiltFired);
+        }
+
+        [Fact]
+        public void Destroy_VehicleOnField_DoesNotDestroy()
+        {
+            // Arrange
+            var model = CreateTestModelWithMap();
+            var stop = new Stop(1, 1, 2);
+            model.Map.UpdateTable(1, 1, stop);
+
+            // Jármű hozzáadása a mezőhöz (ez akadályozza a törlést)
+            model.Vehicles.Add(new Van(1, 1, Direction.Up));
+
+            // Act
+            model.Destroy(1, 1);
+
+            // Assert
+            Assert.IsType<Stop>(model.Map[1, 1]); // A megálló megmaradt, mert állt rajta autó
+        }
+
+        [Fact]
+        public void BuyVehicle_NotOnStop_ReturnsNull()
+        {
+            // Arrange
+            var model = CreateTestModelWithMap();
+            // Az 1,1 pozíción Terrain van, nem Stop
+
+            // Act
+            var vehicle = model.BuyVehicle(1, 1, VehicleType.Van);
+
+            // Assert
+            Assert.Null(vehicle);
+            Assert.Empty(model.Vehicles);
+        }
+
+        [Fact]
+        public void BuyVehicle_OnStopWithSufficientBalance_AddsVehicleAndDeductsBalance()
+        {
+            // Arrange
+            var model = CreateTestModelWithMap(initialBalance: 100000); // Sok pénzünk van
+            model.Map.UpdateTable(1, 1, new Stop(1, 1, 2)); // Teszünk egy megállót az (1,1)-re
+            int startBalance = model.Balance;
+
+            bool balanceChangedFired = false;
+            model.BalanceChanged += (s, e) => balanceChangedFired = true;
+
+            // Act
+            var vehicle = model.BuyVehicle(1, 1, VehicleType.Truck);
+
+            // Assert
+            Assert.NotNull(vehicle);
+            Assert.Single(model.Vehicles);
+            Assert.Equal(VehicleType.Truck, vehicle.Type);
+            Assert.Equal(1, vehicle.MapX);
+            Assert.Equal(1, vehicle.MapY);
+            Assert.True(balanceChangedFired);
+            Assert.Equal(startBalance - vehicle.Price, model.Balance);
+        }
+
+        [Fact]
+        public void BuyVehicle_InsufficientBalance_DoesNotBuy()
+        {
+            // Arrange
+            var model = CreateTestModelWithMap(initialBalance: 10); // Nincs elég pénz (10 credit)
+            model.Map.UpdateTable(1, 1, new Stop(1, 1, 2));
+
+            // Act
+            var vehicle = model.BuyVehicle(1, 1, VehicleType.Truck);
+
+            // Assert
+            Assert.NotNull(vehicle); // A kódod jelenleg leteszi a járművet (objektum létrejön) a metódus elején, de...
+            Assert.Empty(model.Vehicles); // ...nem adja hozzá a listához, ha nincs pénz!
+            Assert.Equal(10, model.Balance); // A pénz maradt 10
         }
     }
 }
