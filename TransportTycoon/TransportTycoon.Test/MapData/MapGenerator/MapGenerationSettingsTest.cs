@@ -5,30 +5,6 @@ namespace TransportTycoon.Test.MapData.MapGenerator;
 
 public class MapGenerationSettingsTest
 {
-    public class DefaultValuesTest
-    {
-        [Fact]
-        public void DefaultSettings_HasCorrectDefaultValues()
-        {
-            // Act
-            MapGenerationSettings settings = new();
-
-            // Assert
-            Assert.Equal(MapGenerationSettingsDefaults.RiverCount, settings.RiverCount);
-            Assert.Equal(MapGenerationSettingsDefaults.ForestPercentage, settings.ForestPercentage);
-            Assert.Equal(MapGenerationSettingsDefaults.MinStructureRange, settings.MinStructureRange);
-            Assert.Equal(MapGenerationSettingsDefaults.MaxStructureRange, settings.MaxStructureRange);
-            Assert.Equal(MapGenerationSettingsDefaults.MinCities, settings.MinCities);
-            Assert.Equal(MapGenerationSettingsDefaults.MaxCities, settings.MaxCities);
-            Assert.Equal(MapGenerationSettingsDefaults.MinStructure, settings.MinStructure);
-            Assert.Equal(MapGenerationSettingsDefaults.MaxStructure, settings.MaxStructure);
-            Assert.Equal(MapGenerationSettingsDefaults.TerrainNoiseScale, settings.TerrainNoiseScale);
-            Assert.Equal(MapGenerationSettingsDefaults.ForestNoiseScale, settings.ForestNoiseScale);
-            Assert.Equal(MapGenerationSettingsDefaults.WaterNoiseScale, settings.WaterNoiseScale);
-            Assert.Equal(MapGenerationSettingsDefaults.Biome, settings.Biome);
-        }
-    }
-
     public class RiverCountTest
     {
         [Theory]

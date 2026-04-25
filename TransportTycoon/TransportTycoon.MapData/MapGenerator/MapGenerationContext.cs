@@ -18,15 +18,9 @@
         #region Constructors
         public MapGenerationContext(int width, int height, int seed, MapGenerationSettings settings)
         {
-            if (width < 0)
-            {
-                throw new ArgumentException("Width must be a positive integer.");
-            }
+            if (width < 0) throw new ArgumentException("Width must be a positive integer.");
 
-            if (height < 0)
-            {
-                throw new ArgumentException("Height must be a positive integer.");
-            }
+            if (height < 0) throw new ArgumentException("Height must be a positive integer.");
 
             Width = width;
             Height = height;
@@ -48,19 +42,32 @@
     /// <summary>
     /// A DTO object for MapGenerationContext, used for serialization and deserialization of map generation context data.
     /// </summary>
-    /// <param name="Width"></param>
-    /// <param name="Height"></param>
-    /// <param name="Seed"></param>
-    /// <param name="Settings"></param>
 
-    public readonly record struct MapGenerationContextData(
-        int Width,
-        int Height,
-        int Seed,
-        MapGenerationSettings Settings
-    )
+    public readonly record struct MapGenerationContextData
     {
+        #region Properties
+        public readonly int Width;
+        public readonly int Height;
+        public readonly int Seed;
+        public readonly MapGenerationSettings Settings;
+        #endregion
+
         #region Constructors
+        public MapGenerationContextData(
+            int width,
+            int height,
+            int seed,
+            MapGenerationSettings settings
+        )
+        {
+            if (width < 0) throw new ArgumentException("Width must be a positive integer.");
+            if (height < 0) throw new ArgumentException("Height must be a positive integer.");
+
+            Width = width;
+            Height = height;
+            Seed = seed;
+            Settings = settings;
+        }
         public MapGenerationContextData(MapGenerationContext context) : this(context.Width, context.Height, context.Seed, context.Settings) { }
         #endregion
     }

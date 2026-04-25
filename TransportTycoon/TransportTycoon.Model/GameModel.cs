@@ -164,6 +164,7 @@ namespace TransportTycoon.Model
             })];
 
             List<TreeSaveData> treesData = [.. Map.Table.Cast<IField>()
+                .Where(field => field.GetTrees() > 0)
                 .Select(field => new TreeSaveData()
                 {
                     X = field.X,
