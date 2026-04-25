@@ -868,7 +868,7 @@ public class GameModelTest
             var persistenceMock = Substitute.For<IPersistence>();
             var mapGenMock = Substitute.For<IMapGenerator>();
 
-            var context = new MapGenerationContext (3, 3, 1 ,new MapGenerationSettings() );
+            var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
             var table = new GameTable(mapGenMock, context);
 
             // 3x3-as pálya feltöltése Terrain-ekkel (Magasság: 2)
