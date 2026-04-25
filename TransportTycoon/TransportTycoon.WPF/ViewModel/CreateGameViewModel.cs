@@ -93,7 +93,7 @@ namespace TransportTycoon.WPF.ViewModel
                     MinCities = minCities,
                     MaxCities = maxCities,
                     MinStructure = minStructures,
-                    MaxStructureRange = maxStructures,
+                    MaxStructure = maxStructures,
                 };
                 MapGenerationContext context = new(width, height, seed, settings);
 
