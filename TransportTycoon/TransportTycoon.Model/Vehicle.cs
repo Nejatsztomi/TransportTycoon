@@ -227,9 +227,10 @@ namespace TransportTycoon.Model
 
             List<Edge>? newRoute = pathFinder.FindPath(startNode, end);
 
-            if (isGhost)
+            if (isGhost && newRoute!=null)
             {
                 injector.RemoveGhostNode(startNode);
+                StartDriving(newRoute);
             }
 
             CurrentRoute = newRoute;

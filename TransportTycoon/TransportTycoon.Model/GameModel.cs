@@ -818,6 +818,7 @@ namespace TransportTycoon.Model
                 newField is not IInfrastructure)
             {
                 vehicle.ChangeCurrentSpeed(0);
+                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork));
                 return;
             }
 
@@ -825,11 +826,19 @@ namespace TransportTycoon.Model
             Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
 
             SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
-            if (vehicle.CurrentSpeed > 0)
+            if (newField is IInfrastructure)
             {
-                vehicle.Step();
-                VehicleChanged?.Invoke(this, vehicle);
+                if (vehicle.CurrentSpeed > 0)
+                {
+                    vehicle.Step();
+                    VehicleChanged?.Invoke(this, vehicle);
+                }
             }
+            else 
+            {
+                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork));
+            }
+            
         }
 
         /// <summary>
