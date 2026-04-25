@@ -10,6 +10,8 @@ namespace TransportTycoon.Persistence
     /// </summary>
     public class BiomeJsonConverter : JsonConverter<IBiome>
     {
+        public override bool HandleNull => true;
+
         public override IBiome Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             string value = reader.GetString() ?? throw new JsonException();
@@ -27,6 +29,8 @@ namespace TransportTycoon.Persistence
     /// </summary>
     public class WaterBiomeJsonConverter : JsonConverter<IWaterBiome>
     {
+        public override bool HandleNull => true;
+
         public override IWaterBiome Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             string value = reader.GetString() ?? throw new JsonException();
