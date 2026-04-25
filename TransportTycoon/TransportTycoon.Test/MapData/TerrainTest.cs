@@ -1,5 +1,4 @@
-﻿using Xunit;
-using TransportTycoon.MapData;
+﻿using TransportTycoon.MapData;
 
 namespace TransportTycoon.Test.MapData
 {
