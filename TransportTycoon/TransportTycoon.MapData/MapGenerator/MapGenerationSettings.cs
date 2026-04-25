@@ -53,7 +53,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.RiverCount;
+        }
         public int MinRiverWidth
         {
             get;
@@ -65,7 +65,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MinRiverWidth;
+        }
         public int MaxRiverWidth
         {
             get;
@@ -77,8 +77,8 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MaxRiverWidth;
-        public IWaterBiome WaterBiome { get; init; } = MapGenerationSettingsDefaults.WaterBiome;
+        }
+        public IWaterBiome WaterBiome { get; init; }
         public float WaterNoiseScale
         {
             get;
@@ -90,11 +90,11 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.WaterNoiseScale;
+        }
         #endregion
 
         #region Terrain generation
-        public IBiome Biome { get; init; } = MapGenerationSettingsDefaults.Biome;
+        public IBiome Biome { get; init; }
         public float TerrainNoiseScale
         {
             get;
@@ -106,7 +106,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.TerrainNoiseScale;
+        }
         #endregion
 
         #region Structure generation
@@ -121,7 +121,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MinStructure;
+        }
         public int MaxStructure
         {
             get;
@@ -133,7 +133,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MaxStructure;
+        }
         public int MinStructureRange
         {
             get;
@@ -145,7 +145,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MinStructureRange;
+        }
         public int MaxStructureRange
         {
             get;
@@ -157,7 +157,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MaxStructureRange;
+        }
         public int StructureWidth
         {
             get;
@@ -169,7 +169,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.StructureWidth;
+        }
         public int StructureHeight
         {
             get;
@@ -181,7 +181,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.StructureHeight;
+        }
         #endregion
 
         #region City generation
@@ -196,7 +196,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MinCities;
+        }
         public int MaxCities
         {
             get;
@@ -208,7 +208,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MaxCities;
+        }
         public int MinCityRange
         {
             get;
@@ -220,7 +220,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MinCityRange;
+        }
         public int MaxCityRange
         {
             get;
@@ -232,7 +232,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.MaxCityRange;
+        }
         public int CityWidth
         {
             get;
@@ -244,7 +244,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.CityWidth;
+        }
         public int CityHeight
         {
             get;
@@ -256,7 +256,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.CityHeight;
+        }
         public int RoadLength
         {
             get;
@@ -268,7 +268,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.RoadLength;
+        }
         public int BranchCount
         {
             get;
@@ -280,7 +280,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.BranchCount;
+        }
         #endregion
 
         #region Forest generation
@@ -295,7 +295,7 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.ForestPercentage;
+        }
 
         public float ForestNoiseScale
         {
@@ -304,12 +304,41 @@ namespace TransportTycoon.MapData.MapGenerator
             {
                 if (!(0f <= value && value <= 1f))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(ForestPercentage), "ForestCount a float between 0 and 1 (inclusive)");
+                    throw new ArgumentOutOfRangeException(nameof(ForestNoiseScale), "ForestNoiseScale a float between 0 and 1 (inclusive)");
                 }
                 field = value;
             }
-        } = MapGenerationSettingsDefaults.ForestNoiseScale;
+        }
         #endregion
+        #endregion
+
+        #region Constructors
+        public MapGenerationSettings()
+        {
+            RiverCount = MapGenerationSettingsDefaults.RiverCount;
+            MinRiverWidth = MapGenerationSettingsDefaults.MinRiverWidth;
+            MaxRiverWidth = MapGenerationSettingsDefaults.MaxRiverWidth;
+            WaterBiome = MapGenerationSettingsDefaults.WaterBiome;
+            WaterNoiseScale = MapGenerationSettingsDefaults.WaterNoiseScale;
+            Biome = MapGenerationSettingsDefaults.Biome;
+            TerrainNoiseScale = MapGenerationSettingsDefaults.TerrainNoiseScale;
+            MinStructure = MapGenerationSettingsDefaults.MinStructure;
+            MaxStructure = MapGenerationSettingsDefaults.MaxStructure;
+            MinStructureRange = MapGenerationSettingsDefaults.MinStructureRange;
+            MaxStructureRange = MapGenerationSettingsDefaults.MaxStructureRange;
+            StructureWidth = MapGenerationSettingsDefaults.StructureWidth;
+            StructureHeight = MapGenerationSettingsDefaults.StructureHeight;
+            MinCities = MapGenerationSettingsDefaults.MinCities;
+            MaxCities = MapGenerationSettingsDefaults.MaxCities;
+            MinCityRange = MapGenerationSettingsDefaults.MinCityRange;
+            MaxCityRange = MapGenerationSettingsDefaults.MaxCityRange;
+            CityWidth = MapGenerationSettingsDefaults.CityWidth;
+            CityHeight = MapGenerationSettingsDefaults.CityHeight;
+            RoadLength = MapGenerationSettingsDefaults.RoadLength;
+            BranchCount = MapGenerationSettingsDefaults.BranchCount;
+            ForestPercentage = MapGenerationSettingsDefaults.ForestPercentage;
+            ForestNoiseScale = MapGenerationSettingsDefaults.ForestNoiseScale;
+        }
         #endregion
     }
 }
