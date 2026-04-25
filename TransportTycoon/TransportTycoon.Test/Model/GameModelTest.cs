@@ -1,5 +1,6 @@
 using NSubstitute;
 using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
 using TransportTycoon.Model.Graph;
@@ -697,6 +698,166 @@ public class GameModelTest
 
             // Assert
             Assert.Empty(_model.SelectedStopFields);
+        }
+    }
+    public class GameModelHeightTests
+    {
+        // Segédmetódus egy alap GameModel és egy 3x3-as tesztpálya létrehozásához
+        private GameModel CreateTestModel(int initialBalance = 1000, int initialHeight = 2)
+        {
+            var timerMock = Substitute.For<ITimer>();
+            var persistenceMock = Substitute.For<IPersistence>();
+            var mapGenMock = Substitute.For<IMapGenerator>();
+
+            var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
+            var table = new GameTable(mapGenMock, context);
+
+            // 3x3-as pálya feltöltése Terrain-ekkel
+            var fields = new IField[3, 3];
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    fields[i, j] = new Terrain(i, j, initialHeight);
+                }
+            }
+
+            mapGenMock.GenerateMap(context).Returns((fields, new List<BuildingEntity>()));
+            table.GenerateMap();
+
+            var model = new GameModel(table, timerMock, persistenceMock, Difficulty.Medium, initialBalance)
+            {
+                Mode = GameMode.Editor // A metódusok csak Editor módban működnek
+            };
+
+            return model;
+        }
+
+        [Fact]
+        public void IncreaseHeight_ValidTerrain_IncreasesHeightAndDeducts100Balance()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 2);
+            int startBalance = model.Balance;
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(3, model.Map[1, 1].Height);
+            Assert.Equal(startBalance - 100, model.Balance);
+        }
+
+        [Fact]
+        public void IncreaseHeight_WithTrees_Deducts150Balance()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 2);
+            var terrain = (Terrain)model.Map[1, 1];
+            terrain.Trees = 2; // Fákat adunk a területhez
+            model.Map.UpdateTable(1, 1, terrain);
+            int startBalance = model.Balance;
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(3, model.Map[1, 1].Height);
+            Assert.Equal(startBalance - 150, model.Balance);
+        }
+
+        [Fact]
+        public void IncreaseHeight_NotEditorMode_DoesNothing()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 2);
+            model.Mode = GameMode.Run; // Átállítjuk futás módba
+            int startBalance = model.Balance;
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(2, model.Map[1, 1].Height);
+            Assert.Equal(startBalance, model.Balance); // A pénz nem változhatott
+        }
+
+        [Fact]
+        public void IncreaseHeight_MaxHeight_DoesNothing()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 4); // Max magasság
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(4, model.Map[1, 1].Height); // Nem nőhet 5-re
+        }
+
+        [Fact]
+        public void DecreaseHeight_ValidTerrain_DecreasesHeightAndDeducts100Balance()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 3);
+            int startBalance = model.Balance;
+
+            // Act
+            model.DecreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(2, model.Map[1, 1].Height);
+            Assert.Equal(startBalance - 100, model.Balance);
+        }
+
+        [Fact]
+        public void DecreaseHeight_MinHeight_DoesNothing()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 1); // Min magasság
+
+            // Act
+            model.DecreaseHeight(1, 1);
+
+            // Assert
+            Assert.Equal(1, model.Map[1, 1].Height); // Nem mehet 0-ra
+        }
+
+        [Fact]
+        public void IncreaseHeight_FiresFieldAndBalanceChangedEvents()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 1000, initialHeight: 2);
+            bool fieldChangedFired = false;
+            bool balanceChangedFired = false;
+
+            model.FieldChanged += (sender, args) => fieldChangedFired = true;
+            model.BalanceChanged += (sender, args) => balanceChangedFired = true;
+
+            // Act
+            model.IncreaseHeight(1, 1);
+
+            // Assert
+            Assert.True(fieldChangedFired);
+            Assert.True(balanceChangedFired);
+        }
+
+        [Fact]
+        public void DecreaseHeight_CausesGameOver_WhenBalanceDropsBelowZero()
+        {
+            // Arrange
+            var model = CreateTestModel(initialBalance: 50, initialHeight: 3); // 50 a kezdeti egyenleg, a módosítás 100-ba kerül
+            bool gameOverFired = false;
+
+            model.GameOver += (sender, args) => gameOverFired = true;
+
+            // Act
+            model.DecreaseHeight(1, 1);
+
+            // Assert
+            Assert.True(gameOverFired);
+            Assert.True(model.IsGameOver);
+            Assert.Equal(GameMode.Paused, model.Mode); // A GameMode.Paused állapotba kell váltania a játéknak
         }
     }
 }

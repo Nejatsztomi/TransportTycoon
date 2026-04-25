@@ -916,6 +916,7 @@ namespace TransportTycoon.Model
         private void OnGameOver()
         {
             _timer.Stop();
+            Mode = GameMode.Paused;
             GameModeChanged?.Invoke(this, GameMode.Paused);
             GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
         }
