@@ -33,7 +33,8 @@
                         <Setter Property="Background" Value="White"/>
                         <Setter Property="BorderBrush" Value="Black"/>
                         <Setter Property="BorderThickness" Value="2"/>
-                        <Setter Property="Height" Value="35"/>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="Width" Value="40"/>
                     </Style>
                 </StatusBar.Resources>
 
@@ -59,8 +60,12 @@
 
                 <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <Button Content="EDIT" Command="{Binding EditorModeCommand}" Margin="2,0" Padding="10,2"/>
-                        <Button Content="||" Command="{Binding EditorModeCommand}" Margin="2,0" Padding="10,2"/>
+                        <Button Command="{Binding EditorModeCommand}" Margin="3,0">
+                            <Image Source="/Assets/Images/Icons/hammer.png" Stretch="Fill"/>
+                        </Button>
+                        <Button Command="{Binding EditorModeCommand}" Margin="3,0">
+                            <Image Source="/Assets/Images/Icons/pause.png" Stretch="Fill"/>
+                        </Button>
                     </StackPanel>
                 </StatusBarItem>
 
