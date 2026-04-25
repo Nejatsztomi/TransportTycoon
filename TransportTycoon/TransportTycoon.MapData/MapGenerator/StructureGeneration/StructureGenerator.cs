@@ -12,7 +12,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
     {
         #region Private fields
         private readonly ICityGenerator _cityGenerator;
-        private readonly IRandom _random;
+        private readonly IRandomProvider _random;
+        private readonly MapGenerationContext _context;
+        private const string PluginId = "BaseGame.Structures";
         #endregion
 
         #region Public properties
@@ -23,23 +25,26 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         public StructureGenerator(ICityGenerator cityGenerator, IRandomProvider randomProvider, MapGenerationContext context)
         {
             _cityGenerator = cityGenerator;
-            _random = randomProvider.GetRandom(context.Seed, "BaseGame.Structures");
+            _random = randomProvider;
+            _context = context;
         }
         #endregion
 
         #region Public methods
         public bool TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY)
         {
+            IRandom random = _random.GetRandom(context.Seed, PluginId);
+
             if (centerX >= 0 && centerY >= 0 && context.Settings.MaxCityRange > 0)
             {
-                return TryPlaceNear(heightMap, waterMap, structureMap, buildingEntity, context, centerX, centerY);
+                return TryPlaceNear(heightMap, waterMap, structureMap, buildingEntity, context, centerX, centerY, random);
             }
 
             int maxAttempts = 50;
             for (int attempt = 0; attempt < maxAttempts; attempt++)
             {
-                int startX = _random.Next(0, context.Width - buildingEntity.Width);
-                int startY = _random.Next(0, context.Height - buildingEntity.Height);
+                int startX = random.Next(0, context.Width - buildingEntity.Width);
+                int startY = random.Next(0, context.Height - buildingEntity.Height);
 
                 if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
                 {
@@ -61,10 +66,12 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
         public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY)
         {
+            IRandom random = _random.GetRandom(context.Seed, PluginId);
+
             Debug.WriteLine($"Force placing {buildingEntity.GetType().Name} at ({centerX}, {centerY})");
             if (centerX >= 0 && centerY >= 0 && context.Settings.MaxCityRange > 0)
             {
-                ForcePlaceNear(buildingEntity, heightMap, waterMap, structureMap, centerX, centerY, context);
+                ForcePlaceNear(buildingEntity, heightMap, waterMap, structureMap, centerX, centerY, context, random);
                 return;
             }
 
@@ -88,7 +95,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
             while (validPoints.Count > 0)
             {
-                int randomIndex = _random.Next(0, validPoints.Count);
+                int randomIndex = random.Next(0, validPoints.Count);
                 (int x, int y) = validPoints[randomIndex];
 
                 if (TryTerraformAndPlace(x, y, buildingEntity, heightMap, waterMap, structureMap, context))
@@ -158,7 +165,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             return true;
         }
 
-        private bool GetStartPosition(int centerX, int centerY, BuildingEntity buildingEntity, MapGenerationContext context, out int startX, out int startY)
+        private bool GetStartPosition(int centerX, int centerY, BuildingEntity buildingEntity, MapGenerationContext context, out int startX, out int startY, IRandom random)
         {
             int minRange = buildingEntity switch
             {
@@ -171,8 +178,8 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 _ => context.Settings.MaxStructureRange,
             };
 
-            int dx = centerX + _random.Next(-maxRange, maxRange + 1);
-            int dy = centerY + _random.Next(-maxRange, maxRange + 1);
+            int dx = centerX + random.Next(-maxRange, maxRange + 1);
+            int dy = centerY + random.Next(-maxRange, maxRange + 1);
             double distance = Math.Sqrt(dx * dx + dy * dy);
 
             // Circle
@@ -189,12 +196,12 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             return true;
         }
 
-        private void ForcePlaceNear(BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap, int centerX, int centerY, MapGenerationContext context)
+        private void ForcePlaceNear(BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap, int centerX, int centerY, MapGenerationContext context, IRandom random)
         {
             for (int attempt = 0; attempt < 500; attempt++)
             {
                 // Pick a spot within the circle
-                if (!GetStartPosition(centerX, centerY, buildingEntity, context, out int startX, out int startY))
+                if (!GetStartPosition(centerX, centerY, buildingEntity, context, out int startX, out int startY, random))
                 {
                     continue;
                 }
@@ -208,14 +215,14 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             ForcePlace(heightMap, waterMap, structureMap, buildingEntity, context, -1, -1);
         }
 
-        private bool TryPlaceNear(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY)
+        private bool TryPlaceNear(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY, IRandom random)
         {
             int maxAttempts = 100;
 
             for (int attempt = 0; attempt < maxAttempts; attempt++)
             {
                 // Pick a spot within the circle
-                if (!GetStartPosition(centerX, centerY, buildingEntity, context, out int startX, out int startY))
+                if (!GetStartPosition(centerX, centerY, buildingEntity, context, out int startX, out int startY, random))
                 {
                     continue;
                 }
