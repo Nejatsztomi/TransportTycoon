@@ -2,6 +2,7 @@ using NSubstitute;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
+using TransportTycoon.Model.Graph;
 using TransportTycoon.Persistence;
 using ITimer = TransportTycoon.Model.ITimer;
 using VehicleType = TransportTycoon.Model.VehicleType;
@@ -217,10 +218,53 @@ public class GameModelTest
             }
 
             [Fact]
-            public void GameAdvanced_EventIsRaised() { }
+            public void GameAdvanced_EventIsRaised()
+            {
+                bool raised = false;
+                void Handler(object? _1, List<Tuple<int, int>> _2) { raised = true; }
+                try
+                {
+                    _gameModel.GameAdvanced += Handler;
+                    // Simulate 10 timer ticks to trigger GameAdvanced
+                    for (int i = 0; i < 10; i++)
+                    {
+                        _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                    }
+                    Assert.True(raised, "GameAdvanced event should be raised after 10 timer ticks");
+                }
+                finally
+                {
+                    _gameModel.GameAdvanced -= Handler;
+                }
+            }
 
             [Fact]
-            public void InfrastructureBuilt_EventIsRaised() { }
+            public void InfrastructureBuilt_EventIsRaised()
+            {
+                // Use a real GameTable for correct indexer behavior
+                var mapGen = Substitute.For<IMapGenerator>();
+                var context = new MapGenerationContext(10, 10, 1, new MapGenerationSettings());
+                var realMap = new GameTable(mapGen, context);
+                // Fill the map with Terrain
+                for (int i = 0; i < 10; i++)
+                    for (int j = 0; j < 10; j++)
+                        realMap[i, j] = new Terrain(i, j, 1);
+                var model = new GameModel(realMap, _mockTimer, _mockPersistence);
+                bool raised = false;
+                void Handler(object? _1, List<(int, int)> _2) { raised = true; }
+                try
+                {
+                    model.InfrastructureBuilt += Handler;
+                    int x = 5, y = 5;
+                    model.Mode = GameMode.Editor;
+                    model.BuildRoad(x, y);
+                    Assert.True(raised, "InfrastructureBuilt event should be raised after building road");
+                }
+                finally
+                {
+                    model.InfrastructureBuilt -= Handler;
+                }
+            }
         }
 
         public class EventArgumentTest
@@ -290,7 +334,30 @@ public class GameModelTest
             }
 
             [Fact]
-            public void GameOver_EventArgumentIsCorrect() { }
+            public void GameOver_EventArgumentIsCorrect()
+            {
+                // Use a real GameTable for correct indexer behavior
+                var mapGen = Substitute.For<IMapGenerator>();
+                var context = new MapGenerationContext(2, 2, 1, new MapGenerationSettings());
+                var realMap = new GameTable(mapGen, context);
+                for (int i = 0; i < 2; i++)
+                    for (int j = 0; j < 2; j++)
+                        realMap[i, j] = new Terrain(i, j, 2); // Height 2 so we can decrease
+                var model = new GameModel(realMap, _mockTimer, _mockPersistence, Difficulty.Medium, 1);
+                TransportTycoonEventArgs? eventArgs = null;
+                void Handler(object? _1, TransportTycoonEventArgs e) { eventArgs = e; }
+                try
+                {
+                    model.GameOver += Handler;
+                    model.Mode = GameMode.Editor;
+                    model.DecreaseHeight(0, 0); // Should reduce balance below 0
+                    Assert.NotNull(eventArgs);
+                }
+                finally
+                {
+                    model.GameOver -= Handler;
+                }
+            }
 
             // TODO: reimplement this with mocking in the future
             //[TestMethod]
@@ -323,7 +390,32 @@ public class GameModelTest
             //}
 
             [Fact]
-            public void InfrastructureBuilt_EventArgumentIsCorrect() { }
+            public void InfrastructureBuilt_EventArgumentIsCorrect()
+            {
+                // Use a real GameTable for correct indexer behavior
+                var mapGen = Substitute.For<IMapGenerator>();
+                var context = new MapGenerationContext(10, 10, 1, new MapGenerationSettings());
+                var realMap = new GameTable(mapGen, context);
+                for (int i = 0; i < 10; i++)
+                    for (int j = 0; j < 10; j++)
+                        realMap[i, j] = new Terrain(i, j, 1);
+                var model = new GameModel(realMap, _mockTimer, _mockPersistence);
+                List<(int, int)>? eventArgs = null;
+                void Handler(object? _1, List<(int, int)> e) { eventArgs = e; }
+                try
+                {
+                    model.InfrastructureBuilt += Handler;
+                    int x = 7, y = 7;
+                    model.Mode = GameMode.Editor;
+                    model.BuildRoad(x, y);
+                    Assert.NotNull(eventArgs);
+                    Assert.Contains((x, y), eventArgs!);
+                }
+                finally
+                {
+                    model.InfrastructureBuilt -= Handler;
+                }
+            }
         }
     }
 
@@ -436,6 +528,175 @@ public class GameModelTest
             // Assert
             Assert.NotNull(result);
             Assert.Equal(typeof(BigBus).Name, result.GetType().Name);
+        }
+    }
+
+    public class RouteAndGraphTests
+    {
+        private readonly MapGenerationContext _context = new(10, 10, 1, new MapGenerationSettings());
+        private readonly GameModel _model;
+
+        public RouteAndGraphTests()
+        {
+            var mapGen = Substitute.For<IMapGenerator>();
+            mapGen
+                .GenerateMap(default)
+                .Returns(
+                ci =>
+                    {
+                        var ctx = _context;
+                        var table = new IField[ctx.Width, ctx.Height];
+                        for (int i = 0; i < ctx.Width; i++)
+                        {
+                            for (int j = 0; j < ctx.Height; j++)
+                            {
+                                table[i, j] = new Terrain(i, j, 1);
+                            }
+                        }
+                        return (table, []);
+                    }
+                );
+
+            var map = new GameTable(mapGen, _context);
+
+            _model = new(map, Substitute.For<ITimer>(), Substitute.For<IPersistence>());
+        }
+
+        private void CallRebuildGraph(GameModel model)
+        {
+            model.Mode = GameMode.Editor; // Ensure we're in a mode that allows graph rebuilding
+            model.Mode = GameMode.Run; // Trigger graph rebuilding
+        }
+
+        [Fact]
+        public void RebuildGraph_DoesNothingIfMapNotGenerated()
+        {
+            // Arrange
+            var oldGraph = _model.GraphNetwork;
+
+            // Act
+            CallRebuildGraph(_model);
+
+            // Assert
+            Assert.Same(oldGraph, _model.GraphNetwork);
+        }
+
+        [Fact]
+        public void RebuildGraph_UpdatesGraphAndVehicleRoutes()
+        {
+            // Arrange
+            _model.NewGame();
+
+            var node = new Node(1, 1, typeof(Stop));
+            _model.Map[1, 1] = new Stop(1, 1, 1);
+            var prouth = new Prouth([node]);
+            var vehicle = new Van(1, 1, Direction.Up)
+            {
+                Prouth = prouth
+            };
+            _model.Vehicles.Add(vehicle);
+
+
+            // Act
+            CallRebuildGraph(_model);
+
+            // Assert
+            Assert.NotNull(vehicle.Prouth);
+            Assert.NotEmpty(vehicle.Prouth.Stops);
+        }
+
+        [Fact]
+        public void DefineRoute_AddsStopAndRaisesEvent()
+        {
+            // Arrange
+            _model.NewGame();
+            int x = 2, y = 3;
+            _model.Map[x, y] = new Stop(x, y, 1);
+            bool eventRaised = false;
+            _model.SelectedStopFieldsChanged += (_, stops) => eventRaised = true;
+
+            // Act
+            _model.DefineRoute(x, y);
+
+            // Assert
+            Assert.Contains(_model.SelectedStopFields, s => s.X == x && s.Y == y && s.Height == 1);
+            Assert.True(eventRaised);
+        }
+
+        [Fact]
+        public void DefineRoute_DoesNotAddDuplicateStop()
+        {
+            // Arrange
+            _model.NewGame();
+            int x = 2, y = 3;
+            var stop = new Stop(x, y, 1);
+            _model.Map[x, y] = stop;
+            _model.SelectedStopFields.Add(stop);
+
+            // Act
+            _model.DefineRoute(x, y);
+
+            // Assert
+            Assert.Single(_model.SelectedStopFields, s => s.X == x && s.Y == y && s.Height == 1);
+        }
+
+        [Fact]
+        public void QueryRoute_SetsSelectedStopFieldsFromVehicleRouteAndRaisesEvent()
+        {
+            // Arrange
+            _model.NewGame();
+            int x = 1, y = 1;
+            var stop = new Stop(x, y, 1);
+            _model.Map[x, y] = stop;
+            var node = new Node(x, y, typeof(Stop));
+            var prouth = new Prouth([node]);
+            var vehicle = new Van(x, y, Direction.Up)
+            {
+                Prouth = prouth
+            };
+            _model.Vehicles.Add(vehicle);
+            bool eventRaised = false;
+            _model.SelectedStopFieldsChanged += (_, stops) => eventRaised = true;
+
+            // Act
+            _model.QueryRoute(x, y);
+
+            // Assert
+            Assert.Contains(_model.SelectedStopFields, s => s.X == x && s.Y == y && s.Height == 1);
+            Assert.True(eventRaised);
+        }
+
+        [Fact]
+        public void DeleteRoute_RemovesStopAndRaisesEvent()
+        {
+            // Arrange
+            _model.NewGame();
+            int x = 2, y = 2;
+            var stop = new Stop(x, y, 1);
+            _model.SelectedStopFields.Add(stop);
+            bool eventRaised = false;
+            _model.SelectedStopFieldsChanged += (_, stops) => eventRaised = true;
+
+            // Act
+            _model.DeleteRoute(x, y);
+
+            // Assert
+            Assert.DoesNotContain(_model.SelectedStopFields, s => s.X == x && s.Y == y && s.Height == 1);
+            Assert.True(eventRaised);
+        }
+
+        [Fact]
+        public void DeleteRoute_ClearAllStopsWithMinusOne()
+        {
+            // Arrange
+            _model.SelectedStopFields.Add(new Stop(1, 1, 1));
+            _model.SelectedStopFields.Add(new Stop(2, 2, 1));
+
+            // Act
+            _model.DeleteRoute(-1, -1);
+
+            // Assert
+            Assert.Empty(_model.SelectedStopFields);
         }
     }
 }
