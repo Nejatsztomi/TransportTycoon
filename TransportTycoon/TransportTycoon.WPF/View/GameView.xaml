@@ -29,12 +29,42 @@
                 <StatusBar.Resources>
                     <Style TargetType="Button">
                         <Setter Property="Foreground" Value="Black"/>
-                        <Setter Property="FontSize" Value="13"/>
+                        <Setter Property="FontSize" Value="20"/>
                         <Setter Property="Background" Value="White"/>
                         <Setter Property="BorderBrush" Value="Black"/>
                         <Setter Property="BorderThickness" Value="2"/>
                         <Setter Property="Height" Value="40"/>
                         <Setter Property="Width" Value="40"/>
+                    </Style>
+                    
+                    <Style TargetType="RadioButton">
+                        <Setter Property="Foreground" Value="Black"/>
+                        <Setter Property="FontSize" Value="20"/>
+                        <Setter Property="Height" Value="40"/>
+                        <Setter Property="Width" Value="40"/>
+                        
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border x:Name="Bd"
+                                            Background="White"
+                                            BorderBrush="Black"
+                                            BorderThickness="2">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="Yellow"/>
+                                        </Trigger>
+
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Bd" Property="Background" Value="LightGray"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
                     </Style>
                 </StatusBar.Resources>
 
@@ -50,19 +80,20 @@
                     </ItemsPanelTemplate>
                 </StatusBar.ItemsPanel>
 
-                <StatusBarItem Grid.Column="0" Margin="80,0,0,0">
+                <StatusBarItem Grid.Column="0" Margin="60,0,0,0">
                     <StackPanel Orientation="Horizontal">
-                        <Button Content="1x" Command="{Binding NormalSpeedCommand}" Margin="3,0" Width="35"/>
-                        <Button Content="2x" Command="{Binding FastSpeedCommand}" Margin="3,0" Width="35"/>
-                        <Button Content="4x" Command="{Binding SuperFastSpeedCommand}" Margin="3,0" Width="35"/>
+                        <Image Source="/Assets/Images/Icons/speed.png" Stretch="Fill"/>
+                        <RadioButton GroupName="Speed" Content="1" Command="{Binding NormalSpeedCommand}" Margin="3,0" IsChecked="True"/>
+                        <RadioButton GroupName="Speed" Content="2" Command="{Binding FastSpeedCommand}" Margin="3,0"/>
+                        <RadioButton GroupName="Speed" Content="4" Command="{Binding SuperFastSpeedCommand}" Margin="3,0"/>
                     </StackPanel>
                 </StatusBarItem>
 
                 <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <Button Command="{Binding EditorModeCommand}" Margin="3,0">
+                        <RadioButton GroupName="Speed" Command="{Binding EditorModeCommand}" Margin="3,0">
                             <Image Source="/Assets/Images/Icons/hammer.png" Stretch="Fill"/>
-                        </Button>
+                        </RadioButton>
                         <Button Command="{Binding EditorModeCommand}" Margin="3,0">
                             <Image Source="/Assets/Images/Icons/pause.png" Stretch="Fill"/>
                         </Button>
@@ -72,7 +103,7 @@
                 <StatusBarItem Grid.Column="2" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Assets/Images/Icons/coin.png" Width="35"/>
-                        <TextBlock Margin="5,0,10,0" VerticalAlignment="Center" Text="{Binding Balance}"/>
+                        <TextBlock Margin="5,0,15,0" VerticalAlignment="Center" Text="{Binding Balance}"/>
                         <Image Source="/Assets/Images/Icons/hourglass.png" Width="35"/>
                         <TextBlock Margin="5,0,5,0" VerticalAlignment="Center" Text="{Binding GameDate, StringFormat={}{0:MMM dd yyyy}}" />
                     </StackPanel>
