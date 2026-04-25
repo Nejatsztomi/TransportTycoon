@@ -540,7 +540,7 @@ public class GameModelTest
         {
             var mapGen = Substitute.For<IMapGenerator>();
             mapGen
-                .GenerateMap(default)
+                .GenerateMap(_context)
                 .Returns(
                 ci =>
                     {
