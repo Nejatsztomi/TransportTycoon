@@ -810,12 +810,15 @@ namespace TransportTycoon.Model
             }
 
             IField? newField = vehicle.TargetTile;
+            if (newField is null) return;
+
+            IField nextField = Map[newField.X, newField.Y];
 
             //if the target field is out of bounds or not an infrastructure, the vehicle should stop and not move
-            if (newField == null ||
-                0 > newField.X || newField.X >= Map.Height ||
-                0 > newField.Y || newField.Y >= Map.Width ||
-                newField is not IInfrastructure)
+            if (nextField == null ||
+                0 > nextField.X || nextField.X >= Map.Height ||
+                0 > nextField.Y || nextField.Y >= Map.Width ||
+                nextField is not IInfrastructure)
             {
                 vehicle.ChangeCurrentSpeed(0);
                 vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork));
@@ -825,8 +828,8 @@ namespace TransportTycoon.Model
             IField currentField = Map[vehicle.MapX, vehicle.MapY];
             Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
 
-            SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
-            if (newField is IInfrastructure)
+            SetVehicleSpeed(vehicle, nextVehicle, currentField, nextField);
+            if (nextField is IInfrastructure)
             {
                 if (vehicle.CurrentSpeed > 0)
                 {
