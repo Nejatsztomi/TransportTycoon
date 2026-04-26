@@ -801,6 +801,11 @@ namespace TransportTycoon.Model
 
             vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
 
+            if (vehicle.IsLost) 
+            {
+                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork), Map[vehicle.MapX,vehicle.MapY]);
+            }
+
             //the vehicle should start
             if (vehicle.CurrentRoute == null && vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
             {
@@ -821,12 +826,12 @@ namespace TransportTycoon.Model
                 nextField is not IInfrastructure)
             {
                 vehicle.ChangeCurrentSpeed(0);
-                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork));
+                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork), Map[vehicle.MapX, vehicle.MapY]);
                 return;
             }
 
             IField currentField = Map[vehicle.MapX, vehicle.MapY];
-            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
+            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == nextField.X && v.MapY == nextField.Y);
 
             SetVehicleSpeed(vehicle, nextVehicle, currentField, nextField);
             if (nextField is IInfrastructure)
@@ -839,7 +844,7 @@ namespace TransportTycoon.Model
             }
             else 
             {
-                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork));
+                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork), Map[vehicle.MapX, vehicle.MapY]);
             }
             
         }

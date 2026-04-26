@@ -210,12 +210,9 @@ namespace TransportTycoon.Model
         /// </remarks>
         /// <param name="pathFinder">The path finder used to compute a new route between nodes.</param>
         /// <param name="injector">The ghost node injector used to manage temporary nodes during route calculation.</param>
-        public void RecalculateRoute(IPathFinder pathFinder, GhostNodeInjector injector)
+        public void RecalculateRoute(IPathFinder pathFinder, GhostNodeInjector injector, IField currentTile)
         {
-            if (CurrentRoute is null || _currentEdgeTiles is null) return;
             if (GetNextStopNodePair() is not (Node _, Node end)) return;
-
-            IField currentTile = _currentEdgeTiles[_currentTileIdx];
 
             (Node? startNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
 
