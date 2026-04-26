@@ -94,7 +94,7 @@
                                 CommandParameter="11"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
-                            <Image Source="/Assets/Images/Buttons/minus.png" Stretch="Uniform"/>
+                            <Image Source="/Assets/Images/Icons/minus.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
@@ -102,7 +102,7 @@
                                 CommandParameter="12"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
-                            <Image Source="/Assets/Images/Buttons/plus.png" Stretch="Uniform"/>
+                            <Image Source="/Assets/Images/Icons/plus.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
                 </TabItem>
@@ -118,7 +118,7 @@
                                 CommandParameter="21"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
-                            <Image Source="/Assets/Images/Road/road.png" Stretch="Uniform"/>
+                            <Image Source="/Assets/Images/Icons/road.png" Stretch="UniformToFill"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
@@ -126,7 +126,7 @@
                                 CommandParameter="22"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
-                            <Image Source="/Assets/Images/Bridge/yellowBridge.png" Stretch="Uniform"/>
+                            <Image Source="/Assets/Images/Icons/bridge.png" Stretch="UniformToFill"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
@@ -134,7 +134,7 @@
                                 CommandParameter="23"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
-                            <Image Source="/Assets/Images/Stop/stop.png" Stretch="Uniform"/>
+                            <Image Source="/Assets/Images/Icons/stop.png" Stretch="UniformToFill"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
@@ -142,7 +142,7 @@
                                 CommandParameter="24"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
-                            <Image Source="/Assets/Images/Buttons/x.png" Stretch="Uniform"/>
+                            <Image Source="/Assets/Images/Icons/x.png" Stretch="UniformToFill"/>
                         </Button>
                     </WrapPanel>
                 </TabItem>
@@ -206,7 +206,7 @@
                                 CommandParameter="44"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
-                            <Image Source="/Assets/Images/Buttons/x.png" Stretch="Uniform"/>
+                            <Image Source="/Assets/Images/Icons/x.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
                 </TabItem>
