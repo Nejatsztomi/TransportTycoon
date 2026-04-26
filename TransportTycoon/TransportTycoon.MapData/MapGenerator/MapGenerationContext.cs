@@ -46,10 +46,26 @@
     public readonly record struct MapGenerationContextData
     {
         #region Properties
-        public int Width { get; }
-        public int Height { get; }
-        public int Seed { get; }
-        public MapGenerationSettings Settings { get; }
+        public int Width
+        {
+            get;
+            init
+            {
+                if (value <= 0) throw new ArgumentException("Width must be a positive integer.");
+                field = value;
+            }
+        }
+        public int Height
+        {
+            get;
+            init
+            {
+                if (value <= 0) throw new ArgumentException("Height must be a positive integer.");
+                field = value;
+            }
+        }
+        public int Seed { get; init; }
+        public MapGenerationSettings Settings { get; init; }
         #endregion
 
         #region Constructors
@@ -60,9 +76,6 @@
             MapGenerationSettings settings
         )
         {
-            if (width <= 0) throw new ArgumentException("Width must be a positive integer.");
-            if (height < 0) throw new ArgumentException("Height must be a positive integer.");
-
             Width = width;
             Height = height;
             Seed = seed;
