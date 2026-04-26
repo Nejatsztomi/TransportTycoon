@@ -198,7 +198,16 @@ namespace TransportTycoon.Model
             {
                 CurrentRoute = pathFinder.FindPath(start, end);
             }
-            StartDriving(CurrentRoute ?? []);
+            if (CurrentRoute != null && CurrentRoute.Count > 0)
+            {
+                IsLost = false;
+                StartDriving(CurrentRoute);
+            }
+            else
+            {
+                IsLost = true;
+                CurrentRoute = null;
+            }
         }
 
         /// <summary>
