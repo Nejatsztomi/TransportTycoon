@@ -654,7 +654,7 @@ namespace TransportTycoon.Model
 
         public void QueryRoute(int x, int y)
         {
-            Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
+            Vehicle? selectedVehcile = Vehicles.Find(v => v.MapX==x && v.MapY==y);
             if (selectedVehcile is null) return;
 
             if (selectedVehcile.Prouth is not null)
@@ -669,7 +669,7 @@ namespace TransportTycoon.Model
         {
             if (SelectedStopFields.Count == 0) return;
 
-            Vehicle? selectedVehicle = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
+            Vehicle? selectedVehicle = Vehicles.Find(v => v.MapX==x && v.MapY==y);
             if (selectedVehicle is null) return;
 
             if (Map[selectedVehicle.MapX, selectedVehicle.MapY] is not Stop)
