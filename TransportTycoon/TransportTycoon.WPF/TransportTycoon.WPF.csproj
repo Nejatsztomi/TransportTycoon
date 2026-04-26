@@ -31,6 +31,7 @@
     <None Remove="Assets\Images\Icons\hourglass.png" />
     <None Remove="Assets\Images\Icons\line.png" />
     <None Remove="Assets\Images\Icons\pause.png" />
+    <None Remove="Assets\Images\Icons\plus.png" />
     <None Remove="Assets\Images\Icons\route.png" />
     <None Remove="Assets\Images\Icons\terrain.png" />
     <None Remove="Assets\Images\Icons\vehicle.png" />
@@ -92,6 +93,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Icons\hammer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Icons\plus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Icons\route.png">

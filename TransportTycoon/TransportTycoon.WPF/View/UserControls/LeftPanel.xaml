@@ -92,14 +92,16 @@
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="11"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Buttons/minus.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="12"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Buttons/plus.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
@@ -114,28 +116,32 @@
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="21"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Road/road.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="22"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Bridge/yellowBridge.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="23"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Stop/stop.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="24"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Buttons/x.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
@@ -150,14 +156,16 @@
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="31"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Vehicle/smallBus.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="32"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Vehicle/largeBus.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
@@ -172,28 +180,32 @@
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="41"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Buttons/route.png" Stretch="UniformToFill"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="42"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Buttons/pull.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="43"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Buttons/push.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="44"
-                                >
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Buttons/x.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
