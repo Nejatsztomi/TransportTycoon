@@ -232,6 +232,8 @@ namespace TransportTycoon.Model
             Map.Context = new(data.MapContextData);
             Map.GenerateMap();
 
+            _modifiedFields.Clear();
+
             data.ModifiedTiles.ForEach(tile =>
             {
                 int x = tile.X;
@@ -249,6 +251,7 @@ namespace TransportTycoon.Model
                     SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
                     _ => Map[x, y]
                 };
+                _modifiedFields.Add((x, y), Map[x, y]);
             });
 
             // Make sure roads have correct rotation
