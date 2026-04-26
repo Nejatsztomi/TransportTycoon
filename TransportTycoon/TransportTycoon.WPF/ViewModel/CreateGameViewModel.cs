@@ -37,7 +37,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Events
-        public event EventHandler? BackToMainMenu;
+        public event Action? BackToMainMenu;
         public event EventHandler<MapGenerationContext>? CreateGame;
         #endregion
 
@@ -109,7 +109,7 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnBackToMainMenu()
         {
-            BackToMainMenu?.Invoke(this, EventArgs.Empty);
+            BackToMainMenu?.Invoke();
         }
         #endregion
 

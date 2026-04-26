@@ -54,6 +54,11 @@ namespace TransportTycoon.WPF.ViewModel
         public event Action? MapUpdated;
 
         public event Action<UInt64>? VehicleDestroyed;
+
+        /// <summary>
+        /// A simple event to notify the view that the user wants to go back to the main menu.
+        /// </summary>
+        public event Action? BackToMainMenu;
         #endregion
 
         #region Constructors
@@ -304,6 +309,7 @@ namespace TransportTycoon.WPF.ViewModel
             else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
 
+        #region Pause menu
         [RelayCommand]
         private void OnExitGame()
         {
@@ -329,6 +335,12 @@ namespace TransportTycoon.WPF.ViewModel
             await Model.SaveGame(uri);
         }
 
+        [RelayCommand]
+        private void OnBackToMainMenu()
+        {
+            BackToMainMenu?.Invoke();
+        }
+        #endregion
         #endregion
 
         #region Event methods

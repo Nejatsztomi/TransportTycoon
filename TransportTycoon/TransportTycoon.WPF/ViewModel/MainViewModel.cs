@@ -38,54 +38,34 @@ namespace TransportTycoon.WPF.ViewModel
         }
         #endregion
 
-        #region Private Methods
+        #region Private event methods
+        #region Start menu
         private void StartMenuViewModel_StartingNewGame(object? _1, EventArgs _2)
         {
-            MapGenerationContext context = new();
+            _model = CreateNewGameModel(new());
 
-            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
-            _model.GameOver += Model_GameOver;
-            _model.NewGame();
-
-            GameViewModel gameViewModel = new(_model);
-
-            CurrentView = gameViewModel;
+            CurrentView = CreateNewGameViewModel(_model);
         }
 
         private void StartMenuViewModel_ShowGameCreationView(object? _1, EventArgs _2)
         {
             CreateGameViewModel createGameViewModel = new();
 
-            createGameViewModel.BackToMainMenu += CreateGameViewModel_BackToMainMenu;
+            createGameViewModel.BackToMainMenu += BackToMainMenu;
             createGameViewModel.CreateGame += CreateGameViewModel_CreateGame;
 
             CurrentView = createGameViewModel;
-        }
-
-        private void CreateGameViewModel_CreateGame(object? _1, MapGenerationContext context)
-        {
-            _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
-            _model.GameOver += Model_GameOver;
-            _model.NewGame();
-
-            GameViewModel gameViewModel = new(_model);
-
-            CurrentView = gameViewModel;
         }
 
         private async void StartMenuViewModel_LoadingGame(object? _1, string uri)
         {
             try
             {
-                MapGenerationContext context = new();
-
-                _model = new(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
-                _model.GameOver += Model_GameOver;
+                _model = CreateNewGameModel(new());
 
                 await _model.LoadGame(uri);
 
-                GameViewModel gameViewModel = new(_model);
-                CurrentView = gameViewModel;
+                CurrentView = CreateNewGameViewModel(_model);
             }
             catch (Exception ex)
             {
@@ -96,17 +76,24 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void StartMenuViewModel_ExitingGame(object? _1, EventArgs _2)
         {
-            // Calls the MainWindows close method, which is basically the same as pressing the 
             Application.Current.MainWindow?.Close();
         }
+        #endregion
 
-        private void CreateGameViewModel_BackToMainMenu(object? _1, EventArgs _2)
+        #region Create game
+        private void CreateGameViewModel_CreateGame(object? _1, MapGenerationContext context)
+        {
+            _model = CreateNewGameModel(context);
+            CurrentView = CreateNewGameViewModel(_model);
+        }
+
+        private void BackToMainMenu()
         {
             CurrentView = _startMenuViewModel;
         }
         #endregion
 
-        #region Private event methods
+        #region Game
         private void Model_GameOver(object? _1, TransportTycoonEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("Unfortunately, you lost!" + Environment.NewLine +
@@ -124,8 +111,41 @@ namespace TransportTycoon.WPF.ViewModel
                 CurrentView = _startMenuViewModel;
             }
         }
+        #endregion
+        #endregion
 
+        #region Private methods
         private bool WantsToExit() => MessageBox.Show("Are you sure, that you want to exit?", "TransportTycoon", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes;
+
+        /// <summary>
+        /// Creates a new game model based on the provided map generation context.
+        /// This method initializes the game model, sets up event handlers, and starts a new game.
+        /// </summary>
+        /// <param name="context">The context for map generation.</param>
+        /// <returns>A new instance of the GameModel class.</returns>
+        private GameModel CreateNewGameModel(MapGenerationContext context)
+        {
+            var model = new GameModel(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
+            model.GameOver += Model_GameOver;
+            model.NewGame();
+            return model;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the GameViewModel class using the specified game model.
+        /// </summary>
+        /// <remarks>
+        /// The BackToMainMenu event of the created GameViewModel is subscribed to the current
+        /// handler to enable navigation back to the main menu.
+        /// </remarks>
+        /// <param name="model">The GameModel instance that provides the data for the new GameViewModel.</param>
+        /// <returns>A new GameViewModel initialized with the specified game model.</returns>
+        private GameViewModel CreateNewGameViewModel(GameModel model)
+        {
+            var gameViewModel = new GameViewModel(model);
+            gameViewModel.BackToMainMenu += BackToMainMenu;
+            return gameViewModel;
+        }
         #endregion
 
         #region Public method
