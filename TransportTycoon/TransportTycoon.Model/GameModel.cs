@@ -669,8 +669,15 @@ namespace TransportTycoon.Model
         {
             if (SelectedStopFields.Count == 0) return;
 
-            Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
-            if (selectedVehcile is null) return;
+            Vehicle? selectedVehicle = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
+            if (selectedVehicle is null) return;
+
+            if (Map[selectedVehicle.MapX, selectedVehicle.MapY] is not Stop)
+            {
+                Debug.WriteLine("The vehicle can get new route only in the stops");
+                return;
+            }
+
             Debug.WriteLine("Vehicle candiate found at X={0}, Y={1}", x, y);
             Debug.WriteLine("The select stop are located at:");
             foreach (var stop in SelectedStopFields)
@@ -683,7 +690,7 @@ namespace TransportTycoon.Model
             Debug.WriteLine("Done!");
 
             Debug.WriteLine("Assigned prouth with {0} stops to the vehicle.", prouth.Stops.Count);
-            selectedVehcile.Prouth = prouth;
+            selectedVehicle.Prouth = prouth;
 
             Debug.WriteLine("Resetting stop list and inkoving event");
             SelectedStopFields = [];
