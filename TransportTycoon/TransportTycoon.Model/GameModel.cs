@@ -142,6 +142,7 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public Methods
+        #region Persistence
         public async Task SaveGame(string uri)
         {
             List<TileSaveData> tileSaveDatas = [.. _modifiedFields.Select(kv => new TileSaveData()
@@ -263,6 +264,8 @@ namespace TransportTycoon.Model
                     Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
                 });
 
+            RebuildGraph();
+
             data.ModifiedTrees.ForEach(treeData =>
                 {
                     if (Map[treeData.X, treeData.Y] is Terrain terrain)
@@ -301,6 +304,14 @@ namespace TransportTycoon.Model
                 };
                 vehicle.SetCurrentLoad(load);
 
+                var stops = vehicleData.Prouth.Stops
+                .Select(stop => Map[stop.X, stop.Y])
+                .Cast<Stop>()
+                .ToList();
+
+                var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
+                vehicle.Prouth = prouth;
+
                 Vehicles.Add(vehicle);
             });
 
@@ -317,6 +328,7 @@ namespace TransportTycoon.Model
 
             NewGameCreated?.Invoke(this, EventArgs.Empty);
         }
+        #endregion
 
         public void NewGame()
         {
