@@ -61,7 +61,7 @@ namespace TransportTycoon.Model
             {
                 _prouth = value;
                 _currentStopIdx = 0;
-                CurrentRoute = null; 
+                CurrentRoute = null;
             }
         }
         /// <summary>
@@ -381,7 +381,7 @@ namespace TransportTycoon.Model
             {
                 IsLost = true;
                 CurrentRoute = null;
-            }  
+            }
         }
         #endregion
     }

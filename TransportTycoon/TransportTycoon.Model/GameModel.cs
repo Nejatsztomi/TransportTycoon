@@ -601,7 +601,7 @@ namespace TransportTycoon.Model
         {
             if (Map[x, y] is not Stop) return null;
 
-            var vehicleOnStop = Vehicles.FirstOrDefault(v => v.MapX==x  && v.MapY==y);
+            var vehicleOnStop = Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
             if (vehicleOnStop != null) return null;
 
             Vehicle vehicle = type switch
@@ -811,9 +811,9 @@ namespace TransportTycoon.Model
 
             vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
 
-            if (vehicle.IsLost) 
+            if (vehicle.IsLost)
             {
-                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork), Map[vehicle.MapX,vehicle.MapY]);
+                vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork), Map[vehicle.MapX, vehicle.MapY]);
             }
 
             //the vehicle should start
@@ -852,11 +852,11 @@ namespace TransportTycoon.Model
                     VehicleChanged?.Invoke(this, vehicle);
                 }
             }
-            else 
+            else
             {
                 vehicle.RecalculateRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork), Map[vehicle.MapX, vehicle.MapY]);
             }
-            
+
         }
 
         /// <summary>
