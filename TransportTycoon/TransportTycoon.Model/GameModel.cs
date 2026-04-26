@@ -192,7 +192,8 @@ namespace TransportTycoon.Model
 
                     _ => throw new Exception($"Invalid load type for vehicle at ({v.X}, {v.Y})")
                 },
-                CurrentCapacity = v.CurrentCapacity
+                CurrentCapacity = v.CurrentCapacity,
+                Prouth = new(v.Prouth?.Stops.Select(stop => new Coordinate(stop.X, stop.Y)).ToList() ?? [])
             })];
 
             List<BuildingEntitySaveData> buildingsData = [.. Map.BuildingEntities
