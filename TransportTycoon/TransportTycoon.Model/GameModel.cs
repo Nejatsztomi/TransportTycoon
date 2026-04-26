@@ -601,6 +601,9 @@ namespace TransportTycoon.Model
         {
             if (Map[x, y] is not Stop) return null;
 
+            var vehicleOnStop = Vehicles.FirstOrDefault(v => v.MapX==x  && v.MapY==y);
+            if (vehicleOnStop != null) return null;
+
             Vehicle vehicle = type switch
             {
                 VehicleType.Van => new Van(x, y, Direction.Up),
