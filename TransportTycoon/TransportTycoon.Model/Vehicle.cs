@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData;
+﻿using System.Diagnostics;
+using TransportTycoon.MapData;
 using TransportTycoon.Model.Graph;
 
 namespace TransportTycoon.Model
@@ -167,6 +168,7 @@ namespace TransportTycoon.Model
         /// </summary>
         public void StartDriving(List<Edge> route)
         {
+            Debug.WriteLine($"Vehicle {Id} is starting to drive...");
             CurrentRoute = route;
             _currentEdgeIdx = 0;
             _currentTileIdx = 0;
@@ -175,6 +177,7 @@ namespace TransportTycoon.Model
             if (CurrentRoute.Count > 0)
             {
                 _currentEdgeTiles = [.. CurrentRoute[0].Roads];
+                Debug.WriteLine($"Vehicle {Id} route: {string.Join(" -> ", _currentEdgeTiles.Select(e => $"({e.X}, {e.Y})"))}");
             }
         }
 
@@ -194,9 +197,13 @@ namespace TransportTycoon.Model
         /// <param name="pathFinder">The path finder to use for finding the route.</param>
         public void GetNextRoute(IPathFinder pathFinder)
         {
+            Debug.WriteLine($"Vehicle {Id} is getting the next route...");
             if (GetNextStopNodePair() is (Node start, Node end))
             {
                 CurrentRoute = pathFinder.FindPath(start, end);
+                Debug.WriteLineIf(CurrentRoute is null, $"Vehicle {Id} could not find a route from ({start.X}, {start.Y}) to ({end.X}, {end.Y}).");
+                Debug.WriteLineIf(CurrentRoute is not null, $"Vehicle {Id} found a route from ({start.X}, {start.Y}) to ({end.X}, {end.Y}) with {CurrentRoute!.Count} edges.");
+                Debug.WriteLineIf(CurrentRoute is not null, $"Vehicle {Id} route: {string.Join(" -> ", CurrentRoute!.Select(e => $"({e.StartNode.X}, {e.StartNode.Y}) to ({e.EndNode.X}, {e.EndNode.Y})"))}");
             }
             StartDriving(CurrentRoute ?? []);
         }
