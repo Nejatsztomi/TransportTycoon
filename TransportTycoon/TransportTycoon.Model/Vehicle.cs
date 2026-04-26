@@ -205,22 +205,20 @@ namespace TransportTycoon.Model
         /// If it's last stop in the route, it loops over.
         /// </summary>
         /// <param name="pathFinder">The path finder to use for finding the route.</param>
-        public void GetNextRoute(IPathFinder pathFinder)
+        public void GetNextRoute(IPathFinder pathFinder, GhostNodeInjector injector, IField currentTile)
         {
-            if (GetNextStopNodePair() is (Node start, Node end))
+            if (Prouth is null || Prouth.Stops.Count == 0) return;
+
+            //the current destination
+            Node destination = Prouth.Stops[_currentStopIdx];
+
+            //if we are in the same tile as the destination, we can skip to the next stop, and get the route to the next stop, this can happen when we are already at the stop, but we don't have a route yet, or when we are at the stop but we are not exactly on the tile of the stop, so we can consider that we have arrived at the stop and move to the next one.
+            if (currentTile.X == destination.X && currentTile.Y == destination.Y)
             {
-                CurrentRoute = pathFinder.FindPath(start, end);
+                AdvanceProuth();
+                destination = Prouth.Stops[_currentStopIdx];
             }
-            if (CurrentRoute != null && CurrentRoute.Count > 0)
-            {
-                IsLost = false;
-                StartDriving(CurrentRoute);
-            }
-            else
-            {
-                IsLost = true;
-                CurrentRoute = null;
-            }
+            CalculatePathToDestination(destination, pathFinder, injector, currentTile);
         }
 
         /// <summary>
@@ -238,35 +236,7 @@ namespace TransportTycoon.Model
 
             Node destination = Prouth.Stops[_currentStopIdx];
 
-            
-
-            (Node? startNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
-
-            if (startNode is null)
-            {
-                IsLost = true;
-                return;
-            }
-
-            List<Edge>? newRoute = pathFinder.FindPath(startNode, destination);
-
-            if (isGhost)
-            {
-                injector.RemoveGhostNode(startNode);
-            }
-
-            if (newRoute != null && newRoute.Count > 0)
-            {
-                IsLost = false;
-                StartDriving(newRoute);
-            }
-            else
-            {
-                IsLost = true;
-                CurrentRoute = null;
-            }
-
-            
+            CalculatePathToDestination(destination, pathFinder, injector, currentTile);
         }
         #endregion
 
@@ -383,6 +353,35 @@ namespace TransportTycoon.Model
             if (Prouth is null || Prouth.Stops.Count == 0) return;
 
             _currentStopIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
+        }
+        private void CalculatePathToDestination(Node destination, IPathFinder pathFinder, GhostNodeInjector injector, IField currentTile)
+        {
+            (Node? startNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
+
+            if (startNode is null)
+            {
+                IsLost = true;
+                CurrentRoute = null;
+                return;
+            }
+
+            CurrentRoute = pathFinder.FindPath(startNode, destination);
+
+            if (isGhost)
+            {
+                injector.RemoveGhostNode(startNode);
+            }
+
+            if (CurrentRoute != null && CurrentRoute.Count > 0)
+            {
+                IsLost = false;
+                StartDriving(CurrentRoute);
+            }
+            else
+            {
+                IsLost = true;
+                CurrentRoute = null;
+            }  
         }
         #endregion
     }

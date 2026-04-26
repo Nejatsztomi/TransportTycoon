@@ -812,7 +812,7 @@ namespace TransportTycoon.Model
             //the vehicle should start
             if (vehicle.CurrentRoute == null && vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
             {
-                vehicle.GetNextRoute(_pathFinder);
+                vehicle.GetNextRoute(_pathFinder, new GhostNodeInjector(Map, GraphNetwork), Map[vehicle.MapX, vehicle.MapY]);
 
                 if (vehicle.CurrentRoute == null) return;
             }
