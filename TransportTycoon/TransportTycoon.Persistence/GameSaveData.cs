@@ -32,7 +32,8 @@ namespace TransportTycoon.Persistence
         int CurrentX,
         int CurrentY,
         Persistence.LoadType CurrentLoad,
-        int CurrentCapacity
+        int CurrentCapacity,
+        ProuthData Prouth
         );
 
     public readonly record struct BuildingEntitySaveData(
@@ -87,4 +88,13 @@ namespace TransportTycoon.Persistence
         Paper,
         People,
     }
+
+    public readonly record struct ProuthData(
+        List<Coordinate> Stops
+        );
+
+    public readonly record struct Coordinate(
+        int X,
+        int Y
+        );
 }

@@ -1,3 +1,4 @@
+using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Persistence;
 
 namespace TransportTycoon.Test.Persistence
@@ -12,13 +13,20 @@ namespace TransportTycoon.Test.Persistence
             var tempFile = Path.GetTempFileName();
             try
             {
+                var settings = new MapGenerationSettings();
                 var data = new GameSaveData
                 {
+                    MapContextData = new(
+                        width: 10,
+                        height: 10,
+                        seed: 1,
+                        settings: settings
+                    ),
                     GameTime = 1234UL,
                     PlayerBalance = 5678,
                     ModifiedTiles = [new(1, 2, SaveFieldType.Road)],
                     ModifiedTrees = [new(3, 4, 10)],
-                    Vehicles = [new(VehicleType.Van, 5, 6, LoadType.Wheat, 20)],
+                    Vehicles = [new(VehicleType.Van, 5, 6, LoadType.Wheat, 20, new())],
                     BuildingEntities = [new(7, 8, 30, 40)]
                 };
 
@@ -60,8 +68,19 @@ namespace TransportTycoon.Test.Persistence
             var tempFile = Path.GetTempFileName();
             try
             {
-                var data1 = new GameSaveData { GameTime = 1, PlayerBalance = 2 };
-                var data2 = new GameSaveData { GameTime = 3, PlayerBalance = 4 };
+                var settings = new MapGenerationSettings();
+                var data1 = new GameSaveData
+                {
+                    MapContextData = new(10, 10, 1, settings),
+                    GameTime = 1,
+                    PlayerBalance = 2
+                };
+                var data2 = new GameSaveData
+                {
+                    MapContextData = new(10, 10, 1, settings),
+                    GameTime = 3,
+                    PlayerBalance = 4
+                };
 
                 // Act
                 await saveManager.SaveGame(tempFile, data1);

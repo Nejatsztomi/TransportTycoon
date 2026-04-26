@@ -307,7 +307,7 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnExitGame()
         {
-            App.Current.Shutdown();
+            App.Current.MainWindow?.Close();
         }
 
         [RelayCommand]

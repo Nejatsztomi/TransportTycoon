@@ -142,6 +142,7 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Public Methods
+        #region Persistence
         public async Task SaveGame(string uri)
         {
             List<TileSaveData> tileSaveDatas = [.. _modifiedFields.Select(kv => new TileSaveData()
@@ -192,7 +193,8 @@ namespace TransportTycoon.Model
 
                     _ => throw new Exception($"Invalid load type for vehicle at ({v.X}, {v.Y})")
                 },
-                CurrentCapacity = v.CurrentCapacity
+                CurrentCapacity = v.CurrentCapacity,
+                Prouth = new(v.Prouth?.Stops.Select(stop => new Coordinate(stop.X, stop.Y)).ToList() ?? [])
             })];
 
             List<BuildingEntitySaveData> buildingsData = [.. Map.BuildingEntities
@@ -231,6 +233,8 @@ namespace TransportTycoon.Model
             Map.Context = new(data.MapContextData);
             Map.GenerateMap();
 
+            _modifiedFields.Clear();
+
             data.ModifiedTiles.ForEach(tile =>
             {
                 int x = tile.X;
@@ -248,6 +252,7 @@ namespace TransportTycoon.Model
                     SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
                     _ => Map[x, y]
                 };
+                _modifiedFields.Add((x, y), Map[x, y]);
             });
 
             // Make sure roads have correct rotation
@@ -258,6 +263,8 @@ namespace TransportTycoon.Model
                 {
                     Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
                 });
+
+            RebuildGraph();
 
             data.ModifiedTrees.ForEach(treeData =>
                 {
@@ -297,6 +304,14 @@ namespace TransportTycoon.Model
                 };
                 vehicle.SetCurrentLoad(load);
 
+                var stops = vehicleData.Prouth.Stops
+                .Select(stop => Map[stop.X, stop.Y])
+                .Cast<Stop>()
+                .ToList();
+
+                var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
+                vehicle.Prouth = prouth;
+
                 Vehicles.Add(vehicle);
             });
 
@@ -313,6 +328,7 @@ namespace TransportTycoon.Model
 
             NewGameCreated?.Invoke(this, EventArgs.Empty);
         }
+        #endregion
 
         public void NewGame()
         {
