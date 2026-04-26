@@ -22,8 +22,8 @@
                                 <ControlTemplate TargetType="TabItem">
                                     <Border x:Name="border"
                                             Background="{TemplateBinding Background}"
-                                            BorderBrush="#888"
-                                            BorderThickness="1"
+                                            BorderBrush="Black"
+                                            BorderThickness="2"
                                             >
                                         <ContentPresenter x:Name="contentPresenter"
                                                           ContentSource="Header"
@@ -34,7 +34,7 @@
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter TargetName="border" Property="BorderThickness" Value="3"/>
-                                            <Setter TargetName="border" Property="BorderBrush" Value="Black"/>
+                                            <Setter TargetName="border" Property="BorderBrush" Value="Yellow"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -63,23 +63,19 @@
                                       KeyboardNavigation.TabIndex="1"
                                       IsItemsHost="True"
                                       HorizontalAlignment="Center"
-                                      Margin="10"
-                                      />
+                                      Margin="10"/>
 
                             <!-- Elválasztó vonal -->
-                            <Border Grid.Row="1"
-                                    Background="Gray"
-                                    Margin="10,0"
-                                    />
+                            <Border Grid.Row="1" Background="White" Margin="10,0"/>
 
                             <!-- Tartalom -->
                             <Border Grid.Row="2"
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    Padding="{TemplateBinding Padding}"
-                                    >
-                                <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
+                                    Padding="{TemplateBinding Padding}">
+                                
+                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
                             </Border>
                         </Grid>
                     </ControlTemplate>
@@ -90,7 +86,7 @@
                     <TabItem.Background>
                         <ImageBrush ImageSource="/Assets/Images/Terrain/mountain.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
-                    <WrapPanel Margin="15" HorizontalAlignment="Center">
+                    <WrapPanel Margin="14" HorizontalAlignment="Center">
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
@@ -113,7 +109,7 @@
                         <ImageBrush ImageSource="/Assets/Images/Road/road.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
 
-                    <WrapPanel Margin="15" HorizontalAlignment="Center">
+                    <WrapPanel Margin="14" HorizontalAlignment="Center">
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
@@ -149,7 +145,7 @@
                     <TabItem.Background>
                         <ImageBrush ImageSource="/Assets/Images/Vehicle/largeBus.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
-                    <WrapPanel Margin="15" HorizontalAlignment="Center">
+                    <WrapPanel Margin="14" HorizontalAlignment="Center">
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
@@ -171,7 +167,7 @@
                     <TabItem.Background>
                         <ImageBrush ImageSource="/Assets/Images/Buttons/route.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
-                    <WrapPanel Margin="15" HorizontalAlignment="Center">
+                    <WrapPanel Margin="14" HorizontalAlignment="Center">
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
