@@ -41,6 +41,10 @@ namespace TransportTycoon.Model
         /// The current edge's tiles.
         /// </summary>
         private List<IField>? _currentEdgeTiles = null;
+        /// <summary>
+        /// the vehicles Route, which is a list of stops that the vehicle should follow in order. The vehicle will be moving from one stop to the next in the order they are listed in the prouth. When the vehicle reaches the last stop in the prouth, it will loop back to the first stop and continue following the route indefinitely.
+        /// </summary>
+        private Prouth? _prouth;
         #endregion
 
         #region Properties
@@ -50,7 +54,16 @@ namespace TransportTycoon.Model
         public Load? CurrentLoad { get; protected set; }
         public int MaxCapacity { get; protected set; }
         public int CurrentCapacity { get; protected set; }
-        public Prouth? Prouth { get; set; }
+        public Prouth? Prouth
+        {
+            get => _prouth;
+            set
+            {
+                _prouth = value;
+                _currentStopIdx = 0;
+                CurrentRoute = null; 
+            }
+        }
         /// <summary>
         /// The current route of the vehicle, represented as a list of edges.
         /// The route may be null if the vehicle does not have a current route assigned.
@@ -221,7 +234,11 @@ namespace TransportTycoon.Model
         /// <param name="injector">The ghost node injector used to manage temporary nodes during route calculation.</param>
         public void RecalculateRoute(IPathFinder pathFinder, GhostNodeInjector injector, IField currentTile)
         {
-            if (GetNextStopNodePair() is not (Node _, Node end)) return;
+            if (Prouth == null || Prouth.Stops.Count == 0) return;
+
+            Node destination = Prouth.Stops[_currentStopIdx];
+
+            
 
             (Node? startNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
 
@@ -231,7 +248,7 @@ namespace TransportTycoon.Model
                 return;
             }
 
-            List<Edge>? newRoute = pathFinder.FindPath(startNode, end);
+            List<Edge>? newRoute = pathFinder.FindPath(startNode, destination);
 
             if (isGhost)
             {
@@ -246,9 +263,10 @@ namespace TransportTycoon.Model
             else
             {
                 IsLost = true;
+                CurrentRoute = null;
             }
 
-            CurrentRoute = newRoute;
+            
         }
         #endregion
 
