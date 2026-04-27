@@ -264,6 +264,26 @@ namespace TransportTycoon.WPF.View.UserControls
             //InternalGameMapRenderer.SelectedTile = -1;
             //InternalGameMapRenderer.SelectedY = -1;
         }
+
+        /// <summary>
+        /// An eventhandler Middle/Wheel Mouse Button press.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseWheelButtonDown(object? _, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton != MouseButton.Middle) return;
+
+            Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
+
+            (int tileX, int tileY) = GetTileCoordinatesFromMousePosition(screenMousePos);
+
+            if (IsInMapBounds(tileX, tileY))
+            {
+                if (DataContext is GameViewModel viewModel)
+                {
+                    viewModel.OnTileWheelClick(tileX, tileY);
+                }
+            }
+        }
         #endregion
     }
 }

@@ -331,6 +331,12 @@ namespace TransportTycoon.WPF.ViewModel
             await Model.SaveGame(uri);
         }
 
+        [RelayCommand]
+        public void OnTileWheelClick(int x, int y)
+        {
+            var field = Tiles[x, y];
+            CurrentFieldInfo = FieldInfoFactory.Create(field);
+        }
         #endregion
 
         #region Event methods
