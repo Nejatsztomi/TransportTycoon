@@ -152,18 +152,38 @@
                         <ImageBrush ImageSource="/Assets/Images/Icons/vehicle.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
                     <WrapPanel Margin="14" HorizontalAlignment="Center">
-                        <Button Width="50" Height="50"
-                                Margin="8"
-                                Command="{Binding SetSelectedButtonCommand}"
-                                CommandParameter="31"
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Vehicle/smallBus.png" Stretch="Uniform"/>
                         </Button>
-                        <Button Width="50" Height="50"
-                                Margin="8"
-                                Command="{Binding SetSelectedButtonCommand}"
-                                CommandParameter="32"
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Vehicle/largeBus.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Vehicle/smallBus.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
+                                Background="White" 
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Vehicle/largeBus.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50" Margin="74,8,8,8" 
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
+                                Background="White" 
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Vehicle/smallBus.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50"  Margin="8" 
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
                                 Background="White"
                                 BorderBrush="Black" BorderThickness="2">
                             <Image Source="/Assets/Images/Vehicle/largeBus.png" Stretch="Uniform"/>
