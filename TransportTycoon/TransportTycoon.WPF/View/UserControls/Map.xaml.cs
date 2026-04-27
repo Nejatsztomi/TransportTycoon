@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -268,7 +269,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <summary>
         /// An eventhandler Middle/Wheel Mouse Button press.
         /// </summary>
-        private void GameMapRenderer_PreviewMouseWheelButtonDown(object? _, MouseButtonEventArgs e)
+        private void GameMapRenderer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton != MouseButton.Middle) return;
 

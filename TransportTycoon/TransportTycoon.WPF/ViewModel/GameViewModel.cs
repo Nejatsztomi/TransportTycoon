@@ -190,6 +190,12 @@ namespace TransportTycoon.WPF.ViewModel
             MapUpdated?.Invoke();
             UpdateMinimapTile(x, y, ConvertTileToColor(Map[x, y]));
         }
+
+        public void OnTileWheelClick(int x, int y)
+        {
+            var field = Tiles[x, y];
+            CurrentFieldInfo = FieldInfoFactory.Create(field);
+        }
         #endregion
 
         #region Private methods
@@ -329,13 +335,6 @@ namespace TransportTycoon.WPF.ViewModel
 
             var uri = fileDiag.FileName;
             await Model.SaveGame(uri);
-        }
-
-        [RelayCommand]
-        public void OnTileWheelClick(int x, int y)
-        {
-            var field = Tiles[x, y];
-            CurrentFieldInfo = FieldInfoFactory.Create(field);
         }
         #endregion
 
