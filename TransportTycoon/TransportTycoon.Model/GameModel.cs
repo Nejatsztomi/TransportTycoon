@@ -672,12 +672,6 @@ namespace TransportTycoon.Model
             Vehicle? selectedVehicle = Vehicles.Find(v => v.MapX==x && v.MapY==y);
             if (selectedVehicle is null) return;
 
-            if (Map[selectedVehicle.MapX, selectedVehicle.MapY] is not Stop)
-            {
-                Debug.WriteLine("The vehicle can get new route only in the stops");
-                return;
-            }
-
             Debug.WriteLine("Vehicle candiate found at X={0}, Y={1}", x, y);
             Debug.WriteLine("The select stop are located at:");
             foreach (var stop in SelectedStopFields)

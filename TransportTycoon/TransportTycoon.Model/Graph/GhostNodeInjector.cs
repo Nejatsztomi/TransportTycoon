@@ -98,6 +98,8 @@ namespace TransportTycoon.Model.Graph
                 }
 
                 currentTile = _gameTable[nextX, nextY];
+                pathTaken.Add(currentTile);
+
                 if (_graph.GetNodeAt(nextX, nextY) is Node node)
                 {
                     return (node, pathTaken);

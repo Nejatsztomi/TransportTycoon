@@ -60,8 +60,8 @@ namespace TransportTycoon.Model
             set
             {
                 _prouth = value;
-                _currentStopIdx = 0;
-                CurrentRoute = null;
+                //_currentStopIdx = 0;
+                //CurrentRoute = null;
             }
         }
         /// <summary>
