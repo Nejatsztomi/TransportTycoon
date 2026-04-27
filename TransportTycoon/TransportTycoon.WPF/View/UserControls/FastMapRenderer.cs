@@ -437,6 +437,10 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 { VehicleType.SmallBus, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/smallBus.png")) },
                 { VehicleType.BigBus, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/largeBus.png")) },
+                { VehicleType.Pickup, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/pickup.png"))},
+                { VehicleType.Van, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/van.png"))},
+                { VehicleType.Truck, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/truck.png"))},
+                { VehicleType.LiquidTruck, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Vehicle/liquidTruck.png"))},
             };
         }
         #endregion

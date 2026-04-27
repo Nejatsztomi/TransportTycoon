@@ -266,10 +266,10 @@
     <Resource Include="Assets\Images\Trees\tree4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Vehicle\LiquidTruck.png">
+    <Resource Include="Assets\Images\Vehicle\liquidTruck.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Vehicle\Truck.png">
+    <Resource Include="Assets\Images\Vehicle\truck.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Vehicle\largeBus.png">
@@ -305,7 +305,7 @@
     <Resource Include="Assets\Images\Vehicle\largeBusUp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Vehicle\Pickup.png">
+    <Resource Include="Assets\Images\Vehicle\pickup.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Vehicle\smallBus.png">
@@ -329,7 +329,7 @@
     <Resource Include="Assets\Fonts\PressStart2P.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Vehicle\Van.png">
+    <Resource Include="Assets\Images\Vehicle\van.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
