@@ -15,7 +15,7 @@ namespace TransportTycoon.Model
         public Van(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
@@ -40,7 +40,7 @@ namespace TransportTycoon.Model
         public Pickup(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
@@ -65,7 +65,7 @@ namespace TransportTycoon.Model
         public Truck(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 1.5;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
@@ -90,7 +90,7 @@ namespace TransportTycoon.Model
         public LiquidTruck(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
