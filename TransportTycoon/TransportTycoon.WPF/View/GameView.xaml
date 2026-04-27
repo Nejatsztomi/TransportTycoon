@@ -92,7 +92,7 @@
                 <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <RadioButton GroupName="Speed" Command="{Binding EditorModeCommand}" Margin="3,0">
-                            <Image Source="/Assets/Images/Icons/hammer.png" Stretch="Fill"/>
+                            <Image Source="/Assets/Images/Icons/tool.png" Stretch="Fill"/>
                         </RadioButton>
                         <Button Command="{Binding EditorModeCommand}" Margin="3,0">
                             <Image Source="/Assets/Images/Icons/pause.png" Stretch="Fill"/>

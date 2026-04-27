@@ -9,9 +9,10 @@
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Border Background="OrangeRed" BorderBrush="Black" BorderThickness="2">
+
             <TabControl Background="Transparent" BorderThickness="0" SelectedIndex="{Binding SelectedTabIndex}">
 
-                <!-- TabItem-ek stílusa (kiegészítve a fejléc szövegének megjelenítésével) -->
+                <!-- TabItem design -->
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
                         <Setter Property="Width" Value="60"/>
@@ -22,8 +23,8 @@
                                 <ControlTemplate TargetType="TabItem">
                                     <Border x:Name="border"
                                             Background="{TemplateBinding Background}"
-                                            BorderBrush="#888"
-                                            BorderThickness="1"
+                                            BorderBrush="Black"
+                                            BorderThickness="2"
                                             >
                                         <ContentPresenter x:Name="contentPresenter"
                                                           ContentSource="Header"
@@ -34,7 +35,7 @@
                                     <ControlTemplate.Triggers>
                                         <Trigger Property="IsSelected" Value="True">
                                             <Setter TargetName="border" Property="BorderThickness" Value="3"/>
-                                            <Setter TargetName="border" Property="BorderBrush" Value="Black"/>
+                                            <Setter TargetName="border" Property="BorderBrush" Value="Yellow"/>
                                         </Trigger>
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
@@ -43,7 +44,7 @@
                     </Style>
                 </TabControl.Resources>
 
-                <!-- Egyedi Template a vonal hozzáadásához -->
+                <!-- TabControl design -->
                 <TabControl.Template>
                     <ControlTemplate TargetType="TabControl">
                         <Grid>
@@ -63,22 +64,18 @@
                                       KeyboardNavigation.TabIndex="1"
                                       IsItemsHost="True"
                                       HorizontalAlignment="Center"
-                                      Margin="10"
-                                      />
+                                      Margin="10"/>
 
                             <!-- Elválasztó vonal -->
-                            <Border Grid.Row="1"
-                                    Background="Gray"
-                                    Margin="10,0"
-                                    />
+                            <Border Grid.Row="1" Background="White" Margin="10,0"/>
 
                             <!-- Tartalom -->
                             <Border Grid.Row="2"
                                     Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    Padding="{TemplateBinding Padding}"
-                                    >
+                                    Padding="{TemplateBinding Padding}">
+
                                 <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
                             </Border>
                         </Grid>
@@ -88,121 +85,157 @@
                 <!-- TabItem-ek-->
                 <TabItem>
                     <TabItem.Background>
-                        <ImageBrush ImageSource="/Assets/Images/Terrain/mountain.png" Stretch="UniformToFill"/>
+                        <ImageBrush ImageSource="/Assets/Images/Icons/terrain.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
-                    <WrapPanel Margin="15" HorizontalAlignment="Center">
+                    <WrapPanel Margin="14" HorizontalAlignment="Center">
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="11"
-                                >
-                            <Image Source="/Assets/Images/Buttons/minus.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/minus.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="12"
-                                >
-                            <Image Source="/Assets/Images/Buttons/plus.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/plus.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
                 </TabItem>
 
                 <TabItem>
                     <TabItem.Background>
-                        <ImageBrush ImageSource="/Assets/Images/Road/road.png" Stretch="UniformToFill"/>
+                        <ImageBrush ImageSource="/Assets/Images/Icons/hammer.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
-
-                    <WrapPanel Margin="15" HorizontalAlignment="Center">
+                    <WrapPanel Margin="14" HorizontalAlignment="Center">
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="21"
-                                >
-                            <Image Source="/Assets/Images/Road/road.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/road.png" Stretch="UniformToFill"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="22"
-                                >
-                            <Image Source="/Assets/Images/Bridge/yellowBridge.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/bridge.png" Stretch="UniformToFill"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="23"
-                                >
-                            <Image Source="/Assets/Images/Stop/stop.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/stop.png" Stretch="UniformToFill"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="24"
-                                >
-                            <Image Source="/Assets/Images/Buttons/x.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/x.png" Stretch="UniformToFill"/>
                         </Button>
                     </WrapPanel>
                 </TabItem>
 
                 <TabItem>
                     <TabItem.Background>
-                        <ImageBrush ImageSource="/Assets/Images/Vehicle/largeBus.png" Stretch="UniformToFill"/>
+                        <ImageBrush ImageSource="/Assets/Images/Icons/vehicle.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
-                    <WrapPanel Margin="15" HorizontalAlignment="Center">
-                        <Button Width="50" Height="50"
-                                Margin="8"
-                                Command="{Binding SetSelectedButtonCommand}"
-                                CommandParameter="31"
-                                >
-                            <Image Source="/Assets/Images/Vehicle/smallBus.png" Stretch="Uniform"/>
+                    <WrapPanel Margin="14" HorizontalAlignment="Center">
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/pickup.png" Stretch="Uniform"/>
                         </Button>
-                        <Button Width="50" Height="50"
-                                Margin="8"
-                                Command="{Binding SetSelectedButtonCommand}"
-                                CommandParameter="32"
-                                >
-                            <Image Source="/Assets/Images/Vehicle/largeBus.png" Stretch="Uniform"/>
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/van.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/camion.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50" Margin="8"
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
+                                Background="White" 
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/petrolcamion.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50" Margin="74,8,8,8" 
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
+                                Background="White" 
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/smallBus.png" Stretch="Uniform"/>
+                        </Button>
+                        <Button Width="50" Height="50"  Margin="8" 
+                                Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/largeBus.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
                 </TabItem>
 
                 <TabItem>
                     <TabItem.Background>
-                        <ImageBrush ImageSource="/Assets/Images/Buttons/route.png" Stretch="UniformToFill"/>
+                        <ImageBrush ImageSource="/Assets/Images/Icons/line.png" Stretch="UniformToFill"/>
                     </TabItem.Background>
-                    <WrapPanel Margin="15" HorizontalAlignment="Center">
+                    <WrapPanel Margin="14" HorizontalAlignment="Center">
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="41"
-                                >
-                            <Image Source="/Assets/Images/Buttons/route.png" Stretch="UniformToFill"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/route.png" Stretch="UniformToFill"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="42"
-                                >
-                            <Image Source="/Assets/Images/Buttons/pull.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
+                                <Image.RenderTransform>
+                                    <RotateTransform Angle="180"/>
+                                </Image.RenderTransform>
+                            </Image>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="43"
-                                >
-                            <Image Source="/Assets/Images/Buttons/push.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform"/>
                         </Button>
                         <Button Width="50" Height="50"
                                 Margin="8"
                                 Command="{Binding SetSelectedButtonCommand}"
                                 CommandParameter="44"
-                                >
-                            <Image Source="/Assets/Images/Buttons/x.png" Stretch="Uniform"/>
+                                Background="White"
+                                BorderBrush="Black" BorderThickness="2">
+                            <Image Source="/Assets/Images/Icons/x.png" Stretch="Uniform"/>
                         </Button>
                     </WrapPanel>
                 </TabItem>
             </TabControl>
+
         </Border>
     </Grid>
 </UserControl>
