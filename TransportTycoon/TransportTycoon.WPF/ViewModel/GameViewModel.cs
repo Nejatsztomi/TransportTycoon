@@ -161,10 +161,26 @@ namespace TransportTycoon.WPF.ViewModel
                     Model.Destroy(tile.X, tile.Y);
                     break;
                 case 31:
-                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Van);
                     Debug.WriteLine("Vehicle bought!");
                     break;
                 case 32:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Pickup);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 33:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Truck);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 34:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.LiquidTruck);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 35:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 36:
                     Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
                     Debug.WriteLine("Vehicle bought!");
                     break;
