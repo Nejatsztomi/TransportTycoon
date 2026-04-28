@@ -414,6 +414,10 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_GameAdvanced(object? _1, List<Tuple<int, int>> _2)
         {
             MapUpdated?.Invoke();
+            foreach (var (x, y) in _2)
+            {
+                RefreshFieldInfo(x, y);
+            }
         }
 
         partial void OnSelectedTabIndexChanged(int value)
