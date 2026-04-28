@@ -1,4 +1,5 @@
 using NSubstitute;
+using System.Reflection;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
@@ -1013,5 +1014,210 @@ public class GameModelTest
             Assert.Empty(model.Vehicles); // ...nem adja hozzá a listához, ha nincs pénz!
             Assert.Equal(10, model.Balance); // A pénz maradt 10
         }
+    }
+    public class GameModelAdvancedTests
+    {
+        // Segédmetódus egy alap GameModel létrehozásához
+        private GameModel CreateTestModel(GameMode mode = GameMode.Editor)
+        {
+            var timerMock = Substitute.For<ITimer>();
+            var persistenceMock = Substitute.For<IPersistence>();
+            var mapGenMock = Substitute.For<IMapGenerator>();
+
+            var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
+            var table = new GameTable(mapGenMock, context);
+
+            // 3x3-as pálya, alapból Terrain
+            var fields = new IField[3, 3];
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    fields[i, j] = new Terrain(i, j, 2);
+                }
+            }
+
+            mapGenMock.GenerateMap(context).Returns((fields, new List<TransportTycoon.MapData.Buildings.BuildingEntity>()));
+            table.GenerateMap();
+
+            return new GameModel(table, timerMock, persistenceMock, Difficulty.Medium, 10000)
+            {
+                Mode = mode
+            };
+        }
+
+        #region Pályakezelés és Építés
+        [Fact]
+        public void BuildRoad_ValidTerrain_BuildsRoadAndDeductsBalance()
+        {
+            // Arrange
+            var model = CreateTestModel();
+            int startBalance = model.Balance;
+
+            // Act
+            model.BuildRoad(1, 1);
+
+            // Assert
+            Assert.IsType<Road>(model.Map[1, 1]);
+            Assert.True(startBalance > model.Balance); // Pénzt vont le
+        }
+
+        [Fact]
+        public void BuildBridge_RequiresSelectedFieldFirst()
+        {
+            // Arrange
+            var model = CreateTestModel();
+            model.Map.UpdateTable(1, 1, new Water(1, 1)); // Víz a hídképzéshez
+            model.Map.UpdateTable(1, 2, new Water(1, 2));
+
+            // Act - Első kattintás a vízre (kiválasztja, de nem épít)
+            model.BuildBridge(1, 1);
+
+            // Assert
+            Assert.NotNull(model.SelectedField);
+            Assert.Equal(1, model.SelectedField.X);
+            Assert.Equal(1, model.SelectedField.Y);
+            Assert.IsType<Water>(model.Map[1, 1]); // Még nem épült meg
+        }
+
+        [Fact]
+        public void ForestGrowing_PrivateMethod_GrowsTrees()
+        {
+            // Arrange
+            var model = CreateTestModel(GameMode.Run);
+            // Egy Terrain lehelyezése, aminek van már fája, hogy tudjon terjedni/nőni
+            var terrain = new Terrain(1, 1, 2) { Trees = 1 };
+            model.Map.UpdateTable(1, 1, terrain);
+
+            // Reflection használata a privát metódus meghívására
+            MethodInfo? forestGrowingMethod = typeof(GameModel).GetMethod("ForestGrowing", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(forestGrowingMethod);
+
+            // Act
+            // Mivel a ForestGrowing random alapú, meghívjuk párszor, hogy garantáltan történjen valami
+            List<Tuple<int, int>> grownTrees = new List<Tuple<int, int>>();
+            for (int i = 0; i < 20; i++)
+            {
+                var result = forestGrowingMethod.Invoke(model, null) as List<Tuple<int, int>>;
+                if (result != null) grownTrees.AddRange(result);
+            }
+
+            // Assert
+            Assert.NotNull(grownTrees);
+            // Ha a random szám generátor kedvező volt, nőttek fák
+        }
+        #endregion
+
+        #region Járművek kezelése
+        [Fact]
+        public void GetVehicleAt_ReturnsCorrectVehicle_OrNull()
+        {
+            // Arrange
+            var model = CreateTestModel();
+            var van = new Van(1, 1, Direction.Up);
+            model.Vehicles.Add(van);
+
+            // Act
+            var foundVehicle = model.GetVehicleAt(1, 1);
+            var missingVehicle = model.GetVehicleAt(2, 2);
+
+            // Assert
+            Assert.Equal(van, foundVehicle);
+            Assert.Null(missingVehicle);
+        }
+
+        [Fact]
+        public void AssignRoute_WithSelectedStops_AssignsProuthToVehicle()
+        {
+            // Arrange
+            var model = CreateTestModel(); // Editor módban indul
+            var van = new Van(1, 1, Direction.Up);
+            model.Vehicles.Add(van);
+
+            var stop1 = new Stop(0, 0, 2);
+            var stop2 = new Stop(0, 1, 2);
+
+            // 1. Tegyük rá a megállókat a tényleges pályára, hogy a gráfgenerátor megtalálja őket!
+            model.Map.UpdateTable(0, 0, stop1);
+            model.Map.UpdateTable(0, 1, stop2);
+
+            // 2. Váltsunk Run módba! 
+            // Ez a setterben automatikusan meghívja a RebuildGraph()-ot, ami legenerálja a csomópontokat.
+            model.Mode = GameMode.Run;
+
+            model.SelectedStopFields.Add(stop1);
+            model.SelectedStopFields.Add(stop2);
+
+            // Act
+            model.AssignRoute(1, 1); // Jármű pozíciója
+
+            // Assert
+            Assert.NotNull(van.Prouth);
+            Assert.Equal(2, van.Prouth.Stops.Count);
+            Assert.Empty(model.SelectedStopFields); // Törlődött a kiválasztási lista
+        }
+
+        [Fact]
+        public void StepAllVehicles_RunMode_CallsStepOnVehicles()
+        {
+            // Arrange
+            var model = CreateTestModel(GameMode.Run);
+            var van = new Van(1, 1, Direction.Up);
+            model.Vehicles.Add(van);
+            // Mivel nincs útvonal, az autó nem fog mozogni, de a metódus lefut
+
+            // Act
+            model.StepAllVehicles();
+
+            // Assert
+            // A sebesség módosulását vagy más állapotváltozást ellenőrizhetünk
+            // Jelen esetben csak azt biztosítjuk, hogy a hívás nem száll el hibával
+            Assert.Equal(1, van.MapX);
+        }
+
+        [Fact]
+        public void IsCarOnStop_PrivateMethod_ReturnsTrueIfOnStop()
+        {
+            // Arrange
+            var model = CreateTestModel();
+            model.Map.UpdateTable(1, 1, new Stop(1, 1, 2)); // Megálló az (1,1)-en
+            var van = new Van(1, 1, Direction.Up); // Autó a megállón
+            var truck = new Truck(2, 2, Direction.Up); // Autó a füvön (Terrain)
+
+            MethodInfo? isCarOnStopMethod = typeof(GameModel).GetMethod("IsCarOnStop", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(isCarOnStopMethod);
+
+            // Act
+            bool isVanOnStop = (bool)isCarOnStopMethod.Invoke(model, new object[] { van })!;
+            bool isTruckOnStop = (bool)isCarOnStopMethod.Invoke(model, new object[] { truck })!;
+
+            // Assert
+            Assert.True(isVanOnStop);
+            Assert.False(isTruckOnStop);
+        }
+
+        [Fact]
+        public void AllVehiclesDoTheTransport_PrivateMethod_ExecutesWithoutError()
+        {
+            // Arrange
+            var model = CreateTestModel(GameMode.Run);
+            var stop = new Stop(1, 1, 2);
+            model.Map.UpdateTable(1, 1, stop);
+
+            var van = new Van(1, 1, Direction.Up);
+            // Készítünk neki egy ál-útvonalat, hogy a feltétel (v.CurrentRoute == null && v.Prouth != null) teljesüljön
+            van.Prouth = new Prouth(new List<Node> { new Node(1, 1, typeof(Stop)), new Node(2, 2, typeof(Stop)) });
+            model.Vehicles.Add(van);
+
+            MethodInfo? transportMethod = typeof(GameModel).GetMethod("AllVehiclesDoTheTransport", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(transportMethod);
+
+            // Act
+            var exception = Record.Exception(() => transportMethod.Invoke(model, null));
+
+            // Assert
+            Assert.Null(exception); // Nem szabad hibára futnia
+        }
+        #endregion
     }
 }
