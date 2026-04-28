@@ -78,6 +78,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
             model.VehicleChanged += Model_VehicleChanged;
             model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
+            model.ProductionChanged += Model_ProductionChanged;
 
             Tiles = model.Map.Table;
             MinimapImage = new(Width, Height, 96, 96, PixelFormats.Bgra32, null);
@@ -394,6 +395,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             //var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
             //tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
+            RefreshFieldInfo(_2.X, _2.Y);
         }
 
         private void Model_VehicleChanged(object? _1, Vehicle e)
@@ -407,6 +409,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 IField tile = Tiles[x, y];
                 UpdateMinimapTile(x, y, ConvertTileToColor(tile));
+                RefreshFieldInfo(x, y);
             }
         }
 
@@ -415,6 +418,14 @@ namespace TransportTycoon.WPF.ViewModel
         {
             MapUpdated?.Invoke();
             foreach (var (x, y) in _2)
+            {
+                RefreshFieldInfo(x, y);
+            }
+        }
+
+        private void Model_ProductionChanged(object? sender, List<(int, int)> e)
+        {
+            foreach (var (x, y) in e)
             {
                 RefreshFieldInfo(x, y);
             }
