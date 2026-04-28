@@ -378,6 +378,23 @@
                 <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
             </StackPanel>
         </DataTemplate>
+
+        <!-- VEHICLE -->
+        <DataTemplate DataType="{x:Type vm:VehicleFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding TopSpeed, StringFormat=Top Speed: {0}}"/>
+                <TextBlock Text="{Binding CurrentSpeed, StringFormat=Current Speed: {0}}"/>
+                <TextBlock Text="{Binding Direction, StringFormat=Direction: {0}}"/>
+                <TextBlock Text="{Binding CurrentLoad, StringFormat=Current Load: {0}}"/>
+                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Capacity: {0}}"/>
+                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current Capacity: {0}}"/>
+                <TextBlock Text="{Binding Maintance, StringFormat=Maintance: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
     </UserControl.Resources>
     
 </UserControl>
