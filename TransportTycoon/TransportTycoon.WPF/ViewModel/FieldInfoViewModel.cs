@@ -5,6 +5,7 @@ using System.Printing;
 using System.Security.Policy;
 using System.Text;
 using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -39,6 +40,25 @@ namespace TransportTycoon.WPF.ViewModel
         public List<string?> Connections { get; init; } = [];
     }
 
+    public abstract class BuildingBlocksFieldInfoViewModel : FieldInfoViewModel
+    {
+        public int MaxCapacity { get; init; }
+        public int CurrentCapacity { get; init; }
+        public int Productivity { get; init; }
+        public int Scaler { get; init; }
+        public int Offset { get; init; }
+    }
+
+    public class HouseFieldInfoViewModel : BuildingBlocksFieldInfoViewModel { }
+
+    public class SiteFieldInfoViewModel : BuildingBlocksFieldInfoViewModel { }
+
+    public class IndustryFieldInfoViewModel : BuildingBlocksFieldInfoViewModel
+    {
+        public int MaxConsumeCapacity { get; init; }
+        public int ConsumeCapacity { get; init; } 
+    }
+
     public static class FieldInfoFactory
     {
         public static FieldInfoViewModel Create(IField field)
@@ -56,7 +76,7 @@ namespace TransportTycoon.WPF.ViewModel
 
                 Road r => new RoadFieldInfoViewmodel
                 {
-                    Type = "Road",
+                    Type = r.GetType().Name,
                     Height = r.Height,
                     X = r.X,
                     Y = r.Y,
@@ -66,7 +86,7 @@ namespace TransportTycoon.WPF.ViewModel
 
                 IBridge b => new BridgeFieldInfoViewModel
                 {
-                    Type = "Bridge",
+                    Type = b.GetType().Name,
                     Height = b.Height,
                     X = b.X,
                     Y = b.Y,
@@ -77,16 +97,57 @@ namespace TransportTycoon.WPF.ViewModel
 
                 Stop s => new StopFieldInfoViewModel
                 {
-                    Type = "Stop",
+                    Type = s.GetType().Name,
                     Height = s.Height,
                     X = s.X,
                     Y = s.Y,
                     Connections = s.Connections?.Select(c => c.ToString()).ToList() ?? []
                 },
 
+                House h => new HouseFieldInfoViewModel
+                {
+                    Type = h.GetType().Name,
+                    Height = h.Height,
+                    X = h.X,
+                    Y =h.Y,
+                    MaxCapacity = h.BuildingEntity.MaxCapacity,
+                    CurrentCapacity = h.BuildingEntity.CurrentCapacity,
+                    Productivity = h.BuildingEntity.Productivity,
+                    Scaler = h.BuildingEntity.Scaler,
+                    Offset = h.BuildingEntity.Offset
+                },
+
+                ISite s => new SiteFieldInfoViewModel
+                {
+                    Type = s.GetType().Name,
+                    Height = s.Height,
+                    X = s.X,
+                    Y = s.Y,
+                    MaxCapacity = s.BuildingEntity.MaxCapacity,
+                    CurrentCapacity = s.BuildingEntity.CurrentCapacity,
+                    Productivity = s.BuildingEntity.Productivity,
+                    Scaler = s.BuildingEntity.Scaler,
+                    Offset = s.BuildingEntity.Offset
+                },
+
+                IIndustry i => new IndustryFieldInfoViewModel
+                {
+                    Type = i.GetType().Name,
+                    Height = i.Height,
+                    X = i.X,
+                    Y = i.Y,
+                    MaxConsumeCapacity = 0,
+                    ConsumeCapacity = 0,
+                    MaxCapacity = i.BuildingEntity.MaxCapacity,
+                    CurrentCapacity = i.BuildingEntity.CurrentCapacity,
+                    Productivity = i.BuildingEntity.Productivity,
+                    Scaler = i.BuildingEntity.Scaler,
+                    Offset = i.BuildingEntity.Offset
+                },
+
                 _ => new FieldInfoViewModel
                 {
-                    Type = "Water",
+                    Type = field.GetType().Name,
                     Height = field.Height,
                     X = field.X,
                     Y = field.Y
