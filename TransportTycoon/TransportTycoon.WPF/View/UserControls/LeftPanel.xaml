@@ -32,6 +32,42 @@
             </StackPanel>
         </DataTemplate>
 
+        <!-- ROAD -->
+        <DataTemplate DataType="{x:Type vm:RoadFieldInfoViewmodel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding RoadType, StringFormat=Roadtype: {0}}"/>
+                <TextBlock Text="{Binding InCity, StringFormat=InCity: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- BRIDGE -->
+        <DataTemplate DataType="{x:Type vm:BridgeFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding BridgeType, StringFormat=Bridgetype: {0}}"/>
+                <TextBlock Text="{Binding Range, StringFormat=Range: {0}}"/>
+                <TextBlock Text="{Binding SpeedLimit, StringFormat=Speedlimit: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- STOP -->
+        <DataTemplate DataType="{x:Type vm:StopFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding Connections, StringFormat=Connections: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
     </UserControl.Resources>
 
     <Grid>
