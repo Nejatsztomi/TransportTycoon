@@ -45,7 +45,7 @@ namespace TransportTycoon.WPF.ViewModel
         [ObservableProperty]
         private int _selectedButton = 0;
         [ObservableProperty]
-        private FieldInfoViewModel? _currentFieldInfo;//
+        private FieldInfoViewModel? _currentFieldInfo;
         #endregion
 
         #region Events
@@ -192,10 +192,12 @@ namespace TransportTycoon.WPF.ViewModel
             UpdateMinimapTile(x, y, ConvertTileToColor(Map[x, y]));
         }
 
-        public void OnTileWheelClick(int x, int y)//
+        public void OnTileWheelClick(int x, int y)
         {
             var field = Tiles[x, y];
-            CurrentFieldInfo = FieldInfoFactory.Create(field);
+            Vehicle? vehicle = Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
+            if (vehicle is not null) CurrentFieldInfo = FieldInfoFactory.ShowVehicle(vehicle,field);
+            else CurrentFieldInfo = FieldInfoFactory.CreateField(field);
         }
 
         public void RefreshFieldInfo(int x, int y)
@@ -205,7 +207,7 @@ namespace TransportTycoon.WPF.ViewModel
             if (CurrentFieldInfo.X == x && CurrentFieldInfo.Y == y)
             {
                 var field = Tiles[x, y];
-                CurrentFieldInfo = FieldInfoFactory.Create(field);
+                CurrentFieldInfo = FieldInfoFactory.CreateField(field);
             }
         }
         #endregion

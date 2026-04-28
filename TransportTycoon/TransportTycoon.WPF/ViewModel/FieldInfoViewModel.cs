@@ -6,6 +6,7 @@ using System.Security.Policy;
 using System.Text;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
+using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -59,9 +60,21 @@ namespace TransportTycoon.WPF.ViewModel
         public int ConsumeCapacity { get; init; } 
     }
 
+    public class VehicleFieldInfoViewModel : FieldInfoViewModel
+    {
+        public double TopSpeed { get; init; }
+        public double CurrentSpeed { get; init; }
+        public string Direction { get; init; } = "";
+        public List<string>? AcceptedLoads { get; init; } = [];
+        public Load? CurrentLoad { get; init; }
+        public int MaxCapacity { get; init; }
+        public int CurrentCapacity { get; init; }
+        public int Maintance { get; init; }
+    }
+
     public static class FieldInfoFactory
     {
-        public static FieldInfoViewModel Create(IField field)
+        public static FieldInfoViewModel CreateField(IField field)
         {
             return field switch
             {
@@ -152,6 +165,24 @@ namespace TransportTycoon.WPF.ViewModel
                     X = field.X,
                     Y = field.Y
                 }
+            };
+        }
+        public static FieldInfoViewModel ShowVehicle(Vehicle v,IField f)
+        {
+            return new VehicleFieldInfoViewModel
+            {
+                Type = v.GetType().Name,
+                Height = f.Height,
+                X = v.MapX,
+                Y = v.MapY,
+                TopSpeed = v.TopSpeed,
+                CurrentSpeed = v.CurrentSpeed,
+                Direction = v.Direction.ToString(),
+                AcceptedLoads = v.AcceptedGoods?.Select(l => l.ToString()).ToList() ?? [],
+                CurrentLoad = v.CurrentLoad,
+                MaxCapacity = v.MaxCapacity,
+                CurrentCapacity = v.CurrentCapacity,
+                Maintance = v.Maintance
             };
         }
     }
