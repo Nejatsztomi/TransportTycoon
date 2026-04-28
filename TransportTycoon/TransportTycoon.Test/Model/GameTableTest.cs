@@ -227,4 +227,242 @@ namespace TransportTycoon.Test.Model
         }
         #endregion
     }
+    public class GameTableBridgeAndStopTests
+    {
+        // Segédmetódus a tesztpálya gyors felépítéséhez
+        private GameTable CreateTestTable(int width = 5, int height = 5, int defaultHeight = 2)
+        {
+            var mapGenMock = Substitute.For<IMapGenerator>();
+            var context = new MapGenerationContext(width, height, 1, new MapGenerationSettings());
+            var table = new GameTable(mapGenMock, context);
+
+            var fields = new IField[height, width];
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    fields[i, j] = new Terrain(i, j, defaultHeight);
+                }
+            }
+
+            mapGenMock.GenerateMap(context).Returns((fields, new List<BuildingEntity>()));
+            table.GenerateMap();
+            return table;
+        }
+
+        #region CreateShortBridge Tesztek
+        [Fact]
+        public void CreateShortBridge_OutOfBounds_ReturnsZero()
+        {
+            var table = CreateTestTable();
+            var changedFields = new List<(int, int)>();
+
+            // Szélén lévő mező, kilépne a tömbből
+            int cost = table.CreateShortBridge(0, 0, ref changedFields);
+            Assert.Equal(0, cost);
+        }
+
+        [Fact]
+        public void CreateShortBridge_BetweenHorizontalInfrastructures_CreatesHorizontalBridge()
+        {
+            var table = CreateTestTable();
+            var changedFields = new List<(int, int)>();
+            table.UpdateTable(1, 0, new Road(1, 0, RoadType.Horizontal, 1));
+            table.UpdateTable(1, 2, new Road(1, 2, RoadType.Horizontal, 1));
+
+            table.CreateShortBridge(1, 1, ref changedFields);
+
+            Assert.IsType<YellowBridge>(table[1, 1]);
+            Assert.Equal(BridgeType.HorizontalYellowBridge, ((YellowBridge)table[1, 1]).BridgeType);
+        }
+
+        [Fact]
+        public void CreateShortBridge_BetweenVerticalInfrastructures_CreatesVerticalBridge()
+        {
+            var table = CreateTestTable();
+            var changedFields = new List<(int, int)>();
+            table.UpdateTable(0, 1, new Road(0, 1, RoadType.Vertical, 1));
+            table.UpdateTable(2, 1, new Road(2, 1, RoadType.Vertical, 1));
+
+            table.CreateShortBridge(1, 1, ref changedFields);
+
+            Assert.IsType<YellowBridge>(table[1, 1]);
+            Assert.Equal(BridgeType.VerticalYellowBridge, ((YellowBridge)table[1, 1]).BridgeType);
+        }
+
+        [Fact]
+        public void CreateShortBridge_BetweenHorizontalPlains_CreatesHorizontalBridge()
+        {
+            var table = CreateTestTable(5, 5, 1); // Height 1 = Plain Terrain
+            var changedFields = new List<(int, int)>();
+
+            table.CreateShortBridge(1, 1, ref changedFields);
+
+            Assert.IsType<YellowBridge>(table[1, 1]);
+            Assert.Equal(BridgeType.HorizontalYellowBridge, ((YellowBridge)table[1, 1]).BridgeType);
+        }
+
+        [Fact]
+        public void CreateShortBridge_BetweenVerticalPlains_CreatesVerticalBridge()
+        {
+            var table = CreateTestTable();
+            var changedFields = new List<(int, int)>();
+            table.UpdateTable(0, 1, new Terrain(0, 1, 1)); // Plain
+            table.UpdateTable(2, 1, new Terrain(2, 1, 1)); // Plain
+            // A szélsőket direkt nem tesszük Plain-re, hogy a Vertical ágra fusson
+
+            table.CreateShortBridge(1, 1, ref changedFields);
+
+            Assert.IsType<YellowBridge>(table[1, 1]);
+            Assert.Equal(BridgeType.VerticalYellowBridge, ((YellowBridge)table[1, 1]).BridgeType);
+        }
+        #endregion
+
+        #region DestroyBridge Tesztek
+        [Fact]
+        public void DestroyBridge_NotABridge_DoesNothing()
+        {
+            var table = CreateTestTable();
+            var changedFields = new List<(int, int)>();
+
+            table.DestroyBridge(1, 1, ref changedFields); // Terrain van ott alapból
+
+            Assert.Empty(changedFields);
+            Assert.IsType<Terrain>(table[1, 1]);
+        }
+
+        [Fact]
+        public void DestroyBridge_HorizontalBridge_DestroysAndUpdatesRoads()
+        {
+            var table = CreateTestTable();
+            var changedFields = new List<(int, int)>();
+
+            // Építünk egy 3 hosszú hidat
+            table.UpdateTable(2, 1, new YellowBridge(2, 1, BridgeType.HorizontalYellowBridge, 1));
+            table.UpdateTable(2, 2, new YellowBridge(2, 2, BridgeType.HorizontalYellowBridge, 1));
+            table.UpdateTable(2, 3, new YellowBridge(2, 3, BridgeType.HorizontalYellowBridge, 1));
+            table.UpdateTable(2, 0, new Road(2, 0, RoadType.Horizontal, 1));
+            table.UpdateTable(2, 4, new Road(2, 4, RoadType.Horizontal, 1));
+
+            // Romboljuk le a közepén
+            table.DestroyBridge(2, 2, ref changedFields);
+
+            // A híd elemeinek vízzé kellett változniuk
+            Assert.IsType<Water>(table[2, 1]);
+            Assert.IsType<Water>(table[2, 2]);
+            Assert.IsType<Water>(table[2, 3]);
+
+            // Az utakat is frissítenie kellett a széleken
+            Assert.Contains((2, 0), changedFields);
+            Assert.Contains((2, 4), changedFields);
+        }
+
+        [Fact]
+        public void DestroyBridge_VerticalBridge_DestroysAndUpdatesRoads()
+        {
+            var table = CreateTestTable();
+            var changedFields = new List<(int, int)>();
+
+            // Építünk egy vertikális hidat
+            table.UpdateTable(1, 2, new GreenBridge(1, 2, BridgeType.VerticalGreenBridge, 1));
+            table.UpdateTable(2, 2, new GreenBridge(2, 2, BridgeType.VerticalGreenBridge, 1));
+            table.UpdateTable(3, 2, new GreenBridge(3, 2, BridgeType.VerticalGreenBridge, 1));
+            table.UpdateTable(0, 2, new Road(0, 2, RoadType.Vertical, 1));
+            table.UpdateTable(4, 2, new Road(4, 2, RoadType.Vertical, 1));
+
+            // Romboljuk le a közepén
+            table.DestroyBridge(2, 2, ref changedFields);
+
+            // A híd elemeinek vízzé kellett változniuk
+            Assert.IsType<Water>(table[1, 2]);
+            Assert.IsType<Water>(table[2, 2]);
+            Assert.IsType<Water>(table[3, 2]);
+
+            // Az utakat is frissítenie kellett a széleken
+            Assert.Contains((0, 2), changedFields);
+            Assert.Contains((4, 2), changedFields);
+        }
+        #endregion
+
+        #region StopEnvironment Tesztek
+        [Fact]
+        public void StopEnvironment_NeighbourIsRoad_CreatesStopAndReturnsTrue()
+        {
+            var table = CreateTestTable();
+            table.UpdateTable(0, 1, new Road(0, 1, RoadType.Horizontal, 2));
+
+            bool result = table.StopEnvironment(1, 1);
+
+            Assert.True(result);
+            Assert.IsType<Stop>(table[1, 1]);
+        }
+
+        [Fact]
+        public void StopEnvironment_BuildingAbove_CreatesStopAndConnects()
+        {
+            var table = CreateTestTable();
+            var mockBlock = Substitute.For<IBuildingBlocks>();
+            mockBlock.Height.Returns(2);
+            table.UpdateTable(0, 1, mockBlock); // Felül (x-1)
+
+            bool result = table.StopEnvironment(1, 1);
+
+            Assert.True(result);
+            Assert.Contains(mockBlock, ((Stop)table[1, 1]).Connenctions!);
+        }
+
+        [Fact]
+        public void StopEnvironment_BuildingRight_CreatesStopAndConnects()
+        {
+            var table = CreateTestTable();
+            var mockBlock = Substitute.For<IBuildingBlocks>();
+            mockBlock.Height.Returns(2);
+            table.UpdateTable(1, 2, mockBlock); // Jobbra (y+1)
+
+            bool result = table.StopEnvironment(1, 1);
+
+            Assert.True(result);
+            Assert.Contains(mockBlock, ((Stop)table[1, 1]).Connenctions!);
+        }
+
+        [Fact]
+        public void StopEnvironment_BuildingBelow_CreatesStopAndConnects()
+        {
+            var table = CreateTestTable();
+            var mockBlock = Substitute.For<IBuildingBlocks>();
+            mockBlock.Height.Returns(2);
+            table.UpdateTable(2, 1, mockBlock); // Alul (x+1)
+
+            bool result = table.StopEnvironment(1, 1);
+
+            Assert.True(result);
+            Assert.Contains(mockBlock, ((Stop)table[1, 1]).Connenctions!);
+        }
+
+        [Fact]
+        public void StopEnvironment_BuildingLeft_CreatesStopAndConnects()
+        {
+            var table = CreateTestTable();
+            var mockBlock = Substitute.For<IBuildingBlocks>();
+            mockBlock.Height.Returns(2);
+            table.UpdateTable(1, 0, mockBlock); // Balra (y-1)
+
+            bool result = table.StopEnvironment(1, 1);
+
+            Assert.True(result);
+            Assert.Contains(mockBlock, ((Stop)table[1, 1]).Connenctions!);
+        }
+
+        [Fact]
+        public void StopEnvironment_NoValidNeighbours_ReturnsFalse()
+        {
+            var table = CreateTestTable(); // Minden szomszéd üres Terrain
+
+            bool result = table.StopEnvironment(1, 1);
+
+            Assert.False(result);
+            Assert.IsNotType<Stop>(table[1, 1]); // Nem épül meg
+        }
+        #endregion
+    }
 }
