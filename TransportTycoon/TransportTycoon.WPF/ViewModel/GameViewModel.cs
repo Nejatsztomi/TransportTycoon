@@ -191,10 +191,21 @@ namespace TransportTycoon.WPF.ViewModel
             UpdateMinimapTile(x, y, ConvertTileToColor(Map[x, y]));
         }
 
-        public void OnTileWheelClick(int x, int y)
+        public void OnTileWheelClick(int x, int y)//
         {
             var field = Tiles[x, y];
             CurrentFieldInfo = FieldInfoFactory.Create(field);
+        }
+
+        public void RefreshFieldInfo(int x, int y)
+        {
+            if (CurrentFieldInfo is null) return;
+
+            if (CurrentFieldInfo.X == x && CurrentFieldInfo.Y == y)
+            {
+                var field = Tiles[x, y];
+                CurrentFieldInfo = FieldInfoFactory.Create(field);
+            }
         }
         #endregion
 
