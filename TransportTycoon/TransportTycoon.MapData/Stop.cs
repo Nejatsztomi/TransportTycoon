@@ -9,7 +9,7 @@ namespace TransportTycoon.MapData
         public int Y { get; set; }
         public int Height { get; set; }
         public readonly int Price => 200;
-        public List<IBuildingBlocks>? Connenctions { get; private set; } = [];
+        public List<IBuildingBlocks>? Connections { get; private set; } = [];
         #endregion
 
         #region Constructors
@@ -30,8 +30,8 @@ namespace TransportTycoon.MapData
         public readonly List<IBuildingBlocks> ShowWhatTheBuildingsCanGet(List<LoadType> vehicleAcceptedGoods)
         {
             List<IBuildingBlocks> buildings = [];
-            if (Connenctions is null) return buildings;
-            foreach (var building in Connenctions)
+            if (Connections is null) return buildings;
+            foreach (var building in Connections)
             {
                 if (building.BuildingEntity is CityEntity)
                 {
@@ -65,8 +65,8 @@ namespace TransportTycoon.MapData
         public readonly List<IBuildingBlocks> ShowWhatTheBuildingsCanGive(List<LoadType> vehicleAcceptedGoods)
         {
             List<IBuildingBlocks> buildings = [];
-            if (Connenctions is null) return buildings;
-            foreach (var building in Connenctions)
+            if (Connections is null) return buildings;
+            foreach (var building in Connections)
             {
                 LoadType type = building.BuildingEntity.GetProvideLoad().LoadType;
                 if (vehicleAcceptedGoods.Contains(type))
@@ -148,7 +148,7 @@ namespace TransportTycoon.MapData
         //}
         public readonly void SetBuildingBlocks(IBuildingBlocks buildingBlock)
         {
-            Connenctions?.Add(buildingBlock);
+            Connections?.Add(buildingBlock);
         }
         #endregion
     }
