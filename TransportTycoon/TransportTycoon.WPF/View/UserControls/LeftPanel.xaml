@@ -9,67 +9,6 @@
              d:DesignHeight="450" d:DesignWidth="800"
              xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel">
 
-    <UserControl.Resources>
-
-        <!-- BASE -->
-        <DataTemplate DataType="{x:Type vm:FieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- TERRAIN -->
-        <DataTemplate DataType="{x:Type vm:TerrainFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding TreeCount, StringFormat=Trees: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- ROAD -->
-        <DataTemplate DataType="{x:Type vm:RoadFieldInfoViewmodel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding RoadType, StringFormat=Roadtype: {0}}"/>
-                <TextBlock Text="{Binding InCity, StringFormat=InCity: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- BRIDGE -->
-        <DataTemplate DataType="{x:Type vm:BridgeFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding BridgeType, StringFormat=Bridgetype: {0}}"/>
-                <TextBlock Text="{Binding Range, StringFormat=Range: {0}}"/>
-                <TextBlock Text="{Binding SpeedLimit, StringFormat=Speedlimit: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- STOP -->
-        <DataTemplate DataType="{x:Type vm:StopFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding Connections, StringFormat=Connections: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-    </UserControl.Resources>
-
     <Grid>
         <Border Background="OrangeRed" BorderBrush="Black" BorderThickness="2">
 
@@ -334,4 +273,111 @@
 
         </Border>
     </Grid>
+
+    <UserControl.Resources>
+        <!-- BASE -->
+        <DataTemplate DataType="{x:Type vm:FieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- TERRAIN -->
+        <DataTemplate DataType="{x:Type vm:TerrainFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding TreeCount, StringFormat=Trees: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- ROAD -->
+        <DataTemplate DataType="{x:Type vm:RoadFieldInfoViewmodel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding RoadType, StringFormat=Roadtype: {0}}"/>
+                <TextBlock Text="{Binding InCity, StringFormat=InCity: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- BRIDGE -->
+        <DataTemplate DataType="{x:Type vm:BridgeFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding BridgeType, StringFormat=Bridgetype: {0}}"/>
+                <TextBlock Text="{Binding Range, StringFormat=Range: {0}}"/>
+                <TextBlock Text="{Binding SpeedLimit, StringFormat=Speedlimit: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- STOP -->
+        <DataTemplate DataType="{x:Type vm:StopFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding Connections, StringFormat=Connections: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- HOUSE -->
+        <DataTemplate DataType="{x:Type vm:HouseFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
+                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
+                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
+                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
+                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- SITE -->
+        <DataTemplate DataType="{x:Type vm:SiteFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
+                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
+                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
+                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
+                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- INDUSTRY -->
+        <DataTemplate DataType="{x:Type vm:IndustryFieldInfoViewModel}">
+            <StackPanel>
+                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
+                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
+                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <TextBlock Text="{Binding MaxConsumeCapacity, StringFormat=Max consume capacity: {0}}"/>
+                <TextBlock Text="{Binding ConsumeCapacity, StringFormat=Consume capacity: {0}}"/>
+                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
+                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
+                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
+                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
+                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
+    
 </UserControl>
