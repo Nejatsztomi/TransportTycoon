@@ -23,7 +23,7 @@ namespace TransportTycoon.WPF.ViewModel
         public int TreeCount { get; init; }
     }
 
-    public class RoadFieldInfoViewmodel : FieldInfoViewModel
+    public class RoadFieldInfoViewModel : FieldInfoViewModel
     {
         public string RoadType { get; init; } = "";
         public bool InCity { get; init; }
@@ -87,7 +87,7 @@ namespace TransportTycoon.WPF.ViewModel
                     TreeCount = t.Trees
                 },
 
-                Road r => new RoadFieldInfoViewmodel
+                Road r => new RoadFieldInfoViewModel
                 {
                     Type = r.GetType().Name,
                     Height = r.Height,
