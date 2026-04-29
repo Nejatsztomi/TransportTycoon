@@ -178,7 +178,7 @@ namespace TransportTycoon.WPF.ViewModel
                 TopSpeed = v.TopSpeed * 100,
                 CurrentSpeed = v.CurrentSpeed * 100,
                 Direction = v.Direction.ToString(),
-                AcceptedLoads = v.AcceptedGoods?.Select(l => l.ToString()).ToList() ?? [],
+                AcceptedLoads = v.AcceptedGoods?.Select(l => l.GetType().Name).ToList() ?? [],
                 CurrentLoad = v.CurrentLoad,
                 MaxCapacity = v.MaxCapacity,
                 CurrentCapacity = v.CurrentCapacity,

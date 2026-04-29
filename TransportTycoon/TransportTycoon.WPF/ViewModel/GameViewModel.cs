@@ -38,6 +38,7 @@ namespace TransportTycoon.WPF.ViewModel
         public IField[,] Tiles { get; }
         public WriteableBitmap MinimapImage { get; set; }
         public IField? SelectedField => Model.SelectedField;
+        public Vehicle? ShownVehicle { get; private set; }
         #endregion
 
         [ObservableProperty]
@@ -195,14 +196,20 @@ namespace TransportTycoon.WPF.ViewModel
         public void OnTileWheelClick(int x, int y)
         {
             var field = Tiles[x, y];
-            Vehicle? vehicle = Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
-            if (vehicle is not null) CurrentFieldInfo = FieldInfoFactory.ShowVehicle(vehicle,field);
+            ShownVehicle = Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
+            if (ShownVehicle is not null) CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle,field);
             else CurrentFieldInfo = FieldInfoFactory.CreateField(field);
         }
 
         public void RefreshFieldInfo(int x, int y)
         {
             if (CurrentFieldInfo is null) return;
+
+            if(ShownVehicle is not null)
+            {
+                CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle, Tiles[ShownVehicle.MapX,ShownVehicle.MapY]);
+                return;
+            }
 
             if (CurrentFieldInfo.X == x && CurrentFieldInfo.Y == y)
             {
@@ -403,6 +410,7 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_VehicleChanged(object? _1, Vehicle e)
         {
             OnPropertyChanged(nameof(Vehicles));
+            if(ShownVehicle is not null) RefreshFieldInfo(ShownVehicle.MapX, ShownVehicle.MapY);
         }
 
         private void Model_InfrastructureBuilt(object? _1, List<(int X, int Y)> changedFields)
