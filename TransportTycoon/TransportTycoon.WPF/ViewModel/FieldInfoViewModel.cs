@@ -57,7 +57,7 @@ namespace TransportTycoon.WPF.ViewModel
     public class IndustryFieldInfoViewModel : BuildingBlocksFieldInfoViewModel
     {
         public int MaxConsumeCapacity { get; init; }
-        public int ConsumeCapacity { get; init; } 
+        public int ConsumeCapacity { get; init; }
     }
 
     public class VehicleFieldInfoViewModel : FieldInfoViewModel
@@ -122,7 +122,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Type = h.GetType().Name,
                     Height = h.Height,
                     X = h.X,
-                    Y =h.Y,
+                    Y = h.Y,
                     MaxCapacity = h.BuildingEntity.MaxCapacity,
                     CurrentCapacity = h.BuildingEntity.CurrentCapacity,
                     Productivity = h.BuildingEntity.Productivity,
@@ -167,7 +167,7 @@ namespace TransportTycoon.WPF.ViewModel
                 }
             };
         }
-        public static FieldInfoViewModel ShowVehicle(Vehicle v,IField f)
+        public static FieldInfoViewModel ShowVehicle(Vehicle v, IField f)
         {
             return new VehicleFieldInfoViewModel
             {

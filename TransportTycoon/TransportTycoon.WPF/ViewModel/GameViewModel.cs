@@ -197,7 +197,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             var field = Tiles[x, y];
             ShownVehicle = Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
-            if (ShownVehicle is not null) CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle,field);
+            if (ShownVehicle is not null) CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle, field);
             else CurrentFieldInfo = FieldInfoFactory.CreateField(field);
         }
 
@@ -205,9 +205,9 @@ namespace TransportTycoon.WPF.ViewModel
         {
             if (CurrentFieldInfo is null) return;
 
-            if(ShownVehicle is not null)
+            if (ShownVehicle is not null)
             {
-                CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle, Tiles[ShownVehicle.MapX,ShownVehicle.MapY]);
+                CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle, Tiles[ShownVehicle.MapX, ShownVehicle.MapY]);
                 return;
             }
 
@@ -410,7 +410,7 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_VehicleChanged(object? _1, Vehicle e)
         {
             OnPropertyChanged(nameof(Vehicles));
-            if(ShownVehicle is not null) RefreshFieldInfo(ShownVehicle.MapX, ShownVehicle.MapY);
+            if (ShownVehicle is not null) RefreshFieldInfo(ShownVehicle.MapX, ShownVehicle.MapY);
         }
 
         private void Model_InfrastructureBuilt(object? _1, List<(int X, int Y)> changedFields)
