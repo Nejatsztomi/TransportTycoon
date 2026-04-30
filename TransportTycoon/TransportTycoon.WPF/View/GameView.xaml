@@ -16,7 +16,7 @@
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Background="#E2D2AF">
         <usercontrols:PauseMenu x:Name="PauseMenuOverlay"
              Visibility="{Binding IsPaused, Converter={StaticResource BoolToVis}}"
              Panel.ZIndex="100"
@@ -92,7 +92,7 @@
                 <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
                         <RadioButton GroupName="Speed" Command="{Binding EditorModeCommand}" Margin="3,0">
-                            <Image Source="/Assets/Images/Icons/hammer.png" Stretch="Fill"/>
+                            <Image Source="/Assets/Images/Icons/tool.png" Stretch="Fill"/>
                         </RadioButton>
                         <Button Command="{Binding EditorModeCommand}" Margin="3,0">
                             <Image Source="/Assets/Images/Icons/pause.png" Stretch="Fill"/>
@@ -124,14 +124,14 @@
                 <usercontrols:Map x:Name="MainMapRenderer"
                               ViewModel="{Binding}"
                               Grid.Column="2"
-                              />
+                              BorderBrush="Black" BorderThickness="2"/>
                 <usercontrols:MinimapControl
-                Grid.Column="2"
-                Margin="10"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Top"
-                TargetRenderer="{Binding GameMapRenderer, ElementName=MainMapRenderer}"
-                />
+                              Grid.Column="2"
+                              Margin="10"
+                              BorderBrush="Black" BorderThickness="2"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Top"
+                              TargetRenderer="{Binding GameMapRenderer, ElementName=MainMapRenderer}"/>
             </Grid>
         </DockPanel>
     </Grid>

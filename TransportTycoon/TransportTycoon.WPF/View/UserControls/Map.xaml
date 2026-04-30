@@ -23,6 +23,7 @@
                                       PreviewMouseWheel="GameMapRenderer_PreviewMouseWheel"
                                       PreviewMouseLeftButtonDown="GameMapRenderer_PreviewMouseLeftButtonDown"
                                       PreviewMouseLeftButtonUp="GameMapRenderer_PreviewMouseLeftButtonUp"
+                                      PreviewMouseDown="GameMapRenderer_PreviewMouseDown"
                                       />
     </Grid>
 </UserControl>

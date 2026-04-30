@@ -11,16 +11,15 @@ namespace TransportTycoon.Model
 
     public sealed class Van : Transport
     {
-        #region Constructor
+        #region Constructor 
         public Van(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Van;
-            //TODO: kitölteni az acceptedGoods listát
             AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
             //modifiable fields
@@ -41,12 +40,11 @@ namespace TransportTycoon.Model
         public Pickup(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Pickup;
-            //TODO: kitölteni az acceptedGoods listát
             AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
             //modifiable fields
@@ -67,12 +65,11 @@ namespace TransportTycoon.Model
         public Truck(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 1.5;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
             Type = VehicleType.Truck;
-            //TODO: kitölteni az acceptedGoods listát
             AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
             //modifiable fields
@@ -93,12 +90,11 @@ namespace TransportTycoon.Model
         public LiquidTruck(int x, int y, Direction direction, Prouth route = null!)
         {
             //fixed fields
-            TopSpeed = 100;
+            TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
             Maintance = 100;
             Type = VehicleType.LiquidTruck;
-            //TODO: kitölteni az acceptedGoods listát
             AcceptedGoods = [LoadType.Oil];
 
             //modifiable fields

@@ -117,6 +117,7 @@ namespace TransportTycoon.Model
         public event EventHandler<(int, int)>? SelectedFieldChanged;
         public event EventHandler<Vehicle>? VehicleChanged;
         public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;
+        public event EventHandler<List<(int, int)>>? ProductionChanged;
         #endregion
 
         #region Constructor
@@ -921,18 +922,24 @@ namespace TransportTycoon.Model
 
         private void AllProduction()
         {
+            List<(int, int)> productionChanged = [];
             HashSet<BuildingEntity> buildingEntities = [];
             for (int i = 0; i < Map.Height; i++)
             {
                 for (int j = 0; j < Map.Width; j++)
                 {
-                    if (Map[i, j] is IBuildingBlocks b) buildingEntities.Add(b.BuildingEntity);
+                    if (Map[i, j] is IBuildingBlocks b)
+                    {
+                        buildingEntities.Add(b.BuildingEntity);
+                        productionChanged.Add((i, j));
+                    }
                 }
             }
             foreach (var item in buildingEntities)
             {
                 item.Production();
             }
+            ProductionChanged?.Invoke(this, productionChanged);
         }
         #endregion
 

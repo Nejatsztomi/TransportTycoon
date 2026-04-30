@@ -37,12 +37,15 @@ namespace TransportTycoon.WPF.ViewModel
         public IField[,] Tiles { get; }
         public WriteableBitmap MinimapImage { get; set; }
         public IField? SelectedField => Model.SelectedField;
+        public Vehicle? ShownVehicle { get; private set; }
         #endregion
 
         [ObservableProperty]
         private int _selectedTabIndex = 0;
         [ObservableProperty]
         private int _selectedButton = 0;
+        [ObservableProperty]
+        private FieldInfoViewModel? _currentFieldInfo;
         #endregion
 
         #region Events
@@ -82,6 +85,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
             model.VehicleChanged += Model_VehicleChanged;
             model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
+            model.ProductionChanged += Model_ProductionChanged;
 
             Tiles = model.Map.Table;
             MinimapImage = new(Width, Height, 96, 96, PixelFormats.Bgra32, null);
@@ -167,10 +171,26 @@ namespace TransportTycoon.WPF.ViewModel
                     Model.Destroy(tile.X, tile.Y);
                     break;
                 case 31:
-                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Van);
                     Debug.WriteLine("Vehicle bought!");
                     break;
                 case 32:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Pickup);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 33:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Truck);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 34:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.LiquidTruck);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 35:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 36:
                     Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
                     Debug.WriteLine("Vehicle bought!");
                     break;
@@ -193,6 +213,31 @@ namespace TransportTycoon.WPF.ViewModel
             }
             MapUpdated?.Invoke();
             UpdateMinimapTile(x, y, ConvertTileToColor(Map[x, y]));
+        }
+
+        public void OnTileWheelClick(int x, int y)
+        {
+            var field = Tiles[x, y];
+            ShownVehicle = Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
+            if (ShownVehicle is not null) CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle, field);
+            else CurrentFieldInfo = FieldInfoFactory.CreateField(field);
+        }
+
+        public void RefreshFieldInfo(int x, int y)
+        {
+            if (CurrentFieldInfo is null) return;
+
+            if (ShownVehicle is not null)
+            {
+                CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle, Tiles[ShownVehicle.MapX, ShownVehicle.MapY]);
+                return;
+            }
+
+            if (CurrentFieldInfo.X == x && CurrentFieldInfo.Y == y)
+            {
+                var field = Tiles[x, y];
+                CurrentFieldInfo = FieldInfoFactory.CreateField(field);
+            }
         }
         #endregion
 
@@ -376,11 +421,13 @@ namespace TransportTycoon.WPF.ViewModel
         {
             //var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
             //tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
+            RefreshFieldInfo(_2.X, _2.Y);
         }
 
         private void Model_VehicleChanged(object? _1, Vehicle e)
         {
             OnPropertyChanged(nameof(Vehicles));
+            if (ShownVehicle is not null) RefreshFieldInfo(ShownVehicle.MapX, ShownVehicle.MapY);
         }
 
         private void Model_InfrastructureBuilt(object? _1, List<(int X, int Y)> changedFields)
@@ -389,6 +436,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 IField tile = Tiles[x, y];
                 UpdateMinimapTile(x, y, ConvertTileToColor(tile));
+                RefreshFieldInfo(x, y);
             }
         }
 
@@ -396,6 +444,18 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_GameAdvanced(object? _1, List<Tuple<int, int>> _2)
         {
             MapUpdated?.Invoke();
+            foreach (var (x, y) in _2)
+            {
+                RefreshFieldInfo(x, y);
+            }
+        }
+
+        private void Model_ProductionChanged(object? sender, List<(int, int)> e)
+        {
+            foreach (var (x, y) in e)
+            {
+                RefreshFieldInfo(x, y);
+            }
         }
 
         partial void OnSelectedTabIndexChanged(int value)
