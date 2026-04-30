@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System.IO;
 using System.Windows;
+using TransportTycoon.MapData;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
 using TransportTycoon.Persistence;
@@ -14,7 +16,7 @@ namespace TransportTycoon.WPF.ViewModel
         private GameModel? _model;
 
         private readonly StartMenuViewModel _startMenuViewModel;
-
+        private readonly IPersistence _persistence;
         #endregion
 
         #region Properties
@@ -24,9 +26,22 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
         #endregion
 
+        #region Events
+        /// <summary>
+        /// Occurs when a save game operation is requested, providing the file path or identifier for the save data.
+        /// </summary>
+        public event Action<string>? SaveGame;
+
+        /// <summary>
+        /// Occurs when a request to load a game is made.
+        /// </summary>
+        public event Action? LoadGame;
+        #endregion
+
         #region Constructors
-        public MainViewModel()
+        public MainViewModel(IPersistence persistence)
         {
+            _persistence = persistence;
             _startMenuViewModel = new();
 
             _startMenuViewModel.StartingNewGame += StartMenuViewModel_StartingNewGame;
@@ -42,7 +57,8 @@ namespace TransportTycoon.WPF.ViewModel
         #region Start menu
         private void StartMenuViewModel_StartingNewGame(object? _1, EventArgs _2)
         {
-            _model = CreateNewGameModel(new());
+            var data = new GameCreationData(new(), DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss"));
+            _model = CreateNewGameModel(data);
 
             CurrentView = CreateNewGameViewModel(_model);
         }
@@ -57,21 +73,9 @@ namespace TransportTycoon.WPF.ViewModel
             CurrentView = createGameViewModel;
         }
 
-        private async void StartMenuViewModel_LoadingGame(object? _1, string uri)
+        private void StartMenuViewModel_LoadingGame()
         {
-            try
-            {
-                _model = CreateNewGameModel(new());
-
-                await _model.LoadGame(uri);
-
-                CurrentView = CreateNewGameViewModel(_model);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to load the game. The file might be corrupted or incompatible." + Environment.NewLine +
-                                "Error details: " + ex.Message, "TransportTycoon", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            LoadGame?.Invoke();
         }
 
         private void StartMenuViewModel_ExitingGame(object? _1, EventArgs _2)
@@ -81,15 +85,16 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Create game
-        private void CreateGameViewModel_CreateGame(object? _1, MapGenerationContext context)
+        private void CreateGameViewModel_CreateGame(GameCreationData data)
         {
-            _model = CreateNewGameModel(context);
+            _model = CreateNewGameModel(data);
             CurrentView = CreateNewGameViewModel(_model);
         }
 
         private void BackToMainMenu()
         {
             CurrentView = _startMenuViewModel;
+            _model = null;
         }
         #endregion
 
@@ -107,9 +112,15 @@ namespace TransportTycoon.WPF.ViewModel
 
             if (result == MessageBoxResult.Yes)
             {
-                //Model = null;
-                CurrentView = _startMenuViewModel;
+                BackToMainMenu();
             }
+        }
+
+        private void GameViewModel_SaveGame()
+        {
+            if (_model is null) return;
+
+            SaveGame?.Invoke(_model.SaveName);
         }
         #endregion
         #endregion
@@ -121,13 +132,24 @@ namespace TransportTycoon.WPF.ViewModel
         /// Creates a new game model based on the provided map generation context.
         /// This method initializes the game model, sets up event handlers, and starts a new game.
         /// </summary>
-        /// <param name="context">The context for map generation.</param>
+        /// <param name="data">The data for game creation.</param>
         /// <returns>A new instance of the GameModel class.</returns>
-        private GameModel CreateNewGameModel(MapGenerationContext context)
+        private GameModel CreateNewGameModel(GameCreationData data)
         {
-            var model = new GameModel(new(MapGeneratorFactory.CreateMapGenerator(context), context), new WpfDispatcherTimer(), JsonSaveManagerFactory.Get());
+            var gameTable = new GameTable(MapGeneratorFactory.CreateMapGenerator(data.MapGenerationContext), data.MapGenerationContext);
+            var model = new GameModel(gameTable, new WpfDispatcherTimer(), data);
             model.GameOver += Model_GameOver;
             model.NewGame();
+            return model;
+        }
+
+
+        private GameModel CreateNewGameModelFromSave(GameSaveData data, string saveName)
+        {
+            var context = new MapGenerationContext(data.MapContextData);
+            var gameTable = new GameTable(MapGeneratorFactory.CreateMapGenerator(context), context);
+            var model = new GameModel(gameTable, new WpfDispatcherTimer(), data, saveName);
+            model.GameOver += Model_GameOver;
             return model;
         }
 
@@ -144,11 +166,19 @@ namespace TransportTycoon.WPF.ViewModel
         {
             var gameViewModel = new GameViewModel(model);
             gameViewModel.BackToMainMenu += BackToMainMenu;
+            gameViewModel.SaveGame += GameViewModel_SaveGame;
             return gameViewModel;
         }
         #endregion
 
-        #region Public method
+        #region Public methods
+        /// <summary>
+        /// Determines whether the game can be safely closed based on the current state and user intent.
+        /// </summary>
+        /// <remarks>This method temporarily pauses the game to check if the user intends to exit. If the
+        /// game is not over and the user does not wish to exit, the game resumes running. Use this method to prompt for
+        /// confirmation or handle cleanup before closing the game.</remarks>
+        /// <returns><see langword="true"/> if the game can be closed; otherwise, <see langword="false"/>.</returns>
         public bool CanClose()
         {
             _model?.Mode = GameMode.Paused;
@@ -163,6 +193,55 @@ namespace TransportTycoon.WPF.ViewModel
                 _model.Mode = GameMode.Run;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Asynchronously saves the current game state to the specified location.
+        /// </summary>
+        /// <remarks>
+        /// If the save operation fails, a message box is displayed to inform the user of the error.
+        /// </remarks>
+        /// <param name="uri">The destination URI where the game state will be saved. This should be a valid file path or resource
+        /// identifier.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous save operation.</returns>
+        public async Task SaveGameAt(string uri)
+        {
+            try
+            {
+                var data = _model?.GetGameSaveData() ?? throw new NullReferenceException("The GameModel doesn't exists");
+                await _persistence.SaveGame(uri, data);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to save the game. Please try again." + Environment.NewLine +
+                                "Error details: " + ex.Message, "TransportTycoon", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Asynchronously loads a game state from the specified file URI and updates the current game view.
+        /// </summary>
+        /// <remarks>
+        /// If the file is corrupted or incompatible, an error message is displayed and the
+        /// current game state is not changed.
+        /// </remarks>
+        /// <param name="uri">The path or URI of the file containing the saved game data. Must refer to a valid and accessible file.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous load operation.</returns>
+        public async Task LoadGameFrom(string uri)
+        {
+            try
+            {
+                var data = await _persistence.LoadGame(uri) ?? throw new NullReferenceException("Loaded data is null.");
+                string saveName = Path.GetFileNameWithoutExtension(uri);
+
+                _model = CreateNewGameModelFromSave(data, saveName);
+                CurrentView = CreateNewGameViewModel(_model);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to load the game. The file might be corrupted or incompatible." + Environment.NewLine +
+                                "Error details: " + ex.Message, "TransportTycoon", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
         #endregion
     }

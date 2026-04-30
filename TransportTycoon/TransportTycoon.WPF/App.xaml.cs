@@ -1,5 +1,6 @@
+using Microsoft.Win32;
 using System.Windows;
-using TransportTycoon.Model;
+using TransportTycoon.Persistence;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF
@@ -10,19 +11,11 @@ namespace TransportTycoon.WPF
     public partial class App : Application
     {
         #region Fields
-        private GameModel? _model;
-
         private MainViewModel? _mainViewModel;
         private MainWindow? _mainView;
         #endregion
 
         #region Properties
-        private GameModel Model
-        {
-            get => _model ?? throw new InvalidOperationException("Model is not initialized.");
-            set => _model = value;
-        }
-
         private MainViewModel MainViewModel
         {
             get => _mainViewModel ?? throw new InvalidOperationException("MainViewModel is not initialized.");
@@ -46,18 +39,57 @@ namespace TransportTycoon.WPF
         #region Private event methods
         private void ShowStartMenu(object? _1, StartupEventArgs _2)
         {
-            MainViewModel = new();
+            MainViewModel = new(JsonSaveManagerFactory.Get());
+
+            MainViewModel.SaveGame += MainViewModel_SaveGame;
+            MainViewModel.LoadGame += MainViewModel_LoadGame;
 
             MainView = new()
             {
                 DataContext = MainViewModel,
             };
-
             MainView.Show();
         }
-        #endregion
 
-        #region Game event methods
+        private async void MainViewModel_LoadGame()
+        {
+            var fileDiag = new OpenFileDialog
+            {
+                Title = "Choose a save location",
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Multiselect = false,
+                RestoreDirectory = true,
+            };
+
+            bool? result = fileDiag.ShowDialog();
+            if (result != true) return;
+
+            var uri = fileDiag.FileName;
+            _mainViewModel?.LoadGameFrom(uri);
+        }
+
+        private async void MainViewModel_SaveGame(string saveName)
+        {
+            var folderDiag = new SaveFileDialog
+            {
+                Title = "Choose a save location",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Filter = "JSON files (*.json)|*.json",
+                RestoreDirectory = true,
+                AddExtension = true,
+                OverwritePrompt = true,
+                CheckPathExists = true,
+                DefaultExt = "json",
+                FileName = saveName
+            };
+
+            bool? result = folderDiag.ShowDialog();
+            if (result != true) return;
+
+            var uri = folderDiag.FileName;
+            _mainViewModel?.SaveGameAt(uri);
+        }
         #endregion
     }
 }

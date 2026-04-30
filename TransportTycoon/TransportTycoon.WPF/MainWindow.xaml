@@ -15,10 +15,6 @@
         
         Closing="Window_Closing"
         >
-    
-    <Window.DataContext>
-        <viewmodels:MainViewModel />
-    </Window.DataContext>
 
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewmodels:StartMenuViewModel}">

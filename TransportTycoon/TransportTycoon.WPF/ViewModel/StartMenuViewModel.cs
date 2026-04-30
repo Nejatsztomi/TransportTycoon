@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
 
 namespace TransportTycoon.WPF.ViewModel
 {
@@ -14,7 +13,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         #region Events
         public event EventHandler? StartingNewGame;
-        public event EventHandler<string>? LoadingGame;
+        public event Action? LoadingGame;
         public event EventHandler? ExitingGame;
         public event EventHandler? ShowGameCreationView;
         #endregion
@@ -33,20 +32,7 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void LoadGame()
         {
-            var fileDiag = new OpenFileDialog
-            {
-                Title = "Choose a save location",
-                Filter = "JSON files|*.json|All files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                Multiselect = false,
-                RestoreDirectory = true,
-            };
-
-            bool? result = fileDiag.ShowDialog();
-            if (result is null || result == false) return;
-
-            var uri = fileDiag.FileName;
-            LoadingGame?.Invoke(this, uri);
+            LoadingGame?.Invoke();
         }
 
         [RelayCommand]
