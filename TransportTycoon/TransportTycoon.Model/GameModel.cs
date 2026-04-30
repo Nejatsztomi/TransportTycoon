@@ -45,7 +45,6 @@ namespace TransportTycoon.Model
 
         #region Private fields
         private readonly ITimer _timer;
-        private readonly IPersistence _persistence;
         private readonly Dictionary<(int X, int Y), IField> _modifiedFields = [];
         private IPathFinder _pathFinder;
         #endregion
@@ -53,9 +52,9 @@ namespace TransportTycoon.Model
         #region Properties
         public GameTable Map { get; private set; }
         public IField? SelectedField { get; private set; }
-
         public List<Stop> SelectedStopFields { get; private set; } = [];
         public int Balance { get; private set; }
+        public string SaveName { get; }
         public ulong GameTime { get; private set; }
         public int Maintance { get; private set; }
 
@@ -87,7 +86,7 @@ namespace TransportTycoon.Model
                 field = value;
             }
         }
-        public Difficulty Difficulty { get; }
+        public Difficulty Difficulty { get; private set; }
 
         public bool IsGameOver => Balance <= 0;
 
@@ -121,14 +120,15 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Constructor
-        public GameModel(GameTable map, ITimer timer, IPersistence persistence, Difficulty difficulty = DefaultDifficulty, int balance = DefaultBalance)
+        public GameModel(GameTable map, ITimer timer, GameCreationData data)
         {
-            Difficulty = difficulty;
-            Balance = balance;
+            Difficulty = data.Difficulty;
+            Balance = data.Balance;
+            SaveName = data.SaveName;
+
             Map = map;
             _timer = timer;
             _timer.Elapsed += Timer_Tick;
-            _persistence = persistence;
 
             SetTax();
             Mode = GameMode.Run;
@@ -139,11 +139,124 @@ namespace TransportTycoon.Model
             GraphNetwork = new([], []);
             _pathFinder = new AStarPathfinder(GraphNetwork);
         }
+
+        public GameModel(GameTable map, ITimer timer, GameSaveData data, string saveName)
+        {
+            Difficulty = (Difficulty)data.Difficulty;
+            Balance = data.PlayerBalance;
+            SaveName = saveName;
+            GameTime = data.GameTime;
+
+            Map = map;
+            _timer = timer;
+            _timer.Elapsed += Timer_Tick;
+
+            SetTax();
+
+            GraphNetwork = new([], []);
+            _pathFinder = new AStarPathfinder(GraphNetwork);
+
+            Map.Context = new(data.MapContextData);
+            Map.GenerateMap();
+
+            _modifiedFields.Clear();
+
+            data.ModifiedTiles.ForEach(tile =>
+            {
+                int x = tile.X;
+                int y = tile.Y;
+                Map[x, y] = tile.Type switch
+                {
+                    SaveFieldType.Terrain => new Terrain(x, y, Map[x, y].Height),
+                    SaveFieldType.Road => new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height),
+                    SaveFieldType.Stop => new Stop(x, y, Map[x, y].Height),
+                    SaveFieldType.HorizontalYellowBridge => new YellowBridge(x, y, BridgeType.HorizontalYellowBridge, 0),
+                    SaveFieldType.VerticalYellowBridge => new YellowBridge(x, y, BridgeType.VerticalYellowBridge, 0),
+                    SaveFieldType.HorizontalRedBridge => new RedBridge(x, y, BridgeType.HorizontalRedBridge, 0),
+                    SaveFieldType.VerticalRedBridge => new RedBridge(x, y, BridgeType.VerticalRedBridge, 0),
+                    SaveFieldType.HorizontalGreenBridge => new GreenBridge(x, y, BridgeType.HorizontalGreenBridge, 0),
+                    SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
+                    _ => Map[x, y]
+                };
+                _modifiedFields.Add((x, y), Map[x, y]);
+            });
+
+            // Make sure roads have correct rotation
+            data.ModifiedTiles
+                .Where(tile => tile.Type == SaveFieldType.Road)
+                .ToList()
+                .ForEach(tile =>
+                {
+                    Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
+                });
+
+            RebuildGraph();
+
+            data.ModifiedTrees.ForEach(treeData =>
+            {
+                if (Map[treeData.X, treeData.Y] is Terrain terrain)
+                {
+                    terrain.Trees = treeData.Amount;
+                }
+            });
+
+            data.Vehicles.ForEach(vehicleData =>
+            {
+                Vehicle vehicle = vehicleData.Type switch
+                {
+                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
+                };
+
+                vehicle.SetCurrentCapacity(vehicleData.CurrentCapacity);
+
+                Load? load = vehicleData.CurrentLoad switch
+                {
+                    Persistence.LoadType.Wheat => new Wheat(),
+                    Persistence.LoadType.Oil => new Oil(),
+                    Persistence.LoadType.Wood => new Wood(),
+                    Persistence.LoadType.Flour => new Flour(),
+                    Persistence.LoadType.Rubber => new Rubber(),
+                    Persistence.LoadType.Paper => new Paper(),
+                    Persistence.LoadType.People => new People(),
+                    Persistence.LoadType.None => null,
+
+                    _ => throw new ArgumentException("Invalid load type in save data", nameof(vehicleData.CurrentLoad)),
+                };
+                vehicle.SetCurrentLoad(load);
+
+                var stops = vehicleData.Prouth.Stops
+                .Select(stop => Map[stop.X, stop.Y])
+                .Cast<Stop>()
+                .ToList();
+
+                var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
+                vehicle.Prouth = prouth;
+
+                Vehicles.Add(vehicle);
+            });
+
+
+            data.BuildingEntities.ForEach(buildingEntityData =>
+            {
+                BuildingEntity? buildingEntity = Map.BuildingEntities.
+                FirstOrDefault(entity => entity.TopLeftPoints.X == buildingEntityData.TopLeftX && entity.TopLeftPoints.Y == buildingEntityData.TopLeftY)
+                ?? throw new Exception($"Failed to find building entity at ({buildingEntityData.TopLeftX}, {buildingEntityData.TopLeftY}) in the map.");
+
+                buildingEntity.CurrentCapacity = buildingEntityData.CurrentCapacity;
+                buildingEntity.Productivity = buildingEntityData.Productivity;
+            });
+        }
         #endregion
 
         #region Public Methods
         #region Persistence
-        public async Task SaveGame(string uri)
+        public GameSaveData GetGameSaveData()
         {
             List<TileSaveData> tileSaveDatas = [.. _modifiedFields.Select(kv => new TileSaveData()
             {
@@ -208,7 +321,7 @@ namespace TransportTycoon.Model
                 )];
 
 
-            GameSaveData data = new()
+            return new()
             {
                 MapContextData = new(Map.Context),
                 GameTime = GameTime,
@@ -219,114 +332,6 @@ namespace TransportTycoon.Model
                 Vehicles = vehiclesData,
                 BuildingEntities = buildingsData
             };
-
-            await _persistence.SaveGame(uri, data);
-        }
-
-        public async Task LoadGame(string uri)
-        {
-            Mode = GameMode.Paused;
-            GameSaveData data = await _persistence.LoadGame(uri) ?? throw new Exception("Failed to load game data.");
-            Balance = data.PlayerBalance;
-            GameTime = data.GameTime;
-
-            Map.Context = new(data.MapContextData);
-            Map.GenerateMap();
-
-            _modifiedFields.Clear();
-
-            data.ModifiedTiles.ForEach(tile =>
-            {
-                int x = tile.X;
-                int y = tile.Y;
-                Map[x, y] = tile.Type switch
-                {
-                    SaveFieldType.Terrain => new Terrain(x, y, Map[x, y].Height),
-                    SaveFieldType.Road => new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height),
-                    SaveFieldType.Stop => new Stop(x, y, Map[x, y].Height),
-                    SaveFieldType.HorizontalYellowBridge => new YellowBridge(x, y, BridgeType.HorizontalYellowBridge, 0),
-                    SaveFieldType.VerticalYellowBridge => new YellowBridge(x, y, BridgeType.VerticalYellowBridge, 0),
-                    SaveFieldType.HorizontalRedBridge => new RedBridge(x, y, BridgeType.HorizontalRedBridge, 0),
-                    SaveFieldType.VerticalRedBridge => new RedBridge(x, y, BridgeType.VerticalRedBridge, 0),
-                    SaveFieldType.HorizontalGreenBridge => new GreenBridge(x, y, BridgeType.HorizontalGreenBridge, 0),
-                    SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
-                    _ => Map[x, y]
-                };
-                _modifiedFields.Add((x, y), Map[x, y]);
-            });
-
-            // Make sure roads have correct rotation
-            data.ModifiedTiles
-                .Where(tile => tile.Type == SaveFieldType.Road)
-                .ToList()
-                .ForEach(tile =>
-                {
-                    Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
-                });
-
-            RebuildGraph();
-
-            data.ModifiedTrees.ForEach(treeData =>
-                {
-                    if (Map[treeData.X, treeData.Y] is Terrain terrain)
-                    {
-                        terrain.Trees = treeData.Amount;
-                    }
-                });
-
-            data.Vehicles.ForEach(vehicleData =>
-            {
-                Vehicle vehicle = vehicleData.Type switch
-                {
-                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
-                };
-
-                vehicle.SetCurrentCapacity(vehicleData.CurrentCapacity);
-
-                Load? load = vehicleData.CurrentLoad switch
-                {
-                    Persistence.LoadType.Wheat => new Wheat(),
-                    Persistence.LoadType.Oil => new Oil(),
-                    Persistence.LoadType.Wood => new Wood(),
-                    Persistence.LoadType.Flour => new Flour(),
-                    Persistence.LoadType.Rubber => new Rubber(),
-                    Persistence.LoadType.Paper => new Paper(),
-                    Persistence.LoadType.People => new People(),
-                    Persistence.LoadType.None => null,
-
-                    _ => throw new ArgumentException("Invalid load type in save data", nameof(vehicleData.CurrentLoad)),
-                };
-                vehicle.SetCurrentLoad(load);
-
-                var stops = vehicleData.Prouth.Stops
-                .Select(stop => Map[stop.X, stop.Y])
-                .Cast<Stop>()
-                .ToList();
-
-                var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
-                vehicle.Prouth = prouth;
-
-                Vehicles.Add(vehicle);
-            });
-
-
-            data.BuildingEntities.ForEach(buildingEntityData =>
-            {
-                BuildingEntity? buildingEntity = Map.BuildingEntities.
-                FirstOrDefault(entity => entity.TopLeftPoints.X == buildingEntityData.TopLeftX && entity.TopLeftPoints.Y == buildingEntityData.TopLeftY)
-                ?? throw new Exception($"Failed to find building entity at ({buildingEntityData.TopLeftX}, {buildingEntityData.TopLeftY}) in the map.");
-
-                buildingEntity.CurrentCapacity = buildingEntityData.CurrentCapacity;
-                buildingEntity.Productivity = buildingEntityData.Productivity;
-            });
-
-            NewGameCreated?.Invoke(this, EventArgs.Empty);
         }
         #endregion
 
