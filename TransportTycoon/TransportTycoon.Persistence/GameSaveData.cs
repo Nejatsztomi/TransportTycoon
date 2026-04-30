@@ -19,7 +19,8 @@ namespace TransportTycoon.Persistence
     public readonly record struct TileSaveData(
         int X,
         int Y,
-        Persistence.SaveFieldType Type
+        Persistence.SaveFieldType Type,
+        int Height
         );
 
     public readonly record struct TreeSaveData(

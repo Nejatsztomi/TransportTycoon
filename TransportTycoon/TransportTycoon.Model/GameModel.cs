@@ -167,9 +167,9 @@ namespace TransportTycoon.Model
                 int y = tile.Y;
                 Map[x, y] = tile.Type switch
                 {
-                    SaveFieldType.Terrain => new Terrain(x, y, Map[x, y].Height),
-                    SaveFieldType.Road => new Road(x, y, Map.CalculateRoadType(x, y), Map[x, y].Height),
-                    SaveFieldType.Stop => new Stop(x, y, Map[x, y].Height),
+                    SaveFieldType.Terrain => new Terrain(x, y, tile.Height),
+                    SaveFieldType.Road => new Road(x, y, Map.CalculateRoadType(x, y), tile.Height),
+                    SaveFieldType.Stop => new Stop(x, y, tile.Height),
                     SaveFieldType.HorizontalYellowBridge => new YellowBridge(x, y, BridgeType.HorizontalYellowBridge, 0),
                     SaveFieldType.VerticalYellowBridge => new YellowBridge(x, y, BridgeType.VerticalYellowBridge, 0),
                     SaveFieldType.HorizontalRedBridge => new RedBridge(x, y, BridgeType.HorizontalRedBridge, 0),
@@ -274,7 +274,8 @@ namespace TransportTycoon.Model
                     GreenBridge greenBridge when greenBridge.BridgeType == BridgeType.HorizontalGreenBridge => SaveFieldType.HorizontalGreenBridge,
                     GreenBridge greenBridge when greenBridge.BridgeType == BridgeType.VerticalGreenBridge => SaveFieldType.VerticalGreenBridge,
                     _ => throw new Exception($"Invalid field type at ({kv.Key.X}, {kv.Key.Y})")
-                }
+                },
+                Height = kv.Value.Height
             })];
 
             List<TreeSaveData> treesData = [.. Map.Table.Cast<IField>()
@@ -326,6 +327,7 @@ namespace TransportTycoon.Model
                 MapContextData = new(Map.Context),
                 GameTime = GameTime,
                 PlayerBalance = Balance,
+                Difficulty = (Persistence.Difficulty)Difficulty,
 
                 ModifiedTiles = tileSaveDatas,
                 ModifiedTrees = treesData,
