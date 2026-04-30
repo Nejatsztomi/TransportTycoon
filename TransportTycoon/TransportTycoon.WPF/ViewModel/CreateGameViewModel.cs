@@ -16,7 +16,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Game specific settings
-        public string SaveName { get; set; } = string.Empty;
+        public string SaveName { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss");
         public string GameHeight { get; set; } = "100";
         public string GameWidth { get; set; } = "100";
         public string GameSeed { get; set; } = "42";
@@ -37,8 +37,8 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Events
-        public event EventHandler? BackToMainMenu;
-        public event EventHandler<MapGenerationContext>? CreateGame;
+        public event Action? BackToMainMenu;
+        public event Action<GameCreationData>? CreateGame;
         #endregion
 
         #region Constructors
@@ -51,7 +51,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             try
             {
-                if (SaveName == String.Empty)
+                if (SaveName.Length <= 0 || string.IsNullOrWhiteSpace(SaveName))
                 {
                     throw new ArgumentException("Invalid save name.");
                 }
@@ -84,7 +84,7 @@ namespace TransportTycoon.WPF.ViewModel
                 int maxStructures = int.Parse(SettingsMaxStructures);
                 Debug.WriteLine($"Max structures: {maxStructures}");
 
-                MapGenerationSettings settings = new()
+                var settings = new MapGenerationSettings()
                 {
                     Biome = biome,
                     WaterBiome = waterBiome,
@@ -95,9 +95,11 @@ namespace TransportTycoon.WPF.ViewModel
                     MinStructure = minStructures,
                     MaxStructure = maxStructures,
                 };
-                MapGenerationContext context = new(width, height, seed, settings);
+                var context = new MapGenerationContext(width, height, seed, settings);
 
-                CreateGame?.Invoke(this, context);
+                var data = new GameCreationData(context, SaveName, difficulty, starterBalance);
+
+                CreateGame?.Invoke(data);
             }
             catch (Exception ex)
             {
@@ -109,7 +111,7 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnBackToMainMenu()
         {
-            BackToMainMenu?.Invoke(this, EventArgs.Empty);
+            BackToMainMenu?.Invoke();
         }
         #endregion
 

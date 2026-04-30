@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
@@ -57,6 +56,13 @@ namespace TransportTycoon.WPF.ViewModel
         public event Action? MapUpdated;
 
         public event Action<UInt64>? VehicleDestroyed;
+
+        /// <summary>
+        /// A simple event to notify the view that the user wants to go back to the main menu.
+        /// </summary>
+        public event Action? BackToMainMenu;
+
+        public event Action? SaveGame;
         #endregion
 
         #region Constructors
@@ -349,6 +355,7 @@ namespace TransportTycoon.WPF.ViewModel
             else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
 
+        #region Pause menu
         [RelayCommand]
         private void OnExitGame()
         {
@@ -358,21 +365,15 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private async Task OnSaveGame()
         {
-            var fileDiag = new OpenFileDialog
-            {
-                Title = "Choose a save location",
-                Filter = "JSON files|*.json|All files (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                Multiselect = false,
-                RestoreDirectory = true,
-            };
-
-            bool? result = fileDiag.ShowDialog();
-            if (result is null || result == false) return;
-
-            var uri = fileDiag.FileName;
-            await Model.SaveGame(uri);
+            SaveGame?.Invoke();
         }
+
+        [RelayCommand]
+        private void OnBackToMainMenu()
+        {
+            BackToMainMenu?.Invoke();
+        }
+        #endregion
         #endregion
 
         #region Event methods
