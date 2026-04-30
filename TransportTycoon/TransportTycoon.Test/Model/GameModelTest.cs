@@ -4,7 +4,6 @@ using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
 using TransportTycoon.Model.Graph;
-using TransportTycoon.Persistence;
 using ITimer = TransportTycoon.Model.ITimer;
 using VehicleType = TransportTycoon.Model.VehicleType;
 
@@ -15,25 +14,24 @@ public class GameModelTest
     public class ConstructorTest
     {
         private readonly ITimer _mockTimer;
-        private readonly IPersistence _mockPersistence;
         private readonly GameTable _mockMap;
+        private readonly MapGenerationContext _context;
 
         public ConstructorTest()
         {
             var mockMapGenerator = Substitute.For<IMapGenerator>();
-            MapGenerationContext context = new();
-
+            _context = new MapGenerationContext();
             _mockTimer = Substitute.For<ITimer>();
-            _mockMap = Substitute.For<GameTable>(mockMapGenerator, context);
-            _mockPersistence = Substitute.For<IPersistence>();
+            _mockMap = Substitute.For<GameTable>(mockMapGenerator, _context);
         }
 
         [Fact]
         public void Constructor_WithAllParameters()
         {
-            Difficulty difficulty = Difficulty.Hard;
+            var difficulty = TransportTycoon.Model.Difficulty.Hard;
             int balance = 5_000;
-            GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence, difficulty, balance);
+            var data = new GameCreationData(_context, "TestSave", difficulty, balance);
+            GameModel gameModel = new(_mockMap, _mockTimer, data);
 
             Assert.Equal(difficulty, gameModel.Difficulty);
             Assert.Equal(balance, gameModel.Balance);
@@ -49,7 +47,8 @@ public class GameModelTest
         [Fact]
         public void Constructor_WithDefaultValues()
         {
-            GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
+            var data = new GameCreationData(_context, "TestSave");
+            GameModel gameModel = new(_mockMap, _mockTimer, data);
 
             Assert.Equal(GameModel.DefaultDifficulty, gameModel.Difficulty);
             Assert.Equal(GameModel.DefaultBalance, gameModel.Balance);
@@ -88,17 +87,17 @@ public class GameModelTest
         {
             private readonly GameModel _gameModel;
             private readonly ITimer _mockTimer;
-            private readonly IPersistence _mockPersistence;
+            private readonly MapGenerationContext _context;
 
             public EventRaisedTest()
             {
                 var mockMapGenerator = Substitute.For<IMapGenerator>();
-                MapGenerationContext context = new();
-                var mockGameTable = Substitute.For<GameTable>(mockMapGenerator, context);
+                _context = new MapGenerationContext();
+                var mockGameTable = Substitute.For<GameTable>(mockMapGenerator, _context);
 
                 _mockTimer = Substitute.For<ITimer>();
-                _mockPersistence = Substitute.For<IPersistence>();
-                _gameModel = new(mockGameTable, _mockTimer, _mockPersistence);
+                var data = new GameCreationData(_context, "TestSave");
+                _gameModel = new(mockGameTable, _mockTimer, data);
             }
 
             [Fact]
@@ -250,7 +249,8 @@ public class GameModelTest
                 for (int i = 0; i < 10; i++)
                     for (int j = 0; j < 10; j++)
                         realMap[i, j] = new Terrain(i, j, 1);
-                var model = new GameModel(realMap, _mockTimer, _mockPersistence);
+                var data = new GameCreationData(context, "TestSave");
+                var model = new GameModel(realMap, _mockTimer, data);
                 bool raised = false;
                 void Handler(object? _1, List<(int, int)> _2) { raised = true; }
                 try
@@ -273,24 +273,25 @@ public class GameModelTest
             private readonly GameModel _gameModel;
             private readonly ITimer _mockTimer;
             private readonly GameTable _mockMap;
-            private readonly IPersistence _mockPersistence;
+            private readonly MapGenerationContext _context;
 
             public EventArgumentTest()
             {
                 IMapGenerator mockGenerator = Substitute.For<IMapGenerator>();
-                MapGenerationContext context = new();
+                _context = new MapGenerationContext();
 
-                _mockMap = Substitute.For<GameTable>(mockGenerator, context);
+                _mockMap = Substitute.For<GameTable>(mockGenerator, _context);
                 _mockTimer = Substitute.For<ITimer>();
-                _mockPersistence = Substitute.For<IPersistence>();
-                _gameModel = new(_mockMap, _mockTimer, _mockPersistence);
+                var data = new GameCreationData(_context, "TestSave");
+                _gameModel = new(_mockMap, _mockTimer, data);
             }
 
             [Theory]
             [ClassData(typeof(EnumEnumerable<GameMode>))]
             public void GameModeChanged_EventArgumentIsCorrect(GameMode expectedGameMode)
             {
-                GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
+                var data = new GameCreationData(_context, "TestSave");
+                GameModel gameModel = new(_mockMap, _mockTimer, data);
                 GameMode actualGameMode = GameMode.Run;
 
                 void Handler(object? _1, GameMode e)
@@ -314,7 +315,8 @@ public class GameModelTest
             [ClassData(typeof(EnumEnumerable<TimeSpeed>))]
             public void TimeSpeedChanged_EventArgumentIsCorrect(TimeSpeed expectedTimeSpeed)
             {
-                GameModel gameModel = new(_mockMap, _mockTimer, _mockPersistence);
+                var data = new GameCreationData(_context, "TestSave");
+                GameModel gameModel = new(_mockMap, _mockTimer, data);
                 TimeSpeed actualTimeSpeed = TimeSpeed.Normal;
 
                 void Handler(object? _1, TimeSpeed e)
@@ -344,7 +346,9 @@ public class GameModelTest
                 for (int i = 0; i < 2; i++)
                     for (int j = 0; j < 2; j++)
                         realMap[i, j] = new Terrain(i, j, 2); // Height 2 so we can decrease
-                var model = new GameModel(realMap, _mockTimer, _mockPersistence, Difficulty.Medium, 1);
+                var localContext = new MapGenerationContext(2, 2, 1, new MapGenerationSettings());
+                var data = new GameCreationData(localContext, "TestSave", TransportTycoon.Model.Difficulty.Medium, 1);
+                var model = new GameModel(realMap, _mockTimer, data);
                 TransportTycoonEventArgs? eventArgs = null;
                 void Handler(object? _1, TransportTycoonEventArgs e) { eventArgs = e; }
                 try
@@ -400,7 +404,8 @@ public class GameModelTest
                 for (int i = 0; i < 10; i++)
                     for (int j = 0; j < 10; j++)
                         realMap[i, j] = new Terrain(i, j, 1);
-                var model = new GameModel(realMap, _mockTimer, _mockPersistence);
+                var data = new GameCreationData(context, "TestSave");
+                var model = new GameModel(realMap, _mockTimer, data);
                 List<(int, int)>? eventArgs = null;
                 void Handler(object? _1, List<(int, int)> e) { eventArgs = e; }
                 try
@@ -425,19 +430,16 @@ public class GameModelTest
         private GameModel _gameModel;
         private readonly GameTable _mockMap;
         private readonly ITimer _mockTimer;
-        private readonly IPersistence _mockPersistence;
+        private readonly MapGenerationContext _context;
 
         public VehicleTests()
         {
             var mockMapGenerator = Substitute.For<IMapGenerator>();
-            MapGenerationContext context = new();
-
+            _context = new MapGenerationContext();
             _mockTimer = Substitute.For<ITimer>();
-            _mockMap = Substitute.For<GameTable>(mockMapGenerator, context);
-            _mockPersistence = Substitute.For<IPersistence>();
-
-            // Initialize GameModel with a default high balance for tests
-            _gameModel = new(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
+            _mockMap = Substitute.For<GameTable>(mockMapGenerator, _context);
+            var data = new GameCreationData(_context, "TestSave", TransportTycoon.Model.Difficulty.Medium, 10000);
+            _gameModel = new(_mockMap, _mockTimer, data);
         }
 
         [Fact]
@@ -449,7 +451,8 @@ public class GameModelTest
             _mockMap[x, y] = new Terrain(x, y, 1);
 
             // Re-initialize GameModel to strictly control the starting balance
-            _gameModel = new(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 10000);
+            var data = new GameCreationData(_context, "TestSave", TransportTycoon.Model.Difficulty.Medium, 10000);
+            _gameModel = new(_mockMap, _mockTimer, data);
             int initialVehiclesCount = _gameModel.Vehicles.Count;
 
             // Act
@@ -469,7 +472,8 @@ public class GameModelTest
             // Mock the map to return a Stop at the given coordinates
             _mockMap[x, y] = new Stop(x, y, 1);
 
-            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 5000);
+            var data = new GameCreationData(_context, "TestSave", TransportTycoon.Model.Difficulty.Medium, 5000);
+            _gameModel = new GameModel(_mockMap, _mockTimer, data);
 
             bool eventRaised = false;
             _gameModel.BalanceChanged += (sender, args) => { eventRaised = true; };
@@ -495,7 +499,8 @@ public class GameModelTest
             _mockMap[x, y] = new Stop(x, y, 1);
 
             // Initialize with 0 balance
-            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 0);
+            var data = new GameCreationData(_context, "TestSave", TransportTycoon.Model.Difficulty.Medium, 0);
+            _gameModel = new GameModel(_mockMap, _mockTimer, data);
 
             bool eventRaised = false;
             _gameModel.BalanceChanged += (sender, args) => { eventRaised = true; };
@@ -521,7 +526,8 @@ public class GameModelTest
             int x = 3, y = 3;
             _mockMap[x, y] = new Stop(x, y, 1);
 
-            _gameModel = new GameModel(_mockMap, _mockTimer, _mockPersistence, Difficulty.Medium, 100000);
+            var data = new GameCreationData(_context, "TestSave", TransportTycoon.Model.Difficulty.Medium, 100000);
+            _gameModel = new GameModel(_mockMap, _mockTimer, data);
 
             // Act
             var result = _gameModel.BuyVehicle(x, y, VehicleType.BigBus);
@@ -559,8 +565,8 @@ public class GameModelTest
                 );
 
             var map = new GameTable(mapGen, _context);
-
-            _model = new(map, Substitute.For<ITimer>(), Substitute.For<IPersistence>());
+            var data = new GameCreationData(_context, "TestSave");
+            _model = new(map, Substitute.For<ITimer>(), data);
         }
 
         private void CallRebuildGraph(GameModel model)
@@ -706,12 +712,9 @@ public class GameModelTest
         private GameModel CreateTestModel(int initialBalance = 1000, int initialHeight = 2)
         {
             var timerMock = Substitute.For<ITimer>();
-            var persistenceMock = Substitute.For<IPersistence>();
             var mapGenMock = Substitute.For<IMapGenerator>();
-
             var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
             var table = new GameTable(mapGenMock, context);
-
             // 3x3-as pálya feltöltése Terrain-ekkel
             var fields = new IField[3, 3];
             for (int i = 0; i < 3; i++)
@@ -721,15 +724,13 @@ public class GameModelTest
                     fields[i, j] = new Terrain(i, j, initialHeight);
                 }
             }
-
             mapGenMock.GenerateMap(context).Returns((fields, new List<BuildingEntity>()));
             table.GenerateMap();
-
-            var model = new GameModel(table, timerMock, persistenceMock, Difficulty.Medium, initialBalance)
+            var data = new GameCreationData(context, "TestSave", TransportTycoon.Model.Difficulty.Medium, initialBalance);
+            var model = new GameModel(table, timerMock, data)
             {
                 Mode = GameMode.Editor // A metódusok csak Editor módban működnek
             };
-
             return model;
         }
 
@@ -865,12 +866,9 @@ public class GameModelTest
         private GameModel CreateTestModelWithMap(int initialBalance = 1000)
         {
             var timerMock = Substitute.For<ITimer>();
-            var persistenceMock = Substitute.For<IPersistence>();
             var mapGenMock = Substitute.For<IMapGenerator>();
-
             var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
             var table = new GameTable(mapGenMock, context);
-
             // 3x3-as pálya feltöltése Terrain-ekkel (Magasság: 2)
             var fields = new IField[3, 3];
             for (int i = 0; i < 3; i++)
@@ -880,15 +878,13 @@ public class GameModelTest
                     fields[i, j] = new Terrain(i, j, 2);
                 }
             }
-
             mapGenMock.GenerateMap(context).Returns((fields, new List<TransportTycoon.MapData.Buildings.BuildingEntity>()));
             table.GenerateMap();
-
-            var model = new GameModel(table, timerMock, persistenceMock, Difficulty.Medium, initialBalance)
+            var data = new GameCreationData(context, "TestSave", TransportTycoon.Model.Difficulty.Medium, initialBalance);
+            var model = new GameModel(table, timerMock, data)
             {
                 Mode = GameMode.Editor // Editor mód az építésekhez
             };
-
             return model;
         }
 
