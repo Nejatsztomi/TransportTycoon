@@ -103,7 +103,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Height = b.Height,
                     X = b.X,
                     Y = b.Y,
-                    BridgeType = b.BridgeType.ToString(),
+                    BridgeType = b.BridgeType.ToString().Contains("Vertical") ? "Vertical" : "Horizontal",
                     Range = b.Range,
                     SpeedLimit = b.SpeedLimit
                 },
