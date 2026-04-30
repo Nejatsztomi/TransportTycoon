@@ -7,6 +7,7 @@ namespace TransportTycoon.Persistence
         public MapGenerationContextData MapContextData { get; set; }
         public ulong GameTime { get; set; }
         public int PlayerBalance { get; set; }
+        public Persistence.Difficulty Difficulty { get; set; }
 
         public List<TileSaveData> ModifiedTiles { get; set; } = [];
         public List<TreeSaveData> ModifiedTrees { get; set; } = [];
@@ -97,4 +98,11 @@ namespace TransportTycoon.Persistence
         int X,
         int Y
         );
+
+    public enum Difficulty : byte
+    {
+        Easy = 0,
+        Medium = 1,
+        Hard = 2,
+    }
 }
