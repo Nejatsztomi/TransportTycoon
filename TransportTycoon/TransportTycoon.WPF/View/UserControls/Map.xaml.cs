@@ -161,7 +161,7 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             if (DataContext is not GameViewModel viewModel) return;
 
-            if (e.LeftButton == MouseButtonState.Pressed && (viewModel.SelectedButton == 21 || viewModel.SelectedButton == 24))
+            if (_isLeftDragging && (viewModel.SelectedButton == 21 || viewModel.SelectedButton == 24))
             {
                 Point dragMousePos = e.GetPosition(InternalGameMapRenderer);
                 (int dragX, int dragY) = GetTileCoordinatesFromMousePosition(dragMousePos);
