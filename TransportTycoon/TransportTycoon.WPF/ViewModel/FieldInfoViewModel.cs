@@ -119,7 +119,7 @@ namespace TransportTycoon.WPF.ViewModel
                     X = h.X,
                     Y = h.Y,
                     MaxCapacity = h.BuildingEntity.MaxCapacity,
-                    CurrentCapacity = Math.Round(h.BuildingEntity.CurrentCapacity, 2),
+                    CurrentCapacity = Math.Round(h.BuildingEntity.CurrentCapacity),
                     Productivity = Math.Round(h.BuildingEntity.Productivity, 2),
                     Scaler = h.BuildingEntity.Scaler,
                     Offset = h.BuildingEntity.Offset
@@ -132,7 +132,7 @@ namespace TransportTycoon.WPF.ViewModel
                     X = s.X,
                     Y = s.Y,
                     MaxCapacity = s.BuildingEntity.MaxCapacity,
-                    CurrentCapacity = Math.Round(s.BuildingEntity.CurrentCapacity, 2),
+                    CurrentCapacity = Math.Round(s.BuildingEntity.CurrentCapacity),
                     Productivity = Math.Round(s.BuildingEntity.Productivity, 2),
                     Scaler = s.BuildingEntity.Scaler,
                     Offset = s.BuildingEntity.Offset
@@ -145,9 +145,9 @@ namespace TransportTycoon.WPF.ViewModel
                     X = i.X,
                     Y = i.Y,
                     MaxConsumeCapacity = ((IndustryEntity)i.BuildingEntity).MaxConsumeCapacity,
-                    ConsumeCapacity = Math.Round(((IndustryEntity)i.BuildingEntity).ConsumeCapacity, 2),
+                    ConsumeCapacity = Math.Round(((IndustryEntity)i.BuildingEntity).ConsumeCapacity),
                     MaxCapacity = i.BuildingEntity.MaxCapacity,
-                    CurrentCapacity = i.BuildingEntity.CurrentCapacity,
+                    CurrentCapacity = Math.Round(i.BuildingEntity.CurrentCapacity),
                     Productivity = Math.Round(i.BuildingEntity.Productivity, 2),
                     Scaler = i.BuildingEntity.Scaler,
                     Offset = i.BuildingEntity.Offset

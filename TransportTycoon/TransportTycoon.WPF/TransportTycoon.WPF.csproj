@@ -65,16 +65,7 @@
     <None Remove="Assets\Images\Trees\tree3.png" />
     <None Remove="Assets\Images\Trees\tree4.png" />
     <None Remove="Assets\Images\Vehicle\largeBus.png" />
-    <None Remove="Assets\Images\Vehicle\largeBus2.png" />
-    <None Remove="Assets\Images\Vehicle\largeBusDown.png" />
-    <None Remove="Assets\Images\Vehicle\largeBusLeft.png" />
-    <None Remove="Assets\Images\Vehicle\largeBusRight.png" />
-    <None Remove="Assets\Images\Vehicle\largeBusUp.png" />
     <None Remove="Assets\Images\Vehicle\smallBus.png" />
-    <None Remove="Assets\Images\Vehicle\smallBusDown.png" />
-    <None Remove="Assets\Images\Vehicle\smallBusLeft.png" />
-    <None Remove="Assets\Images\Vehicle\smallBusRight.png" />
-    <None Remove="Assets\Images\Vehicle\smallBusUp.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -290,37 +281,10 @@
     <Resource Include="Assets\Images\Terrain\mountain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Vehicle\largeBus2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Vehicle\largeBusDown.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Vehicle\largeBusLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Vehicle\largeBusRight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Vehicle\largeBusUp.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Assets\Images\Vehicle\pickup.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Vehicle\smallBus.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Vehicle\smallBusDown.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Vehicle\smallBusLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Vehicle\smallBusRight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Vehicle\smallBusUp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

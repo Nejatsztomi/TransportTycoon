@@ -419,8 +419,6 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs _2)
         {
-            //var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
-            //tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
             RefreshFieldInfo(_2.X, _2.Y);
         }
 
