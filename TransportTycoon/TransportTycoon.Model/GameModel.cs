@@ -983,7 +983,7 @@ namespace TransportTycoon.Model
                             LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
                             foreach (var building in buildings_taker)
                             {
-                                if (building.BuildingEntity is IndustryEntity industry)
+                                if (building.BuildingEntity is IndustryEntity industry && building.BuildingEntity is not CityEntity)
                                 {
                                     if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
                                     {
@@ -1035,6 +1035,7 @@ namespace TransportTycoon.Model
                                 if (acceptsLoad && isEmptyOrSameLoad)
                                 {
                                     int buildingCanGive = building.BuildingEntity.CurrentCapacity;
+                                    if (buildingCanGive == 0) break;
                                     if (buildingCanGive >= vehicleCanTake)
                                     {
                                         int buildingNewCapacity = buildingCanGive - vehicleCanTake;
@@ -1090,8 +1091,8 @@ namespace TransportTycoon.Model
                 return;
             }
             GameTime++;
-            StepAllVehicles();
             AllVehiclesDoTheTransport();
+            StepAllVehicles();
             AllProduction();
             if (GameTime > 0 && GameTime % 10 == 0)
             {

@@ -327,8 +327,8 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
 
         #region Public methods
-        public override Load? GetConsumeLoad() => new Wood();
-        public override Load GetProvideLoad() => new Paper();
+        public override Load? GetConsumeLoad() => new Oil();
+        public override Load GetProvideLoad() => new Rubber();
         public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
@@ -356,8 +356,8 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
 
         #region Public methods
-        public override Load? GetConsumeLoad() => new Oil();
-        public override Load GetProvideLoad() => new Rubber();
+        public override Load? GetConsumeLoad() => new Wood();
+        public override Load GetProvideLoad() => new Paper();
         public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
