@@ -73,7 +73,7 @@
         {
             if (CurrentCapacity < MaxCapacity)
             {
-                double production = Math.Round(Scaler * Productivity);
+                double production = Scaler * Productivity;
                 CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
             }
         }
@@ -253,7 +253,7 @@
         {
             if ((int)ConsumeCapacity == 0 || (int)CurrentCapacity == (int)MaxCapacity) return;
 
-            double production = Math.Round(Scaler * Productivity);
+            double production = Scaler * Productivity;
 
             if (ConsumeCapacity < production) production = ConsumeCapacity;
 
