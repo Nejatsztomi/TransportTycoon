@@ -8,6 +8,8 @@ namespace TransportTycoon.Model.Graph
     public class GhostNodeInjector
     {
         #region Private fields
+        private static readonly (int dx, int dy)[] _directions = [(0, -1), (0, 1), (-1, 0), (1, 0)];
+
         private readonly GameTable _gameTable;
         private readonly Graph _graph;
         #endregion
@@ -36,7 +38,10 @@ namespace TransportTycoon.Model.Graph
 
             Node ghostNode = new(currentVehicleTile.X, currentVehicleTile.Y, currentVehicleTile.GetType());
             _graph.AddNode(ghostNode);
-            List<(int X, int Y)> validExits = GetValidExits(currentVehicleTile);
+
+            var validExits = new List<(int X, int Y)>(4);
+            GetValidExits(currentVehicleTile, validExits);
+
             foreach ((int x, int y) exit in validExits)
             {
                 (Node? hitNode, List<IField> pathTaken) = WalkToNextJunction(currentVehicleTile, exit);
@@ -65,26 +70,26 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Private methods
-        private List<(int X, int Y)> GetValidExits(IField currentVehichleTile)
+        private void GetValidExits(IField currentVehichleTile, List<(int dx, int dy)> validExits)
         {
-            (int dx, int dy)[] directions = [(0, -1), (0, 1), (-1, 0), (1, 0)];
-            List<(int X, int Y)> validExits = [];
-            foreach ((int dx, int dy) in directions)
+            validExits.Clear();
+            foreach ((int dx, int dy) in _directions)
             {
                 int newX = currentVehichleTile.X + dx;
                 int newY = currentVehichleTile.Y + dy;
-                if (_gameTable.IsInBounds(newX, newY))
-                {
-                    validExits.Add((newX, newY));
-                }
+
+                if (!_gameTable.IsInBounds(newX, newY)) continue;
+                if (_gameTable[newX, newY] is not IInfrastructure) continue;
+
+                validExits.Add((dx, dy));
             }
-            return validExits;
         }
 
         private (Node? endNode, List<IField> path) WalkToNextJunction(IField startTile, (int X, int Y) initialMomentum)
         {
             List<IField> pathTaken = [startTile];
             IField currentTile = startTile;
+            var exits = new List<(int X, int Y)>(4);
             (int dx, int dy) momentum = initialMomentum;
 
             while (true)
@@ -98,13 +103,14 @@ namespace TransportTycoon.Model.Graph
                 }
 
                 currentTile = _gameTable[nextX, nextY];
+                pathTaken.Add(currentTile);
                 if (_graph.GetNodeAt(nextX, nextY) is Node node)
                 {
                     return (node, pathTaken);
                 }
 
                 (int backdx, int backdy) = (-momentum.dx, -momentum.dy);
-                List<(int dx, int dy)> exits = GetValidExits(currentTile);
+                GetValidExits(currentTile, exits);
                 exits.Remove((backdx, backdy));
 
                 if (exits.Count == 1)
