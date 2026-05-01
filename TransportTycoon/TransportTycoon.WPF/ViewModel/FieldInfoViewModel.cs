@@ -23,7 +23,7 @@ namespace TransportTycoon.WPF.ViewModel
         public int TreeCount { get; init; }
     }
 
-    public class RoadFieldInfoViewmodel : FieldInfoViewModel
+    public class RoadFieldInfoViewModel : FieldInfoViewModel
     {
         public string RoadType { get; init; } = "";
         public bool InCity { get; init; }
@@ -38,16 +38,14 @@ namespace TransportTycoon.WPF.ViewModel
 
     public class StopFieldInfoViewModel : FieldInfoViewModel
     {
-        public List<string?> Connections { get; init; } = [];
+        public List<string> Connections { get; init; } = [];
     }
 
     public abstract class BuildingBlocksFieldInfoViewModel : FieldInfoViewModel
     {
         public int MaxCapacity { get; init; }
         public int CurrentCapacity { get; init; }
-        public int Productivity { get; init; }
-        public int Scaler { get; init; }
-        public int Offset { get; init; }
+        public double Production { get; init; }
     }
 
     public class HouseFieldInfoViewModel : BuildingBlocksFieldInfoViewModel { }
@@ -66,7 +64,7 @@ namespace TransportTycoon.WPF.ViewModel
         public double CurrentSpeed { get; init; }
         public string Direction { get; init; } = "";
         public List<string>? AcceptedLoads { get; init; } = [];
-        public Load? CurrentLoad { get; init; }
+        public string? CurrentLoad { get; init; }
         public int MaxCapacity { get; init; }
         public int CurrentCapacity { get; init; }
         public int Maintance { get; init; }
@@ -87,7 +85,7 @@ namespace TransportTycoon.WPF.ViewModel
                     TreeCount = t.Trees
                 },
 
-                Road r => new RoadFieldInfoViewmodel
+                Road r => new RoadFieldInfoViewModel
                 {
                     Type = r.GetType().Name,
                     Height = r.Height,
@@ -103,7 +101,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Height = b.Height,
                     X = b.X,
                     Y = b.Y,
-                    BridgeType = b.BridgeType.ToString(),
+                    BridgeType = b.BridgeType.ToString().Contains("Vertical") ? "Vertical" : "Horizontal",
                     Range = b.Range,
                     SpeedLimit = b.SpeedLimit
                 },
@@ -114,7 +112,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Height = s.Height,
                     X = s.X,
                     Y = s.Y,
-                    Connections = s.Connections?.Select(c => c.ToString()).ToList() ?? []
+                    Connections = s.Connections?.Select(c => c.GetType().Name).ToList() ?? []
                 },
 
                 House h => new HouseFieldInfoViewModel
@@ -125,9 +123,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Y = h.Y,
                     MaxCapacity = h.BuildingEntity.MaxCapacity,
                     CurrentCapacity = h.BuildingEntity.CurrentCapacity,
-                    Productivity = h.BuildingEntity.Productivity,
-                    Scaler = h.BuildingEntity.Scaler,
-                    Offset = h.BuildingEntity.Offset
+                    Production = h.BuildingEntity.Production(),
                 },
 
                 ISite s => new SiteFieldInfoViewModel
@@ -138,9 +134,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Y = s.Y,
                     MaxCapacity = s.BuildingEntity.MaxCapacity,
                     CurrentCapacity = s.BuildingEntity.CurrentCapacity,
-                    Productivity = s.BuildingEntity.Productivity,
-                    Scaler = s.BuildingEntity.Scaler,
-                    Offset = s.BuildingEntity.Offset
+                    Production = s.BuildingEntity.Production(),
                 },
 
                 IIndustry i => new IndustryFieldInfoViewModel
@@ -153,9 +147,7 @@ namespace TransportTycoon.WPF.ViewModel
                     ConsumeCapacity = ((IndustryEntity)i.BuildingEntity).ConsumeCapacity,
                     MaxCapacity = i.BuildingEntity.MaxCapacity,
                     CurrentCapacity = i.BuildingEntity.CurrentCapacity,
-                    Productivity = i.BuildingEntity.Productivity,
-                    Scaler = i.BuildingEntity.Scaler,
-                    Offset = i.BuildingEntity.Offset
+                    Production = i.BuildingEntity.Production(),
                 },
 
                 _ => new FieldInfoViewModel
@@ -179,7 +171,7 @@ namespace TransportTycoon.WPF.ViewModel
                 CurrentSpeed = v.CurrentSpeed * 100,
                 Direction = v.Direction.ToString(),
                 AcceptedLoads = v.AcceptedGoods?.Select(l => l.GetType().Name).ToList() ?? [],
-                CurrentLoad = v.CurrentLoad,
+                CurrentLoad = v.CurrentLoad?.GetType().Name,
                 MaxCapacity = v.MaxCapacity,
                 CurrentCapacity = v.CurrentCapacity,
                 Maintance = v.Maintance

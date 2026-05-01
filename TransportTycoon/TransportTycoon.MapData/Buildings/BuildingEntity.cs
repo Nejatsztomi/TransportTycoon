@@ -68,13 +68,15 @@ namespace TransportTycoon.MapData.Buildings
         /// <summary>
         /// The production itself
         /// </summary>
-        public virtual void Production()
+        public virtual int Production()
         {
             if (CurrentCapacity < MaxCapacity)
             {
                 int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
                 CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
+                return production;
             }
+            return 0;
         }
         #endregion
 
@@ -258,9 +260,9 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
 
         #region Protected methods
-        public override void Production()
+        public override int Production()
         {
-            if (ConsumeCapacity == 0 || CurrentCapacity == MaxCapacity) return;
+            if (ConsumeCapacity == 0 || CurrentCapacity == MaxCapacity) return 0;
 
             int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
 
@@ -276,6 +278,7 @@ namespace TransportTycoon.MapData.Buildings
                 ConsumeCapacity -= production;
                 CurrentCapacity += production;
             }
+            return production;
         }
         public void SetConsumeCapacity(int value)
         {

@@ -262,9 +262,9 @@
                         <TextBlock Text="Field Info" HorizontalAlignment="Center"
                                    FontSize="14"
                                    FontWeight="Bold"
-                                   Margin="0,0,0,10"/>
+                                   Margin="0,20,0,30"/>
 
-                        <ContentControl Content="{Binding CurrentFieldInfo}"/>
+                        <ContentControl Content="{Binding CurrentFieldInfo}" FontFamily="/Assets/Fonts/#Press Start 2P"/>
                     </StackPanel>
 
                 </Border>
@@ -278,123 +278,308 @@
         <!-- BASE -->
         <DataTemplate DataType="{x:Type vm:FieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <!-- TERRAIN -->
         <DataTemplate DataType="{x:Type vm:TerrainFieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding TreeCount, StringFormat=Trees: {0}}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/forest.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding TreeCount, StringFormat=Forest: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <!-- ROAD -->
-        <DataTemplate DataType="{x:Type vm:RoadFieldInfoViewmodel}">
+        <DataTemplate DataType="{x:Type vm:RoadFieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding RoadType, StringFormat=Roadtype: {0}}"/>
-                <TextBlock Text="{Binding InCity, StringFormat=InCity: {0}}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">                 
+                    <Image Source="/Assets/Images/Icons/road.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="RType: " VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <TextBlock Text="{Binding RoadType}" VerticalAlignment="Center" Margin="42,5,0,5"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/city.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding InCity, StringFormat=In City: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <!-- BRIDGE -->
         <DataTemplate DataType="{x:Type vm:BridgeFieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding BridgeType, StringFormat=Bridgetype: {0}}"/>
-                <TextBlock Text="{Binding Range, StringFormat=Range: {0}}"/>
-                <TextBlock Text="{Binding SpeedLimit, StringFormat=Speedlimit: {0}}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type:{0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/bridge.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding BridgeType, StringFormat=BType: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/range.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Range, StringFormat=Range: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/speedlimit.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding SpeedLimit, StringFormat=Speed Limit: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <!-- STOP -->
         <DataTemplate DataType="{x:Type vm:StopFieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding Connections, StringFormat=Connections: {0}}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/connection.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="Connections: " VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding Connections}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" Margin="41,6,0,6"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <!-- HOUSE -->
         <DataTemplate DataType="{x:Type vm:HouseFieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
-                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
-                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
-                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
-                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/people.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentCapacity, StringFormat=Passengers: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Production, StringFormat=Growth: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <!-- SITE -->
         <DataTemplate DataType="{x:Type vm:SiteFieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
-                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
-                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
-                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
-                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/resource.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentCapacity, StringFormat=Resources: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Production, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <!-- INDUSTRY -->
         <DataTemplate DataType="{x:Type vm:IndustryFieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding MaxConsumeCapacity, StringFormat=Max consume capacity: {0}}"/>
-                <TextBlock Text="{Binding ConsumeCapacity, StringFormat=Consume capacity: {0}}"/>
-                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
-                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
-                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
-                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
-                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxConsumeCapacity, StringFormat=Input Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/resource.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding ConsumeCapacity, StringFormat=Resources: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/package.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentCapacity, StringFormat=Products: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Production, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
 
         <!-- VEHICLE -->
         <DataTemplate DataType="{x:Type vm:VehicleFieldInfoViewModel}">
             <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding TopSpeed, StringFormat=Top Speed: {0}}"/>
-                <TextBlock Text="{Binding CurrentSpeed, StringFormat=Current Speed: {0}}"/>
-                <TextBlock Text="{Binding Direction, StringFormat=Direction: {0}}"/>
-                <TextBlock Text="{Binding CurrentLoad, StringFormat=Current Load: {0}}"/>
-                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Capacity: {0}}"/>
-                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current Capacity: {0}}"/>
-                <TextBlock Text="{Binding Maintance, StringFormat=Maintance: {0}}"/>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/car.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding TopSpeed, StringFormat=Top Speed: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/vehiclespeed.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentSpeed, StringFormat=Curr. Speed: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/package.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentLoad, StringFormat=Load: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/vehiclecap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fuel.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Maintance, StringFormat=Maintenance: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
-    
+
 </UserControl>

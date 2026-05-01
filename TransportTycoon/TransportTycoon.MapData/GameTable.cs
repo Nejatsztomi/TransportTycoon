@@ -310,19 +310,19 @@ namespace TransportTycoon.MapData
                 ((Stop)Table[x, y]).SetBuildingBlocks(blocks);
                 result = true;
             }
-            else if (y + 1 < Width && HeightCheck(Table[x, y + 1], Table[x, y]) && Table[x, y + 1] is IBuildingBlocks blocks1)
+            if (y + 1 < Width && HeightCheck(Table[x, y + 1], Table[x, y]) && Table[x, y + 1] is IBuildingBlocks blocks1)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 ((Stop)Table[x, y]).SetBuildingBlocks(blocks1);
                 result = true;
             }
-            else if (x + 1 < Height && HeightCheck(Table[x + 1, y], Table[x, y]) && Table[x + 1, y] is IBuildingBlocks blocks2)
+            if (x + 1 < Height && HeightCheck(Table[x + 1, y], Table[x, y]) && Table[x + 1, y] is IBuildingBlocks blocks2)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 ((Stop)Table[x, y]).SetBuildingBlocks(blocks2);
                 result = true;
             }
-            else if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]) && Table[x, y - 1] is IBuildingBlocks blocks3)
+            if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]) && Table[x, y - 1] is IBuildingBlocks blocks3)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 ((Stop)Table[x, y]).SetBuildingBlocks(blocks3);
