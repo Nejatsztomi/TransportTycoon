@@ -193,6 +193,8 @@ namespace TransportTycoon.Model
         /// </summary>
         public List<Edge>? GetNextRoute()
         {
+            if (PathFinder is null || Prouth is null) return null;
+
             Debug.WriteLine($"Vehicle {Id} is getting the next route...");
             var stopPair = GetNextStopNodePair();
             _currentStopIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
@@ -242,10 +244,10 @@ namespace TransportTycoon.Model
         /// If the current route or edge tiles are not set, or if the next stop node pair cannot be determined, the method does nothing.
         /// If a ghost node cannot be injected, the route is marked as lost.
         /// </remarks>
-        /// <param name="pathFinder">The path finder used to compute a new route between nodes.</param>
         /// <param name="injector">The ghost node injector used to manage temporary nodes during route calculation.</param>
         public void RecalculateRoute(GhostNodeInjector injector)
         {
+            if (PathFinder is null || Prouth is null) return;
             if (GetCurrentStopNodePair() is not (Node _, Node end)) return;
 
             IField currentTile;
@@ -300,7 +302,7 @@ namespace TransportTycoon.Model
         /// </summary>
         private void AdvanceToNextTile()
         {
-            if (_currentEdgeTiles is null) return;
+            if (_currentEdgeTiles is null || CurrentRoute is null) return;
 
             _currentTileIdx++;
 
