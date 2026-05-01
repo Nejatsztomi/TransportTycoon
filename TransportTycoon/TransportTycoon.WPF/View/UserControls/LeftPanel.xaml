@@ -342,9 +342,12 @@
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
                     <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,2">
+                <StackPanel Orientation="Horizontal" Margin="0,2">                 
                     <Image Source="/Assets/Images/Icons/road.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding RoadType, StringFormat=RoadType: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="RType: " VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <TextBlock Text="{Binding RoadType}" VerticalAlignment="Center" Margin="42,5,0,5"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/city.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -358,7 +361,7 @@
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type:{0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -374,7 +377,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/bridge.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding BridgeType, StringFormat=BridgeType: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding BridgeType, StringFormat=BType: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/range.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -382,7 +385,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/speedlimit.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding SpeedLimit, StringFormat=Speed Limit: {0} mph}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding SpeedLimit, StringFormat=Speed Limit: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
@@ -544,15 +547,15 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding TopSpeed, StringFormat=Top Speed: {0} mph}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding TopSpeed, StringFormat=Top Speed: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/Images/Icons/vehiclespeed.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding CurrentSpeed, StringFormat=Current Speed: {0} mph}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentSpeed, StringFormat=Curr. Speed: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/package.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding CurrentLoad, StringFormat=Current Load: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentLoad, StringFormat=Load: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>

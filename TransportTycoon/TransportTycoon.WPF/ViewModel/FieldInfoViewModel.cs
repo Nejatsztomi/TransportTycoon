@@ -38,7 +38,7 @@ namespace TransportTycoon.WPF.ViewModel
 
     public class StopFieldInfoViewModel : FieldInfoViewModel
     {
-        public List<string?> Connections { get; init; } = [];
+        public List<string> Connections { get; init; } = [];
     }
 
     public abstract class BuildingBlocksFieldInfoViewModel : FieldInfoViewModel
@@ -112,7 +112,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Height = s.Height,
                     X = s.X,
                     Y = s.Y,
-                    Connections = s.Connections?.Select(c => c.ToString()).ToList() ?? []
+                    Connections = s.Connections?.Select(c => c.GetType().Name).ToList() ?? []
                 },
 
                 House h => new HouseFieldInfoViewModel
