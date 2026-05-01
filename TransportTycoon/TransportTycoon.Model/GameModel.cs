@@ -455,8 +455,8 @@ namespace TransportTycoon.Model
             }
             else
             {
-                cost = newRoad.Price * 2;
-                Balance += -cost;
+                cost = -newRoad.Price * 2;
+                Balance += cost;
             }
 
             foreach (IField? e in Map.NeighboursOfRoadsAndStops(x, y))

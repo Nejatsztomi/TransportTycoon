@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF.View.UserControls
@@ -149,46 +150,84 @@ namespace TransportTycoon.WPF.View.UserControls
 
         private async Task ShowFloatingMessage(string text, int tileX, int tileY)////
         {
+            //Pixel point coordinates
             int TILE_SIZE = FastMapRenderer.TileSize;
             double worldX = tileX * TILE_SIZE;
             double worldY = tileY * TILE_SIZE;
 
+            //Pixel point coordinates from screen's upper left corner
             double screenX = (worldX - InternalGameMapRenderer.CameraX) * InternalGameMapRenderer.ZoomLevel;
             double screenY = (worldY - InternalGameMapRenderer.CameraY) * InternalGameMapRenderer.ZoomLevel;
 
+            //Message color
+            Brush textColor;
+            if (text.StartsWith("-")) textColor = Brushes.Red;
+            else textColor = Brushes.LightGreen;
+
+            //Message text
             var textBlock = new System.Windows.Controls.TextBlock
             {
                 Text = text,
                 FontSize = 24,
                 FontWeight = FontWeights.Bold,
-                Foreground = Brushes.Red,
+                Foreground = textColor,
                 Opacity = 1.0
             };
 
-            FloatingCanvas.Children.Add(textBlock);
-            Canvas.SetLeft(textBlock, screenX);
-            Canvas.SetTop(textBlock, screenY);
+            // Coin picture
+            var coinImage = new Image
+            {
+                Source = new BitmapImage(new Uri("/Assets/Images/Icons/coin.png", UriKind.Relative)),
+                Width = 24,
+                Height = 24,
+                Opacity = 1.0,
+                Margin = new Thickness(3, 0, 0, 0),
+                VerticalAlignment = VerticalAlignment.Center
+            };
 
+            // StackPanel for message
+            var stackPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(0)
+            };
+            stackPanel.Children.Add(textBlock);
+            stackPanel.Children.Add(coinImage);
+
+            //Stackpanel added to canvas
+            FloatingCanvas.Children.Add(stackPanel);
+            Canvas.SetLeft(stackPanel, screenX);
+            Canvas.SetTop(stackPanel, screenY);
+
+            //Animation start and end point, timer for animation and duration of animation
             double startY = screenY;
             double endY = screenY - 50;
             var sw = System.Diagnostics.Stopwatch.StartNew();
             double durationMs = 1000;
 
+            //Animation loop
             while (sw.ElapsedMilliseconds < durationMs)
             {
+                //Elapsed time ratio
                 double t = sw.ElapsedMilliseconds / durationMs;
+                //New point with interpolation due to elapsed time ratio
                 double newY = startY + (endY - startY) * t;
+                //Reduce opacity
                 double newOpacity = 1.0 - t;
 
+                //Set new properties of stackpanel
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    Canvas.SetTop(textBlock, newY);
-                    textBlock.Opacity = newOpacity;
+                    Canvas.SetTop(stackPanel, newY);
+                    stackPanel.Opacity = newOpacity;
                 });
+
+                //Wait a little in order to smooth animation
                 await Task.Delay(16);
             }
 
-            await Dispatcher.InvokeAsync(() => FloatingCanvas.Children.Remove(textBlock));
+            //Remove stackpanel from canvas
+            await Dispatcher.InvokeAsync(() => FloatingCanvas.Children.Remove(stackPanel));
         }
 
         private void GameViewModel_OnVehichleDestroyed(UInt64 vehicleId)
