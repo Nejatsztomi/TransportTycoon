@@ -288,11 +288,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
@@ -310,11 +310,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/forest.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -336,11 +336,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">                 
                     <Image Source="/Assets/Images/Icons/road.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -369,11 +369,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/bridge.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -403,11 +403,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/connection.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -429,11 +429,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -463,11 +463,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -497,11 +497,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -539,11 +539,11 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding X, StringFormat=Latitude (X): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Y, StringFormat=Longitude (Y): {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
