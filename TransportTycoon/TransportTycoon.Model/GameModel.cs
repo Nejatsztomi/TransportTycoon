@@ -611,7 +611,7 @@ namespace TransportTycoon.Model
             }
             else
             {
-                if(CheckDestroyBridge(x, y)) Map.DestroyBridge(x, y, ref changedFields);
+                if (CheckDestroyBridge(x, y)) Map.DestroyBridge(x, y, ref changedFields);
             }
             // Modify the changed fields in the dictionary
             foreach (var change in changedFields)
