@@ -162,12 +162,12 @@ namespace TransportTycoon.WPF.View.UserControls
             //Message color
             Brush textColor;
             if (text.StartsWith("-")) textColor = Brushes.Red;
-            else textColor = Brushes.LightGreen;
+            else textColor = Brushes.Green;
 
             //Message text
             var textBlock = new System.Windows.Controls.TextBlock
             {
-                Text = text,
+                Text = text.StartsWith("-") ? text : "+"+text,
                 FontSize = 20,
                 FontWeight = FontWeights.Bold,
                 Foreground = textColor,

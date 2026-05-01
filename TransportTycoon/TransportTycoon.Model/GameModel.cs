@@ -370,11 +370,14 @@ namespace TransportTycoon.Model
                     if (Map.IsTileHeightPossible(x, y, nextHeight))
                     {
                         if (field.Height == 4) return;
+                        int cost;
                         if (terrain.Trees > 0)
                         {
-                            Balance -= 50;
+                            cost = -50;
+                            Balance += cost;
                         }
-                        Balance -= 100;
+                        cost = -100;
+                        Balance += cost;
                         terrain.IncreaseHeight();
 
                         Map.UpdateTable(x, y, terrain);
@@ -384,6 +387,7 @@ namespace TransportTycoon.Model
 
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
+                        BalanceMessage?.Invoke(this, (x, y, cost));
                         if (IsGameOver)
                         {
                             OnGameOver();
@@ -407,11 +411,14 @@ namespace TransportTycoon.Model
                     if (Map.IsTileHeightPossible(x, y, nextHeight))
                     {
                         if (field.Height == 1) return;
+                        int cost;
                         if (terrain.Trees > 0)
                         {
-                            Balance -= 50;
+                            cost = -50;
+                            Balance += cost;
                         }
-                        Balance -= 100;
+                        cost = -100;
+                        Balance += cost;
                         terrain.DecreaseHeight();
 
                         Map.UpdateTable(x, y, terrain);
@@ -422,6 +429,7 @@ namespace TransportTycoon.Model
 
                         FieldChanged?.Invoke(this, new TransportTycoonFieldEventArgs(x, y));
                         BalanceChanged?.Invoke(this, EventArgs.Empty);
+                        BalanceMessage?.Invoke(this, (x, y, cost));
                         if (IsGameOver)
                         {
                             OnGameOver();
@@ -496,6 +504,7 @@ namespace TransportTycoon.Model
             }
 
             List<(int X, int Y)> changedFields = [];
+            int cost = 0;
             if (SelectedField.X == x && SelectedField.Y == y)
             {
                 Balance -= Map.CreateShortBridge(x, y, ref changedFields);
@@ -524,7 +533,8 @@ namespace TransportTycoon.Model
                         return;
                     }
                 }
-                Balance -= Map.CreateHorizontalBridge(x, Math.Min(SelectedField.Y, y), Math.Max(SelectedField.Y, y), b_type, ref changedFields);
+                cost = -Map.CreateHorizontalBridge(x, Math.Min(SelectedField.Y, y), Math.Max(SelectedField.Y, y), b_type, ref changedFields);
+                Balance += cost;
             }
             else if (SelectedField.Y == y)
             {
@@ -551,7 +561,8 @@ namespace TransportTycoon.Model
                         return;
                     }
                 }
-                Balance -= Map.CreateVerticalBridge(y, Math.Min(SelectedField.X, x), Math.Max(SelectedField.X, x), b_type, ref changedFields);
+                cost = -Map.CreateVerticalBridge(y, Math.Min(SelectedField.X, x), Math.Max(SelectedField.X, x), b_type, ref changedFields);
+                Balance += cost;
             }
 
             SetSelectedField(-1, -1);
@@ -565,6 +576,7 @@ namespace TransportTycoon.Model
 
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
+            if(cost!=0) BalanceMessage?.Invoke(this, (x, y, cost));
         }
 
         public void BuildStop(int x, int y)
@@ -580,8 +592,17 @@ namespace TransportTycoon.Model
             _modifiedFields[(x, y)] = Map[x, y];
 
             int oldTrees = Map[x, y].GetTrees();
-            if (oldTrees == 0) Balance -= stop.Price;
-            else Balance -= stop.Price * 2;
+            int cost;
+            if (oldTrees == 0)
+            {
+                cost = -stop.Price;
+                Balance += cost;
+            }
+            else
+            {
+                cost = -stop.Price * 2;
+                Balance += cost;
+            }
 
             foreach (var e in Map.NeighboursOfRoadsAndStops(x, y))
             {
@@ -597,6 +618,7 @@ namespace TransportTycoon.Model
 
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
+            BalanceMessage?.Invoke(this, (x, y, cost));
         }
 
         public void Destroy(int x, int y)
@@ -653,6 +675,7 @@ namespace TransportTycoon.Model
                 Balance -= vehicle.Price;
                 Vehicles.Add(vehicle);
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
+                BalanceMessage?.Invoke(this, (x, y, -vehicle.Price));
                 if (IsGameOver)
                 {
                     OnGameOver();
@@ -1007,6 +1030,7 @@ namespace TransportTycoon.Model
                                             int buildingNewCapacity = (int)industry.ConsumeCapacity + vehicleCanGive;
                                             Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
+                                            BalanceMessage?.Invoke(this, (vehicle.MapX, vehicle.MapY, vehicleCanGive * vehicle.CurrentLoad!.Price));
                                             industry.SetConsumeCapacity(buildingNewCapacity);
                                             vehicle.SetCurrentCapacity(0);
                                             vehicle.SetCurrentLoad(null);
@@ -1017,6 +1041,7 @@ namespace TransportTycoon.Model
                                             vehicleCanGive -= buildingCanTake;
                                             Balance += buildingCanTake * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
+                                            BalanceMessage?.Invoke(this, (vehicle.MapX, vehicle.MapY, buildingCanTake * vehicle.CurrentLoad!.Price));
                                             industry.SetConsumeCapacity(industry.MaxConsumeCapacity);
                                             vehicle.SetCurrentCapacity(vehicleCanGive);
                                         }
@@ -1027,6 +1052,7 @@ namespace TransportTycoon.Model
                                     vehicleCanGive = vehicle.CurrentCapacity;
                                     Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
                                     BalanceChanged?.Invoke(this, EventArgs.Empty);
+                                    BalanceMessage?.Invoke(this, (vehicle.MapX, vehicle.MapY, vehicleCanGive * vehicle.CurrentLoad!.Price));
                                     vehicle.SetCurrentCapacity(0);
                                     vehicle.SetCurrentLoad(null);
                                     break;
