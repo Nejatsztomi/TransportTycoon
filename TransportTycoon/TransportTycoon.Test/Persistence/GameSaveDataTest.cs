@@ -7,21 +7,34 @@ namespace TransportTycoon.Test.Persistence
 {
     public class GameSaveDataTest
     {
-        [Fact]
-        public void CanConstructAndSetProperties()
+        public class EnumEnumerable<T> : TheoryData<T> where T : struct, Enum
+        {
+            public EnumEnumerable()
+            {
+                foreach (var value in Enum.GetValues<T>())
+                {
+                    Add(value);
+                }
+            }
+        }
+
+        [Theory]
+        [ClassData(typeof(EnumEnumerable<Difficulty>))]
+        public void CanConstructAndSetProperties(Difficulty diff)
         {
             var settings = new MapGenerationSettings();
             var data = new GameSaveData
             {
                 MapContextData = new(
-                    width: 10,
-                    height: 10,
-                    seed: 1,
-                    settings: settings
-                ),
+                        width: 10,
+                        height: 10,
+                        seed: 1,
+                        settings: settings
+                    ),
                 GameTime = 42UL,
                 PlayerBalance = 1000,
-                ModifiedTiles = [new(1, 2, SaveFieldType.Road)],
+                Difficulty = diff,
+                ModifiedTiles = [new(1, 2, SaveFieldType.Road, 1)],
                 ModifiedTrees = [new(3, 4, 5)],
                 Vehicles = [new(VehicleType.Van, 6, 7, LoadType.Wheat, 8, new())],
                 BuildingEntities = [new(9, 10, 11, 12)]
@@ -29,27 +42,30 @@ namespace TransportTycoon.Test.Persistence
 
             Assert.Equal(42UL, data.GameTime);
             Assert.Equal(1000, data.PlayerBalance);
+            Assert.Equal(diff, data.Difficulty);
             Assert.Single(data.ModifiedTiles);
             Assert.Single(data.ModifiedTrees);
             Assert.Single(data.Vehicles);
             Assert.Single(data.BuildingEntities);
         }
 
-        [Fact]
-        public void CanSerializeAndDeserialize()
+        [Theory]
+        [ClassData(typeof(EnumEnumerable<Difficulty>))]
+        public void CanSerializeAndDeserialize(Difficulty diff)
         {
             var settings = new MapGenerationSettings();
             var data = new GameSaveData
             {
                 MapContextData = new(
                     width: 10,
-                    height: 10,
-                    seed: 1,
-                    settings: settings
-                ),
+                        height: 10,
+                        seed: 1,
+                        settings: settings
+                    ),
                 GameTime = 99UL,
                 PlayerBalance = 1234,
-                ModifiedTiles = [new(1, 2, SaveFieldType.Road)],
+                Difficulty = diff,
+                ModifiedTiles = [new(1, 2, SaveFieldType.Road, 1)],
                 ModifiedTrees = [new(3, 4, 5)],
                 Vehicles = [new(VehicleType.Van, 6, 7, LoadType.Wheat, 8, new())],
                 BuildingEntities = [new(9, 10, 11, 12)]
@@ -70,6 +86,7 @@ namespace TransportTycoon.Test.Persistence
             Assert.NotNull(deserialized);
             Assert.Equal(data.GameTime, deserialized.GameTime);
             Assert.Equal(data.PlayerBalance, deserialized.PlayerBalance);
+            Assert.Equal(data.Difficulty, deserialized.Difficulty);
         }
     }
 }

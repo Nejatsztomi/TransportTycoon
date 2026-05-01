@@ -135,8 +135,9 @@ namespace TransportTycoon.Test.MapData
                 stop.SetBuildingBlocks(mockBuildingBlock);
 
                 // Assert
-                Assert.Single(stop.Connections!); // Pontosan 1 elemnek kell lennie
-                Assert.Contains(mockBuildingBlock, stop.Connections!);
+                Assert.NotNull(stop.Connections);
+                Assert.Single(stop.Connections); // Pontosan 1 elemnek kell lennie
+                Assert.Contains(mockBuildingBlock, stop.Connections);
             }
         }
     }
