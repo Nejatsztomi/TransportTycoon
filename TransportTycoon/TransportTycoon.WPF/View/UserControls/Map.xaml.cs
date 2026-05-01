@@ -167,7 +167,7 @@ namespace TransportTycoon.WPF.View.UserControls
             //Message text
             var textBlock = new System.Windows.Controls.TextBlock
             {
-                Text = text.StartsWith("-") ? text : "+"+text,
+                Text = text.StartsWith("-") ? text : "+" + text,
                 FontSize = 20,
                 FontWeight = FontWeights.Bold,
                 Foreground = textColor,

@@ -576,7 +576,7 @@ namespace TransportTycoon.Model
 
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
-            if(cost!=0) BalanceMessage?.Invoke(this, (x, y, cost));
+            if (cost != 0) BalanceMessage?.Invoke(this, (x, y, cost));
         }
 
         public void BuildStop(int x, int y)
