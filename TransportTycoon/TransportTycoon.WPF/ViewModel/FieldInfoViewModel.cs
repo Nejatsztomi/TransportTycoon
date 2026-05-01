@@ -64,7 +64,7 @@ namespace TransportTycoon.WPF.ViewModel
         public double CurrentSpeed { get; init; }
         public string Direction { get; init; } = "";
         public List<string>? AcceptedLoads { get; init; } = [];
-        public Load? CurrentLoad { get; init; }
+        public string? CurrentLoad { get; init; }
         public int MaxCapacity { get; init; }
         public int CurrentCapacity { get; init; }
         public int Maintance { get; init; }
@@ -171,7 +171,7 @@ namespace TransportTycoon.WPF.ViewModel
                 CurrentSpeed = v.CurrentSpeed * 100,
                 Direction = v.Direction.ToString(),
                 AcceptedLoads = v.AcceptedGoods?.Select(l => l.GetType().Name).ToList() ?? [],
-                CurrentLoad = v.CurrentLoad,
+                CurrentLoad = v.CurrentLoad?.GetType().Name,
                 MaxCapacity = v.MaxCapacity,
                 CurrentCapacity = v.CurrentCapacity,
                 Maintance = v.Maintance
