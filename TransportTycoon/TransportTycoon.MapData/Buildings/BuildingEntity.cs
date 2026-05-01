@@ -1,26 +1,15 @@
-﻿using static TransportTycoon.MapData.Load;
-
-namespace TransportTycoon.MapData.Buildings
+﻿namespace TransportTycoon.MapData.Buildings
 
 {
     public abstract class BuildingEntity
     {
         #region Properties
-        /// <summary>
-        /// Mennyit tud tárolni
-        /// </summary>
         public int MaxCapacity { private set; get; } = 1000;
 
-        /// <summary>
-        /// Jelenleg mennyit termelt
-        /// </summary>
         public double CurrentCapacity { set; get; } = 0;
 
         private double _productivity = 1;
 
-        /// <summary>
-        /// Milyen mennyiséggel termel
-        /// </summary>
         public double Productivity
         {
             get
@@ -34,7 +23,7 @@ namespace TransportTycoon.MapData.Buildings
         }
 
         /// <summary>
-        /// Melyik telephely milyen szorzóval termel
+        /// factor that determines the production rate of the building. The actual production is calculated as Scaler * Productivity.
         /// </summary>
         public int Scaler { protected set; get; }
         public int Offset { protected set; get; }
