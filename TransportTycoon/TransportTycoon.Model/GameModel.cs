@@ -118,6 +118,7 @@ namespace TransportTycoon.Model
         public event EventHandler<Vehicle>? VehicleChanged;
         public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;
         public event EventHandler<List<(int, int)>>? ProductionChanged;
+        public event EventHandler<(int, int, int)>? BalanceMessage;/////
         #endregion
 
         #region Constructor
@@ -446,8 +447,17 @@ namespace TransportTycoon.Model
             // Add the modified field to the dictionary
             _modifiedFields[(x, y)] = newRoad;
 
-            if (oldTrees == 0) Balance -= newRoad.Price;
-            else Balance -= newRoad.Price * 2;
+            int cost;
+            if (oldTrees == 0)
+            {
+                cost = -newRoad.Price;
+                Balance += cost;
+            }
+            else
+            {
+                cost = newRoad.Price * 2;
+                Balance += -cost;
+            }
 
             foreach (IField? e in Map.NeighboursOfRoadsAndStops(x, y))
             {
@@ -462,6 +472,7 @@ namespace TransportTycoon.Model
             if (IsGameOver) OnGameOver();
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
+            BalanceMessage?.Invoke(this, (x, y, cost));
         }
 
         public void BuildBridge(int x, int y)
