@@ -69,15 +69,14 @@
         /// <summary>
         /// The production itself
         /// </summary>
-        public virtual int Production()
+        public virtual void Production()
         {
             if (CurrentCapacity < MaxCapacity)
             {
                 double production = Scaler * Productivity;
                 CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
-                return production;
             }
-            return 0;
+            return;
         }
         #endregion
 
@@ -251,7 +250,7 @@
         #endregion
 
         #region Protected methods
-        public override int Production()
+        public override void Production()
         {
             if ((int)ConsumeCapacity == 0 || (int)CurrentCapacity == (int)MaxCapacity) return;
 
@@ -269,7 +268,6 @@
                 ConsumeCapacity -= production;
                 CurrentCapacity += production;
             }
-            return production;
         }
         public void SetConsumeCapacity(int value)
         {
