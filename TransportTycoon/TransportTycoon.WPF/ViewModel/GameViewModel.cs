@@ -46,6 +46,7 @@ namespace TransportTycoon.WPF.ViewModel
         private int _selectedButton = 0;
         [ObservableProperty]
         private FieldInfoViewModel? _currentFieldInfo;
+
         #endregion
 
         #region Events

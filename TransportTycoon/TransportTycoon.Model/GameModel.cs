@@ -611,7 +611,7 @@ namespace TransportTycoon.Model
             }
             else
             {
-                Map.DestroyBridge(x, y, ref changedFields);
+                if (CheckDestroyBridge(x, y)) Map.DestroyBridge(x, y, ref changedFields);
             }
             // Modify the changed fields in the dictionary
             foreach (var change in changedFields)
@@ -1081,6 +1081,35 @@ namespace TransportTycoon.Model
                 return true;
             }
             return false;
+        }
+
+        private bool CheckDestroyBridge(int x, int y)
+        {
+            int left = y - 1;
+            while (Map[x, left] is IBridge)
+            {
+                if (Vehicles.Any(v => v.MapX == x && v.MapY == left)) return false;
+                left--;
+            }
+            int right = y + 1;
+            while (Map[x, right] is IBridge)
+            {
+                if (Vehicles.Any(v => v.MapX == x && v.MapY == right)) return false;
+                right++;
+            }
+            int up = x - 1;
+            while (Map[up, y] is IBridge)
+            {
+                if (Vehicles.Any(v => v.MapX == up && v.MapY == y)) return false;
+                up--;
+            }
+            int down = x + 1;
+            while (Map[down, y] is IBridge)
+            {
+                if (Vehicles.Any(v => v.MapX == down && v.MapY == y)) return false;
+                down++;
+            }
+            return true;
         }
         #endregion
 
