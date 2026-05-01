@@ -70,7 +70,7 @@ namespace TransportTycoon.Model
                 else
                 {
                     _timer.Start();
-                    RebuildGraph();
+                    //RebuildGraph();
                 }
                 GameModeChanged?.Invoke(this, value);
                 field = value;
@@ -236,8 +236,11 @@ namespace TransportTycoon.Model
                 .Cast<Stop>()
                 .ToList();
 
-                var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
-                vehicle.Prouth = prouth;
+                if (stops.Any())
+                {
+                    var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
+                    vehicle.SetProuth(prouth, _pathFinder, new(Map, GraphNetwork));
+                }
 
                 Vehicles.Add(vehicle);
             });
@@ -462,6 +465,7 @@ namespace TransportTycoon.Model
             if (IsGameOver) OnGameOver();
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
+            RebuildGraph();
         }
 
         public void BuildBridge(int x, int y)
@@ -554,6 +558,7 @@ namespace TransportTycoon.Model
 
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
+            RebuildGraph();
         }
 
         public void BuildStop(int x, int y)
@@ -619,6 +624,7 @@ namespace TransportTycoon.Model
                 _modifiedFields[change] = Map[change.X, change.Y];
             }
             InfrastructureBuilt?.Invoke(this, changedFields);
+            RebuildGraph();
         }
 
         //Create a new Vehicle based on the given type and coordinates, and add it to the player's collection if they have enough balance. Returns the created Vehicle.
@@ -660,7 +666,7 @@ namespace TransportTycoon.Model
             if (Mode != GameMode.Run) return;
             foreach (Vehicle vehicle in Vehicles)
             {
-                Step(vehicle);
+                vehicle.Step();
             }
         }
 
@@ -691,8 +697,8 @@ namespace TransportTycoon.Model
         {
             if (SelectedStopFields.Count == 0) return;
 
-            Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
-            if (selectedVehcile is null) return;
+            Vehicle? selectedVehicle = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
+            if (selectedVehicle is null) return;
             Debug.WriteLine("Vehicle candiate found at X={0}, Y={1}", x, y);
             Debug.WriteLine("The select stop are located at:");
             foreach (var stop in SelectedStopFields)
@@ -705,7 +711,9 @@ namespace TransportTycoon.Model
             Debug.WriteLine("Done!");
 
             Debug.WriteLine("Assigned prouth with {0} stops to the vehicle.", prouth.Stops.Count);
-            selectedVehcile.Prouth = prouth;
+
+            var ghostNodeInjector = new GhostNodeInjector(Map, GraphNetwork);
+            selectedVehicle.SetProuth(prouth, _pathFinder, ghostNodeInjector);
 
             Debug.WriteLine("Resetting stop list and inkoving event");
             SelectedStopFields = [];
@@ -733,22 +741,32 @@ namespace TransportTycoon.Model
         /// </summary>
         private void RebuildGraph()
         {
-            if (!Map.IsMapGenerated)
-            {
-                return;
-            }
-            GraphNetwork = Graph.GraphBuilder.BuildGraph(Map);
+            Debug.WriteLine("Starting to rebuild the graph!");
+            if (!Map.IsMapGenerated) return;
+            GraphNetwork = GraphBuilder.BuildGraph(Map);
+            _pathFinder = new AStarPathfinder(GraphNetwork);
+            Debug.WriteLine("The graph has been successfully rebuilt!");
 
-            foreach (Vehicle vehicle in Vehicles)
+            ReasignVehiclesProuth();
+        }
+
+        private void ReasignVehiclesProuth()
+        {
+            Debug.WriteLine("Starting to reasign vehicle prouths!");
+            var ghostNodeInjector = new GhostNodeInjector(Map, GraphNetwork);
+
+            foreach (var vehicle in Vehicles)
             {
-                if (vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
+                if (vehicle.Prouth is not null && vehicle.Prouth.Stops.Count > 0)
                 {
-                    List<Stop> stopFields = ProuthUtil.ConvertNodestoStopTiles(vehicle.Prouth.Stops, Map);
+                    var stopFields = ProuthUtil.ConvertNodestoStopTiles(vehicle.Prouth.Stops, Map);
+                    vehicle.Prouth = new(ProuthUtil.ConvertStopTilesToNodes(stopFields, GraphNetwork));
 
-                    vehicle.Prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stopFields, GraphNetwork));
+                    vehicle.PathFinder = _pathFinder;
+                    vehicle.RecalculateRoute(ghostNodeInjector);
                 }
             }
-            _pathFinder = new AStarPathfinder(GraphNetwork);
+            Debug.WriteLine("Successfully reasigned vehicle prouths!");
         }
 
         private void SetTax()
@@ -810,51 +828,6 @@ namespace TransportTycoon.Model
             }
 
             return grownTrees;
-        }
-        /// <summary>
-        /// Updates the position of the specified vehicle based on its current direction and speed, provided the game is
-        /// in Run mode.
-        /// </summary>
-        /// <remarks>The method checks if the new coordinates are within the map boundaries and whether
-        /// the vehicle can move to the new position, which must be an infrastructure. If the game is not in Run mode,
-        /// the vehicle does not move.</remarks>
-        /// <param name="vehicle">The vehicle to be moved, which influences its new position based on its direction and speed.</param>
-        private void Step(Vehicle vehicle)
-        {
-            //if the game is not in Run mode, the vehicles should not move
-            if (Mode != GameMode.Run) return;
-
-            vehicle.ChangeCurrentSpeed(vehicle.TopSpeed);
-
-            //the vehicle should start
-            if (vehicle.CurrentRoute == null && vehicle.Prouth != null && vehicle.Prouth.Stops.Count > 0)
-            {
-                vehicle.GetNextRoute(_pathFinder);
-
-                if (vehicle.CurrentRoute == null) return;
-            }
-
-            IField? newField = vehicle.TargetTile;
-
-            //if the target field is out of bounds or not an infrastructure, the vehicle should stop and not move
-            if (newField == null ||
-                0 > newField.X || newField.X >= Map.Height ||
-                0 > newField.Y || newField.Y >= Map.Width ||
-                newField is not IInfrastructure)
-            {
-                vehicle.ChangeCurrentSpeed(0);
-                return;
-            }
-
-            IField currentField = Map[vehicle.MapX, vehicle.MapY];
-            Vehicle? nextVehicle = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
-
-            SetVehicleSpeed(vehicle, nextVehicle, currentField, newField);
-            if (vehicle.CurrentSpeed > 0)
-            {
-                vehicle.Step();
-                VehicleChanged?.Invoke(this, vehicle);
-            }
         }
 
         /// <summary>

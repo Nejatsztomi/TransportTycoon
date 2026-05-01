@@ -36,8 +36,7 @@ namespace TransportTycoon.Model
         /// <summary>
         /// The current tile's progress.
         /// </summary>
-        /// //TODO: maybe we can use this to make the movement smoother, instead of just moving from tile to tile, we can move smoothly between them based on the current speed and the distance to the next tile.
-        //private double _tileProgress = 0.0;
+        private double _tileProgress = 0.0;
         /// <summary>
         /// The current edge's tiles.
         /// </summary>
@@ -51,10 +50,14 @@ namespace TransportTycoon.Model
         public Load? CurrentLoad { get; protected set; }
         public int MaxCapacity { get; protected set; }
         public int CurrentCapacity { get; protected set; }
-        public Prouth? Prouth { get; set; }
+        public Prouth? Prouth
+        {
+            get;
+            set;
+        }
         /// <summary>
-        /// The current route of the vehicle, represented as a list of edges.
-        /// The route may be null if the vehicle does not have a current route assigned.
+        /// The current route of the vehicle, represented as a list of <see cref="Edge"/> objects.
+        /// The route may be <see langword="null"/> if the vehicle does not have a current route assigned.
         /// The vehicle will be repeating this route, if not given a new one.
         /// </summary>
         public List<Edge>? CurrentRoute { get; protected set; }
@@ -83,6 +86,15 @@ namespace TransportTycoon.Model
                 return _currentEdgeTiles[_currentTileIdx];
             }
         }
+
+        public IPathFinder? PathFinder
+        {
+            get;
+            set
+            {
+                field = value;
+            }
+        } = null;
         #endregion
 
         #region Protected constructor
@@ -102,39 +114,26 @@ namespace TransportTycoon.Model
         /// the route. The method has no effect if there is no active route or target tile.</remarks>
         public void Step()
         {
-            if (CurrentRoute is null) return;
+            if (IsLost || Prouth is null || _currentEdgeTiles is null) return;
 
-            IField? targetTile = TargetTile;
-            if (targetTile is null) return;
+            const double AMOUNT = 0.5;
 
-            //update the direction
-            UpdateDirection(targetTile);
-
-            //check if we have arrived at the target tile
-            double distanceToTarget = Math.Sqrt(Math.Pow(X - targetTile.X, 2) + Math.Pow(Y - targetTile.Y, 2));
-            if (distanceToTarget < 0.1 || distanceToTarget <= CurrentSpeed) //if we are close enough to the target tile, we consider that we have arrived
+            if (_tileProgress + AMOUNT >= 1.0)
             {
-                X = targetTile.X;
-                Y = targetTile.Y;
+                _tileProgress = _tileProgress + AMOUNT - 1.0;
+                // update indexes for next tile
                 AdvanceToNextTile();
 
-                targetTile = TargetTile;
-                if (targetTile is null) return;
+                if (IsLost || _currentEdgeTiles is null) return;
 
-                //update the direction
-                UpdateDirection(targetTile);
-
-                return;
+                // update vehicle position
+                X = _currentEdgeTiles[_currentTileIdx].X;
+                Y = _currentEdgeTiles[_currentTileIdx].Y;
             }
-
-            //take the step
-            MoveTowardsTarget(targetTile);
-
-            targetTile = TargetTile;
-            if (targetTile is null) return;
-
-            //update the direction
-            UpdateDirection(targetTile);
+            else
+            {
+                _tileProgress += AMOUNT;
+            }
         }
 
         /// <summary>
@@ -163,18 +162,16 @@ namespace TransportTycoon.Model
             }
         }
 
-        /// <summary>
-        /// Sets the current route of the vehicle to the specified list of edges and initializes the indices for tracking the current edge and tile.
-        /// </summary>
-        public void StartDriving(List<Edge> route)
+        public void StartDrivingFromStopToStop()
         {
+            if (IsLost) return;
+
             Debug.WriteLine($"Vehicle {Id} is starting to drive...");
-            CurrentRoute = route;
             _currentEdgeIdx = 0;
             _currentTileIdx = 0;
-            //_tileProgress = 0.0;
+            _tileProgress = 0.0;
 
-            if (CurrentRoute.Count > 0)
+            if (CurrentRoute?.Count > 0)
             {
                 _currentEdgeTiles = [.. CurrentRoute[0].Roads];
                 Debug.WriteLine($"Vehicle {Id} route: {string.Join(" -> ", _currentEdgeTiles.Select(e => $"({e.X}, {e.Y})"))}");
@@ -194,18 +191,48 @@ namespace TransportTycoon.Model
         /// Gets the next route between two <see cref="Stop"/> tiles.
         /// If it's last stop in the route, it loops over.
         /// </summary>
-        /// <param name="pathFinder">The path finder to use for finding the route.</param>
-        public void GetNextRoute(IPathFinder pathFinder)
+        public List<Edge>? GetNextRoute()
         {
             Debug.WriteLine($"Vehicle {Id} is getting the next route...");
-            if (GetNextStopNodePair() is (Node start, Node end))
+            var stopPair = GetNextStopNodePair();
+            _currentStopIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
+            if (stopPair is (Node start, Node end))
             {
-                CurrentRoute = pathFinder.FindPath(start, end);
-                Debug.WriteLineIf(CurrentRoute is null, $"Vehicle {Id} could not find a route from ({start.X}, {start.Y}) to ({end.X}, {end.Y}).");
-                Debug.WriteLineIf(CurrentRoute is not null, $"Vehicle {Id} found a route from ({start.X}, {start.Y}) to ({end.X}, {end.Y}) with {CurrentRoute!.Count} edges.");
-                Debug.WriteLineIf(CurrentRoute is not null, $"Vehicle {Id} route: {string.Join(" -> ", CurrentRoute!.Select(e => $"({e.StartNode.X}, {e.StartNode.Y}) to ({e.EndNode.X}, {e.EndNode.Y})"))}");
+                var currentRoute = PathFinder.FindPath(start, end);
+                Debug.WriteLineIf(currentRoute is null, $"Vehicle {Id} could not find a route from ({start.X}, {start.Y}) to ({end.X}, {end.Y}).");
+                Debug.WriteLineIf(currentRoute is not null, $"Vehicle {Id} found a route from ({start.X}, {start.Y}) to ({end.X}, {end.Y}) with {currentRoute!.Count} edges.");
+                Debug.WriteLineIf(currentRoute is not null, $"Vehicle {Id} route: {string.Join(" -> ", currentRoute!.Select(e => $"({e.StartNode.X}, {e.StartNode.Y}) to ({e.EndNode.X}, {e.EndNode.Y})"))}");
+
+                if (currentRoute is null) IsLost = true;
+
+                return currentRoute;
             }
-            StartDriving(CurrentRoute ?? []);
+            return null;
+        }
+
+        public void SetProuth(Prouth prouth, IPathFinder pathFinder, GhostNodeInjector injector)
+        {
+            bool alreadyHadProuth = Prouth is not null;
+            Prouth = prouth;
+            PathFinder = pathFinder;
+
+            // If Prouth is not null, the vehicle has a valid Prouth, and can be mid-route
+            // if we called this method, the vehicle should recalculate it's route via the new Prouth.
+            // It should always go to the first stop of the new Prouth if possible, else be lost.
+            if (alreadyHadProuth)
+            {
+                _currentStopIdx = 0;
+
+                RecalculateRoute(injector);
+
+                Debug.WriteLine($"Vehicle {Id} was reassigned a new Prouth and is routing to the first stop.");
+            }
+            else
+            {
+
+                CurrentRoute = GetNextRoute();
+                StartDrivingFromStopToStop();
+            }
         }
 
         /// <summary>
@@ -217,113 +244,82 @@ namespace TransportTycoon.Model
         /// </remarks>
         /// <param name="pathFinder">The path finder used to compute a new route between nodes.</param>
         /// <param name="injector">The ghost node injector used to manage temporary nodes during route calculation.</param>
-        public void RecalculateRoute(IPathFinder pathFinder, GhostNodeInjector injector)
+        public void RecalculateRoute(GhostNodeInjector injector)
         {
-            if (CurrentRoute is null || _currentEdgeTiles is null) return;
-            if (GetNextStopNodePair() is not (Node _, Node end)) return;
+            if (GetCurrentStopNodePair() is not (Node _, Node end)) return;
 
-            IField currentTile = _currentEdgeTiles[_currentTileIdx];
+            IField currentTile;
+            if (IsLost)
+            {
+                currentTile = new Stop(MapX, MapY, 1);
+            }
+            else
+            {
+                if (CurrentRoute is null || _currentEdgeTiles is null) return;
+                currentTile = _currentEdgeTiles[_currentTileIdx];
+            }
 
-            (Node? startNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
+            (Node? ghostNode, bool isGhost) = injector.GetOrInjectGhostNode(currentTile);
 
-            if (startNode is null)
+            if (ghostNode is null)
             {
                 IsLost = true;
                 return;
             }
 
-            List<Edge>? newRoute = pathFinder.FindPath(startNode, end);
+            List<Edge>? newRoute = PathFinder.FindPath(ghostNode, end);
+
 
             if (isGhost)
             {
-                injector.RemoveGhostNode(startNode);
+                injector.RemoveGhostNode(ghostNode);
+            }
+
+            if (newRoute is not null && newRoute.Count == 0)
+            {
+                CurrentRoute = GetNextRoute();
+                StartDrivingFromStopToStop();
+                return;
             }
 
             CurrentRoute = newRoute;
+            IsLost = CurrentRoute is null;
+
+            if (CurrentRoute is not null)
+            {
+                _currentEdgeIdx = 0;
+                _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
+                _currentTileIdx = Math.Max(0, _currentEdgeTiles.IndexOf(currentTile));
+            }
         }
         #endregion
 
         #region Private method
         /// <summary>
-        /// A helper method to be called when the vehicle arrives at a stop.
-        /// It resets the current route and edge tiles, and advances the prouth to the next stop.
-        /// After this method is called the vehicle should be ready to get the next route to the next stop in the prouth.
-        /// </summary>
-        private void ArriveAtStop()
-        {
-            CurrentRoute = null;
-            _currentEdgeTiles = null;
-            AdvanceProuth();
-        }
-
-        /// <summary>
-        /// if the target tile is in a different direction than the current one, it updates the direction to face towards the target tile.
-        /// </summary>
-        /// <param name="target"></param>
-        private void UpdateDirection(IField target)
-        {
-            if (target.X < MapX) Direction = Direction.Up;
-            else if (target.X > MapX) Direction = Direction.Down;
-            else if (target.Y < MapY) Direction = Direction.Left;
-            else if (target.Y > MapY) Direction = Direction.Right;
-        }
-
-        /// <summary>
-        /// Moves the object toward the specified target field based on the current direction and speed.
-        /// </summary>
-        /// <remarks>The method updates the object's position by adjusting its coordinates according to
-        /// the current direction and speed. The direction is determined by the Direction property, which can be set to
-        /// Up, Down, Left, or Right.</remarks>
-        /// <param name="target">The field that the object is moving toward. This parameter determines the destination used to update the
-        /// object's direction and position.</param>
-        private void MoveTowardsTarget(IField target)
-        {
-            UpdateDirection(target);
-            switch (Direction)
-            {
-                case Direction.Up:
-                    X -= CurrentSpeed;
-                    break;
-                case Direction.Down:
-                    X += CurrentSpeed;
-                    break;
-                case Direction.Right:
-                    Y += CurrentSpeed;
-                    break;
-                case Direction.Left:
-                    Y -= CurrentSpeed;
-                    break;
-            }
-        }
-
-        /// <summary>
         /// advances the current tile index to the next tile in the current edge.
         /// </summary>
         private void AdvanceToNextTile()
         {
-            if (_currentEdgeTiles == null) return;
+            if (_currentEdgeTiles is null) return;
 
             _currentTileIdx++;
 
+            // We reached the end of the current edge
             if (_currentTileIdx >= _currentEdgeTiles.Count)
             {
                 _currentEdgeIdx++;
                 _currentTileIdx = 0;
 
-                //check if we have more edges in the current route
-                if (CurrentRoute != null && _currentEdgeIdx < CurrentRoute.Count)
+                // We still have edges
+                if (_currentEdgeIdx < CurrentRoute.Count)
                 {
                     _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
-
-                    //if we reach a crossroad we should move to the next tile
-                    if (_currentEdgeTiles.Count > 0 && _currentEdgeTiles[0].X == this.MapX && _currentEdgeTiles[0].Y == this.MapY)
-                    {
-                        _currentEdgeTiles.RemoveAt(0);
-                    }
                 }
-                else //if its the last edge, we reached the Stop
+                // It was the last edge == stop reached
+                else
                 {
-                    ArriveAtStop();
+                    CurrentRoute = GetNextRoute();
+                    StartDrivingFromStopToStop();
                 }
             }
         }
@@ -341,21 +337,25 @@ namespace TransportTycoon.Model
 
             Node start = Prouth.Stops[_currentStopIdx];
 
-            int nextIndex = (_currentStopIdx + 1) % Prouth.Stops.Count;
+            var nextId = (_currentStopIdx + 1) % Prouth.Stops.Count;
 
-            Node destination = Prouth.Stops[nextIndex];
+            Node destination = Prouth.Stops[nextId];
             return (start, destination);
         }
 
-        /// <summary>
-        /// Move the <see cref="_currentEdgeIdx"/> "pointer" forward.
-        /// At the end it loops back to <see langword="0"/>.
-        /// </summary>
-        private void AdvanceProuth()
+        private (Node startNode, Node endNode)? GetCurrentStopNodePair()
         {
-            if (Prouth is null || Prouth.Stops.Count == 0) return;
+            if (Prouth is null || Prouth.Stops.Count < 2)
+            {
+                return null;
+            }
 
-            _currentStopIdx = (_currentStopIdx + 1) % Prouth.Stops.Count;
+            var prevIndex = (_currentStopIdx - 1 + Prouth.Stops.Count) % Prouth.Stops.Count;
+
+            Node start = Prouth.Stops[prevIndex];
+
+            Node destination = Prouth.Stops[_currentStopIdx];
+            return (start, destination);
         }
         #endregion
     }
