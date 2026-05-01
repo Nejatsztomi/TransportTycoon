@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Printing;
-using System.Security.Policy;
-using System.Text;
+﻿using System.Data;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 using TransportTycoon.Model;
@@ -44,8 +39,10 @@ namespace TransportTycoon.WPF.ViewModel
     public abstract class BuildingBlocksFieldInfoViewModel : FieldInfoViewModel
     {
         public int MaxCapacity { get; init; }
-        public int CurrentCapacity { get; init; }
-        public double Production { get; init; }
+        public double CurrentCapacity { get; init; }
+        public double Productivity { get; init; }
+        public int Scaler { get; init; }
+        public int Offset { get; init; }
     }
 
     public class HouseFieldInfoViewModel : BuildingBlocksFieldInfoViewModel { }
@@ -55,7 +52,7 @@ namespace TransportTycoon.WPF.ViewModel
     public class IndustryFieldInfoViewModel : BuildingBlocksFieldInfoViewModel
     {
         public int MaxConsumeCapacity { get; init; }
-        public int ConsumeCapacity { get; init; }
+        public double ConsumeCapacity { get; init; }
     }
 
     public class VehicleFieldInfoViewModel : FieldInfoViewModel
@@ -66,8 +63,8 @@ namespace TransportTycoon.WPF.ViewModel
         public List<string>? AcceptedLoads { get; init; } = [];
         public string? CurrentLoad { get; init; }
         public int MaxCapacity { get; init; }
-        public int CurrentCapacity { get; init; }
-        public int Maintance { get; init; }
+        public double CurrentCapacity { get; init; }
+        public double Maintance { get; init; }
     }
 
     public static class FieldInfoFactory
@@ -122,8 +119,10 @@ namespace TransportTycoon.WPF.ViewModel
                     X = h.X,
                     Y = h.Y,
                     MaxCapacity = h.BuildingEntity.MaxCapacity,
-                    CurrentCapacity = h.BuildingEntity.CurrentCapacity,
-                    Production = h.BuildingEntity.Production(),
+                    CurrentCapacity = Math.Round(h.BuildingEntity.CurrentCapacity),
+                    Productivity = Math.Round(h.BuildingEntity.Productivity, 2),
+                    Scaler = h.BuildingEntity.Scaler,
+                    Offset = h.BuildingEntity.Offset
                 },
 
                 ISite s => new SiteFieldInfoViewModel
@@ -133,8 +132,10 @@ namespace TransportTycoon.WPF.ViewModel
                     X = s.X,
                     Y = s.Y,
                     MaxCapacity = s.BuildingEntity.MaxCapacity,
-                    CurrentCapacity = s.BuildingEntity.CurrentCapacity,
-                    Production = s.BuildingEntity.Production(),
+                    CurrentCapacity = Math.Round(s.BuildingEntity.CurrentCapacity),
+                    Productivity = Math.Round(s.BuildingEntity.Productivity, 2),
+                    Scaler = s.BuildingEntity.Scaler,
+                    Offset = s.BuildingEntity.Offset
                 },
 
                 IIndustry i => new IndustryFieldInfoViewModel
@@ -144,10 +145,12 @@ namespace TransportTycoon.WPF.ViewModel
                     X = i.X,
                     Y = i.Y,
                     MaxConsumeCapacity = ((IndustryEntity)i.BuildingEntity).MaxConsumeCapacity,
-                    ConsumeCapacity = ((IndustryEntity)i.BuildingEntity).ConsumeCapacity,
+                    ConsumeCapacity = Math.Round(((IndustryEntity)i.BuildingEntity).ConsumeCapacity),
                     MaxCapacity = i.BuildingEntity.MaxCapacity,
-                    CurrentCapacity = i.BuildingEntity.CurrentCapacity,
-                    Production = i.BuildingEntity.Production(),
+                    CurrentCapacity = Math.Round(i.BuildingEntity.CurrentCapacity),
+                    Productivity = Math.Round(i.BuildingEntity.Productivity, 2),
+                    Scaler = i.BuildingEntity.Scaler,
+                    Offset = i.BuildingEntity.Offset
                 },
 
                 _ => new FieldInfoViewModel
@@ -174,7 +177,7 @@ namespace TransportTycoon.WPF.ViewModel
                 CurrentLoad = v.CurrentLoad?.GetType().Name,
                 MaxCapacity = v.MaxCapacity,
                 CurrentCapacity = v.CurrentCapacity,
-                Maintance = v.Maintance
+                Maintance = v.Maintenance
             };
         }
     }

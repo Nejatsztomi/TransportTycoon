@@ -18,7 +18,7 @@ namespace TransportTycoon.Model
             TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
-            Maintance = 100;
+            Maintenance = 100;
             Type = VehicleType.Van;
             AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
@@ -43,7 +43,7 @@ namespace TransportTycoon.Model
             TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
-            Maintance = 100;
+            Maintenance = 100;
             Type = VehicleType.Pickup;
             AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
@@ -68,7 +68,7 @@ namespace TransportTycoon.Model
             TopSpeed = 1.5;
             MaxCapacity = 100;
             Price = 100;
-            Maintance = 100;
+            Maintenance = 100;
             Type = VehicleType.Truck;
             AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
 
@@ -93,7 +93,7 @@ namespace TransportTycoon.Model
             TopSpeed = 0.9;
             MaxCapacity = 100;
             Price = 100;
-            Maintance = 100;
+            Maintenance = 100;
             Type = VehicleType.LiquidTruck;
             AcceptedGoods = [LoadType.Oil];
 

@@ -317,8 +317,8 @@ namespace TransportTycoon.Model
                 {
                     TopLeftX = entity.TopLeftPoints.X,
                     TopLeftY = entity.TopLeftPoints.Y,
-                    CurrentCapacity = entity.CurrentCapacity,
-                    Productivity = entity.Productivity
+                    CurrentCapacity = (int)entity.CurrentCapacity,
+                    Productivity = (int)entity.Productivity
                 }
                 )];
 
@@ -853,6 +853,8 @@ namespace TransportTycoon.Model
             if (vehicle.CurrentSpeed > 0)
             {
                 vehicle.Step();
+                Balance -= vehicle.Maintenance;
+                BalanceChanged?.Invoke(this, EventArgs.Empty);
                 VehicleChanged?.Invoke(this, vehicle);
             }
         }
@@ -983,15 +985,15 @@ namespace TransportTycoon.Model
                             LoadType? vehicleLoad = vehicle.CurrentLoad?.LoadType;
                             foreach (var building in buildings_taker)
                             {
-                                if (building.BuildingEntity is IndustryEntity industry)
+                                if (building.BuildingEntity is IndustryEntity industry && building.BuildingEntity is not CityEntity)
                                 {
                                     if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
                                     {
                                         vehicleCanGive = vehicle.CurrentCapacity;
-                                        int buildingCanTake = industry.MaxConsumeCapacity - industry.ConsumeCapacity;
+                                        int buildingCanTake = (int)industry.MaxConsumeCapacity - (int)industry.ConsumeCapacity;
                                         if (buildingCanTake >= vehicleCanGive)
                                         {
-                                            int buildingNewCapacity = industry.ConsumeCapacity + vehicleCanGive;
+                                            int buildingNewCapacity = (int)industry.ConsumeCapacity + vehicleCanGive;
                                             Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
                                             industry.SetConsumeCapacity(buildingNewCapacity);
@@ -1034,7 +1036,8 @@ namespace TransportTycoon.Model
 
                                 if (acceptsLoad && isEmptyOrSameLoad)
                                 {
-                                    int buildingCanGive = building.BuildingEntity.CurrentCapacity;
+                                    int buildingCanGive = (int)building.BuildingEntity.CurrentCapacity;
+                                    if (buildingCanGive == 0) break;
                                     if (buildingCanGive >= vehicleCanTake)
                                     {
                                         int buildingNewCapacity = buildingCanGive - vehicleCanTake;
@@ -1090,8 +1093,8 @@ namespace TransportTycoon.Model
                 return;
             }
             GameTime++;
-            StepAllVehicles();
             AllVehiclesDoTheTransport();
+            StepAllVehicles();
             AllProduction();
             if (GameTime > 0 && GameTime % 10 == 0)
             {

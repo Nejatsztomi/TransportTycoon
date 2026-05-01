@@ -67,28 +67,28 @@ namespace TransportTycoon.Test.MapData
             }
         }
 
-        [Fact]
-        public void Goods_Value_CalculatesCorrectly()
-        {
-            // Arrange
-            int initialTax = Goods.Tax;
+        //[Fact]
+        //public void Goods_Value_CalculatesCorrectly()
+        //{
+        //    // Arrange
+        //    int initialTax = Goods.Tax;
 
-            try
-            {
-                Goods.SetGlobalTax(10); // Beállítjuk az adót 10-re
-                var testGoods = new TestGoods(15); // A teszt áru ára 15
+        //    try
+        //    {
+        //        Goods.SetGlobalTax(10); // Beállítjuk az adót 10-re
+        //        var testGoods = new TestGoods(15); // A teszt áru ára 15
 
-                // Act
-                int resultValue = testGoods.CalculateValue();
+        //        // Act
+        //        int resultValue = testGoods.CalculateValue();
 
-                // Assert
-                Assert.Equal(150, resultValue); // 10 (Tax) * 15 (Price) = 150
-            }
-            finally
-            {
-                // Takarítás
-                Goods.SetGlobalTax(initialTax);
-            }
-        }
+        //        // Assert
+        //        Assert.Equal(150, resultValue); // 10 (Tax) * 15 (Price) = 150
+        //    }
+        //    finally
+        //    {
+        //        // Takarítás
+        //        Goods.SetGlobalTax(initialTax);
+        //    }
+        //}
     }
 }

@@ -21,7 +21,7 @@ namespace TransportTycoon.Model
             TopSpeed = 1;
             MaxCapacity = 100;
             Price = 100;
-            Maintance = 100;
+            Maintenance = 100;
             Type = VehicleType.SmallBus;
 
             //modifiable fields
@@ -45,7 +45,7 @@ namespace TransportTycoon.Model
             TopSpeed = 1;
             MaxCapacity = 100;
             Price = 100;
-            Maintance = 100;
+            Maintenance = 100;
             Type = VehicleType.BigBus;
 
             //modifiable fields
