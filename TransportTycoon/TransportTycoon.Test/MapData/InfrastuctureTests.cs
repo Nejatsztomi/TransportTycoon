@@ -120,8 +120,8 @@ namespace TransportTycoon.Test.MapData
                 Assert.Equal(6, stop.Y);
                 Assert.Equal(1, stop.Height);
                 Assert.Equal(200, stop.Price);
-                Assert.NotNull(stop.Connenctions);
-                Assert.Empty(stop.Connenctions);
+                Assert.NotNull(stop.Connections);
+                Assert.Empty(stop.Connections);
             }
 
             [Fact]
@@ -135,8 +135,8 @@ namespace TransportTycoon.Test.MapData
                 stop.SetBuildingBlocks(mockBuildingBlock);
 
                 // Assert
-                Assert.Single(stop.Connenctions!); // Pontosan 1 elemnek kell lennie
-                Assert.Contains(mockBuildingBlock, stop.Connenctions!);
+                Assert.Single(stop.Connections!); // Pontosan 1 elemnek kell lennie
+                Assert.Contains(mockBuildingBlock, stop.Connections!);
             }
         }
     }
