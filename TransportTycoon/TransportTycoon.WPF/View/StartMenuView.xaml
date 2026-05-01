@@ -5,15 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel"
         xmlns:local="clr-namespace:TransportTycoon.WPF.View" d:DataContext="{d:DesignInstance Type=vm:StartMenuViewModel}"
-        mc:Ignorable="d"
-        Background="OrangeRed"
-        >
-
+        mc:Ignorable="d">
 
     <UserControl.Resources>
         <Style x:Key="StarterButton" TargetType="Button">
             <Setter Property="FontFamily" Value="/Assets/Fonts/#Press Start 2P"/>
-            <Setter Property="Background" Value="Orange"/>
+            <Setter Property="Background" Value="OrangeRed"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
@@ -26,24 +23,30 @@
         </Style>
     </UserControl.Resources>
 
-    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-        <TextBlock Text="TransportTycoon" FontSize="32" FontFamily="/Assets/Fonts/#Press Start 2P" Margin="0 0 0 50"></TextBlock>
-        <Button Content="Create new game"
-                Style="{StaticResource StarterButton}"
-                Command="{Binding CreateNewGameCommand}" 
-                ></Button>
-        <Button Content="Start new game" 
-                Command="{Binding NewGameCommand}"
-                Style="{StaticResource StarterButton}">
-        </Button>
-        <Button Content="Load game" 
-                Command="{Binding LoadGameCommand}"
-                Style="{StaticResource StarterButton}">
-            
-        </Button>
-        <Button Content="Exit Game" 
-                Command="{Binding ExitGameCommand}" 
-                Style="{StaticResource StarterButton}"
-        ></Button>
-    </StackPanel>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.Background>
+                <ImageBrush ImageSource="/Assets/Images/background.png" Stretch="UniformToFill"/>
+            </Grid.Background>
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,150">
+                <TextBlock Text="TransportTycoon" FontSize="72" FontFamily="/Assets/Fonts/#Press Start 2P" Margin="0 0 0 150"></TextBlock>
+                <Button Content="Create New Game"
+                    Style="{StaticResource StarterButton}"
+                    Command="{Binding CreateNewGameCommand}">
+                </Button>
+                <Button Content="Start New Game" 
+                    Command="{Binding NewGameCommand}"
+                    Style="{StaticResource StarterButton}">
+                </Button>
+                <Button Content="Load Game" 
+                    Command="{Binding LoadGameCommand}"
+                    Style="{StaticResource StarterButton}">
+                </Button>
+                <Button Content="Exit Game" 
+                    Command="{Binding ExitGameCommand}" 
+                    Style="{StaticResource StarterButton}">
+                </Button>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </UserControl>
