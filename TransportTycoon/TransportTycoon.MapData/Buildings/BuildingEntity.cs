@@ -253,7 +253,7 @@
         {
             if ((int)ConsumeCapacity == 0 || (int)CurrentCapacity == (int)MaxCapacity) return;
 
-            double production = Scaler * Productivity;
+            double production = (double)Scaler * Productivity;
 
             if (ConsumeCapacity < production) production = ConsumeCapacity;
 
