@@ -182,7 +182,7 @@ namespace TransportTycoon.WPF.ViewModel
                 CurrentLoad = v.CurrentLoad,
                 MaxCapacity = v.MaxCapacity,
                 CurrentCapacity = v.CurrentCapacity,
-                Maintance = v.Maintance
+                Maintance = v.Maintenance
             };
         }
     }

@@ -63,7 +63,7 @@ namespace TransportTycoon.Model
         public double Y { get; protected set; }
         public Direction Direction { get; protected set; }
         public int Price { get; protected set; }
-        public int Maintance { get; protected set; }
+        public int Maintenance { get; protected set; }
 
         public int MapX => (int)Math.Round(X);
         public int MapY => (int)Math.Round(Y);

@@ -853,7 +853,7 @@ namespace TransportTycoon.Model
             if (vehicle.CurrentSpeed > 0)
             {
                 vehicle.Step();
-                Balance -= vehicle.Maintance;
+                Balance -= vehicle.Maintenance;
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
                 VehicleChanged?.Invoke(this, vehicle);
             }
