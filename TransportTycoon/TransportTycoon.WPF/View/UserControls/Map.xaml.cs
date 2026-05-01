@@ -168,21 +168,21 @@ namespace TransportTycoon.WPF.View.UserControls
             var textBlock = new System.Windows.Controls.TextBlock
             {
                 Text = text,
-                FontSize = 24,
+                FontSize = 20,
                 FontWeight = FontWeights.Bold,
                 Foreground = textColor,
-                Opacity = 1.0
+                FontFamily = (FontFamily)Application.Current.FindResource("GameFont"),
+                Opacity = 1.0,
+                VerticalAlignment = VerticalAlignment.Center
             };
 
             // Coin picture
             var coinImage = new Image
             {
                 Source = new BitmapImage(new Uri("/Assets/Images/Icons/coin.png", UriKind.Relative)),
-                Width = 24,
-                Height = 24,
+                Width = 34,
+                Height = 34,
                 Opacity = 1.0,
-                Margin = new Thickness(3, 0, 0, 0),
-                VerticalAlignment = VerticalAlignment.Center
             };
 
             // StackPanel for message
