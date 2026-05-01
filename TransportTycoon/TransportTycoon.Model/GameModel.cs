@@ -317,8 +317,8 @@ namespace TransportTycoon.Model
                 {
                     TopLeftX = entity.TopLeftPoints.X,
                     TopLeftY = entity.TopLeftPoints.Y,
-                    CurrentCapacity = entity.CurrentCapacity,
-                    Productivity = entity.Productivity
+                    CurrentCapacity = (int)entity.CurrentCapacity,
+                    Productivity = (int)entity.Productivity
                 }
                 )];
 
@@ -990,10 +990,10 @@ namespace TransportTycoon.Model
                                     if (vehicleLoad == building.BuildingEntity.GetConsumeLoad()?.LoadType)
                                     {
                                         vehicleCanGive = vehicle.CurrentCapacity;
-                                        int buildingCanTake = industry.MaxConsumeCapacity - industry.ConsumeCapacity;
+                                        int buildingCanTake = (int)industry.MaxConsumeCapacity - (int)industry.ConsumeCapacity;
                                         if (buildingCanTake >= vehicleCanGive)
                                         {
-                                            int buildingNewCapacity = industry.ConsumeCapacity + vehicleCanGive;
+                                            int buildingNewCapacity = (int)industry.ConsumeCapacity + vehicleCanGive;
                                             Balance += vehicleCanGive * vehicle.CurrentLoad!.Price;
                                             BalanceChanged?.Invoke(this, EventArgs.Empty);
                                             industry.SetConsumeCapacity(buildingNewCapacity);
@@ -1036,7 +1036,7 @@ namespace TransportTycoon.Model
 
                                 if (acceptsLoad && isEmptyOrSameLoad)
                                 {
-                                    int buildingCanGive = building.BuildingEntity.CurrentCapacity;
+                                    int buildingCanGive = (int)building.BuildingEntity.CurrentCapacity;
                                     if (buildingCanGive == 0) break;
                                     if (buildingCanGive >= vehicleCanTake)
                                     {
