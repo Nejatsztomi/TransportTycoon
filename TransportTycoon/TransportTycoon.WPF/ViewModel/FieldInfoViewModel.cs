@@ -45,9 +45,7 @@ namespace TransportTycoon.WPF.ViewModel
     {
         public int MaxCapacity { get; init; }
         public int CurrentCapacity { get; init; }
-        public int Productivity { get; init; }
-        public int Scaler { get; init; }
-        public int Offset { get; init; }
+        public double Production { get; init; }
     }
 
     public class HouseFieldInfoViewModel : BuildingBlocksFieldInfoViewModel { }
@@ -125,9 +123,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Y = h.Y,
                     MaxCapacity = h.BuildingEntity.MaxCapacity,
                     CurrentCapacity = h.BuildingEntity.CurrentCapacity,
-                    Productivity = h.BuildingEntity.Productivity,
-                    Scaler = h.BuildingEntity.Scaler,
-                    Offset = h.BuildingEntity.Offset
+                    Production = h.BuildingEntity.Production(),
                 },
 
                 ISite s => new SiteFieldInfoViewModel
@@ -138,9 +134,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Y = s.Y,
                     MaxCapacity = s.BuildingEntity.MaxCapacity,
                     CurrentCapacity = s.BuildingEntity.CurrentCapacity,
-                    Productivity = s.BuildingEntity.Productivity,
-                    Scaler = s.BuildingEntity.Scaler,
-                    Offset = s.BuildingEntity.Offset
+                    Production = s.BuildingEntity.Production(),
                 },
 
                 IIndustry i => new IndustryFieldInfoViewModel
@@ -153,9 +147,7 @@ namespace TransportTycoon.WPF.ViewModel
                     ConsumeCapacity = ((IndustryEntity)i.BuildingEntity).ConsumeCapacity,
                     MaxCapacity = i.BuildingEntity.MaxCapacity,
                     CurrentCapacity = i.BuildingEntity.CurrentCapacity,
-                    Productivity = i.BuildingEntity.Productivity,
-                    Scaler = i.BuildingEntity.Scaler,
-                    Offset = i.BuildingEntity.Offset
+                    Production = i.BuildingEntity.Production(),
                 },
 
                 _ => new FieldInfoViewModel
