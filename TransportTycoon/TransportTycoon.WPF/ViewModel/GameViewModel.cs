@@ -65,7 +65,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public event Action? SaveGame;
 
-        public event Action<int, int, int>? ShowFloatingMessage;////
+        public event Action<int, int, int>? ShowBalanceMessage;////
         #endregion
 
         #region Constructors
@@ -89,7 +89,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.VehicleChanged += Model_VehicleChanged;
             model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
             model.ProductionChanged += Model_ProductionChanged;
-            model.BalanceMessage += (s,e) => ShowFloatingMessage?.Invoke(e.X, e.Y, e.Value);
+            model.BalanceMessage += (s,e) => ShowBalanceMessage?.Invoke(e.X, e.Y, e.Value);
 
             Tiles = model.Map.Table;
             MinimapImage = new(Width, Height, 96, 96, PixelFormats.Bgra32, null);

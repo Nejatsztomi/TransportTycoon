@@ -135,8 +135,60 @@ namespace TransportTycoon.WPF.View.UserControls
             GameViewModel? newVm = e.NewValue as GameViewModel;
 
             oldVm?.VehicleDestroyed -= map.GameViewModel_OnVehichleDestroyed;
+            oldVm?.ShowBalanceMessage -= map.GameViewModel_OnShowBalanceMessage;
 
             newVm?.VehicleDestroyed += map.GameViewModel_OnVehichleDestroyed;
+            newVm?.ShowBalanceMessage += map.GameViewModel_OnShowBalanceMessage;
+        }
+
+        private void GameViewModel_OnShowBalanceMessage(int x, int y, int value)////
+        {
+            string text = value.ToString();
+            _ = ShowFloatingMessage(text, x, y);
+        }
+
+        private async Task ShowFloatingMessage(string text, int tileX, int tileY)////
+        {
+            int TILE_SIZE = FastMapRenderer.TileSize;
+            double worldX = tileX * TILE_SIZE;
+            double worldY = tileY * TILE_SIZE;
+
+            double screenX = (worldX - InternalGameMapRenderer.CameraX) * InternalGameMapRenderer.ZoomLevel;
+            double screenY = (worldY - InternalGameMapRenderer.CameraY) * InternalGameMapRenderer.ZoomLevel;
+
+            var textBlock = new System.Windows.Controls.TextBlock
+            {
+                Text = text,
+                FontSize = 24,
+                FontWeight = FontWeights.Bold,
+                Foreground = Brushes.Red,
+                Opacity = 1.0
+            };
+
+            FloatingCanvas.Children.Add(textBlock);
+            Canvas.SetLeft(textBlock, screenX);
+            Canvas.SetTop(textBlock, screenY);
+
+            double startY = screenY;
+            double endY = screenY - 50;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            double durationMs = 1000;
+
+            while (sw.ElapsedMilliseconds < durationMs)
+            {
+                double t = sw.ElapsedMilliseconds / durationMs;
+                double newY = startY + (endY - startY) * t;
+                double newOpacity = 1.0 - t;
+
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    Canvas.SetTop(textBlock, newY);
+                    textBlock.Opacity = newOpacity;
+                });
+                await Task.Delay(16);
+            }
+
+            await Dispatcher.InvokeAsync(() => FloatingCanvas.Children.Remove(textBlock));
         }
 
         private void GameViewModel_OnVehichleDestroyed(UInt64 vehicleId)

@@ -26,6 +26,6 @@
                                       PreviewMouseDown="GameMapRenderer_PreviewMouseDown"
                                       />
 
-        <Canvas x:Name="FloatingCanvas" IsHitTestVisible="False" />
+        <Canvas x:Name="FloatingCanvas" IsHitTestVisible="False"/>
     </Grid>
 </UserControl>
