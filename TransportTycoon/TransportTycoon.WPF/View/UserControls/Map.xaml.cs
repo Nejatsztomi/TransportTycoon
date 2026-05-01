@@ -15,6 +15,9 @@ namespace TransportTycoon.WPF.View.UserControls
         #region Private fields
         private Point? _dragStartPoint = null;
         private Point _dragStartCamera;
+        private bool _isLeftDragging;
+        private int _lastDragRoadX = -1;
+        private int _lastDragRoadY = -1;
         #endregion
 
         #region Bindings
@@ -156,6 +159,25 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseMove(object? _, MouseEventArgs e)
         {
+            if (DataContext is not GameViewModel viewModel) return;
+
+            if (e.LeftButton == MouseButtonState.Pressed && (viewModel.SelectedButton == 21 || viewModel.SelectedButton == 24))
+            {
+                Point dragMousePos = e.GetPosition(InternalGameMapRenderer);
+                (int dragX, int dragY) = GetTileCoordinatesFromMousePosition(dragMousePos);
+
+                if (IsInMapBounds(dragX, dragY))
+                {
+                    if (dragX != _lastDragRoadX || dragY != _lastDragRoadY)
+                    {
+                        _lastDragRoadX = dragX;
+                        _lastDragRoadY = dragY;
+
+                        viewModel.OnTileLeftClick(dragX, dragY);
+                    }
+                }
+            }
+
             if (_dragStartPoint.HasValue)
             {
                 Point screenMousePos = e.GetPosition(this);
@@ -245,6 +267,12 @@ namespace TransportTycoon.WPF.View.UserControls
                 //InternalGameMapRenderer.SelectedTile = tileX;
                 //InternalGameMapRenderer.SelectedY = tileY;
 
+                _isLeftDragging = true;
+                _lastDragRoadX = tileX;
+                _lastDragRoadY = tileY;
+
+                InternalGameMapRenderer.CaptureMouse();
+
                 if (DataContext is GameViewModel viewModel)
                 {
                     viewModel.OnTileLeftClick(tileX, tileY);
@@ -264,6 +292,12 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             //InternalGameMapRenderer.SelectedTile = -1;
             //InternalGameMapRenderer.SelectedY = -1;
+
+            _isLeftDragging = false;
+            _lastDragRoadX = -1;
+            _lastDragRoadY = -1;
+
+            InternalGameMapRenderer.ReleaseMouseCapture();
         }
 
         /// <summary>
