@@ -41,9 +41,11 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         [ObservableProperty]
-        private int _selectedTabIndex = 0;
+        private int _selectedTabIndex = -1;
         [ObservableProperty]
         private int _selectedButton = 0;
+        [ObservableProperty]
+        private int _selectedSpeed = 1;
         [ObservableProperty]
         private FieldInfoViewModel? _currentFieldInfo;
 
@@ -293,6 +295,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.Normal;
             OnResumeGame();
+            SelectedSpeed = 1;
         }
 
         [RelayCommand]
@@ -300,6 +303,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.Fast;
             OnResumeGame();
+            SelectedSpeed = 2;
         }
 
         [RelayCommand]
@@ -307,24 +311,34 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.SuperFast;
             OnResumeGame();
+            SelectedSpeed = 4;
         }
 
         [RelayCommand]
         private void OnPauseGame()
         {
             PauseGame();
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = -1;
+            SelectedSpeed = -1;
         }
 
         [RelayCommand]
         private void OnResumeGame()
         {
             ResumeGame();
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = -1;
+            SelectedSpeed = 1;
         }
 
         [RelayCommand]
         private void OnEditorMode()
         {
             Model.Mode = GameMode.Editor;
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = 0;
+            SelectedSpeed = 0;
         }
 
         [RelayCommand]

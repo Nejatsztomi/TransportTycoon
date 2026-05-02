@@ -10,10 +10,11 @@
         Focusable="True"
         PreviewKeyDown="UserControl_PreviewKeyDown"
         MouseDown="UserControl_MouseDown"
-        >
+        xmlns:conv="clr-namespace:TransportTycoon.WPF.ViewModel.Converters">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <conv:SelectedButtonConverter x:Key="SelectedButtonConverter"/>
     </UserControl.Resources>
 
     <Grid Background="#E2D2AF">
@@ -83,15 +84,19 @@
                 <StatusBarItem Grid.Column="0" Margin="60,0,0,0">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="/Assets/Images/Icons/speed.png" Stretch="Fill"/>
-                        <RadioButton GroupName="Speed" Content="1" Command="{Binding NormalSpeedCommand}" Margin="3,0" IsChecked="True"/>
-                        <RadioButton GroupName="Speed" Content="2" Command="{Binding FastSpeedCommand}" Margin="3,0"/>
-                        <RadioButton GroupName="Speed" Content="4" Command="{Binding SuperFastSpeedCommand}" Margin="3,0"/>
+                        <RadioButton GroupName="Speed" Content="1" Command="{Binding NormalSpeedCommand}" Margin="3,0"
+                                     IsChecked="{Binding SelectedSpeed, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=1}"/>
+                        <RadioButton GroupName="Speed" Content="2" Command="{Binding FastSpeedCommand}" Margin="3,0"
+                                     IsChecked="{Binding SelectedSpeed, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=2}"/>
+                        <RadioButton GroupName="Speed" Content="4" Command="{Binding SuperFastSpeedCommand}" Margin="3,0"
+                                     IsChecked="{Binding SelectedSpeed, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=4}"/>
                     </StackPanel>
                 </StatusBarItem>
 
                 <StatusBarItem Grid.Column="1" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <RadioButton GroupName="Speed" Command="{Binding EditorModeCommand}" Margin="3,0">
+                        <RadioButton GroupName="Speed" Command="{Binding EditorModeCommand}" Margin="3,0"
+                                     IsChecked="{Binding SelectedSpeed, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=0}">
                             <Image Source="/Assets/Images/Icons/tool.png" Stretch="Fill"/>
                         </RadioButton>
                         <Button Command="{Binding PauseGameCommand}" Margin="3,0">
