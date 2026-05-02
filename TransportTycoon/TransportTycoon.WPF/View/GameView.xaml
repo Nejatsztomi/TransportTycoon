@@ -94,7 +94,7 @@
                         <RadioButton GroupName="Speed" Command="{Binding EditorModeCommand}" Margin="3,0">
                             <Image Source="/Assets/Images/Icons/tool.png" Stretch="Fill"/>
                         </RadioButton>
-                        <Button Command="{Binding EditorModeCommand}" Margin="3,0">
+                        <Button Command="{Binding PauseGameCommand}" Margin="3,0">
                             <Image Source="/Assets/Images/Icons/pause.png" Stretch="Fill"/>
                         </Button>
                     </StackPanel>
