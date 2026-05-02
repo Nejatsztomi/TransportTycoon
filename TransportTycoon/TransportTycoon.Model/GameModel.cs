@@ -56,7 +56,7 @@ namespace TransportTycoon.Model
         public int Balance { get; private set; }
         public string SaveName { get; }
         public ulong GameTime { get; private set; }
-        public int Maintance { get; private set; }
+        public int Maintenance { get; private set; }
 
         public GameMode Mode
         {
@@ -119,6 +119,7 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;
         public event EventHandler<List<(int, int)>>? ProductionChanged;
         public event EventHandler<(int X, int Y, int Value)>? BalanceMessage;/////
+        public event EventHandler? MaintenanceChanged;
         #endregion
 
         #region Constructor
@@ -674,8 +675,10 @@ namespace TransportTycoon.Model
             {
                 Balance -= vehicle.Price;
                 Vehicles.Add(vehicle);
+                Maintenance += vehicle.Maintenance;
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
                 BalanceMessage?.Invoke(this, (x, y, -vehicle.Price));
+                MaintenanceChanged?.Invoke(this, EventArgs.Empty);
                 if (IsGameOver)
                 {
                     OnGameOver();
@@ -985,7 +988,7 @@ namespace TransportTycoon.Model
             _timer.Stop();
             Mode = GameMode.Paused;
             GameModeChanged?.Invoke(this, GameMode.Paused);
-            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintance));
+            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintenance));
         }
         /// <summary>
         /// Processes the transfer of goods between all vehicles and buildings at their respective stop locations on the

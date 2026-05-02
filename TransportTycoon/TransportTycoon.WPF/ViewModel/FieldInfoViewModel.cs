@@ -64,7 +64,7 @@ namespace TransportTycoon.WPF.ViewModel
         public string? CurrentLoad { get; init; }
         public int MaxCapacity { get; init; }
         public double CurrentCapacity { get; init; }
-        public double Maintance { get; init; }
+        public double Maintenance { get; init; }
     }
 
     public static class FieldInfoFactory
@@ -177,7 +177,7 @@ namespace TransportTycoon.WPF.ViewModel
                 CurrentLoad = v.CurrentLoad?.GetType().Name,
                 MaxCapacity = v.MaxCapacity,
                 CurrentCapacity = v.CurrentCapacity,
-                Maintance = v.Maintenance
+                Maintenance = v.Maintenance
             };
         }
     }

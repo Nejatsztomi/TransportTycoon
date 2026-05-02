@@ -25,6 +25,7 @@ namespace TransportTycoon.WPF.ViewModel
         public List<StopData> Stops { get; private set; } = [];
 
         public int Balance => Model.Balance;
+        public int Maintenance => Model.Maintenance;
         public ulong GameTime => Model.GameTime;
         public DateTime GameDate => new DateTime(1970, 1, 1).AddDays(GameTime);
         public bool IsPaused => Model.Mode == GameMode.Paused;
@@ -91,6 +92,7 @@ namespace TransportTycoon.WPF.ViewModel
             model.VehicleChanged += Model_VehicleChanged;
             model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
             model.ProductionChanged += Model_ProductionChanged;
+            model.MaintenanceChanged += Model_MaintenanceChanged;
             model.BalanceMessage += (s, e) => ShowBalanceMessage?.Invoke(e.X, e.Y, e.Value);
 
             Tiles = model.Map.Table;
@@ -477,6 +479,11 @@ namespace TransportTycoon.WPF.ViewModel
         partial void OnSelectedTabIndexChanged(int value)
         {
             OnSetSelectedButton(value);
+        }
+
+        private void Model_MaintenanceChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Maintenance));
         }
         #endregion
 
