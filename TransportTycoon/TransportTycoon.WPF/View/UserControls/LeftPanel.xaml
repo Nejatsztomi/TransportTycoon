@@ -56,6 +56,35 @@
                                 </Setter.Value>
                             </Setter>
                         </Style>
+
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Height" Value="50"/>
+                            <Setter Property="Width" Value="50"/>
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="Margin" Value="8"/>
+
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Bd"
+                                                Background="White"
+                                                BorderBrush="Black"
+                                                BorderThickness="2">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Bd" Property="BorderBrush" Value="Yellow"/>
+                                                <Setter TargetName="Bd" Property="BorderThickness" Value="4"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
                     </TabControl.Resources>
 
                     <!-- TabControl design -->
@@ -96,28 +125,18 @@
                         </ControlTemplate>
                     </TabControl.Template>
 
-                    <!-- TabItem-ek-->
+                    <!-- TabItems -->
                     <TabItem>
                         <TabItem.Background>
                             <ImageBrush ImageSource="/Assets/Images/Icons/terrain.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="11"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="11">
                                 <Image Source="/Assets/Images/Icons/minus.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="12"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="12">
                                 <Image Source="/Assets/Images/Icons/plus.png" Stretch="Uniform"/>
-                            </Button>
+                            </RadioButton>
                         </WrapPanel>
                     </TabItem>
 
@@ -126,38 +145,18 @@
                             <ImageBrush ImageSource="/Assets/Images/Icons/hammer.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="21"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="21">
                                 <Image Source="/Assets/Images/Icons/road.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="22"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="22">
                                 <Image Source="/Assets/Images/Icons/bridge.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="23"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="23">
                                 <Image Source="/Assets/Images/Icons/stop.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="24"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="24">
                                 <Image Source="/Assets/Images/Icons/x.png" Stretch="UniformToFill"/>
-                            </Button>
+                            </RadioButton>
                         </WrapPanel>
                     </TabItem>
 
@@ -166,42 +165,24 @@
                             <ImageBrush ImageSource="/Assets/Images/Icons/vehicle.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="31">
                                 <Image Source="/Assets/Images/Icons/pickup.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="32">
                                 <Image Source="/Assets/Images/Icons/van.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="33">
                                 <Image Source="/Assets/Images/Icons/camion.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
-                                    Background="White" 
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="34">
                                 <Image Source="/Assets/Images/Icons/petrolcamion.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="74,8,8,8" 
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
-                                    Background="White" 
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Margin="74,8,8,8" Command="{Binding SetSelectedButtonCommand}" CommandParameter="35">
                                 <Image Source="/Assets/Images/Icons/smallBus.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"  Margin="8" 
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="36">
                                 <Image Source="/Assets/Images/Icons/largeBus.png" Stretch="Uniform"/>
-                            </Button>
+                            </RadioButton>
                         </WrapPanel>
                     </TabItem>
 
@@ -210,42 +191,22 @@
                             <ImageBrush ImageSource="/Assets/Images/Icons/line.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="41"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="41">
                                 <Image Source="/Assets/Images/Icons/route.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="42"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="42">
                                 <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
                                     <Image.RenderTransform>
                                         <RotateTransform Angle="180"/>
                                     </Image.RenderTransform>
                                 </Image>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="43"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="43">
                                 <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="44"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="44">
                                 <Image Source="/Assets/Images/Icons/x.png" Stretch="Uniform"/>
-                            </Button>
+                            </RadioButton>
                         </WrapPanel>
                     </TabItem>
 
