@@ -41,7 +41,7 @@ public class GameModelTest
 
             // Timer mock tesztek
             // Feliratkoztak az Elapsed eseményre
-            _mockTimer.Received().Elapsed += Arg.Any<EventHandler>();
+            _mockTimer.Received().Tick += Arg.Any<EventHandler>();
         }
 
         [Fact]
@@ -184,7 +184,7 @@ public class GameModelTest
                     // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
                     for (int i = 0; i < 10; i++)
                     {
-                        _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                        _mockTimer.Tick += Raise.EventWith(this, EventArgs.Empty);
                     }
                     Assert.True(raised, "GameAdvanced event should be raised after 10 timer ticks");
                 }
@@ -208,7 +208,7 @@ public class GameModelTest
                 {
                     _gameModel.GameTicked += Handler;
                     // Szimuláljuk a timer tick eseményét
-                    _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                    _mockTimer.Tick += Raise.EventWith(this, EventArgs.Empty);
                     Assert.True(raised, "GameTicked should be raised after 1 timer tick");
                 }
                 finally
@@ -228,7 +228,7 @@ public class GameModelTest
                     // Simulate 10 timer ticks to trigger GameAdvanced
                     for (int i = 0; i < 10; i++)
                     {
-                        _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                        _mockTimer.Tick += Raise.EventWith(this, EventArgs.Empty);
                     }
                     Assert.True(raised, "GameAdvanced event should be raised after 10 timer ticks");
                 }
