@@ -191,7 +191,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Production, StringFormat=Growth: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Growth: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
@@ -225,7 +225,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Production, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
@@ -267,7 +267,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Production, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
