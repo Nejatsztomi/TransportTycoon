@@ -20,12 +20,6 @@
     <None Remove="Assets\Images\Buildings\lumbercamp.png" />
     <None Remove="Assets\Images\Buildings\mill.png" />
     <None Remove="Assets\Images\Buildings\plant.png" />
-    <None Remove="Assets\Images\Buttons\minus.png" />
-    <None Remove="Assets\Images\Buttons\plus.png" />
-    <None Remove="Assets\Images\Buttons\pull.png" />
-    <None Remove="Assets\Images\Buttons\push.png" />
-    <None Remove="Assets\Images\Buttons\route.png" />
-    <None Remove="Assets\Images\Buttons\x.png" />
     <None Remove="Assets\Images\Icons\arrow.png" />
     <None Remove="Assets\Images\Icons\bridge.png" />
     <None Remove="Assets\Images\Icons\camion.png" />
@@ -252,12 +246,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Images\Buttons\minus.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Buttons\minus3.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Assets\Images\Bridge\yellowBridge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
@@ -265,18 +253,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Bridge\redBridge.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Buttons\pull.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Buttons\push.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Buttons\route.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Buttons\x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Road\crossT.png">
@@ -345,12 +321,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Images\Buttons\minus2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Buttons\plus.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Assets\Images\Terrain\highmountain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
