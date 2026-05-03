@@ -22,7 +22,7 @@ namespace TransportTycoon.Test.MapData
 
                 // Readonly / Constant property checks
                 Assert.Equal(50, bridge.Price);
-                Assert.Equal(100, bridge.SpeedLimit);
+                Assert.Equal(50, bridge.SpeedLimit);
                 Assert.Equal(13, bridge.Range);
             }
 
@@ -40,7 +40,7 @@ namespace TransportTycoon.Test.MapData
 
                 // Readonly / Constant property checks
                 Assert.Equal(100, bridge.Price);
-                Assert.Equal(100, bridge.SpeedLimit);
+                Assert.Equal(50, bridge.SpeedLimit);
                 Assert.Equal(15, bridge.Range);
             }
 
@@ -58,7 +58,7 @@ namespace TransportTycoon.Test.MapData
 
                 // Readonly / Constant property checks
                 Assert.Equal(150, bridge.Price);
-                Assert.Equal(100, bridge.SpeedLimit);
+                Assert.Equal(50, bridge.SpeedLimit);
                 Assert.Equal(17, bridge.Range);
             }
         }

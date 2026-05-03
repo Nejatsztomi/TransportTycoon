@@ -1,8 +1,8 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF.View.UserControls
@@ -15,6 +15,9 @@ namespace TransportTycoon.WPF.View.UserControls
         #region Private fields
         private Point? _dragStartPoint = null;
         private Point _dragStartCamera;
+        private bool _isLeftDragging;
+        private int _lastDragRoadX = -1;
+        private int _lastDragRoadY = -1;
         #endregion
 
         #region Bindings
@@ -132,8 +135,98 @@ namespace TransportTycoon.WPF.View.UserControls
             GameViewModel? newVm = e.NewValue as GameViewModel;
 
             oldVm?.VehicleDestroyed -= map.GameViewModel_OnVehichleDestroyed;
+            oldVm?.ShowBalanceMessage -= map.GameViewModel_OnShowBalanceMessage;
 
             newVm?.VehicleDestroyed += map.GameViewModel_OnVehichleDestroyed;
+            newVm?.ShowBalanceMessage += map.GameViewModel_OnShowBalanceMessage;
+        }
+
+        private void GameViewModel_OnShowBalanceMessage(int x, int y, int value)
+        {
+            string text = value.ToString();
+            _ = ShowFloatingMessage(text, x, y);
+        }
+
+        private async Task ShowFloatingMessage(string text, int tileX, int tileY)
+        {
+            //Pixel point coordinates
+            int TILE_SIZE = FastMapRenderer.TileSize;
+            double worldX = tileX * TILE_SIZE;
+            double worldY = tileY * TILE_SIZE;
+
+            //Pixel point coordinates from screen's upper left corner
+            double screenX = (worldX - InternalGameMapRenderer.CameraX) * InternalGameMapRenderer.ZoomLevel;
+            double screenY = (worldY - InternalGameMapRenderer.CameraY) * InternalGameMapRenderer.ZoomLevel;
+
+            //Message color
+            Brush textColor;
+            if (text.StartsWith("-")) textColor = Brushes.Red;
+            else textColor = Brushes.Green;
+
+            //Message text
+            var textBlock = new System.Windows.Controls.TextBlock
+            {
+                Text = text.StartsWith("-") ? text : "+" + text,
+                FontSize = 20,
+                FontWeight = FontWeights.Bold,
+                Foreground = textColor,
+                FontFamily = (FontFamily)Application.Current.FindResource("GameFont"),
+                Opacity = 1.0,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            // Coin picture
+            var coinImage = new Image
+            {
+                Source = new BitmapImage(new Uri("/Assets/Images/Icons/coin.png", UriKind.Relative)),
+                Width = 34,
+                Height = 34,
+                Opacity = 1.0,
+            };
+
+            // StackPanel for message
+            var stackPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(0)
+            };
+            stackPanel.Children.Add(textBlock);
+            stackPanel.Children.Add(coinImage);
+
+            //Stackpanel added to canvas
+            FloatingCanvas.Children.Add(stackPanel);
+            Canvas.SetLeft(stackPanel, screenX);
+            Canvas.SetTop(stackPanel, screenY);
+
+            //Animation start and end point, timer for animation and duration of animation
+            double startY = screenY;
+            double endY = screenY - 50;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            double durationMs = 1000;
+
+            //Animation loop
+            while (sw.ElapsedMilliseconds < durationMs)
+            {
+                //Elapsed time ratio
+                double t = sw.ElapsedMilliseconds / durationMs;
+                //New point with interpolation due to elapsed time ratio
+                double newY = startY + (endY - startY) * t;
+                //Reduce opacity
+                double newOpacity = 1.0 - t;
+
+                //Set new properties of stackpanel
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    Canvas.SetTop(stackPanel, newY);
+                    stackPanel.Opacity = newOpacity;
+                });
+
+                //Wait a little in order to smooth animation
+                await Task.Delay(16);
+            }
+
+            //Remove stackpanel from canvas
+            await Dispatcher.InvokeAsync(() => FloatingCanvas.Children.Remove(stackPanel));
         }
 
         private void GameViewModel_OnVehichleDestroyed(UInt64 vehicleId)
@@ -156,6 +249,25 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseMove(object? _, MouseEventArgs e)
         {
+            if (DataContext is not GameViewModel viewModel) return;
+
+            if (_isLeftDragging && (viewModel.SelectedButton == 21 || viewModel.SelectedButton == 24))
+            {
+                Point dragMousePos = e.GetPosition(InternalGameMapRenderer);
+                (int dragX, int dragY) = GetTileCoordinatesFromMousePosition(dragMousePos);
+
+                if (IsInMapBounds(dragX, dragY))
+                {
+                    if (dragX != _lastDragRoadX || dragY != _lastDragRoadY)
+                    {
+                        _lastDragRoadX = dragX;
+                        _lastDragRoadY = dragY;
+
+                        viewModel.OnTileLeftClick(dragX, dragY);
+                    }
+                }
+            }
+
             if (_dragStartPoint.HasValue)
             {
                 Point screenMousePos = e.GetPosition(this);
@@ -245,6 +357,12 @@ namespace TransportTycoon.WPF.View.UserControls
                 //InternalGameMapRenderer.SelectedTile = tileX;
                 //InternalGameMapRenderer.SelectedY = tileY;
 
+                _isLeftDragging = true;
+                _lastDragRoadX = tileX;
+                _lastDragRoadY = tileY;
+
+                InternalGameMapRenderer.CaptureMouse();
+
                 if (DataContext is GameViewModel viewModel)
                 {
                     viewModel.OnTileLeftClick(tileX, tileY);
@@ -264,12 +382,18 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             //InternalGameMapRenderer.SelectedTile = -1;
             //InternalGameMapRenderer.SelectedY = -1;
+
+            _isLeftDragging = false;
+            _lastDragRoadX = -1;
+            _lastDragRoadY = -1;
+
+            InternalGameMapRenderer.ReleaseMouseCapture();
         }
 
         /// <summary>
         /// An eventhandler Middle/Wheel Mouse Button press.
         /// </summary>
-        private void GameMapRenderer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void GameMapRenderer_PreviewMouseDown(object? _1, MouseButtonEventArgs e)
         {
             if (e.ChangedButton != MouseButton.Middle) return;
 

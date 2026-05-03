@@ -1,28 +1,29 @@
-﻿using static TransportTycoon.MapData.Load;
-
-namespace TransportTycoon.MapData.Buildings
+﻿namespace TransportTycoon.MapData.Buildings
 
 {
     public abstract class BuildingEntity
     {
         #region Properties
-        /// <summary>
-        /// Mennyit tud tárolni
-        /// </summary>
         public int MaxCapacity { private set; get; } = 1000;
 
-        /// <summary>
-        /// Jelenleg mennyit termelt
-        /// </summary>
-        public int CurrentCapacity { set; get; } = 0;
+        public double CurrentCapacity { set; get; } = 0;
+
+        private double _productivity = 1;
+
+        public double Productivity
+        {
+            get
+            {
+                return _productivity * GetMultiplier();
+            }
+            set
+            {
+                _productivity = value;
+            }
+        }
 
         /// <summary>
-        /// Milyen mennyiséggel termel
-        /// </summary>
-        public int Productivity { set; get; } = 1;
-
-        /// <summary>
-        /// Melyik telephely milyen szorzóval termel
+        /// factor that determines the production rate of the building. The actual production is calculated as Scaler * Productivity.
         /// </summary>
         public int Scaler { protected set; get; }
         public int Offset { protected set; get; }
@@ -72,9 +73,10 @@ namespace TransportTycoon.MapData.Buildings
         {
             if (CurrentCapacity < MaxCapacity)
             {
-                int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
+                double production = Scaler * Productivity;
                 CurrentCapacity = Math.Min(CurrentCapacity + production, MaxCapacity);
             }
+            return;
         }
         #endregion
 
@@ -82,7 +84,7 @@ namespace TransportTycoon.MapData.Buildings
         protected double GetMultiplier()
         {
             double period = 300;
-            double time = DateTime.Now.TimeOfDay.Seconds;
+            double time = DateTime.Now.TimeOfDay.TotalSeconds;
 
             // sin()->[-1,1]
             // 0.5*sin() ->[-0.5, 0.5]
@@ -93,16 +95,6 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
 
         #region Public methods
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="q"></param>
-        /// <returns>The maximum what the factory can give</returns>
-        public int Unload(int q)
-        {
-            CurrentCapacity = Math.Max(CurrentCapacity - q, 0);
-            return CurrentCapacity;
-        }
         public void SetCurrentCapacity(int currentCapacity)
         {
             if (0 <= currentCapacity && currentCapacity <= MaxCapacity)
@@ -247,7 +239,7 @@ namespace TransportTycoon.MapData.Buildings
     {
         #region Properties
         public int MaxConsumeCapacity { private set; get; } = 1000;
-        public int ConsumeCapacity { private set; get; } = 0;
+        public double ConsumeCapacity { private set; get; } = 0;
         #endregion
 
         #region Constructors
@@ -260,9 +252,9 @@ namespace TransportTycoon.MapData.Buildings
         #region Protected methods
         public override void Production()
         {
-            if (ConsumeCapacity == 0 || CurrentCapacity == MaxCapacity) return;
+            if ((int)ConsumeCapacity == 0 || (int)CurrentCapacity == (int)MaxCapacity) return;
 
-            int production = (int)Math.Round(Scaler * Productivity * GetMultiplier());
+            double production = (double)Scaler * Productivity;
 
             if (ConsumeCapacity < production) production = ConsumeCapacity;
 
@@ -327,8 +319,8 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
 
         #region Public methods
-        public override Load? GetConsumeLoad() => new Wood();
-        public override Load GetProvideLoad() => new Paper();
+        public override Load? GetConsumeLoad() => new Oil();
+        public override Load GetProvideLoad() => new Rubber();
         public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)
@@ -356,8 +348,8 @@ namespace TransportTycoon.MapData.Buildings
         #endregion
 
         #region Public methods
-        public override Load? GetConsumeLoad() => new Oil();
-        public override Load GetProvideLoad() => new Rubber();
+        public override Load? GetConsumeLoad() => new Wood();
+        public override Load GetProvideLoad() => new Paper();
         public override void GenerateBuildingPoints(int startX, int startY, int[,] heightMap)
         {
             for (int i = 0; i < Width; i++)

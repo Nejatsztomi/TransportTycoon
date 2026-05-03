@@ -25,6 +25,7 @@ namespace TransportTycoon.WPF.ViewModel
         public List<StopData> Stops { get; private set; } = [];
 
         public int Balance => Model.Balance;
+        public int Maintenance => Model.Maintenance;
         public ulong GameTime => Model.GameTime;
         public DateTime GameDate => new DateTime(1970, 1, 1).AddDays(GameTime);
         public bool IsPaused => Model.Mode == GameMode.Paused;
@@ -41,11 +42,14 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         [ObservableProperty]
-        private int _selectedTabIndex = 0;
+        private int _selectedTabIndex = -1;
         [ObservableProperty]
         private int _selectedButton = 0;
         [ObservableProperty]
+        private int _selectedSpeed = 1;
+        [ObservableProperty]
         private FieldInfoViewModel? _currentFieldInfo;
+
         #endregion
 
         #region Events
@@ -63,6 +67,8 @@ namespace TransportTycoon.WPF.ViewModel
         public event Action? BackToMainMenu;
 
         public event Action? SaveGame;
+
+        public event Action<int, int, int>? ShowBalanceMessage;
         #endregion
 
         #region Constructors
@@ -86,6 +92,8 @@ namespace TransportTycoon.WPF.ViewModel
             model.VehicleChanged += Model_VehicleChanged;
             model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
             model.ProductionChanged += Model_ProductionChanged;
+            model.MaintenanceChanged += Model_MaintenanceChanged;
+            model.BalanceMessage += (s, e) => ShowBalanceMessage?.Invoke(e.X, e.Y, e.Value);
 
             Tiles = model.Map.Table;
             MinimapImage = new(Width, Height, 96, 96, PixelFormats.Bgra32, null);
@@ -289,6 +297,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.Normal;
             OnResumeGame();
+            SelectedSpeed = 1;
         }
 
         [RelayCommand]
@@ -296,6 +305,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.Fast;
             OnResumeGame();
+            SelectedSpeed = 2;
         }
 
         [RelayCommand]
@@ -303,24 +313,34 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.SuperFast;
             OnResumeGame();
+            SelectedSpeed = 4;
         }
 
         [RelayCommand]
         private void OnPauseGame()
         {
             PauseGame();
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = -1;
+            SelectedSpeed = -1;
         }
 
         [RelayCommand]
         private void OnResumeGame()
         {
             ResumeGame();
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = -1;
+            SelectedSpeed = 1;
         }
 
         [RelayCommand]
         private void OnEditorMode()
         {
             Model.Mode = GameMode.Editor;
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = 0;
+            SelectedSpeed = 0;
         }
 
         [RelayCommand]
@@ -419,8 +439,6 @@ namespace TransportTycoon.WPF.ViewModel
 
         private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs _2)
         {
-            //var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
-            //tile?.RefreshTerrain(Model.Map[e.X, e.Y]);
             RefreshFieldInfo(_2.X, _2.Y);
         }
 
@@ -461,6 +479,11 @@ namespace TransportTycoon.WPF.ViewModel
         partial void OnSelectedTabIndexChanged(int value)
         {
             OnSetSelectedButton(value);
+        }
+
+        private void Model_MaintenanceChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Maintenance));
         }
         #endregion
 

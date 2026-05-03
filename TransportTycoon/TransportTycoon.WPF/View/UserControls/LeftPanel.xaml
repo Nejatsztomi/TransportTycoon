@@ -7,7 +7,317 @@
              xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:GameViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel">
+             xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel"
+             xmlns:conv="clr-namespace:TransportTycoon.WPF.ViewModel.Converters">
+
+    <UserControl.Resources>
+        <conv:SelectedButtonConverter x:Key="SelectedButtonConverter"/>
+        <!-- BASE -->
+        <DataTemplate DataType="{x:Type vm:FieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- TERRAIN -->
+        <DataTemplate DataType="{x:Type vm:TerrainFieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/forest.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding TreeCount, StringFormat=Forest: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- ROAD -->
+        <DataTemplate DataType="{x:Type vm:RoadFieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/road.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="RType: " VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <TextBlock Text="{Binding RoadType}" VerticalAlignment="Center" Margin="42,5,0,5"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/city.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding InCity, StringFormat=In City: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- BRIDGE -->
+        <DataTemplate DataType="{x:Type vm:BridgeFieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type:{0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/bridge.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding BridgeType, StringFormat=BType: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/range.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Range, StringFormat=Max Range: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/speedlimit.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding SpeedLimit, StringFormat=Speed Limit: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- STOP -->
+        <DataTemplate DataType="{x:Type vm:StopFieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/connection.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="Connections: " VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding Connections}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" Margin="41,6,0,6"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- HOUSE -->
+        <DataTemplate DataType="{x:Type vm:HouseFieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/people.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentCapacity, StringFormat=Passengers: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Growth: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- SITE -->
+        <DataTemplate DataType="{x:Type vm:SiteFieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/resource.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentCapacity, StringFormat=Resources: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- INDUSTRY -->
+        <DataTemplate DataType="{x:Type vm:IndustryFieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fieldtype.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxConsumeCapacity, StringFormat=Input Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/resource.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding ConsumeCapacity, StringFormat=Resources: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/package.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentCapacity, StringFormat=Products: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!-- VEHICLE -->
+        <DataTemplate DataType="{x:Type vm:VehicleFieldInfoViewModel}">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/car.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Type, StringFormat=Type: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/sea.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Height, StringFormat=Sea Level: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding X, StringFormat=Latitude(X): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding TopSpeed, StringFormat=Top Speed: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Assets/Images/Icons/vehiclespeed.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentSpeed, StringFormat=Curr. Speed: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/package.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentLoad, StringFormat=Load: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/maxcap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/vehiclecap.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current Cap.: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0,2">
+                    <Image Source="/Assets/Images/Icons/fuel.png" Width="32" Height="32" Margin="0,0,8,0"/>
+                    <TextBlock Text="{Binding Maintenance, StringFormat=Maintenance: {0}}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.Resources>
 
     <Grid>
         <Border Background="OrangeRed" BorderBrush="Black" BorderThickness="2">
@@ -15,6 +325,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="60"/>
                     <RowDefinition Height="440" />
                 </Grid.RowDefinitions>
 
@@ -24,7 +335,8 @@
                     </Style>
                 </Grid.Resources>
 
-                <TabControl Grid.Row="0"  Background="Transparent" BorderThickness="0" SelectedIndex="{Binding SelectedTabIndex}">
+                <TabControl Grid.Row="0"  Background="Transparent" BorderThickness="0" 
+                            SelectedIndex="{Binding SelectedTabIndex}" IsEnabled="{Binding IsEditorMode}">
 
                     <!-- TabItem design -->
                     <TabControl.Resources>
@@ -50,6 +362,35 @@
                                             <Trigger Property="IsSelected" Value="True">
                                                 <Setter TargetName="border" Property="BorderThickness" Value="3"/>
                                                 <Setter TargetName="border" Property="BorderBrush" Value="Yellow"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Height" Value="50"/>
+                            <Setter Property="Width" Value="50"/>
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="Margin" Value="8"/>
+
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Bd"
+                                                Background="White"
+                                                BorderBrush="Black"
+                                                BorderThickness="2">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Bd" Property="BorderBrush" Value="Yellow"/>
+                                                <Setter TargetName="Bd" Property="BorderThickness" Value="4"/>
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -96,28 +437,20 @@
                         </ControlTemplate>
                     </TabControl.Template>
 
-                    <!-- TabItem-ek-->
+                    <!-- TabItems -->
                     <TabItem>
                         <TabItem.Background>
                             <ImageBrush ImageSource="/Assets/Images/Icons/terrain.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="11"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="11"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=11}">
                                 <Image Source="/Assets/Images/Icons/minus.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="12"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="12"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=12}">
                                 <Image Source="/Assets/Images/Icons/plus.png" Stretch="Uniform"/>
-                            </Button>
+                            </RadioButton>
                         </WrapPanel>
                     </TabItem>
 
@@ -126,38 +459,22 @@
                             <ImageBrush ImageSource="/Assets/Images/Icons/hammer.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="21"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="21"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=21}">
                                 <Image Source="/Assets/Images/Icons/road.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="22"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="22"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=22}">
                                 <Image Source="/Assets/Images/Icons/bridge.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="23"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="23"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=23}">
                                 <Image Source="/Assets/Images/Icons/stop.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="24"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="24"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=24}">
                                 <Image Source="/Assets/Images/Icons/x.png" Stretch="UniformToFill"/>
-                            </Button>
+                            </RadioButton>
                         </WrapPanel>
                     </TabItem>
 
@@ -166,42 +483,30 @@
                             <ImageBrush ImageSource="/Assets/Images/Icons/vehicle.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=31}">
                                 <Image Source="/Assets/Images/Icons/pickup.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=32}">
                                 <Image Source="/Assets/Images/Icons/van.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=33}">
                                 <Image Source="/Assets/Images/Icons/camion.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
-                                    Background="White" 
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=34}">
                                 <Image Source="/Assets/Images/Icons/petrolcamion.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="74,8,8,8" 
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
-                                    Background="White" 
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Margin="74,8,8,8" Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=35}">
                                 <Image Source="/Assets/Images/Icons/smallBus.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"  Margin="8" 
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=36}">
                                 <Image Source="/Assets/Images/Icons/largeBus.png" Stretch="Uniform"/>
-                            </Button>
+                            </RadioButton>
                         </WrapPanel>
                     </TabItem>
 
@@ -210,48 +515,37 @@
                             <ImageBrush ImageSource="/Assets/Images/Icons/line.png" Stretch="UniformToFill"/>
                         </TabItem.Background>
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="41"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="41"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=41}">
                                 <Image Source="/Assets/Images/Icons/route.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="42"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="42"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=42}">
                                 <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
                                     <Image.RenderTransform>
                                         <RotateTransform Angle="180"/>
                                     </Image.RenderTransform>
                                 </Image>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="43"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="43"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=43}">
                                 <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="44"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="44"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=44}">
                                 <Image Source="/Assets/Images/Icons/x.png" Stretch="Uniform"/>
-                            </Button>
+                            </RadioButton>
                         </WrapPanel>
                     </TabItem>
 
                 </TabControl>
 
-                <Border Grid.Row="1"
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <TextBlock Text="{Binding Maintenance, StringFormat=Maintenance: {0}}" FontSize="14" Margin="12,0,1,0" Foreground="White" VerticalAlignment="Center"/>
+                    <Image Source="/Assets/Images/Icons/coin.png" Width="25" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <Border Grid.Row="2"
                         Margin="10,0,10,10"
                         Background="White"
                         BorderBrush="Black"
@@ -262,9 +556,9 @@
                         <TextBlock Text="Field Info" HorizontalAlignment="Center"
                                    FontSize="14"
                                    FontWeight="Bold"
-                                   Margin="0,0,0,10"/>
+                                   Margin="0,20,0,30"/>
 
-                        <ContentControl Content="{Binding CurrentFieldInfo}"/>
+                        <ContentControl Content="{Binding CurrentFieldInfo}" FontFamily="/Assets/Fonts/#Press Start 2P"/>
                     </StackPanel>
 
                 </Border>
@@ -274,127 +568,4 @@
         </Border>
     </Grid>
 
-    <UserControl.Resources>
-        <!-- BASE -->
-        <DataTemplate DataType="{x:Type vm:FieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- TERRAIN -->
-        <DataTemplate DataType="{x:Type vm:TerrainFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding TreeCount, StringFormat=Trees: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- ROAD -->
-        <DataTemplate DataType="{x:Type vm:RoadFieldInfoViewmodel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding RoadType, StringFormat=Roadtype: {0}}"/>
-                <TextBlock Text="{Binding InCity, StringFormat=InCity: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- BRIDGE -->
-        <DataTemplate DataType="{x:Type vm:BridgeFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding BridgeType, StringFormat=Bridgetype: {0}}"/>
-                <TextBlock Text="{Binding Range, StringFormat=Range: {0}}"/>
-                <TextBlock Text="{Binding SpeedLimit, StringFormat=Speedlimit: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- STOP -->
-        <DataTemplate DataType="{x:Type vm:StopFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding Connections, StringFormat=Connections: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- HOUSE -->
-        <DataTemplate DataType="{x:Type vm:HouseFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
-                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
-                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
-                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
-                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- SITE -->
-        <DataTemplate DataType="{x:Type vm:SiteFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
-                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
-                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
-                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
-                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- INDUSTRY -->
-        <DataTemplate DataType="{x:Type vm:IndustryFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding MaxConsumeCapacity, StringFormat=Max consume capacity: {0}}"/>
-                <TextBlock Text="{Binding ConsumeCapacity, StringFormat=Consume capacity: {0}}"/>
-                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max capacity: {0}}"/>
-                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current capacity: {0}}"/>
-                <TextBlock Text="{Binding Productivity, StringFormat=Productivity: {0}}"/>
-                <TextBlock Text="{Binding Scaler, StringFormat=Scaler: {0}}"/>
-                <TextBlock Text="{Binding Offset, StringFormat=Offset: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-
-        <!-- VEHICLE -->
-        <DataTemplate DataType="{x:Type vm:VehicleFieldInfoViewModel}">
-            <StackPanel>
-                <TextBlock Text="{Binding Type}" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Height, StringFormat=Height: {0}}"/>
-                <TextBlock Text="{Binding X, StringFormat=X: {0}}"/>
-                <TextBlock Text="{Binding Y, StringFormat=Y: {0}}"/>
-                <TextBlock Text="{Binding TopSpeed, StringFormat=Top Speed: {0}}"/>
-                <TextBlock Text="{Binding CurrentSpeed, StringFormat=Current Speed: {0}}"/>
-                <TextBlock Text="{Binding Direction, StringFormat=Direction: {0}}"/>
-                <TextBlock Text="{Binding CurrentLoad, StringFormat=Current Load: {0}}"/>
-                <TextBlock Text="{Binding MaxCapacity, StringFormat=Max Capacity: {0}}"/>
-                <TextBlock Text="{Binding CurrentCapacity, StringFormat=Current Capacity: {0}}"/>
-                <TextBlock Text="{Binding Maintance, StringFormat=Maintance: {0}}"/>
-            </StackPanel>
-        </DataTemplate>
-    </UserControl.Resources>
-    
 </UserControl>

@@ -13,7 +13,7 @@ namespace TransportTycoon.Test.Model
             // Assert
             Assert.Equal(100ul, args.GameTime);
             Assert.Equal(5, args.NumberOfVehicles);
-            Assert.Equal(250, args.Maintance);
+            Assert.Equal(250, args.Maintenance);
         }
 
         [Fact]

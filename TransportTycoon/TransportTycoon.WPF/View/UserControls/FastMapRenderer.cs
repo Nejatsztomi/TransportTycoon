@@ -358,9 +358,7 @@ namespace TransportTycoon.WPF.View.UserControls
             _cameraTransformGroup.Children.Add(_zoomTransform);
 
             // Generate the stop textures
-#pragma warning disable IDE0028 // Simplify collection initialization
             _stopTextures = new(20);
-#pragma warning restore IDE0028 // Simplify collection initialization
             GenerateRouteStopTextures(0, 20);
 
             // TODO: Later maybe JSON or .rex format
