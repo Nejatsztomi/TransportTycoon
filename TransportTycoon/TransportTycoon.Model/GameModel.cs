@@ -118,7 +118,7 @@ namespace TransportTycoon.Model
         public event EventHandler<Vehicle>? VehicleChanged;
         public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;
         public event EventHandler<List<(int, int)>>? ProductionChanged;
-        public event EventHandler<(int X, int Y, int Value)>? BalanceMessage;/////
+        public event EventHandler<(int X, int Y, int Value)>? BalanceMessage;
         public event EventHandler? MaintenanceChanged;
         #endregion
 

@@ -68,7 +68,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public event Action? SaveGame;
 
-        public event Action<int, int, int>? ShowBalanceMessage;////
+        public event Action<int, int, int>? ShowBalanceMessage;
         #endregion
 
         #region Constructors

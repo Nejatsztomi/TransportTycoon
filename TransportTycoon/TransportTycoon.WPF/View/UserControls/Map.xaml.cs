@@ -142,13 +142,13 @@ namespace TransportTycoon.WPF.View.UserControls
             newVm?.ShowBalanceMessage += map.GameViewModel_OnShowBalanceMessage;
         }
 
-        private void GameViewModel_OnShowBalanceMessage(int x, int y, int value)////
+        private void GameViewModel_OnShowBalanceMessage(int x, int y, int value)
         {
             string text = value.ToString();
             _ = ShowFloatingMessage(text, x, y);
         }
 
-        private async Task ShowFloatingMessage(string text, int tileX, int tileY)////
+        private async Task ShowFloatingMessage(string text, int tileX, int tileY)
         {
             //Pixel point coordinates
             int TILE_SIZE = FastMapRenderer.TileSize;
