@@ -150,9 +150,8 @@ namespace TransportTycoon.WPF.View.UserControls
         private async Task ShowFloatingMessage(string text, int tileX, int tileY)
         {
             //Pixel point coordinates
-            int TILE_SIZE = FastMapRenderer.TileSize;
-            double worldX = tileX * TILE_SIZE;
-            double worldY = tileY * TILE_SIZE;
+            double worldX = tileX * FastMapRenderer.TileSize;
+            double worldY = tileY * FastMapRenderer.TileSize;
 
             //Pixel point coordinates from screen's upper left corner
             double screenX = (worldX - InternalGameMapRenderer.CameraX) * InternalGameMapRenderer.ZoomLevel;

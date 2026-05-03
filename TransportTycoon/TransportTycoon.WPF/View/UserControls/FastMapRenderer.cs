@@ -535,24 +535,6 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
-        /// <summary>
-        /// Converts a vehicle's movement direction to its corresponding rotation angle in degrees.
-        /// </summary>
-        /// <param name="direction">The direction in which the vehicle is moving.</param>
-        /// <returns>An <see langword="double"/> representing the rotation angle in degrees that corresponds to the specified direction.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private double VehicleDirectionToRotation(Direction direction)
-        {
-            return direction switch
-            {
-                Direction.Down => 90.0, // balra
-                Direction.Up => 270.0, // jobbra
-                Direction.Right => 180.0, // fel
-                Direction.Left => 0.0, // le
-                _ => 0.0,
-            };
-        }
-
         #region Enum converters
         /// <summary>
         /// Converts a <see cref="MapData.FieldType"/> to the corresponding <see cref="FieldType"/> for texture lookup.
@@ -773,7 +755,7 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             if (Vehicles is null) return;
 
-            const double LaneOffsetPixels = 10.0;
+            const double LANE_OFFSET_PIXEL = 10.0;
 
             foreach (Vehicle vehicle in Vehicles)
             {
@@ -784,7 +766,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 double pixelX = vehicle.X * TileSize + shiftX;
                 double pixelY = vehicle.Y * TileSize + shiftY;
 
-                Rect vehicleRect = new(pixelX, pixelY + LaneOffsetPixels, TileSize, TileSize);
+                Rect vehicleRect = new(pixelX, pixelY + LANE_OFFSET_PIXEL, TileSize, TileSize);
 
                 // Culling check
                 if (!visibleWorldRect.IntersectsWith(vehicleRect)) continue;

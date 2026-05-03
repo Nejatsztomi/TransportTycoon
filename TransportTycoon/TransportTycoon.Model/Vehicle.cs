@@ -5,6 +5,7 @@ using TransportTycoon.Model.Graph;
 
 namespace TransportTycoon.Model
 {
+    [Obsolete]
     public enum Direction
     {
         Up = 0, Down = 1, Left = 2, Right = 3
@@ -67,8 +68,6 @@ namespace TransportTycoon.Model
         public VehicleType Type { get; protected set; }
         public double X { get; protected set; }
         public double Y { get; protected set; }
-        [Obsolete]
-        public Direction Direction { get; protected set; }
 
         /// <summary>
         /// The angle of the vehicle in degrees, where <see langword="0"/> degrees represents facing right (positive X direction), and angles increase counterclockwise (90 degrees is up, 180 degrees is left, and 270 degrees is down).
@@ -114,9 +113,29 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Protected constructor
+        /// <summary>
+        /// The base constructor for the <see cref="Vehicle"/> class, which initializes the vehicle's unique identifier and sets default values for its properties.
+        /// </summary>
         protected Vehicle()
         {
             Id = _globalIdCounter++;
+            CurrentLoad = null;
+            CurrentCapacity = 0;
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="Vehicle"/> class with the specified initial position, angle, and route.
+        /// </summary>
+        /// <param name="x">The initial X coordinate of the vehicle.</param>
+        /// <param name="y">The initial Y coordinate of the vehicle.</param>
+        /// <param name="angle">The initial angle of the vehicle in degrees.</param>
+        /// <param name="route">The initial route of the vehicle.</param>
+        protected Vehicle(int x, int y, double angle, Prouth? route) : this()
+        {
+            X = x;
+            Y = y;
+            Angle = angle;
+            Prouth = route;
         }
         #endregion
 

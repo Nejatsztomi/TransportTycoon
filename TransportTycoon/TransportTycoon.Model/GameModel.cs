@@ -212,12 +212,12 @@ namespace TransportTycoon.Model
             {
                 Vehicle vehicle = vehicleData.Type switch
                 {
-                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
-                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, Direction.Up),
+                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
+                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
+                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
+                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
+                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
+                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
                     _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
                 };
 
@@ -674,12 +674,12 @@ namespace TransportTycoon.Model
 
             Vehicle vehicle = type switch
             {
-                VehicleType.Van => new Van(x, y, Direction.Up),
-                VehicleType.Pickup => new Pickup(x, y, Direction.Up),
-                VehicleType.Truck => new Truck(x, y, Direction.Up),
-                VehicleType.LiquidTruck => new LiquidTruck(x, y, Direction.Up),
-                VehicleType.SmallBus => new SmallBus(x, y, Direction.Up),
-                VehicleType.BigBus => new BigBus(x, y, Direction.Up),
+                VehicleType.Van => new Van(x, y, 0.0, null),
+                VehicleType.Pickup => new Pickup(x, y, 0.0, null),
+                VehicleType.Truck => new Truck(x, y, 0.0, null),
+                VehicleType.LiquidTruck => new LiquidTruck(x, y, 0.0, null),
+                VehicleType.SmallBus => new SmallBus(x, y, 0.0, null),
+                VehicleType.BigBus => new BigBus(x, y, 0.0, null),
                 _ => throw new ArgumentException("Invalid vehicle type", nameof(type)),
             };
 
