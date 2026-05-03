@@ -737,8 +737,6 @@ namespace TransportTycoon.Model
 
                 ApplyAntiCollision(vehicle);
                 vehicle.Step(deltaTime);
-                Balance -= vehicle.Maintenance;
-                BalanceChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -1142,6 +1140,13 @@ namespace TransportTycoon.Model
                     var grownTrees = ForestGrowing();
                     GameAdvanced?.Invoke(this, grownTrees);
                 }
+
+                foreach (var vehicle in Vehicles)
+                {
+                    Balance -= vehicle.Maintenance;
+                    BalanceChanged?.Invoke(this, EventArgs.Empty);
+                }
+
                 GameTicked?.Invoke(this, EventArgs.Empty);
                 _timeAccumulator -= 1;
             }
