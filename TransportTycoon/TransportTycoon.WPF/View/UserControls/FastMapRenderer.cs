@@ -781,29 +781,12 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 double shiftX = 0.0;
                 double shiftY = 0.0;
-
-                switch (vehicle.Direction)
-                {
-                    case Direction.Right: // fel
-                        shiftX = -LaneOffsetPixels;
-                        break;
-                    case Direction.Left: // le
-                        shiftX = LaneOffsetPixels;
-                        break;
-                    case Direction.Down: // balra
-                        shiftY = LaneOffsetPixels;
-                        break;
-                    case Direction.Up: // jobbra
-                        shiftY = -LaneOffsetPixels;
-                        break;
-                    default:
-                        break;
-                }
+                double angle = vehicle.Angle;
 
                 double pixelX = vehicle.X * TileSize + shiftX;
                 double pixelY = vehicle.Y * TileSize + shiftY;
 
-                Rect vehicleRect = new(pixelX, pixelY, TileSize, TileSize);
+                Rect vehicleRect = new(pixelX, pixelY + LaneOffsetPixels, TileSize, TileSize);
 
                 // Culling check
                 if (!visibleWorldRect.IntersectsWith(vehicleRect)) continue;
@@ -816,13 +799,13 @@ namespace TransportTycoon.WPF.View.UserControls
 
                     if (!_vehicleRotationCache.TryGetValue(vehicle.Id, out var transform))
                     {
-                        transform = new RotateTransform(VehicleDirectionToRotation(vehicle.Direction), centerX, centerY);
+                        transform = new RotateTransform(angle, centerX, centerY);
                         _vehicleRotationCache[vehicle.Id] = transform;
                     }
 
                     transform.CenterX = centerX;
                     transform.CenterY = centerY;
-                    transform.Angle = VehicleDirectionToRotation(vehicle.Direction);
+                    transform.Angle = angle;
 
                     ctx.PushTransform(transform);
 

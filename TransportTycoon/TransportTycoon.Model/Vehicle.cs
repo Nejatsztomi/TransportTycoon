@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using TransportTycoon.MapData;
 using TransportTycoon.Model.Graph;
 
@@ -41,6 +42,8 @@ namespace TransportTycoon.Model
         /// The current edge's tiles.
         /// </summary>
         private List<IField>? _currentEdgeTiles = null;
+        private double _lerpX;
+        private double _lerpY;
         #endregion
 
         #region Properties
@@ -64,7 +67,18 @@ namespace TransportTycoon.Model
         public VehicleType Type { get; protected set; }
         public double X { get; protected set; }
         public double Y { get; protected set; }
+        [Obsolete]
         public Direction Direction { get; protected set; }
+
+        /// <summary>
+        /// The angle of the vehicle in degrees, where <see langword="0"/> degrees represents facing right (positive X direction), and angles increase counterclockwise (90 degrees is up, 180 degrees is left, and 270 degrees is down).
+        /// </summary>
+        public double Angle { get; protected set; }
+
+        /// <summary>
+        /// How fast should the vehicle turn in degrees per second.
+        /// </summary>
+        public double TurnSpeed { get; protected set; } = 360.0;
         public int Price { get; protected set; }
         public int Maintance { get; protected set; }
 
@@ -106,34 +120,35 @@ namespace TransportTycoon.Model
 
         #region Public methods
         /// <summary>
-        /// Advances the entity along its current route by moving it one step toward the next target tile, updating its
-        /// position and direction as needed.
+        /// Advances the entity along its current route by moving it one step toward the next target tile, updating its position and direction as needed.
         /// </summary>
-        /// <remarks>This method performs a single movement operation for the entity. If the entity is
-        /// close enough to the target tile or can reach it within the current speed, it advances to the next tile in
-        /// the route. The method has no effect if there is no active route or target tile.</remarks>
-        public void Step()
+        /// <remarks>
+        /// This method performs a single movement operation for the entity.
+        /// </remarks>
+        public void Step(double deltaTime)
         {
             if (IsLost || Prouth is null || _currentEdgeTiles is null) return;
 
-            const double AMOUNT = 0.5;
+            double distanceToTravel = CurrentSpeed * deltaTime;
+            _tileProgress += distanceToTravel;
 
-            if (_tileProgress + AMOUNT >= 1.0)
+            if (_tileProgress >= 1.0)
             {
-                _tileProgress = _tileProgress + AMOUNT - 1.0;
+                _tileProgress -= 1.0;
+
+                _lerpX = _currentEdgeTiles[_currentTileIdx].X;
+                _lerpY = _currentEdgeTiles[_currentTileIdx].Y;
+
+                X = _lerpX;
+                Y = _lerpY;
+
                 // update indexes for next tile
                 AdvanceToNextTile();
 
                 if (IsLost || _currentEdgeTiles is null) return;
+            }
 
-                // update vehicle position
-                X = _currentEdgeTiles[_currentTileIdx].X;
-                Y = _currentEdgeTiles[_currentTileIdx].Y;
-            }
-            else
-            {
-                _tileProgress += AMOUNT;
-            }
+            UpdateContinuousPosition(deltaTime);
         }
 
         /// <summary>
@@ -162,6 +177,13 @@ namespace TransportTycoon.Model
             }
         }
 
+        /// <summary>
+        /// Initializes the vehicle's driving state and begins movement from the current stop to the next stop along the assigned route.
+        /// </summary>
+        /// <remarks>
+        /// If the vehicle is in a lost state, this method does not perform any action.
+        /// The method resets the vehicle's progress and prepares it to follow the current route, if one available.
+        /// </remarks>
         public void StartDrivingFromStopToStop()
         {
             if (IsLost) return;
@@ -170,6 +192,9 @@ namespace TransportTycoon.Model
             _currentEdgeIdx = 0;
             _currentTileIdx = 0;
             _tileProgress = 0.0;
+
+            _lerpX = X;
+            _lerpY = Y;
 
             if (CurrentRoute?.Count > 0)
             {
@@ -212,6 +237,14 @@ namespace TransportTycoon.Model
             return null;
         }
 
+        /// <summary>
+        /// A method to set the vehicle's <see cref="Prouth"/>, <see cref="PathFinder"/>, and <see cref="GhostNodeInjector"/>.
+        /// If the vehicle already has a <see cref="Prouth"/> assigned, it will recalculate its route using the new <see cref="Prouth"/> and start driving to the first stop of the new <see cref="Prouth"/>.
+        /// If the vehicle did not have a <see cref="Prouth"/> before, it will simply get the next route and start driving.
+        /// </summary>
+        /// <param name="prouth">The <see cref="Prouth"/> to assign to the vehicle.</param>
+        /// <param name="pathFinder">The <see cref="IPathFinder"/> used to calculate routes.</param>
+        /// <param name="injector">The <see cref="GhostNodeInjector"/> used to manage temporary nodes during route calculation.</param> 
         public void SetProuth(Prouth prouth, IPathFinder pathFinder, GhostNodeInjector injector)
         {
             bool alreadyHadProuth = Prouth is not null;
@@ -292,17 +325,72 @@ namespace TransportTycoon.Model
                 _currentEdgeIdx = 0;
                 _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
                 _currentTileIdx = Math.Max(0, _currentEdgeTiles.IndexOf(currentTile));
+
+                _lerpX = X;
+                _lerpY = Y;
             }
         }
         #endregion
 
         #region Private method
+        private void UpdateContinuousPosition(double deltaTime)
+        {
+            if (_currentEdgeTiles is null) return;
+
+            double startX = _lerpX;
+            double startY = _lerpY;
+
+            double targetX = _currentEdgeTiles[_currentTileIdx].X;
+            double targetY = _currentEdgeTiles[_currentTileIdx].Y;
+
+            // Linear interpolation: Start + (Difference * Progress)
+            // The difference should be always between -1 and 1.
+            X = startX + ((targetX - startX) * _tileProgress);
+            Y = startY + ((targetY - startY) * _tileProgress);
+            //Debug.WriteLine($"Vechile ({Id}) startX={startX:0.00} startY={startY:0.00}  X={X:0.00} Y={Y:0.00} with tileProgress={_tileProgress:0.00}");
+
+            double dx = targetX - startX;
+            double dy = targetY - startY;
+
+            if (Math.Abs(dx) > 0.001 || Math.Abs(dy) > 0.001)
+            {
+                double targetAngle = Math.Atan2(dy, dx) * (180.0 / Math.PI);
+
+                if (targetAngle < 0) targetAngle += 360.0;
+
+                Angle = RotateTowards(Angle, targetAngle, TurnSpeed * deltaTime);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private double RotateTowards(double current, double target, double maxDelta)
+        {
+            double delta = target - current;
+
+            // Normalize to [-180, 180]
+            while (delta > 180) delta -= 360;
+            while (delta <= -180) delta += 360;
+
+            // If the remaining turn is smaller than our step size, just snap to the target
+            if (Math.Abs(delta) <= maxDelta)
+            {
+                return target;
+            }
+
+            double newAngle = current + (Math.Sign(delta) * maxDelta);
+
+            if (newAngle < 0) newAngle += 360;
+            if (newAngle >= 360) newAngle -= 360;
+
+            return newAngle;
+        }
+
         /// <summary>
-        /// advances the current tile index to the next tile in the current edge.
+        /// Advances the current tile index to the next tile.
         /// </summary>
         private void AdvanceToNextTile()
         {
-            if (_currentEdgeTiles is null || CurrentRoute is null) return;
+            if (_currentEdgeTiles is null) return;
 
             _currentTileIdx++;
 
@@ -313,9 +401,16 @@ namespace TransportTycoon.Model
                 _currentTileIdx = 0;
 
                 // We still have edges
-                if (_currentEdgeIdx < CurrentRoute.Count)
+                if (CurrentRoute is not null && _currentEdgeIdx < CurrentRoute.Count)
                 {
                     _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
+
+                    if (_currentEdgeTiles.Count > 1 &&
+                        _currentEdgeTiles[0].X == _lerpX &&
+                        _currentEdgeTiles[0].Y == _lerpY)
+                    {
+                        _currentTileIdx = 1;
+                    }
                 }
                 // It was the last edge == stop reached
                 else
