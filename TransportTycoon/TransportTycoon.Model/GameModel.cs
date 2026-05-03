@@ -46,6 +46,7 @@ namespace TransportTycoon.Model
         #region Private fields
         private readonly ITimer _timer;
         private readonly Dictionary<(int X, int Y), IField> _modifiedFields = [];
+        private double _timeAccumulator = 0.0;
         private IPathFinder _pathFinder;
         #endregion
 
@@ -81,7 +82,6 @@ namespace TransportTycoon.Model
             get;
             set
             {
-                _timer.Interval = DefaultInterval / (double)(value);
                 TimeSpeedChanged?.Invoke(this, value);
                 field = value;
             }
@@ -129,7 +129,7 @@ namespace TransportTycoon.Model
 
             Map = map;
             _timer = timer;
-            _timer.Elapsed += Timer_Tick;
+            _timer.Tick += Timer_Tick;
 
             SetTax();
             Mode = GameMode.Run;
@@ -150,7 +150,7 @@ namespace TransportTycoon.Model
 
             Map = map;
             _timer = timer;
-            _timer.Elapsed += Timer_Tick;
+            _timer.Tick += Timer_Tick;
 
             SetTax();
 
@@ -661,12 +661,12 @@ namespace TransportTycoon.Model
         /// </summary>
         /// <remarks>This method iterates through the collection of vehicles and updates each one by
         /// invoking the step operation. No action is taken if the game mode is not set to run.</remarks>
-        public void StepAllVehicles()
+        public void StepAllVehicles(double deltaTime)
         {
             if (Mode != GameMode.Run) return;
             foreach (Vehicle vehicle in Vehicles)
             {
-                vehicle.Step();
+                vehicle.Step(deltaTime);
             }
         }
 
@@ -1055,23 +1055,31 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Timer event handlers
-        private void Timer_Tick(object? _1, EventArgs _2)
+        private void Timer_Tick(double deltaTime)
         {
             if (IsGameOver)
             {
                 OnGameOver();
                 return;
             }
-            GameTime++;
-            StepAllVehicles();
-            AllVehiclesDoTheTransport();
-            AllProduction();
-            if (GameTime > 0 && GameTime % 10 == 0)
+
+            double scaledDeltaTime = deltaTime * (double)TimeSpeed;
+            StepAllVehicles(scaledDeltaTime);
+            _timeAccumulator += scaledDeltaTime;
+
+            while (_timeAccumulator >= 1)
             {
-                var grownTrees = ForestGrowing();
-                GameAdvanced?.Invoke(this, grownTrees);
+                GameTime++;
+                AllVehiclesDoTheTransport();
+                AllProduction();
+                if (GameTime > 0 && GameTime % 10 == 0)
+                {
+                    var grownTrees = ForestGrowing();
+                    GameAdvanced?.Invoke(this, grownTrees);
+                }
+                GameTicked?.Invoke(this, EventArgs.Empty);
+                _timeAccumulator -= 1;
             }
-            GameTicked?.Invoke(this, EventArgs.Empty);
         }
         #endregion
     }
