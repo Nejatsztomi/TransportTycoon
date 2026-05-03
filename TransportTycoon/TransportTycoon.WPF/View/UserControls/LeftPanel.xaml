@@ -7,274 +7,11 @@
              xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:GameViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel">
-
-    <Grid>
-        <Border Background="OrangeRed" BorderBrush="Black" BorderThickness="2">
-
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="440" />
-                </Grid.RowDefinitions>
-
-                <Grid.Resources>
-                    <Style TargetType="TextBlock">
-                        <Setter Property="FontFamily" Value="/Assets/Fonts/#Press Start 2P"/>
-                    </Style>
-                </Grid.Resources>
-
-                <TabControl Grid.Row="0"  Background="Transparent" BorderThickness="0" SelectedIndex="{Binding SelectedTabIndex}">
-
-                    <!-- TabItem design -->
-                    <TabControl.Resources>
-                        <Style TargetType="TabItem">
-                            <Setter Property="Width" Value="60"/>
-                            <Setter Property="Height" Value="60"/>
-
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="TabItem">
-                                        <Border x:Name="border"
-                                                Background="{TemplateBinding Background}"
-                                                BorderBrush="Black"
-                                                BorderThickness="2"
-                                                >
-                                            <ContentPresenter x:Name="contentPresenter"
-                                                              ContentSource="Header"
-                                                              HorizontalAlignment="Center"
-                                                              VerticalAlignment="Center"
-                                                              />
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="border" Property="BorderThickness" Value="3"/>
-                                                <Setter TargetName="border" Property="BorderBrush" Value="Yellow"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </TabControl.Resources>
-
-                    <!-- TabControl design -->
-                    <TabControl.Template>
-                        <ControlTemplate TargetType="TabControl">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" MinHeight="90"/>
-                                    <!-- fejléc sora -->
-                                    <RowDefinition Height="2"/>
-                                    <!-- vonal sora -->
-                                    <RowDefinition Height="*"/>
-                                    <!-- tartalom sora -->
-                                </Grid.RowDefinitions>
-
-                                <!-- Fejléc panel (alapértelmezett TabPanel, görgethető) -->
-                                <TabPanel Grid.Row="0"
-                                          Name="HeaderPanel"
-                                          Panel.ZIndex="1"
-                                          KeyboardNavigation.TabIndex="1"
-                                          IsItemsHost="True"
-                                          HorizontalAlignment="Center"
-                                          Margin="10"/>
-
-                                <!-- Elválasztó vonal -->
-                                <Border Grid.Row="1" Background="White" Margin="10,0"/>
-
-                                <!-- Tartalom -->
-                                <Border Grid.Row="2"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        Padding="{TemplateBinding Padding}">
-
-                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
-                                </Border>
-                            </Grid>
-                        </ControlTemplate>
-                    </TabControl.Template>
-
-                    <!-- TabItem-ek-->
-                    <TabItem>
-                        <TabItem.Background>
-                            <ImageBrush ImageSource="/Assets/Images/Icons/terrain.png" Stretch="UniformToFill"/>
-                        </TabItem.Background>
-                        <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="11"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/minus.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="12"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/plus.png" Stretch="Uniform"/>
-                            </Button>
-                        </WrapPanel>
-                    </TabItem>
-
-                    <TabItem>
-                        <TabItem.Background>
-                            <ImageBrush ImageSource="/Assets/Images/Icons/hammer.png" Stretch="UniformToFill"/>
-                        </TabItem.Background>
-                        <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="21"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/road.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="22"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/bridge.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="23"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/stop.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="24"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/x.png" Stretch="UniformToFill"/>
-                            </Button>
-                        </WrapPanel>
-                    </TabItem>
-
-                    <TabItem>
-                        <TabItem.Background>
-                            <ImageBrush ImageSource="/Assets/Images/Icons/vehicle.png" Stretch="UniformToFill"/>
-                        </TabItem.Background>
-                        <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/pickup.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/van.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/camion.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
-                                    Background="White" 
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/petrolcamion.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50" Margin="74,8,8,8" 
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
-                                    Background="White" 
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/smallBus.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"  Margin="8" 
-                                    Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/largeBus.png" Stretch="Uniform"/>
-                            </Button>
-                        </WrapPanel>
-                    </TabItem>
-
-                    <TabItem>
-                        <TabItem.Background>
-                            <ImageBrush ImageSource="/Assets/Images/Icons/line.png" Stretch="UniformToFill"/>
-                        </TabItem.Background>
-                        <WrapPanel Margin="14" HorizontalAlignment="Center">
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="41"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/route.png" Stretch="UniformToFill"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="42"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
-                                    <Image.RenderTransform>
-                                        <RotateTransform Angle="180"/>
-                                    </Image.RenderTransform>
-                                </Image>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="43"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform"/>
-                            </Button>
-                            <Button Width="50" Height="50"
-                                    Margin="8"
-                                    Command="{Binding SetSelectedButtonCommand}"
-                                    CommandParameter="44"
-                                    Background="White"
-                                    BorderBrush="Black" BorderThickness="2">
-                                <Image Source="/Assets/Images/Icons/x.png" Stretch="Uniform"/>
-                            </Button>
-                        </WrapPanel>
-                    </TabItem>
-
-                </TabControl>
-
-                <Border Grid.Row="1"
-                        Margin="10,0,10,10"
-                        Background="White"
-                        BorderBrush="Black"
-                        BorderThickness="2"
-                        Padding="10">
-
-                    <StackPanel>
-                        <TextBlock Text="Field Info" HorizontalAlignment="Center"
-                                   FontSize="14"
-                                   FontWeight="Bold"
-                                   Margin="0,20,0,30"/>
-
-                        <ContentControl Content="{Binding CurrentFieldInfo}" FontFamily="/Assets/Fonts/#Press Start 2P"/>
-                    </StackPanel>
-
-                </Border>
-
-            </Grid>
-
-        </Border>
-    </Grid>
+             xmlns:vm="clr-namespace:TransportTycoon.WPF.ViewModel"
+             xmlns:conv="clr-namespace:TransportTycoon.WPF.ViewModel.Converters">
 
     <UserControl.Resources>
+        <conv:SelectedButtonConverter x:Key="SelectedButtonConverter"/>
         <!-- BASE -->
         <DataTemplate DataType="{x:Type vm:FieldInfoViewModel}">
             <StackPanel>
@@ -342,7 +79,7 @@
                     <Image Source="/Assets/Images/Icons/point.png" Width="32" Height="32" Margin="0,0,8,0"/>
                     <TextBlock Text="{Binding Y, StringFormat=Longitude(Y): {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,2">                 
+                <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/road.png" Width="32" Height="32" Margin="0,0,8,0"/>
                     <TextBlock Text="RType: " VerticalAlignment="Center"/>
                 </StackPanel>
@@ -381,7 +118,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/range.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Range, StringFormat=Range: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Range, StringFormat=Max Range: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/speedlimit.png" Width="32" Height="32" Margin="0,0,8,0"/>
@@ -454,7 +191,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Production, StringFormat=Growth: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Growth: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
@@ -488,7 +225,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Production, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
@@ -530,7 +267,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/production.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Production, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Productivity, StringFormat=Production: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
@@ -576,10 +313,259 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,2">
                     <Image Source="/Assets/Images/Icons/fuel.png" Width="32" Height="32" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding Maintance, StringFormat=Maintenance: {0}}" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Maintenance, StringFormat=Maintenance: {0}}" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
         </DataTemplate>
     </UserControl.Resources>
+
+    <Grid>
+        <Border Background="OrangeRed" BorderBrush="Black" BorderThickness="2">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="440" />
+                </Grid.RowDefinitions>
+
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="FontFamily" Value="/Assets/Fonts/#Press Start 2P"/>
+                    </Style>
+                </Grid.Resources>
+
+                <TabControl Grid.Row="0"  Background="Transparent" BorderThickness="0" 
+                            SelectedIndex="{Binding SelectedTabIndex}" IsEnabled="{Binding IsEditorMode}">
+
+                    <!-- TabItem design -->
+                    <TabControl.Resources>
+                        <Style TargetType="TabItem">
+                            <Setter Property="Width" Value="60"/>
+                            <Setter Property="Height" Value="60"/>
+
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TabItem">
+                                        <Border x:Name="border"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="Black"
+                                                BorderThickness="2"
+                                                >
+                                            <ContentPresenter x:Name="contentPresenter"
+                                                              ContentSource="Header"
+                                                              HorizontalAlignment="Center"
+                                                              VerticalAlignment="Center"
+                                                              />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="border" Property="BorderThickness" Value="3"/>
+                                                <Setter TargetName="border" Property="BorderBrush" Value="Yellow"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Height" Value="50"/>
+                            <Setter Property="Width" Value="50"/>
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="Background" Value="White"/>
+                            <Setter Property="Margin" Value="8"/>
+
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Bd"
+                                                Background="White"
+                                                BorderBrush="Black"
+                                                BorderThickness="2">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Bd" Property="BorderBrush" Value="Yellow"/>
+                                                <Setter TargetName="Bd" Property="BorderThickness" Value="4"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TabControl.Resources>
+
+                    <!-- TabControl design -->
+                    <TabControl.Template>
+                        <ControlTemplate TargetType="TabControl">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" MinHeight="90"/>
+                                    <!-- fejléc sora -->
+                                    <RowDefinition Height="2"/>
+                                    <!-- vonal sora -->
+                                    <RowDefinition Height="*"/>
+                                    <!-- tartalom sora -->
+                                </Grid.RowDefinitions>
+
+                                <!-- Fejléc panel (alapértelmezett TabPanel, görgethető) -->
+                                <TabPanel Grid.Row="0"
+                                          Name="HeaderPanel"
+                                          Panel.ZIndex="1"
+                                          KeyboardNavigation.TabIndex="1"
+                                          IsItemsHost="True"
+                                          HorizontalAlignment="Center"
+                                          Margin="10"/>
+
+                                <!-- Elválasztó vonal -->
+                                <Border Grid.Row="1" Background="White" Margin="10,0"/>
+
+                                <!-- Tartalom -->
+                                <Border Grid.Row="2"
+                                        Background="{TemplateBinding Background}"
+                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                        Padding="{TemplateBinding Padding}">
+
+                                    <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent"/>
+                                </Border>
+                            </Grid>
+                        </ControlTemplate>
+                    </TabControl.Template>
+
+                    <!-- TabItems -->
+                    <TabItem>
+                        <TabItem.Background>
+                            <ImageBrush ImageSource="/Assets/Images/Icons/terrain.png" Stretch="UniformToFill"/>
+                        </TabItem.Background>
+                        <WrapPanel Margin="14" HorizontalAlignment="Center">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="11"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=11}">
+                                <Image Source="/Assets/Images/Icons/minus.png" Stretch="Uniform"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="12"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=12}">
+                                <Image Source="/Assets/Images/Icons/plus.png" Stretch="Uniform"/>
+                            </RadioButton>
+                        </WrapPanel>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Background>
+                            <ImageBrush ImageSource="/Assets/Images/Icons/hammer.png" Stretch="UniformToFill"/>
+                        </TabItem.Background>
+                        <WrapPanel Margin="14" HorizontalAlignment="Center">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="21"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=21}">
+                                <Image Source="/Assets/Images/Icons/road.png" Stretch="UniformToFill"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="22"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=22}">
+                                <Image Source="/Assets/Images/Icons/bridge.png" Stretch="UniformToFill"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="23"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=23}">
+                                <Image Source="/Assets/Images/Icons/stop.png" Stretch="UniformToFill"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="24"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=24}">
+                                <Image Source="/Assets/Images/Icons/x.png" Stretch="UniformToFill"/>
+                            </RadioButton>
+                        </WrapPanel>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Background>
+                            <ImageBrush ImageSource="/Assets/Images/Icons/vehicle.png" Stretch="UniformToFill"/>
+                        </TabItem.Background>
+                        <WrapPanel Margin="14" HorizontalAlignment="Center">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=31}">
+                                <Image Source="/Assets/Images/Icons/pickup.png" Stretch="Uniform"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=32}">
+                                <Image Source="/Assets/Images/Icons/van.png" Stretch="Uniform"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=33}">
+                                <Image Source="/Assets/Images/Icons/camion.png" Stretch="Uniform"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=34}">
+                                <Image Source="/Assets/Images/Icons/petrolcamion.png" Stretch="Uniform"/>
+                            </RadioButton>
+                            <RadioButton Margin="74,8,8,8" Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=35}">
+                                <Image Source="/Assets/Images/Icons/smallBus.png" Stretch="Uniform"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=36}">
+                                <Image Source="/Assets/Images/Icons/largeBus.png" Stretch="Uniform"/>
+                            </RadioButton>
+                        </WrapPanel>
+                    </TabItem>
+
+                    <TabItem>
+                        <TabItem.Background>
+                            <ImageBrush ImageSource="/Assets/Images/Icons/line.png" Stretch="UniformToFill"/>
+                        </TabItem.Background>
+                        <WrapPanel Margin="14" HorizontalAlignment="Center">
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="41"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=41}">
+                                <Image Source="/Assets/Images/Icons/route.png" Stretch="UniformToFill"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="42"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=42}">
+                                <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
+                                    <Image.RenderTransform>
+                                        <RotateTransform Angle="180"/>
+                                    </Image.RenderTransform>
+                                </Image>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="43"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=43}">
+                                <Image Source="/Assets/Images/Icons/arrow.png" Stretch="Uniform"/>
+                            </RadioButton>
+                            <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="44"
+                                         IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=44}">
+                                <Image Source="/Assets/Images/Icons/x.png" Stretch="Uniform"/>
+                            </RadioButton>
+                        </WrapPanel>
+                    </TabItem>
+
+                </TabControl>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <TextBlock Text="{Binding Maintenance, StringFormat=Maintenance: {0}}" FontSize="14" Margin="12,0,1,0" Foreground="White" VerticalAlignment="Center"/>
+                    <Image Source="/Assets/Images/Icons/coin.png" Width="25" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <Border Grid.Row="2"
+                        Margin="10,0,10,10"
+                        Background="White"
+                        BorderBrush="Black"
+                        BorderThickness="2"
+                        Padding="10">
+
+                    <StackPanel>
+                        <TextBlock Text="Field Info" HorizontalAlignment="Center"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Margin="0,20,0,30"/>
+
+                        <ContentControl Content="{Binding CurrentFieldInfo}" FontFamily="/Assets/Fonts/#Press Start 2P"/>
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+        </Border>
+    </Grid>
 
 </UserControl>
