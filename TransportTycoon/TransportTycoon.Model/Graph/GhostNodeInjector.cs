@@ -37,29 +37,30 @@ namespace TransportTycoon.Model.Graph
             }
 
             Node ghostNode = new(currentVehicleTile.X, currentVehicleTile.Y, currentVehicleTile.GetType());
-            _graph.AddNode(ghostNode);
-
             var validExits = new List<(int X, int Y)>(4);
             GetValidExits(currentVehicleTile, validExits);
 
+            var ghostEdges = new List<Edge>();
             foreach ((int x, int y) exit in validExits)
             {
                 (Node? hitNode, List<IField> pathTaken) = WalkToNextJunction(currentVehicleTile, exit);
-
                 if (hitNode is not null)
                 {
-                    Edge ghostEdge = new(ghostNode, hitNode, pathTaken, pathTaken.Count);
-                    _graph.AddEdge(ghostNode, ghostEdge);
+                    ghostEdges.Add(new Edge(ghostNode, hitNode, pathTaken, pathTaken.Count));
                 }
             }
 
-            // Can't reach any junctions
-            if (_graph.AdjacencyList[ghostNode].Count == 0)
+            // Only add the ghost node if at least one connection is possible
+            if (ghostEdges.Count == 0)
             {
-                _graph.AdjacencyList.Remove(ghostNode);
                 return (null, false);
             }
 
+            _graph.AddNode(ghostNode);
+            foreach (var edge in ghostEdges)
+            {
+                _graph.AddEdge(ghostNode, edge);
+            }
             return (ghostNode, true);
         }
 
@@ -91,6 +92,7 @@ namespace TransportTycoon.Model.Graph
             IField currentTile = startTile;
             var exits = new List<(int X, int Y)>(4);
             (int dx, int dy) momentum = initialMomentum;
+            var visited = new HashSet<(int, int)> { (currentTile.X, currentTile.Y) };
 
             while (true)
             {
@@ -98,6 +100,12 @@ namespace TransportTycoon.Model.Graph
                 int nextY = currentTile.Y + momentum.dy;
 
                 if (!_gameTable.IsInBounds(nextX, nextY))
+                {
+                    return (null, pathTaken);
+                }
+
+                // Prevent infinite loops by checking if we've already visited this tile
+                if (!visited.Add((nextX, nextY)))
                 {
                     return (null, pathTaken);
                 }
