@@ -84,6 +84,11 @@ namespace TransportTycoon.Model
 
         public int MapX => (int)Math.Round(X);
         public int MapY => (int)Math.Round(Y);
+
+        public int LastMapX { get; set; } = -1;
+        public int LastMapY { get; set; } = -1;
+        public int LastLaneIdx { get; set; } = -1;
+
         public List<LoadType>? AcceptedGoods { get; protected set; } = [];
 
         /// <summary>
@@ -104,10 +109,7 @@ namespace TransportTycoon.Model
         public IPathFinder? PathFinder
         {
             get;
-            set
-            {
-                field = value;
-            }
+            set;
         } = null;
         #endregion
 
@@ -204,12 +206,12 @@ namespace TransportTycoon.Model
         }
 
         /// <summary>
-        /// Changes the current speed of the vehicle, if the given speed is between 0 and the top speed of the vehicle
+        /// Changes the current speed of the vehicle to a value between 0 and <see cref="TopSpeed"/>.
         /// </summary>
-        /// <param name="speed"></param>
+        /// <param name="speed">The desired speed to set for the vehicle.</param>
         public void ChangeCurrentSpeed(double speed)
         {
-            if (speed >= 0 && speed <= TopSpeed) CurrentSpeed = speed;
+            CurrentSpeed = Math.Clamp(speed, 0.0, TopSpeed);
         }
 
         /// <summary>
@@ -329,6 +331,58 @@ namespace TransportTycoon.Model
                 _lerpX = X;
                 _lerpY = Y;
             }
+        }
+
+        /// <summary>
+        /// Gets the lane index of the vehicle based on its current position and the next target tile in its route.
+        /// </summary>
+        /// <returns>The lane index: 0 = Up, 1 = Right, 2 = Down, 3 = Left.</returns>
+        public int GetLaneIdx()
+        {
+            if (_currentEdgeTiles is null || _currentTileIdx >= _currentEdgeTiles.Count) return 0;
+
+            double targetX = _currentEdgeTiles[_currentTileIdx].X;
+            double targetY = _currentEdgeTiles[_currentTileIdx].Y;
+
+            double dx = targetX - _lerpX;
+            double dy = targetY - _lerpY;
+
+            // 0 = Up, 1 = Right, 2 = Down, 3 = Left
+            if (Math.Abs(dx) > Math.Abs(dy))
+            {
+                // Left or Right
+                return dx > 0 ? 1 : 3;
+            }
+            else
+            {
+                // Up or Down
+                return dy > 0 ? 2 : 0;
+            }
+        }
+
+        public (int X, int Y)? GetNextTileCoordinates()
+        {
+            if (_currentEdgeTiles is null || IsLost) return null;
+
+            int nextIdx = _currentTileIdx + 1;
+
+            // If there is a next tile in the current edge
+            if (nextIdx < _currentEdgeTiles.Count)
+            {
+                return (_currentEdgeTiles[nextIdx].X, _currentEdgeTiles[nextIdx].Y);
+            }
+
+            // End of edge
+            if (CurrentRoute is not null && _currentEdgeIdx + 1 < CurrentRoute.Count)
+            {
+                var nextEdgeRoads = CurrentRoute[_currentEdgeIdx + 1].Roads.ToList();
+                if (nextEdgeRoads.Count > 0)
+                {
+                    return (nextEdgeRoads[0].X, nextEdgeRoads[0].Y);
+                }
+            }
+
+            return null; // Nowhere to go
         }
         #endregion
 

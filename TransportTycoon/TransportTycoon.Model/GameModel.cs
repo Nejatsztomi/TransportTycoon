@@ -48,6 +48,7 @@ namespace TransportTycoon.Model
         private readonly Dictionary<(int X, int Y), IField> _modifiedFields = [];
         private double _timeAccumulator = 0.0;
         private IPathFinder _pathFinder;
+        private readonly Vehicle?[,,] _tileOccupancy;
         #endregion
 
         #region Properties
@@ -141,6 +142,8 @@ namespace TransportTycoon.Model
             // We create an empty graph
             GraphNetwork = new([], []);
             _pathFinder = new AStarPathfinder(GraphNetwork);
+
+            _tileOccupancy = new Vehicle?[Map.Width, Map.Height, 4];
         }
 
         public GameModel(GameTable map, ITimer timer, GameSaveData data, string saveName)
@@ -158,6 +161,8 @@ namespace TransportTycoon.Model
 
             GraphNetwork = new([], []);
             _pathFinder = new AStarPathfinder(GraphNetwork);
+
+            _tileOccupancy = new Vehicle?[Map.Width, Map.Height, 4];
 
             Map.Context = new(data.MapContextData);
             Map.GenerateMap();
@@ -245,6 +250,7 @@ namespace TransportTycoon.Model
                 }
 
                 Vehicles.Add(vehicle);
+                _tileOccupancy[vehicle.MapX, vehicle.MapY, vehicle.GetLaneIdx()] = vehicle;
             });
 
 
@@ -701,8 +707,35 @@ namespace TransportTycoon.Model
         public void StepAllVehicles(double deltaTime)
         {
             if (Mode != GameMode.Run) return;
-            foreach (Vehicle vehicle in Vehicles)
+
+            foreach (var vehicle in Vehicles)
             {
+                if (vehicle.IsLost) continue;
+
+                int currentLaneIdx = vehicle.GetLaneIdx();
+
+                if (vehicle.MapX != vehicle.LastMapX
+                    || vehicle.MapY != vehicle.LastMapY
+                    || currentLaneIdx != vehicle.LastLaneIdx)
+                {
+                    if (vehicle.LastMapX >= 0 && vehicle.LastLaneIdx >= 0)
+                    {
+                        _tileOccupancy[vehicle.LastMapX, vehicle.LastMapY, vehicle.LastLaneIdx] = null;
+                    }
+
+                    if (0 <= vehicle.MapX && vehicle.MapX < Map.Width
+                        && 0 <= vehicle.MapY && vehicle.MapY < Map.Height)
+                    {
+                        _tileOccupancy[vehicle.MapX, vehicle.MapY, currentLaneIdx] = vehicle;
+                    }
+
+                    // Update the tracker
+                    vehicle.LastMapX = vehicle.MapX;
+                    vehicle.LastMapY = vehicle.MapY;
+                    vehicle.LastLaneIdx = currentLaneIdx;
+                }
+
+                ApplyAntiCollision(vehicle);
                 vehicle.Step(deltaTime);
                 Balance -= vehicle.Maintenance;
                 BalanceChanged?.Invoke(this, EventArgs.Empty);
@@ -775,6 +808,29 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Private Methods
+        private void ApplyAntiCollision(Vehicle vehicle)
+        {
+            double targetSpeed = vehicle.TopSpeed;
+
+            IField currentField = Map[vehicle.MapX, vehicle.MapY];
+            if (currentField is IBridge bridge)
+            {
+                targetSpeed = Math.Min(targetSpeed, bridge.SpeedLimit);
+            }
+
+            if (vehicle.GetNextTileCoordinates() is (int nextX, int nextY))
+            {
+                int nextLaneIdx = vehicle.GetLaneIdx();
+                Vehicle? vehicleAhead = _tileOccupancy[nextX, nextY, nextLaneIdx];
+
+                if (vehicleAhead is not null && vehicleAhead != vehicle)
+                {
+                    targetSpeed = Math.Min(targetSpeed, vehicleAhead.CurrentSpeed);
+                }
+            }
+            vehicle.ChangeCurrentSpeed(targetSpeed);
+        }
+
         /// <summary>
         /// A method that rebuilds the graph representation of the map.
         /// </summary>
@@ -867,69 +923,6 @@ namespace TransportTycoon.Model
             }
 
             return grownTrees;
-        }
-
-        /// <summary>
-        /// Sets the speed of the given vehicle based on the type of the new field it is moving to, and the presence of another vehicle on that field. 
-        /// If the new field is a bridge, the vehicle's speed should be limited to the bridge's speed limit.
-        /// If there is another vehicle on the new field, the current vehicle's speed should be limited to the speed of that vehicle.
-        /// </summary>
-        /// <param name="vehicle"></param>
-        /// <param name="nextVehicle"></param>
-        /// <param name="currentField"></param>
-        /// <param name="newField"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        private void SetVehicleSpeed(Vehicle vehicle, Vehicle? nextVehicle, IField currentField, IField newField)
-        {
-            //if the vehicle will be on a bridge, it should slow down to its speedlimit
-            if (newField is IBridge bridge)
-            {
-                vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, bridge.SpeedLimit));
-            }
-
-            //if the newField is Incline, the vehicle should slow down to half of its current speed
-            if (newField.Height > currentField.Height && currentField is not Water)
-            {
-                vehicle.ChangeCurrentSpeed(vehicle.CurrentSpeed / 2);
-            }
-
-
-            if (newField is Road road)
-            {
-                if (road.RoadType == RoadType.LeftTRoad || road.RoadType == RoadType.UpperTRoad ||
-                    road.RoadType == RoadType.RightTRoad || road.RoadType == RoadType.DownTRoad || road.RoadType == RoadType.XRoad)
-                {
-                    var vehicleOnCrossRoad = Vehicles.FirstOrDefault(v => v != vehicle && v.MapX == newField.X && v.MapY == newField.Y);
-                    if (vehicleOnCrossRoad != null)
-                    {
-                        vehicle.ChangeCurrentSpeed(0);
-                    }
-                }
-                else
-                {
-                    //if the next field has another vehicle on it, the current vehicle should slow down to the speed of that vehicle, or stop if the other vehicle is on a different field (to avoid collisions)
-                    if (nextVehicle != null)
-                    {
-                        bool isOppositeDirection = (vehicle.Direction == Direction.Up && nextVehicle.Direction == Direction.Down) ||
-                            (vehicle.Direction == Direction.Down && nextVehicle.Direction == Direction.Up) ||
-                            (vehicle.Direction == Direction.Left && nextVehicle.Direction == Direction.Right) ||
-                            (vehicle.Direction == Direction.Right && nextVehicle.Direction == Direction.Left);
-
-                        if (!isOppositeDirection)
-                        {
-                            //if the next vehicle is on a different field
-                            if (currentField != newField)
-                            {
-                                vehicle.ChangeCurrentSpeed(0);
-                            }
-                            else //if they are on the same field
-                            {
-                                vehicle.ChangeCurrentSpeed(Math.Min(vehicle.CurrentSpeed, nextVehicle.CurrentSpeed));
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         private void AllProduction()
