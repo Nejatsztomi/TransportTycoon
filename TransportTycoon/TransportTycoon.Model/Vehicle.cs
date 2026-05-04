@@ -5,6 +5,9 @@ using TransportTycoon.Model.Graph;
 
 namespace TransportTycoon.Model
 {
+    /// <summary>
+    /// An enum to represent vehicle types.
+    /// </summary>
     public enum VehicleType : byte
     {
         Van = 0,
@@ -15,6 +18,18 @@ namespace TransportTycoon.Model
         BigBus = 5,
     }
 
+    /// <summary>
+    /// Represents an abstract base class for vehicles that travel along routes, manage loads, and interact with a
+    /// pathfinding system.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="Vehicle"/> class provides core functionality for movement, routing, and load management in a
+    /// transportation or simulation context. It exposes properties and methods for controlling position, speed, route
+    /// assignment, and load handling. Derived classes should implement specific vehicle behaviors as needed. Vehicles
+    /// can become lost if they are unable to find a valid route to their destination, in which case intervention may be
+    /// required. Thread safety is not guaranteed; external synchronization may be necessary if accessed from multiple
+    /// threads.
+    /// </remarks>
     public abstract class Vehicle
     {
         #region Private static fields
@@ -47,25 +62,74 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Properties
+        #region Readonly
+        /// <summary>
+        /// The unique identifier for the vehicle, assigned automatically upon creation.
+        /// </summary>
         public UInt64 Id { get; private set; }
-        public double TopSpeed { get; protected set; }
+
+        /// <summary>
+        /// The maximum speed that can be achieved.
+        /// </summary>
+        public double TopSpeed { get; protected init; }
+
+        /// <summary>
+        /// Gets the maximum capacity allowed for the vehicle.
+        /// </summary>
+        public int MaxCapacity { get; protected init; }
+
+        /// <summary>
+        /// Gets the type of the vehicle.
+        /// </summary>
+        public VehicleType Type { get; protected init; }
+
+        /// <summary>
+        /// Gets the price associated with the vehicle.
+        /// </summary>
+        public int Price { get; protected init; }
+
+        /// <summary>
+        /// Gets the maintenance cost associated with the vehicle.
+        /// </summary>
+        public int Maintenance { get; protected init; }
+        #endregion
+
+        /// <summary>
+        /// The current speed of the vehicle.
+        /// </summary>
         public double CurrentSpeed { get; protected set; }
+
+        /// <summary>
+        /// Gets the current load information, if available.
+        /// </summary>
         public Load? CurrentLoad { get; protected set; }
-        public int MaxCapacity { get; protected set; }
+
+        /// <summary>
+        /// Gets the current capacity value.
+        /// </summary>
         public int CurrentCapacity { get; protected set; }
-        public Prouth? Prouth
-        {
-            get;
-            set;
-        }
+
+        /// <summary>
+        /// Gets the current <see cref="Prouth"/> value associated with this vehicle.
+        /// </summary>
+        public Prouth? Prouth { get; set; }
+
         /// <summary>
         /// The current route of the vehicle, represented as a list of <see cref="Edge"/> objects.
         /// The route may be <see langword="null"/> if the vehicle does not have a current route assigned.
         /// The vehicle will be repeating this route, if not given a new one.
         /// </summary>
         public List<Edge>? CurrentRoute { get; protected set; }
-        public VehicleType Type { get; protected set; }
+
+        #region Position and movement
+        /// <summary>
+        /// The vehicle's current X coordinate on the map.
+        /// </summary>
         public double X { get; protected set; }
+
+        /// <summary>
+        /// The vehicle's current Y coordinate on the map.
+        /// </summary>
         public double Y { get; protected set; }
 
         /// <summary>
@@ -77,16 +141,47 @@ namespace TransportTycoon.Model
         /// How fast should the vehicle turn in degrees per second.
         /// </summary>
         public double TurnSpeed { get; protected set; } = 360.0;
-        public int Price { get; protected set; }
-        public int Maintenance { get; protected set; }
 
+        /// <summary>
+        /// Gets the rounded X coordinate of the vehicle on the map.
+        /// </summary>
         public int MapX => (int)Math.Round(X);
+
+        /// <summary>
+        /// Gets the rounded Y coordinate of the vehicle on the map.
+        /// </summary>
         public int MapY => (int)Math.Round(Y);
 
+        /// <summary>
+        /// Gets or sets the X-coordinate of the last map position accessed.
+        /// </summary>
+        /// <remarks>
+        /// The value -1 indicates that no map position has been accessed yet.
+        /// This property can be used to track the most recently accessed map coordinates for optimization or state management purposes.
+        /// </remarks>
         public int LastMapX { get; set; } = -1;
+
+        /// <summary>
+        /// Gets or sets the Y-coordinate of the last map position accessed.
+        /// </summary>
+        /// <remarks>
+        /// The value -1 indicates that no map position has been accessed yet.
+        /// This property can be used to track the most recently accessed map coordinates for optimization or state management purposes.
+        /// </remarks>
         public int LastMapY { get; set; } = -1;
+
+        /// <summary>
+        /// Gets or sets the index of the last lane used or selected.
+        /// </summary>
+        /// <remarks>
+        /// A value of -1 indicates that no lane has been selected or used. This property can be
+        /// used to track the most recently accessed lane in scenarios where multiple lanes are available.
+        /// </remarks>
         public int LastLaneIdx { get; set; } = -1;
 
+        /// <summary>
+        /// Gets the list of load types that are accepted.
+        /// </summary>
         public List<LoadType>? AcceptedGoods { get; protected set; } = [];
 
         /// <summary>
@@ -95,20 +190,16 @@ namespace TransportTycoon.Model
         /// When a vehicle is marked as lost, it may require intervention to be moved back onto a valid path or to be removed from the game if it cannot be recovered.
         /// </summary>
         public bool IsLost { get; private set; } = false;
-        public IField? TargetTile
-        {
-            get
-            {
-                if (_currentEdgeTiles is null || _currentTileIdx >= _currentEdgeTiles.Count) return null;
-                return _currentEdgeTiles[_currentTileIdx];
-            }
-        }
 
-        public IPathFinder? PathFinder
-        {
-            get;
-            set;
-        } = null;
+        /// <summary>
+        /// Gets the pathfinding service used to calculate routes or paths within the application.
+        /// </summary>
+        /// <remarks>
+        /// The returned pathfinder may be <see langword="null"/> if no pathfinding service is configured.
+        /// Consumers should check for <see langword="null"/> before invoking pathfinding operations.
+        /// </remarks>
+        public IPathFinder? PathFinder { get; set; }
+        #endregion
         #endregion
 
         #region Protected constructor
