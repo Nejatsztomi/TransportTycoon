@@ -557,8 +557,8 @@ namespace TransportTycoon.Model
                     _currentEdgeTiles = [.. CurrentRoute[_currentEdgeIdx].Roads];
 
                     if (_currentEdgeTiles.Count > 1 &&
-                        _currentEdgeTiles[0].X == _lerpX &&
-                        _currentEdgeTiles[0].Y == _lerpY)
+                        Math.Abs(_currentEdgeTiles[0].X - _lerpX) < 0.001 &&
+                        Math.Abs(_currentEdgeTiles[0].Y - _lerpY) < 0.001)
                     {
                         _currentTileIdx = 1;
                     }
