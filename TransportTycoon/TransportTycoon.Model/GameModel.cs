@@ -628,6 +628,7 @@ namespace TransportTycoon.Model
 
             if (IsGameOver) OnGameOver();
 
+            RebuildGraph();
             InfrastructureBuilt?.Invoke(this, changedFields);
             BalanceChanged?.Invoke(this, EventArgs.Empty);
             BalanceMessage?.Invoke(this, (x, y, cost));
