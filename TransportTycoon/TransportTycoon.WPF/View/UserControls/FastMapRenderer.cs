@@ -399,20 +399,20 @@ namespace TransportTycoon.WPF.View.UserControls
             _roadTextures = new()
             {
                 // Straight
-                { RoadType.Horizontal, straightRoadTexture },
-                { RoadType.Vertical, RotateTexture(straightRoadTexture, 90.0) },
+                { RoadType.Vertical, straightRoadTexture },
+                { RoadType.Horizontal, RotateTexture(straightRoadTexture, 90.0) },
                 
                 // Turn
                 { RoadType.RightTurn, turnRoadTexture },
-                { RoadType.UpperRightTurn, RotateTexture(turnRoadTexture, 90.0) },
+                { RoadType.LeftTurn, RotateTexture(turnRoadTexture, 90.0) },
                 { RoadType.UpperLeftTurn, RotateTexture(turnRoadTexture, 180.0) },
-                { RoadType.LeftTurn, RotateTexture(turnRoadTexture, 270.0) },
+                { RoadType.UpperRightTurn, RotateTexture(turnRoadTexture, 270.0) },
                 
                 // Cross T
-                { RoadType.RightTRoad, crossTRoadTexture },
-                { RoadType.UpperTRoad, RotateTexture(crossTRoadTexture, 90.0) },
-                { RoadType.LeftTRoad, RotateTexture(crossTRoadTexture, 180.0) },
-                { RoadType.DownTRoad, RotateTexture(crossTRoadTexture, 270.0) },
+                { RoadType.DownTRoad, crossTRoadTexture },
+                { RoadType.LeftTRoad, RotateTexture(crossTRoadTexture, 90.0) },
+                { RoadType.UpperTRoad, RotateTexture(crossTRoadTexture, 180.0) },
+                { RoadType.RightTRoad, RotateTexture(crossTRoadTexture, 270.0) },
                 
                 // Cross X
                 { RoadType.XRoad, crossXRoadTexture },
@@ -423,13 +423,13 @@ namespace TransportTycoon.WPF.View.UserControls
             var yellowBridgeTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/yellowBridge.png"));
             _bridgeTextures = new()
             {
-                { BridgeType.HorizontalGreenBridge, greenBridgeTexture },
-                { BridgeType.HorizontalRedBridge, redBridgeTexture },
-                { BridgeType.HorizontalYellowBridge, yellowBridgeTexture },
+                { BridgeType.VerticalGreenBridge, greenBridgeTexture },
+                { BridgeType.VerticalRedBridge, redBridgeTexture },
+                { BridgeType.VerticalYellowBridge, yellowBridgeTexture },
 
-                { BridgeType.VerticalGreenBridge, RotateTexture(greenBridgeTexture, 90.0) },
-                { BridgeType.VerticalRedBridge, RotateTexture(redBridgeTexture, 90.0) },
-                { BridgeType.VerticalYellowBridge, RotateTexture(yellowBridgeTexture, 90.0) },
+                { BridgeType.HorizontalGreenBridge, RotateTexture(greenBridgeTexture, 90.0) },
+                { BridgeType.HorizontalRedBridge, RotateTexture(redBridgeTexture, 90.0) },
+                { BridgeType.HorizontalYellowBridge, RotateTexture(yellowBridgeTexture, 90.0) },
             };
 
             _vehicleTextures = new()

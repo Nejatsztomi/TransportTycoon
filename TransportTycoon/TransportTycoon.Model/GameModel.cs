@@ -523,13 +523,13 @@ namespace TransportTycoon.Model
             else if (SelectedField.X == x)
             {
                 if (Math.Min(SelectedField.Y, y) - 1 < 0 || Map[x, Math.Min(SelectedField.Y, y) - 1].Height != 1 ||
-                    Math.Max(SelectedField.Y, y) + 1 >= Map.Width || Map[x, Math.Max(SelectedField.Y, y) + 1].Height != 1)
+                    Math.Max(SelectedField.Y, y) + 1 >= Map.Height || Map[x, Math.Max(SelectedField.Y, y) + 1].Height != 1)
                 {
                     SetSelectedField(-1, -1);
                     return;
                 }
                 int dif = Math.Abs(SelectedField.Y - y);
-                BridgeType b_type = Map.CalculateBridgeType(dif, "horizontal");
+                BridgeType b_type = Map.CalculateBridgeType(dif, "vertical");
                 if (b_type == BridgeType.Null)
                 {
                     SetSelectedField(-1, -1);
@@ -544,20 +544,20 @@ namespace TransportTycoon.Model
                         return;
                     }
                 }
-                cost = -Map.CreateHorizontalBridge(x, Math.Min(SelectedField.Y, y), Math.Max(SelectedField.Y, y), b_type, ref changedFields);
+                cost = -Map.CreateVerticalBridge(x, Math.Min(SelectedField.Y, y), Math.Max(SelectedField.Y, y), b_type, ref changedFields);
                 Balance += cost;
             }
             else if (SelectedField.Y == y)
             {
                 if (Math.Min(SelectedField.X, x) - 1 < 0 || Map[Math.Min(SelectedField.X, x) - 1, y].Height != 1 ||
-                    Math.Max(SelectedField.X, x) + 1 >= Map.Height || Map[Math.Max(SelectedField.X, x) + 1, y].Height != 1)
+                    Math.Max(SelectedField.X, x) + 1 >= Map.Width || Map[Math.Max(SelectedField.X, x) + 1, y].Height != 1)
                 {
                     SetSelectedField(-1, -1);
                     return;
                 }
 
                 int dif = Math.Abs(SelectedField.X - x);
-                BridgeType b_type = Map.CalculateBridgeType(dif, "vertical");
+                BridgeType b_type = Map.CalculateBridgeType(dif, "horizontal");
                 if (b_type == BridgeType.Null)
                 {
                     SetSelectedField(-1, -1);
@@ -572,7 +572,7 @@ namespace TransportTycoon.Model
                         return;
                     }
                 }
-                cost = -Map.CreateVerticalBridge(y, Math.Min(SelectedField.X, x), Math.Max(SelectedField.X, x), b_type, ref changedFields);
+                cost = -Map.CreateHorizontalBridge(y, Math.Min(SelectedField.X, x), Math.Max(SelectedField.X, x), b_type, ref changedFields);
                 Balance += cost;
             }
 
@@ -1090,29 +1090,29 @@ namespace TransportTycoon.Model
 
         private bool CheckDestroyBridge(int x, int y)
         {
-            int left = y - 1;
-            while (Map[x, left] is IBridge)
+            int up = y - 1;
+            while (Map[x, up] is IBridge)
             {
-                if (Vehicles.Any(v => v.MapX == x && v.MapY == left)) return false;
-                left--;
-            }
-            int right = y + 1;
-            while (Map[x, right] is IBridge)
-            {
-                if (Vehicles.Any(v => v.MapX == x && v.MapY == right)) return false;
-                right++;
-            }
-            int up = x - 1;
-            while (Map[up, y] is IBridge)
-            {
-                if (Vehicles.Any(v => v.MapX == up && v.MapY == y)) return false;
+                if (Vehicles.Any(v => v.MapX == x && v.MapY == up)) return false;
                 up--;
             }
-            int down = x + 1;
-            while (Map[down, y] is IBridge)
+            int down = y + 1;
+            while (Map[x, down] is IBridge)
             {
-                if (Vehicles.Any(v => v.MapX == down && v.MapY == y)) return false;
+                if (Vehicles.Any(v => v.MapX == x && v.MapY == down)) return false;
                 down++;
+            }
+            int left = x - 1;
+            while (Map[left, y] is IBridge)
+            {
+                if (Vehicles.Any(v => v.MapX == left && v.MapY == y)) return false;
+                left--;
+            }
+            int right = x + 1;
+            while (Map[right, y] is IBridge)
+            {
+                if (Vehicles.Any(v => v.MapX == right && v.MapY == y)) return false;
+                right++;
             }
             return true;
         }
