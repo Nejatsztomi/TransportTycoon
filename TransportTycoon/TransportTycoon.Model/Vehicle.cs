@@ -259,35 +259,25 @@ namespace TransportTycoon.Model
 
         /// <summary>
         /// A method to set the vehicle's <see cref="Prouth"/>, <see cref="PathFinder"/>, and <see cref="GhostNodeInjector"/>.
-        /// If the vehicle already has a <see cref="Prouth"/> assigned, it will recalculate its route using the new <see cref="Prouth"/> and start driving to the first stop of the new <see cref="Prouth"/>.
-        /// If the vehicle did not have a <see cref="Prouth"/> before, it will simply get the next route and start driving.
         /// </summary>
+        /// <remarks>
+        /// It always tries to found a route to the first stop of the new <see cref="Prouth"/>. If it fails, the vehicle is marked as lost.
+        /// It uses <see cref="RecalculateRoute(GhostNodeInjector)"/> to determine the route to the first stop.
+        /// It is "lazy" since if the vehicle correctly stand on the <see cref="Prouth"/>'s first stop it returns early.
+        /// </remarks>
         /// <param name="prouth">The <see cref="Prouth"/> to assign to the vehicle.</param>
         /// <param name="pathFinder">The <see cref="IPathFinder"/> used to calculate routes.</param>
         /// <param name="injector">The <see cref="GhostNodeInjector"/> used to manage temporary nodes during route calculation.</param> 
         public void SetProuth(Prouth prouth, IPathFinder pathFinder, GhostNodeInjector injector)
         {
-            bool alreadyHadProuth = Prouth is not null;
             Prouth = prouth;
             PathFinder = pathFinder;
 
-            // If Prouth is not null, the vehicle has a valid Prouth, and can be mid-route
-            // if we called this method, the vehicle should recalculate it's route via the new Prouth.
-            // It should always go to the first stop of the new Prouth if possible, else be lost.
-            if (alreadyHadProuth)
-            {
-                _currentStopIdx = 0;
+            _currentStopIdx = 0;
 
-                RecalculateRoute(injector);
+            RecalculateRoute(injector);
 
-                Debug.WriteLine($"Vehicle {Id} was reassigned a new Prouth and is routing to the first stop.");
-            }
-            else
-            {
-
-                CurrentRoute = GetNextRoute();
-                StartDrivingFromStopToStop();
-            }
+            Debug.WriteLine($"Vehicle {Id} was reassigned a new Prouth and is routing to the first stop.");
         }
 
         /// <summary>
@@ -300,17 +290,16 @@ namespace TransportTycoon.Model
         /// <param name="injector">The ghost node injector used to manage temporary nodes during route calculation.</param>
         public void RecalculateRoute(GhostNodeInjector injector)
         {
-            if (PathFinder is null || Prouth is null) return;
+            if (PathFinder is null) return;
             if (GetCurrentStopNodePair() is not (Node _, Node end)) return;
 
             IField currentTile;
-            if (IsLost)
+            if (IsLost || CurrentRoute is null || _currentEdgeTiles is null)
             {
                 currentTile = new Stop(MapX, MapY, 1);
             }
             else
             {
-                if (CurrentRoute is null || _currentEdgeTiles is null) return;
                 currentTile = _currentEdgeTiles[_currentTileIdx];
             }
 
@@ -323,7 +312,6 @@ namespace TransportTycoon.Model
             }
 
             List<Edge>? newRoute = PathFinder.FindPath(ghostNode, end);
-
 
             if (isGhost)
             {
