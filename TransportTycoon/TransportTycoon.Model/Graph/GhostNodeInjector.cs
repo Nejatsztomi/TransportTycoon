@@ -37,13 +37,16 @@ namespace TransportTycoon.Model.Graph
             }
 
             Node ghostNode = new(currentVehicleTile.X, currentVehicleTile.Y, currentVehicleTile.GetType());
-            var validExits = new List<(int X, int Y)>(4);
-            GetValidExits(currentVehicleTile, validExits);
 
             var ghostEdges = new List<Edge>();
-            foreach ((int x, int y) exit in validExits)
+            foreach ((int dx, int dy) dir in _directions)
             {
-                (Node? hitNode, List<IField> pathTaken) = WalkToNextJunction(currentVehicleTile, exit);
+                int newX = currentVehicleTile.X + dir.dx;
+                int newY = currentVehicleTile.Y + dir.dy;
+
+                if (!IsValidExit(newX, newY)) continue;
+
+                (Node? hitNode, List<IField> pathTaken) = WalkToNextJunction(currentVehicleTile, dir);
                 if (hitNode is not null)
                 {
                     ghostEdges.Add(new Edge(ghostNode, hitNode, pathTaken, pathTaken.Count));
@@ -71,59 +74,52 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Private methods
-        private void GetValidExits(IField currentVehichleTile, List<(int dx, int dy)> validExits)
+        private bool IsValidExit(int x, int y)
         {
-            validExits.Clear();
-            foreach ((int dx, int dy) in _directions)
-            {
-                int newX = currentVehichleTile.X + dx;
-                int newY = currentVehichleTile.Y + dy;
-
-                if (!_gameTable.IsInBounds(newX, newY)) continue;
-                if (_gameTable[newX, newY] is not IInfrastructure) continue;
-
-                validExits.Add((dx, dy));
-            }
+            return _gameTable.IsInBounds(x, y)
+                && _gameTable[x, y] is IInfrastructure;
         }
 
         private (Node? endNode, List<IField> path) WalkToNextJunction(IField startTile, (int X, int Y) initialMomentum)
         {
             List<IField> pathTaken = [startTile];
+
             IField currentTile = startTile;
-            var exits = new List<(int X, int Y)>(4);
             (int dx, int dy) momentum = initialMomentum;
-            var visited = new HashSet<(int, int)> { (currentTile.X, currentTile.Y) };
 
             while (true)
             {
                 int nextX = currentTile.X + momentum.dx;
                 int nextY = currentTile.Y + momentum.dy;
 
-                if (!_gameTable.IsInBounds(nextX, nextY))
-                {
-                    return (null, pathTaken);
-                }
-
-                // Prevent infinite loops by checking if we've already visited this tile
-                if (!visited.Add((nextX, nextY)))
-                {
-                    return (null, pathTaken);
-                }
+                if (!_gameTable.IsInBounds(nextX, nextY)) return (null, pathTaken);
 
                 currentTile = _gameTable[nextX, nextY];
+
+                if (currentTile == startTile) return (null, pathTaken);
+
                 pathTaken.Add(currentTile);
-                if (_graph.GetNodeAt(nextX, nextY) is Node node)
+                if (_graph.GetNodeAt(nextX, nextY) is Node node) return (node, pathTaken);
+
+                (int backDx, int backDy) = (-momentum.dx, -momentum.dy);
+                (int dx, int dy) nextMomentum = (0, 0);
+                int validExitsCount = 0;
+
+                foreach (var dir in _directions)
                 {
-                    return (node, pathTaken);
+                    if (dir == (backDx, backDy)) continue;
+
+                    int neighborX = currentTile.X + dir.dx;
+                    int neighborY = currentTile.Y + dir.dy;
+
+                    if (!IsValidExit(neighborX, neighborY)) continue;
+                    validExitsCount++;
+                    nextMomentum = dir;
                 }
 
-                (int backdx, int backdy) = (-momentum.dx, -momentum.dy);
-                GetValidExits(currentTile, exits);
-                exits.Remove((backdx, backdy));
-
-                if (exits.Count == 1)
+                if (validExitsCount == 1)
                 {
-                    momentum = exits[0];
+                    momentum = nextMomentum;
                 }
                 else
                 {
