@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -854,6 +855,7 @@ namespace TransportTycoon.WPF.View.UserControls
                     BitmapSource generatedTexture = GenerateRouteStopTexture(stop.Order);
                     _stopTextures[stop.Order] = generatedTexture;
                     ctx.DrawImage(generatedTexture, stopRect);
+                    Debug.WriteLine($"Cached a new image with order: {stop.Order}!");
                 }
             }
         }
@@ -899,8 +901,6 @@ namespace TransportTycoon.WPF.View.UserControls
                     DrawBridgeLayer(ctx, currentField, baseRect);
                     DrawTreesLayer(ctx, currentField, baseRect);
 
-                    DrawRouteStopsLayer(ctx);
-
                     // Hover effect
                     if (x == HoverX && y == HoverY)
                     {
@@ -914,11 +914,13 @@ namespace TransportTycoon.WPF.View.UserControls
                     }
                 }
             }
-
             Rect visibleWorldRect = new(CameraX, CameraY, visibleWorldWidth, visibleWorldHeight);
 
             // Vehicle layer
             DrawVehiclesLayer(ctx, visibleWorldRect);
+
+            // Stop order layer
+            DrawRouteStopsLayer(ctx);
 
             ctx.Pop();
         }
