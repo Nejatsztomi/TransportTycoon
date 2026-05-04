@@ -779,13 +779,13 @@ namespace TransportTycoon.WPF.View.UserControls
 
                     if (!_vehicleRotationCache.TryGetValue(vehicle.Id, out var transform))
                     {
-                        transform = new RotateTransform(angle, centerX, centerY);
+                        transform = new RotateTransform(angle + 90, centerX, centerY);
                         _vehicleRotationCache[vehicle.Id] = transform;
                     }
 
                     transform.CenterX = centerX;
                     transform.CenterY = centerY;
-                    transform.Angle = angle;
+                    transform.Angle = angle + 90;
 
                     ctx.PushTransform(transform);
 
