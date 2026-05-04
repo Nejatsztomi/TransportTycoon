@@ -3,7 +3,7 @@
 namespace TransportTycoon.Model.Graph
 {
     /// <summary>
-    /// Injects a ghost (temporary) node into the graph at the current position of the vehicle if there is no real node at that position.
+    /// Injects a ghost (temporary) <see cref="Node"/> into the graph at the current position of the vehicle if there is no "real" <see cref="Node"/> at that position.
     /// </summary>
     public class GhostNodeInjector
     {
@@ -15,6 +15,11 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GhostNodeInjector"/> class with the specified <see cref="GameTable"/> and <see cref="Graph"/>.
+        /// </summary>
+        /// <param name="gameTable">The <see cref="GameTable"/> that provides the context or data for node injection. Cannot be <see langword="null"/>.</param>
+        /// <param name="graph">The <see cref="Graph"/> in which ghost nodes will be injected. Cannot be <see langword="null"/>.</param>
         public GhostNodeInjector(GameTable gameTable, Graph graph)
         {
             _gameTable = gameTable;
@@ -37,8 +42,8 @@ namespace TransportTycoon.Model.Graph
             }
 
             Node ghostNode = new(currentVehicleTile.X, currentVehicleTile.Y, currentVehicleTile.GetType());
-
             var ghostEdges = new List<Edge>();
+
             foreach ((int dx, int dy) dir in _directions)
             {
                 int newX = currentVehicleTile.X + dir.dx;
@@ -67,6 +72,11 @@ namespace TransportTycoon.Model.Graph
             return (ghostNode, true);
         }
 
+        /// <summary>
+        /// Removes the specified ghost node from the graph.
+        /// Should be called when the vehicle moves off the ghost node's tile or when the ghost node is no longer needed.
+        /// </summary>
+        /// <param name="ghostNode">The ghost node to remove.</param>
         public void RemoveGhostNode(Node ghostNode)
         {
             _graph.AdjacencyList.Remove(ghostNode);
@@ -96,7 +106,8 @@ namespace TransportTycoon.Model.Graph
 
                 currentTile = _gameTable[nextX, nextY];
 
-                if (currentTile == startTile) return (null, pathTaken);
+                if (currentTile.X == startTile.X && currentTile.Y == startTile.Y)
+                    return (null, pathTaken);
 
                 pathTaken.Add(currentTile);
                 if (_graph.GetNodeAt(nextX, nextY) is Node node) return (node, pathTaken);
