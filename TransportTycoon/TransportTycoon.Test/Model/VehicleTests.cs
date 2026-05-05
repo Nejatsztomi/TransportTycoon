@@ -21,9 +21,9 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(20, bus.Y);
             Assert.Equal(Direction.Up, bus.Direction);
             Assert.Equal(1, bus.TopSpeed);
-            Assert.Equal(100, bus.MaxCapacity);
-            Assert.Equal(100, bus.Price);
-            Assert.Equal(100, bus.Maintenance);
+            Assert.Equal(10, bus.MaxCapacity);
+            Assert.Equal(500, bus.Price);
+            Assert.Equal(2, bus.Maintenance);
             Assert.Equal(VehicleType.SmallBus, bus.Type);
             Assert.Single(bus.AcceptedGoods!);
             Assert.Contains(LoadType.People, bus.AcceptedGoods!);
@@ -37,8 +37,8 @@ namespace TransportTycoon.Test.Model
             var truck = new Truck(5, 5, Direction.Right);
 
             // Assert
-            Assert.Equal(1.5, truck.TopSpeed);
-            Assert.Equal(100, truck.MaxCapacity);
+            Assert.Equal(0.9, truck.TopSpeed);
+            Assert.Equal(20, truck.MaxCapacity);
             Assert.Equal(VehicleType.Truck, truck.Type);
             Assert.Equal(5, truck.AcceptedGoods!.Count);
             Assert.Contains(LoadType.Wood, truck.AcceptedGoods);
@@ -67,10 +67,10 @@ namespace TransportTycoon.Test.Model
             var van = new Van(0, 0, Direction.Up);
 
             // Act
-            van.SetCurrentCapacity(50);
+            van.SetCurrentCapacity(10);
 
             // Assert
-            Assert.Equal(50, van.CurrentCapacity);
+            Assert.Equal(10, van.CurrentCapacity);
         }
 
         [Fact]
@@ -78,13 +78,13 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var van = new Van(0, 0, Direction.Up);
-            van.SetCurrentCapacity(50); // Beállítunk egy érvényes 50-es értéket
+            van.SetCurrentCapacity(10); // Beállítunk egy érvényes 50-es értéket
 
             // Act
             van.SetCurrentCapacity(150); // Érvénytelen érték, mert MaxCapacity = 100
 
             // Assert
-            Assert.Equal(50, van.CurrentCapacity); // Az érték nem változhatott
+            Assert.Equal(10, van.CurrentCapacity); // Az érték nem változhatott
         }
 
         [Fact]
@@ -92,13 +92,13 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var van = new Van(0, 0, Direction.Up);
-            van.SetCurrentCapacity(50); // Beállítunk egy érvényes 50-es értéket
+            van.SetCurrentCapacity(10); // Beállítunk egy érvényes 50-es értéket
 
             // Act
             van.SetCurrentCapacity(-20); // Érvénytelen (negatív) érték
 
             // Assert
-            Assert.Equal(50, van.CurrentCapacity); // Az érték nem változhatott
+            Assert.Equal(10, van.CurrentCapacity); // Az érték nem változhatott
         }
 
         [Fact]

@@ -751,7 +751,7 @@ public class GameModelTest
 
             // Assert
             Assert.Equal(3, model.Map[1, 1].Height);
-            Assert.Equal(startBalance - 100, model.Balance);
+            Assert.Equal(startBalance - 200, model.Balance);
         }
 
         [Fact]
@@ -769,7 +769,7 @@ public class GameModelTest
 
             // Assert
             Assert.Equal(3, model.Map[1, 1].Height);
-            Assert.Equal(startBalance - 150, model.Balance);
+            Assert.Equal(startBalance - 250, model.Balance);
         }
 
         [Fact]
@@ -813,7 +813,7 @@ public class GameModelTest
 
             // Assert
             Assert.Equal(2, model.Map[1, 1].Height);
-            Assert.Equal(startBalance - 100, model.Balance);
+            Assert.Equal(startBalance - 200, model.Balance);
         }
 
         [Fact]
@@ -1523,7 +1523,7 @@ public class GameModelTest
             method!.Invoke(model, null);
 
             // Assert
-            Assert.Equal(80, truck.CurrentCapacity); // Felvette a 80 fát
+            Assert.Equal(20, truck.CurrentCapacity); // Felvette a 20 fát
             Assert.NotNull(truck.CurrentLoad);
             Assert.Equal(LoadType.Wood, truck.CurrentLoad.LoadType);
         }
