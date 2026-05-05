@@ -377,7 +377,7 @@ namespace TransportTycoon.Model
                             cost = -50;
                             Balance += cost;
                         }
-                        cost = -100;
+                        cost = -200;
                         Balance += cost;
                         terrain.IncreaseHeight();
 
@@ -418,7 +418,7 @@ namespace TransportTycoon.Model
                             cost = -50;
                             Balance += cost;
                         }
-                        cost = -100;
+                        cost = -200;
                         Balance += cost;
                         terrain.DecreaseHeight();
 
