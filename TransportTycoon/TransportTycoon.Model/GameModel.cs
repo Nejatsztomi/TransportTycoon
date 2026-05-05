@@ -35,7 +35,7 @@ namespace TransportTycoon.Model
         /// <summary>
         /// Default starting balance for new game.
         /// </summary>
-        public const int DefaultBalance = 1_000_000;
+        public const int DefaultBalance = 10_000;
 
         /// <summary>
         /// Default starting difficulty for new game.
