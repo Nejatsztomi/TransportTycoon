@@ -12,7 +12,7 @@
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public readonly int Price => 100;
+        public readonly int Price => 10;
         #endregion
 
         #region Constructors

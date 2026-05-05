@@ -8,7 +8,7 @@ namespace TransportTycoon.MapData
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public readonly int Price => 200;
+        public readonly int Price => 300;
         public List<IBuildingBlocks>? Connections { get; private set; } = [];
         #endregion
 

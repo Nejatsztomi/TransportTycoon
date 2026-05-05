@@ -21,7 +21,7 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BridgeType BridgeType { get; set; }
-        public readonly int Price => 50;
+        public readonly int Price => 60;
         public readonly int SpeedLimit => 50;
         public readonly int Range => 13;
         #endregion
@@ -44,7 +44,7 @@
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public readonly int Price => 100;
+        public readonly int Price => 80;
         public readonly int SpeedLimit => 50;
         public readonly int Range => 15;
         #endregion
@@ -67,7 +67,7 @@
         public int Y { get; set; }
         public int Height { get; set; }
         public BridgeType BridgeType { get; set; }
-        public readonly int Price => 150;
+        public readonly int Price => 100;
         public readonly int SpeedLimit => 50;
         public readonly int Range => 17;
         #endregion
