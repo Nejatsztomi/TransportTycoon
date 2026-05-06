@@ -2,6 +2,9 @@
 
 namespace TransportTycoon.Model.Graph
 {
+    /// <summary>
+    /// The status of a path tracing operation, indicating the outcome of the trace.
+    /// </summary>
     public enum TraceStatus : byte
     {
         FoundIntersection,
@@ -9,6 +12,14 @@ namespace TransportTycoon.Model.Graph
         ClosedCircle,
     }
 
+    /// <summary>
+    /// Represents the result of a trace operation, including the path taken, costs, and final status.
+    /// </summary>
+    /// <param name="EndTile">The field where the trace operation ended, or null if the trace did not reach a valid end point.</param>
+    /// <param name="PathTaken">The ordered list of fields traversed during the trace operation. The list may be empty if no path was found.</param>
+    /// <param name="ForwardCost">The total cost accumulated when tracing from the start to the end tile. The value is typically non-negative.</param>
+    /// <param name="BackwardCost">The total cost accumulated when tracing from the end tile back to the start, if applicable. The value is typically non-negative.</param>
+    /// <param name="Status">The final status of the trace operation, indicating success, failure, or other relevant outcome.</param>
     public readonly record struct TraceResult(
         IField? EndTile,
         List<IField> PathTaken,
@@ -30,6 +41,10 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the PathTracer class using the specified game table.
+        /// </summary>
+        /// <param name="gameTable">The GameTable instance that provides the context for path tracing operations. Cannot be null.</param>
         public PathTracer(GameTable gameTable)
         {
             _gameTable = gameTable;
@@ -37,6 +52,20 @@ namespace TransportTycoon.Model.Graph
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Traces a path segment starting from the specified tile and initial momentum, following valid road
+        /// connections until an intersection, dead end, or closed loop is encountered.
+        /// </summary>
+        /// <remarks>The method follows the path in the direction of the initial momentum, only proceeding
+        /// through valid road connections. The trace stops if it reaches an intersection, a dead end, or forms a closed
+        /// loop back to the starting tile. The returned TraceResult provides details about the outcome and the path
+        /// taken.</remarks>
+        /// <param name="startTile">The starting tile from which to begin tracing the segment. Must be a valid field on the game table.</param>
+        /// <param name="initialMomentum">The initial movement direction, represented as a tuple of (dx, dy), indicating the change in X and Y
+        /// coordinates per step.</param>
+        /// <returns>A TraceResult containing information about the traced path, including the endpoint (if found), the sequence
+        /// of tiles traversed, accumulated forward and backward costs, and the status indicating how the trace
+        /// terminated.</returns>
         public TraceResult TraceSegment(IField startTile, (int dx, int dy) initialMomentum)
         {
             List<IField> pathTaken = [startTile];
@@ -101,30 +130,38 @@ namespace TransportTycoon.Model.Graph
 
         private bool CanMoveTo(IField currentTile, IField nextTile, (int dx, int dy) momentum)
         {
-            if (currentTile is not IInfrastructure currentRoad || nextTile is not IInfrastructure nextRoad) return false;
-
-            if (!HasExit(currentRoad, momentum)) return false;
-
-            (int enterDx, int enterDy) = (-momentum.dx, -momentum.dy);
-            if (!HasExit(nextRoad, (enterDx, enterDy))) return false;
-
             if (Math.Abs(nextTile.Height - currentTile.Height) > 1) return false;
 
-            return true;
+            bool canExitCurrent = currentTile switch
+            {
+                Road currentRoad => HasExit(currentRoad.RoadType, momentum),
+                Stop => true,
+                IBridge currentBridge => IsValidBridgeDirection(currentBridge, momentum),
+                _ => false
+            };
+
+            if (!canExitCurrent) return false;
+
+            (int enterDx, int enterDy) = (-momentum.dx, -momentum.dy);
+            bool canEnterNext = nextTile switch
+            {
+                Road nextRoad => HasExit(nextRoad.RoadType, (enterDx, enterDy)),
+                Stop => true,
+                IBridge nextBridge => IsValidBridgeDirection(nextBridge, (enterDx, enterDy)),
+                _ => false
+            };
+
+            return canEnterNext;
         }
 
-        private bool HasExit(IInfrastructure infrastructure, (int dx, int dy) direction)
+        private bool HasExit(RoadType roadType, (int dx, int dy) direction)
         {
-            // Stops can be entered and exited from any direction
-            if (infrastructure is Stop) return true;
-            if (infrastructure is not Road r) return true;
-
             var up = (0, -1);
             var down = (0, 1);
             var right = (1, 0);
             var left = (-1, 0);
 
-            return r.RoadType switch
+            return roadType switch
             {
                 RoadType.Vertical => direction == up || direction == down,
                 RoadType.Horizontal => direction == right || direction == left,
@@ -144,6 +181,23 @@ namespace TransportTycoon.Model.Graph
 
                 _ => false
             };
+        }
+
+        private bool IsValidBridgeDirection(IBridge bridge, (int dx, int dy) direction)
+        {
+            var up = (0, -1);
+            var down = (0, 1);
+            var right = (1, 0);
+            var left = (-1, 0);
+
+            if (bridge.BridgeType == BridgeType.VerticalGreenBridge || bridge.BridgeType == BridgeType.VerticalYellowBridge || bridge.BridgeType == BridgeType.VerticalRedBridge)
+            {
+                return direction == up || direction == down;
+            }
+            else
+            {
+                return direction == left || direction == right;
+            }
         }
 
         /// <summary>
