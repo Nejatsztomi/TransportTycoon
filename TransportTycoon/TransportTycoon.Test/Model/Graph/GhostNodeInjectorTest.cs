@@ -16,7 +16,7 @@ namespace TransportTycoon.Test.Model.Graph
             var gameTable = new GameTable(mapGen, context);
             var node = new GraphNS.Node(0, 0, typeof(Stop));
             var graph = new GraphNS.Graph(new Dictionary<GraphNS.Node, List<GraphNS.Edge>> { { node, [] } });
-            var injector = new GraphNS.GhostNodeInjector(gameTable, graph);
+            var injector = new GraphNS.GhostNodeInjector(graph, new(gameTable));
             var field = new Stop(0, 0, 0);
 
             // Act
@@ -42,7 +42,7 @@ namespace TransportTycoon.Test.Model.Graph
             gameTable.Table[0, 1] = new Road(0, 1, RoadType.Horizontal, 0);
             gameTable.Table[1, 1] = new Road(1, 1, RoadType.Horizontal, 0);
             var graph = new GraphNS.Graph(new Dictionary<GraphNS.Node, List<GraphNS.Edge>> { { new GraphNS.Node(1, 0, typeof(Stop)), [] } });
-            var injector = new GraphNS.GhostNodeInjector(gameTable, graph);
+            var injector = new GraphNS.GhostNodeInjector(graph, new(gameTable));
             var field = road00;
 
             // Act
@@ -67,7 +67,7 @@ namespace TransportTycoon.Test.Model.Graph
             gameTable.Table[0, 1] = new Road(0, 1, RoadType.Horizontal, 0);
             gameTable.Table[1, 1] = new Road(1, 1, RoadType.Horizontal, 0);
             var graph = new GraphNS.Graph([]);
-            var injector = new GraphNS.GhostNodeInjector(gameTable, graph);
+            var injector = new GraphNS.GhostNodeInjector(graph, new(gameTable));
             var field = new Road(0, 0, RoadType.Horizontal, 0);
 
             // Act
@@ -85,7 +85,7 @@ namespace TransportTycoon.Test.Model.Graph
             var gameTable = Substitute.For<GameTable>(Substitute.For<IMapGenerator>(), new MapGenerationContext(2, 2, 0, new MapGenerationSettings()));
             var ghostNode = new GraphNS.Node(0, 0, typeof(Road));
             var graph = new GraphNS.Graph(new Dictionary<GraphNS.Node, List<GraphNS.Edge>> { { ghostNode, [] } });
-            var injector = new GraphNS.GhostNodeInjector(gameTable, graph);
+            var injector = new GraphNS.GhostNodeInjector(graph, new(gameTable));
 
             // Act
             injector.RemoveGhostNode(ghostNode);
