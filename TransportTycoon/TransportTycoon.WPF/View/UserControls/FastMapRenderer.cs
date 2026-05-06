@@ -760,14 +760,17 @@ namespace TransportTycoon.WPF.View.UserControls
 
             foreach (Vehicle vehicle in Vehicles)
             {
-                double shiftX = 0.0;
-                double shiftY = 0.0;
                 double angle = vehicle.Angle;
 
-                double pixelX = vehicle.X * TileSize + shiftX;
-                double pixelY = vehicle.Y * TileSize + shiftY;
+                double rightAngleRad = (angle + 90.0) * (Math.PI / 180.0);
 
-                Rect vehicleRect = new(pixelX, pixelY + LANE_OFFSET_PIXEL, TileSize, TileSize);
+                double shiftX = Math.Cos(rightAngleRad) * LANE_OFFSET_PIXEL;
+                double shiftY = Math.Sin(rightAngleRad) * LANE_OFFSET_PIXEL;
+
+                double pixelX = (vehicle.X * TileSize) + shiftX;
+                double pixelY = (vehicle.Y * TileSize) + shiftY;
+
+                Rect vehicleRect = new(pixelX, pixelY, TileSize, TileSize);
 
                 // Culling check
                 if (!visibleWorldRect.IntersectsWith(vehicleRect)) continue;
@@ -775,8 +778,8 @@ namespace TransportTycoon.WPF.View.UserControls
                 if (_vehicleTextures.TryGetValue(ConvertVehicleType(vehicle.Type), out var texture))
                 {
                     // Calculate the rotation center, match the size to the given rectangle
-                    double centerX = vehicleRect.X + (vehicleRect.Width / 2);
-                    double centerY = vehicleRect.Y + (vehicleRect.Height / 2);
+                    double centerX = vehicleRect.X + (vehicleRect.Width / 2.0);
+                    double centerY = vehicleRect.Y + (vehicleRect.Height / 2.0);
 
                     if (!_vehicleRotationCache.TryGetValue(vehicle.Id, out var transform))
                     {
