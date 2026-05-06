@@ -246,7 +246,7 @@ namespace TransportTycoon.Model
                 if (stops.Any())
                 {
                     var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
-                    vehicle.SetProuth(prouth, _pathFinder, new(Map, GraphNetwork));
+                    vehicle.SetProuth(prouth, _pathFinder, new(GraphNetwork, new(Map)));
                 }
 
                 Vehicles.Add(vehicle);
@@ -783,7 +783,7 @@ namespace TransportTycoon.Model
 
             Debug.WriteLine("Assigned prouth with {0} stops to the vehicle.", prouth.Stops.Count);
 
-            var ghostNodeInjector = new GhostNodeInjector(Map, GraphNetwork);
+            var ghostNodeInjector = new GhostNodeInjector(GraphNetwork, new(Map));
             selectedVehicle.SetProuth(prouth, _pathFinder, ghostNodeInjector);
 
             Debug.WriteLine("Resetting stop list and inkoving event");
@@ -847,7 +847,7 @@ namespace TransportTycoon.Model
         private void ReasignVehiclesProuth()
         {
             Debug.WriteLine("Starting to reasign vehicle prouths!");
-            var ghostNodeInjector = new GhostNodeInjector(Map, GraphNetwork);
+            var ghostNodeInjector = new GhostNodeInjector(GraphNetwork, new(Map));
 
             foreach (var vehicle in Vehicles)
             {
