@@ -26,6 +26,12 @@
       <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
   </PropertyGroup>
 
+  <!-- Add naming to the output file  -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-SC' Or '$(Configuration)'=='Release-FD'">
+      <!-- Existing properties … -->
+      <AssemblyName>TransportTycoon</AssemblyName>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Assets\Fonts\PressStart2P.ttf" />
     <None Remove="Assets\Images\background.png" />
