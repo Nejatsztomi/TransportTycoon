@@ -214,9 +214,9 @@ create_release:
             - **Framework-dependent** requires .NET Desktop Runtime installed
         assets:
             links:
-                - name: 'TransportTycoon-self-contained.zip'
-                  url: '${CI_JOB_URL}/artifacts/download?filetype=archive&job=publish_self_contained'
+                - name: 'TransportTycoon-${CI_COMMIT_TAG}-self-contained.exe'
+                  url: '${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_SHA}/file/publish-sc/TransportTycoon.Wpf.exe?job=publish_self_contained'
                   link_type: package
-                - name: 'TransportTycoon-framework-dependent.zip'
-                  url: '${CI_JOB_URL}/artifacts/download?filetype=archive&job=publish_framework_dependent'
+                - name: 'TransportTycoon-${CI_COMMIT_TAG}-framework-dependent.exe'
+                  url: '${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_SHA}/file/publish-fd/TransportTycoon.Wpf.exe?job=publish_framework_dependent'
                   link_type: package
