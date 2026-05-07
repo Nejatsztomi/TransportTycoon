@@ -61,6 +61,9 @@
         #region Constructors
         protected BuildingEntity(int width = 2, int height = 2)
         {
+            if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width), "Width must be greater than 0.");
+            if (height <= 0) throw new ArgumentOutOfRangeException(nameof(height), "Height must be greater than 0.");
+
             Width = width;
             Height = height;
         }
