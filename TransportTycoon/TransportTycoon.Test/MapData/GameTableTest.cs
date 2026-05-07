@@ -26,6 +26,60 @@ public class GameTableTest
             Assert.Equal(height, gameTable.Table.GetLength(1));
         }
     }
+
+    #region IsInBounds Tests
+    [Theory]
+    [InlineData(0, 0)]
+    [InlineData(4, 0)]
+    [InlineData(0, 4)]
+    [InlineData(4, 4)]
+    public void IsInBounds_ReturnsTrue_ForValidCoordinates_WhenWidthEqualsHeight(int x, int y)
+    {
+        // Arrange
+        var table = CreateTestTable(5, 5, 2);
+
+        // Act
+        var result = table.IsInBounds(x, y);
+
+        // Assert
+        Assert.True(result);
+    }
+
+    [Theory]
+    [InlineData(-1, 0)]
+    [InlineData(5, 0)]
+    [InlineData(0, -1)]
+    [InlineData(0, 5)]
+    public void IsInBounds_ReturnsFalse_ForInvalidCoordinates_WhenWidthEqualsHeight(int x, int y)
+    {
+        // Arrange
+        var table = CreateTestTable(5, 5, 2);
+
+        // Act
+        var result = table.IsInBounds(x, y);
+
+        // Assert
+        Assert.False(result);
+    }
+
+    [Theory]
+    [InlineData(3, 5, 2, 4, true)]
+    [InlineData(3, 5, 2, 5, false)]
+    [InlineData(5, 3, 4, 2, true)]
+    [InlineData(5, 3, 5, 2, false)]
+    public void IsInBounds_ReturnsExpectedResult_WhenWidthAndHeightDiffer(int width, int height, int x, int y, bool expected)
+    {
+        // Arrange
+        var table = CreateTestTable(width, height, 2);
+
+        // Act
+        var result = table.IsInBounds(x, y);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+    #endregion
+
     private GameTable CreateTestTable(int width = 5, int height = 5, int defaultHeight = 2)
     {
         var mapGenMock = Substitute.For<IMapGenerator>();
@@ -196,6 +250,7 @@ public class GameTableTest
         Assert.Equal(RoadType.XRoad, table.CalculateRoadType(1, 1));
     }
     #endregion
+
     //public class MapGenerationTest
     //{
     //    private GameTable _gameTable = null!;
