@@ -22,6 +22,19 @@ public class WaterGeneratorTest
             Assert.NotNull(result);
             Assert.IsType<LakeGenerator>(result);
         }
+
+        [Fact]
+        public void WaterGeneratorFactory_Create_SetsWaterLayerPhase()
+        {
+            // Arrange
+            INoiseGenerator noiseGenerator = Substitute.For<INoiseGenerator>();
+
+            // Act
+            IWaterGenerator result = LakeGeneratorFactory.Create(noiseGenerator);
+
+            // Assert
+            Assert.Equal(GenerationPhase.WaterLayer, result.Phase);
+        }
     }
 
     public class GenerateWaterMapTest
@@ -102,6 +115,65 @@ public class WaterGeneratorTest
                 }
             }
             Assert.False(hasWaterCells, "Water should not appear on high terrain");
+        }
+
+        [Fact]
+        public void GenerateWaterMap_AlreadyFullOfWater_StaysUnchanged()
+        {
+            // Arrange
+            MapGenerationContext smallContext = new(10, 10, 42, new MapGenerationSettings());
+            float[,] variableHeightMap = GenerateHeightMap(smallContext.Width, smallContext.Height);
+            bool[,] waterMap = new bool[smallContext.Width, smallContext.Height];
+
+            for (int x = 0; x < smallContext.Width; x++)
+            {
+                for (int y = 0; y < smallContext.Height; y++)
+                {
+                    waterMap[x, y] = true;
+                }
+            }
+
+            bool[,] originalWaterMap = (bool[,])waterMap.Clone();
+
+            // Act
+            bool[,] result = _waterGenerator.GenerateWaterMap(variableHeightMap, waterMap, smallContext);
+
+            // Assert
+            for (int x = 0; x < smallContext.Width; x++)
+            {
+                for (int y = 0; y < smallContext.Height; y++)
+                {
+                    Assert.Equal(originalWaterMap[x, y], result[x, y]);
+                }
+            }
+        }
+
+        [Fact]
+        public void GenerateWaterMap_OnMountains_NoWaterAppears()
+        {
+            // Arrange
+            MapGenerationContext smallContext = new(10, 10, 42, new MapGenerationSettings());
+            float[,] mountainHeightMap = new float[smallContext.Width, smallContext.Height];
+            for (int x = 0; x < smallContext.Width; x++)
+            {
+                for (int y = 0; y < smallContext.Height; y++)
+                {
+                    mountainHeightMap[x, y] = 1f;
+                }
+            }
+            bool[,] waterMap = new bool[smallContext.Width, smallContext.Height];
+
+            // Act
+            bool[,] result = _waterGenerator.GenerateWaterMap(mountainHeightMap, waterMap, smallContext);
+
+            // Assert
+            for (int x = 0; x < smallContext.Width; x++)
+            {
+                for (int y = 0; y < smallContext.Height; y++)
+                {
+                    Assert.False(result[x, y], $"Water should not appear on mountains at ({x}, {y}).");
+                }
+            }
         }
 
         [Fact]
