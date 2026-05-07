@@ -1,5 +1,8 @@
 ﻿namespace TransportTycoon.MapData.MapGenerator.CoordinateHasher
 {
+    /// <summary>
+    /// An interface for hashing 2D coordinates into deterministic pseudo-random values, which can be used in procedural map generation to create consistent and repeatable results based on the same input parameters.
+    /// </summary>
     public interface ICoordinateHasher
     {
         #region Public methods

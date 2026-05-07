@@ -2,6 +2,9 @@
 
 namespace TransportTycoon.MapData.MapGenerator.CoordinateHasher
 {
+    /// <summary>
+    /// A basic implementation of the <see cref="ICoordinateHasher"/> interface that provides deterministic hashing of 2D coordinates based on a seed value.
+    /// </summary>
     public class BasicCoordinateHasher : ICoordinateHasher
     {
         #region Constants
