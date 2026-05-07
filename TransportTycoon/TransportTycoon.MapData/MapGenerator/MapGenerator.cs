@@ -7,9 +7,18 @@ using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.MapData.MapGenerator
 {
-
+    /// <summary>
+    /// A factory class for creating instances of <see cref="IMapGenerator"/>.
+    /// This class is responsible for assembling the various components and generators required to produce a complete map, including terrain, water, forests, and structures.
+    /// By centralizing the creation logic, it allows for easy configuration and extension of the map generation process, enabling different types of maps to be generated based on varying algorithms and strategies.
+    /// </summary>
     public static class MapGeneratorFactory
     {
+        /// <summary>
+        /// Creates a new instance of <see cref="IMapGenerator"/> based on the provided <see cref="MapGenerationContext"/>.
+        /// </summary>
+        /// <param name="context">The context containing the settings and parameters for map generation.</param>
+        /// <returns>A new instance of <see cref="IMapGenerator"/> initialized with the specified context.</returns>
         public static IMapGenerator CreateMapGenerator(MapGenerationContext context)
         {
             var randomProvider = new RandomProvider();
