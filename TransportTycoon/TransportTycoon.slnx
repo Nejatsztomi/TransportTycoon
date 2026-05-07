@@ -1,7 +1,25 @@
 <Solution>
-  <Project Path="TransportTycoon.MapData/TransportTycoon.MapData.csproj" Id="9a941ffe-0df3-44f2-99a6-11f9fdc15a48" />
-  <Project Path="TransportTycoon.Model/TransportTycoon.Model.csproj" Id="c6fe7877-e36d-440c-a54f-15cfb5c07bc3" />
-  <Project Path="TransportTycoon.Persistence/TransportTycoon.Persistence.csproj" Id="c27daee1-e8c1-4989-adac-e8960ed3b3d7" />
-  <Project Path="TransportTycoon.Test/TransportTycoon.Test.csproj" />
-  <Project Path="TransportTycoon.WPF/TransportTycoon.WPF.csproj" />
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="Release" />
+    <BuildType Name="Release-FD" />
+    <BuildType Name="Release-SC" />
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="TransportTycoon.MapData/TransportTycoon.MapData.csproj" Id="9a941ffe-0df3-44f2-99a6-11f9fdc15a48">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="TransportTycoon.Model/TransportTycoon.Model.csproj" Id="c6fe7877-e36d-440c-a54f-15cfb5c07bc3">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="TransportTycoon.Persistence/TransportTycoon.Persistence.csproj" Id="c27daee1-e8c1-4989-adac-e8960ed3b3d7">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="TransportTycoon.Test/TransportTycoon.Test.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="TransportTycoon.WPF/TransportTycoon.WPF.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
 </Solution>
