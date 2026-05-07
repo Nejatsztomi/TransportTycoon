@@ -3,8 +3,18 @@ using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
+    /// <summary>
+    /// A factory class for creating instances of <see cref="IStructureGenerator"/> that specifically generate city structures.
+    /// </summary>
     public static class CityGeneratorFactory
     {
+        /// <summary>
+        /// Creates a new instance of an implementation of the IStructureGenerator interface using the specified random
+        /// provider and map generation context.
+        /// </summary>
+        /// <param name="randomProvider">The random number provider to use for procedural generation. Cannot be null.</param>
+        /// <param name="context">The context containing configuration and state information for map generation. Cannot be null.</param>
+        /// <returns>An IStructureGenerator instance configured with the specified random provider and context.</returns>
         public static IStructureGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new CityGenerator(randomProvider, context);
     }
 
@@ -20,7 +30,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         public override GenerationPhase Phase => GenerationPhase.Structures;
         #endregion
 
-        #region Constructor
+        #region Constructors
         internal CityGenerator(IRandomProvider randomProvider, MapGenerationContext context) : base(randomProvider, context) { }
         #endregion
 

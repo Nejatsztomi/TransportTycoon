@@ -3,6 +3,9 @@ using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
+    /// <summary>
+    /// An abstract base class for structure placement generators, providing common functionality for placing structures on the map.
+    /// </summary>
     internal abstract class BaseStructurePlacementGenerator : IStructureGenerator
     {
         #region Private fields
