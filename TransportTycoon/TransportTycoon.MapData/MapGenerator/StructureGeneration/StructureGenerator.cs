@@ -39,17 +39,12 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             var random = _random.GetRandom(context.Seed, PluginId);
             var structures = new List<BuildingEntity>(context.Settings.MaxStructure);
 
-            var validPoints = new List<(int X, int Y)>(context.Width * context.Height);
+            var validPoints = GetValidPointsForPlacement(context, 2, 2);
 
-            for (int i = 0; i < context.Width; i++)
-            {
-                for (int j = 0; j < context.Height; j++)
-                {
-                    if (context.WaterMap[i, j] || context.StructureMap[i, j]) continue;
-                    if (context.HeightMap[i, j] >= 4) continue;
-                    validPoints.Add((i, j));
-                }
-            }
+            validPoints.RemoveAll(point =>
+                context.WaterMap[point.X, point.Y] ||
+                context.StructureMap[point.X, point.Y] ||
+                context.HeightMap[point.X, point.Y] >= 4);
 
             for (int i = 1; i < context.Settings.MinStructure; i += 2)
             {

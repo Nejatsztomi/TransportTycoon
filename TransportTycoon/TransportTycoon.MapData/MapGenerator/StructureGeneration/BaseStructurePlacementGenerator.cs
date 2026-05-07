@@ -103,6 +103,8 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             var waterMap = context.WaterMap;
             var structureMap = context.StructureMap;
 
+            if (startX < 0 || startY < 0 || startX + buildingEntity.Width > context.Width || startY + buildingEntity.Height > context.Height) return false;
+
             // Valid tile check (no water, no structures)
             for (int i = 0; i < buildingEntity.Width; i++)
             {
@@ -158,6 +160,21 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 }
             }
             return true;
+        }
+
+        protected List<(int X, int Y)> GetValidPointsForPlacement(MapGenerationContext context, int buildingWidth, int buildingHeight)
+        {
+            var validPoints = new List<(int X, int Y)>(context.Width * context.Height);
+
+            for (int i = 0; i <= context.Width - buildingWidth; i++)
+            {
+                for (int j = 0; j <= context.Height - buildingHeight; j++)
+                {
+                    validPoints.Add((i, j));
+                }
+            }
+
+            return validPoints;
         }
 
         private bool IsValidPlacement(int startX, int startY, BuildingEntity buildingEntity, MapGenerationContext context)
@@ -238,8 +255,8 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 _ => context.Settings.MaxStructureRange,
             };
 
-            int dx = centerX + random.Next(-maxRange, maxRange + 1);
-            int dy = centerY + random.Next(-maxRange, maxRange + 1);
+            int dx = random.Next(-maxRange, maxRange + 1);
+            int dy = random.Next(-maxRange, maxRange + 1);
             double distance = Math.Sqrt(dx * dx + dy * dy);
 
             // Circle

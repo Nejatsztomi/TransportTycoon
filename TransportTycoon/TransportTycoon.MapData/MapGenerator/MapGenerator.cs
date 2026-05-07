@@ -89,7 +89,8 @@ namespace TransportTycoon.MapData.MapGenerator
                 }
                 else if (generator is IStructureGenerator structureGen)
                 {
-                    structures.AddRange(structureGen.GenerateStructures(context));
+                    var generatedStructures = structureGen.GenerateStructures(context);
+                    structures.AddRange(generatedStructures);
                 }
                 _stopwatch.Stop();
                 Debug.WriteLine($"{generator.GetType().Name} took: {_stopwatch.ElapsedMilliseconds} ms");
