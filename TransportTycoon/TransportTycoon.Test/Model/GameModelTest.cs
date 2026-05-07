@@ -60,14 +60,6 @@ public class GameModelTest
 
     public class EventTest
     {
-        //public class EnumEnumerable<T> : IEnumerable<T[]> where T : struct, Enum
-        //{
-        //    private readonly List<T[]> _data = [.. Enum.GetValues<T>().Select(v => new T[] { v })];
-
-        //    public IEnumerator<T[]> GetEnumerator() => _data.GetEnumerator();
-        //    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        //}
-
         /// <summary>
         /// A helper class that generates test data for all values of a given enum type <typeparamref name="T"/>.
         /// It inherits from <see cref="TheoryData{T}"/>, which is a convenient way to provide data for xUnit theories.
@@ -366,36 +358,6 @@ public class GameModelTest
                     model.GameOver -= Handler;
                 }
             }
-
-            // TODO: reimplement this with mocking in the future
-            //[TestMethod]
-            //public void GameAdvanced_EventArgumentIsCorrect()
-            //{
-            //    GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
-            //    List<Tuple<int, int>> actualTrees = [];
-
-            //    EventHandler<List<Tuple<int, int>>> handler = (_, e) =>
-            //    {
-            //        actualTrees = e;
-            //    };
-
-            //    try
-            //    {
-            //        gameModel.GameAdvanced += handler;
-            //        // Indítsunk egy új játékot, hogy biztosan legyen mapunk és fáink
-            //        gameModel.NewGame();
-            //        // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
-            //        for (int i = 0; i < 10; i++)
-            //        {
-            //            _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
-            //        }
-            //        Assert.IsNotEmpty(actualTrees, "GameAdvanced event after 10 timer ticks should raise and return with non-empty trees changed");
-            //    }
-            //    finally
-            //    {
-            //        gameModel.GameAdvanced -= handler;
-            //    }
-            //}
 
             [Fact]
             public void InfrastructureBuilt_EventArgumentIsCorrect()
