@@ -351,7 +351,6 @@ namespace TransportTycoon.Model
 
         public void NewGame()
         {
-            Balance = DefaultBalance;
             Vehicles.Clear();
             Map.BuildingEntities.Clear();
 
