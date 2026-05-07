@@ -45,9 +45,7 @@ namespace TransportTycoon.Model.Graph
             {
                 var result = _pathTracer.TraceSegment(currentTile, dir);
 
-                if (result.Status != TraceStatus.FoundIntersection) continue;
-                var endTile = result.EndTile;
-                if (endTile is null) continue;
+                if (result is not { Status: TraceStatus.FoundIntersection, EndTile: { } endTile }) continue;
 
                 if (_graph.GetNodeAt(endTile.X, endTile.Y) is not Node destinationNode) continue;
 

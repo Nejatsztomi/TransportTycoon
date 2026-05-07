@@ -39,7 +39,7 @@ namespace TransportTycoon.Model.Graph
             while (nodesToExplore.Count > 0)
             {
                 var currentNode = nodesToExplore.Dequeue();
-                IField currentTile = table[currentNode.X, currentNode.Y];
+                var currentTile = table[currentNode.X, currentNode.Y];
 
                 foreach (var dir in _directions)
                 {
@@ -50,13 +50,11 @@ namespace TransportTycoon.Model.Graph
                     if (table[startStepX, startStepY] is not IInfrastructure) continue;
                     if (visitedRoadTiles.Contains((startStepX, startStepY))) continue;
 
-                    TraceResult result = tracer.TraceSegment(currentTile, dir);
+                    var result = tracer.TraceSegment(currentTile, dir);
 
-                    if (result.Status == TraceStatus.FoundIntersection)
+                    // Pattern matching: since the compiler doesn't know that FoundInsection implies EndTile is not null.
+                    if (result is { Status: TraceStatus.FoundIntersection, EndTile: { } destTile })
                     {
-                        var destTile = result.EndTile;
-                        if (destTile is null) continue;
-
                         var destinationNode = graph.GetNodeAt(destTile.X, destTile.Y) ?? new Node(destTile.X, destTile.Y, destTile.GetType());
 
                         if (!graph.ContainsNode(destinationNode))
