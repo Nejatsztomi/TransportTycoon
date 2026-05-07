@@ -57,7 +57,7 @@ namespace TransportTycoon.MapData
         /// <param name="x">The x-coordinate to check.</param>
         /// <param name="y">The y-coordinate to check.</param>
         /// <returns><see langword="true"/> if both coordinates are within bounds; otherwise, <see langword="false"/>.</returns>
-        public bool IsInBounds(int x, int y) => 0 <= x && x < Height && 0 <= y && y < Width;
+        public bool IsInBounds(int x, int y) => 0 <= x && x < Width && 0 <= y && y < Height;
 
         public void GenerateMap()
         {
