@@ -4,47 +4,80 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
     public static class CityGeneratorFactory
     {
-        public static ICityGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new CityGenerator(randomProvider, context);
+        public static IStructureGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new CityGenerator(randomProvider, context);
     }
 
-    internal class CityGenerator : ICityGenerator
+    internal class CityGenerator : BaseStructurePlacementGenerator
     {
         #region Private fields
-        private readonly IRandomProvider _randomProvider;
-        private readonly MapGenerationContext _context;
+        private static readonly (int dx, int dy)[] _directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
+
         private const string PluginId = "BaseGame.Cities";
         #endregion
 
         #region Public properties
-        public GenerationPhase Phase => GenerationPhase.Structures;
+        public override GenerationPhase Phase => GenerationPhase.Structures;
         #endregion
 
         #region Constructor
-        public CityGenerator(IRandomProvider randomProvider, MapGenerationContext context)
-        {
-            _randomProvider = randomProvider;
-            _context = context;
-        }
+        internal CityGenerator(IRandomProvider randomProvider, MapGenerationContext context) : base(randomProvider, context) { }
         #endregion
 
         #region Public methods
+        public override List<BuildingEntity> GenerateStructures(MapGenerationContext context)
+        {
+            var random = _random.GetRandom(context.Seed, PluginId);
+            var structures = new List<BuildingEntity>(context.Settings.MaxStructure);
 
+            var validPoints = new List<(int X, int Y)>(context.Width * context.Height);
+
+            for (int i = 0; i < context.Width; i++)
+            {
+                for (int j = 0; j < context.Height; j++)
+                {
+                    if (context.WaterMap[i, j] || context.StructureMap[i, j]) continue;
+                    if (context.HeightMap[i, j] >= 4) continue;
+                    validPoints.Add((i, j));
+                }
+            }
+
+            for (int i = 0; i < context.Settings.MinCities; i++)
+            {
+                CityEntity city = new(context.Settings.CityWidth, context.Settings.CityHeight);
+                ForcePlace(city, context, -1, -1, random, validPoints);
+
+                GenerateCity(city, context, random);
+                structures.Add(city);
+            }
+
+            // Try to generate rest
+            for (int i = context.Settings.MinCities; i < context.Settings.MaxCities; i++)
+            {
+                CityEntity city = new(context.Settings.CityWidth, context.Settings.CityHeight);
+                if (!TryPlace(city, context, -1, -1, random, validPoints)) continue;
+
+                GenerateCity(city, context, random);
+                structures.Add(city);
+            }
+
+            return structures;
+        }
+        #endregion
+
+        #region Private methods
         /// <summary>
         /// Implementaion of the Drunken Builder algorithm.
         /// It spawns a number of random walkers (branchCount) that carve roads in the city for a certain number of steps (maxRoadCount).
         /// </summary>
         /// <param name="city"></param>
         /// <param name="context"></param>
-        public void GenerateCity(BuildingEntity city, MapGenerationContext context)
+        private void GenerateCity(CityEntity city, MapGenerationContext context, IRandom random)
         {
-            IRandom random = _randomProvider.GetRandom(context.Seed, PluginId);
-
-            if (city is not CityEntity) return;
-            (int topLeftX, int topLeftY) = city.MapPoints.First().Key;
+            (int topLeftX, int topLeftY) = city.TopLeftPoints;
 
             int centerX = topLeftX + city.Width / 2;
             int centerY = topLeftY + city.Height / 2;
-            city.MapPoints[(centerX, centerY)] = new Road(centerX, centerY, RoadType.XRoad, city.MapPoints[(centerX, centerY)].Height);
+            city.MapPoints[(centerX, centerY)] = new Road(centerX, centerY, RoadType.XRoad, city.MapPoints[(centerX, centerY)].Height, city);
 
             CarveExit(city, centerX, centerY, random);
 
@@ -54,26 +87,16 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 CarveRoad(city, centerX, centerY, context.Settings.RoadLength, random);
             }
         }
-        #endregion
 
-        #region Private methods
-        /// <summary>
-        /// Gurantes and exit from the city to the main road network.
-        /// </summary>
-        /// <param name="city"></param>
-        /// <param name="startX"></param>
-        /// <param name="startY"></param>
-        /// <param name="random"></param>
-        private void CarveExit(BuildingEntity city, int startX, int startY, IRandom random)
+        private void CarveExit(CityEntity city, int startX, int startY, IRandom random)
         {
-            (int topLeftX, int topLeftY) = city.MapPoints.First().Key;
+            (int topLeftX, int topLeftY) = city.TopLeftPoints;
 
             int x = startX;
             int y = startY;
 
             // North, East, South, West
-            (int dx, int dy)[] directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
-            (int dx, int dy) = directions[random.Next(4)];
+            (int dx, int dy) = _directions[random.Next(4)];
 
             while (x <= topLeftX && x < topLeftX + city.Width &&
                     topLeftY <= y && y < topLeftY + city.Height)
@@ -93,7 +116,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                     {
                         y = Math.Clamp(y + sideStep, 0, city.Height - 1);
                     }
-                    city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height);
+                    city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height, city);
                 }
 
                 // Step the iteration
@@ -102,44 +125,28 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             }
         }
 
-        /// <summary>
-        /// Carves road into the city.
-        /// Uses the same algorithm <see cref="CarveExit(BuildingEntity, int, int, Random)"/> but don't loop until the edge of the city, but only for a certain number of steps (maxRoadCount).
-        /// </summary>
-        /// <param name="city"></param>
-        /// <param name="startX"></param>
-        /// <param name="startY"></param>
-        /// <param name="maxRoadCount"></param>
-        /// <param name="random"></param>
-        private void CarveRoad(BuildingEntity city, int startX, int startY, int maxRoadCount, IRandom random)
+        private void CarveRoad(CityEntity city, int startX, int startY, int maxRoadCount, IRandom random)
         {
-            (int topLeftX, int topLeftY) = city.MapPoints.First().Key;
+            (int topLeftX, int topLeftY) = city.TopLeftPoints;
 
             int x = startX;
             int y = startY;
 
             // North, East, South, West
-            (int dx, int dy)[] directions = [(0, -1), (1, 0), (0, 1), (-1, 0)];
-            (int dx, int dy) currentDir = directions[random.Next(4)];
+            (int dx, int dy) currentDir = _directions[random.Next(4)];
 
             for (int step = 0; step < maxRoadCount; step++)
             {
                 // Place road
-                city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height);
+                city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height, city);
 
-                if (random.NextDouble() < 0.3)
-                {
-                    currentDir = directions[random.Next(4)];
-                }
+                if (random.NextDouble() < 0.3) currentDir = _directions[random.Next(4)];
 
                 int nextX = x + currentDir.dx;
                 int nextY = y + currentDir.dy;
 
                 // If the road hits the edge of the city bounds, stop this branch
-                if (!(topLeftX <= nextX && nextX < topLeftX + city.Width) || !(topLeftY <= nextY && nextY < topLeftY + city.Height))
-                {
-                    break;
-                }
+                if (!(topLeftX <= nextX && nextX < topLeftX + city.Width) || !(topLeftY <= nextY && nextY < topLeftY + city.Height)) break;
 
                 // Step the iteraion
                 x = nextX;

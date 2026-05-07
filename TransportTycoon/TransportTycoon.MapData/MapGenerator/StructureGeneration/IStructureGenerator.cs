@@ -1,4 +1,6 @@
-﻿namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
+﻿using TransportTycoon.MapData.Buildings;
+
+namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
     /// <summary>
     /// An interface for generating structures on the map.
@@ -11,6 +13,6 @@
         /// Generates structures within the map using the specified generation context.
         /// </summary>
         /// <param name="context">The context that provides information and services required for map structure generation. Cannot be <see langword="null"/>.</param>
-        public void GenerateStructures(MapGenerationContext context);
+        public List<BuildingEntity> GenerateStructures(MapGenerationContext context);
     }
 }
