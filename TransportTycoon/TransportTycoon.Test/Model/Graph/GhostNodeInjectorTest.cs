@@ -55,6 +55,41 @@ namespace TransportTycoon.Test.Model.Graph
         }
 
         [Fact]
+        public void GetOrInjectGhostNode_SkipsUnmappedJunctions_AndStillInjectsGhostNode()
+        {
+            // Arrange
+            var mapGen = Substitute.For<IMapGenerator>();
+            var context = new MapGenerationContext(3, 3, 0, new MapGenerationSettings());
+            var gameTable = new GameTable(mapGen, context);
+
+            var ghostTile = new Road(1, 1, RoadType.Horizontal, 0);
+            var unmappedJunction = new Road(0, 1, RoadType.XRoad, 0);
+            var destinationStop = new Stop(2, 1, 0);
+
+            gameTable.Table[0, 1] = unmappedJunction;
+            gameTable.Table[1, 1] = ghostTile;
+            gameTable.Table[2, 1] = destinationStop;
+
+            var destinationNode = new GraphNS.Node(2, 1, typeof(Stop));
+            var graph = new GraphNS.Graph(new Dictionary<GraphNS.Node, List<GraphNS.Edge>>
+            {
+                { destinationNode, [] }
+            });
+
+            var injector = new GraphNS.GhostNodeInjector(graph, new GraphNS.PathTracer(gameTable));
+
+            // Act
+            var (resultNode, isGhost) = injector.GetOrInjectGhostNode(ghostTile);
+
+            // Assert
+            Assert.NotNull(resultNode);
+            Assert.True(isGhost);
+            Assert.Contains(resultNode, graph.AdjacencyList.Keys);
+            Assert.Single(graph.AdjacencyList[resultNode]);
+            Assert.Equal(destinationNode, graph.AdjacencyList[resultNode][0].EndNode);
+        }
+
+        [Fact]
         public void GetOrInjectGhostNode_ReturnsNull_WhenNoJunctionReachable()
         {
             // Arrange

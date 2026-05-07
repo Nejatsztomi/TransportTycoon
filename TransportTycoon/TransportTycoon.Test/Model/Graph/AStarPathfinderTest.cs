@@ -27,6 +27,26 @@ namespace TransportTycoon.Test.Model.Graph
         }
 
         [Fact]
+        public void FindPath_ReturnsNull_WhenStartNodeIsNotInAdjacencyList()
+        {
+            // Arrange
+            var nodeA = new GraphNS.Node(0, 0, typeof(Stop));
+            var nodeB = new GraphNS.Node(1, 0, typeof(Stop));
+            var adjacencyList = new Dictionary<GraphNS.Node, List<GraphNS.Edge>>
+            {
+                { nodeB, [] }
+            };
+            var graph = new GraphNS.Graph(adjacencyList);
+            var pathfinder = new GraphNS.AStarPathfinder(graph);
+
+            // Act
+            var path = pathfinder.FindPath(nodeA, nodeB);
+
+            // Assert
+            Assert.Null(path);
+        }
+
+        [Fact]
         public void FindPath_ReturnsSingleEdgePath_WhenDirectEdgeExists()
         {
             // Arrange
