@@ -261,7 +261,6 @@ namespace TransportTycoon.Model
                 ?? throw new Exception($"Failed to find building entity at ({buildingEntityData.TopLeftX}, {buildingEntityData.TopLeftY}) in the map.");
 
                 buildingEntity.CurrentCapacity = buildingEntityData.CurrentCapacity;
-                buildingEntity.Productivity = buildingEntityData.Productivity;
             });
         }
         #endregion
@@ -329,7 +328,6 @@ namespace TransportTycoon.Model
                     TopLeftX = entity.TopLeftPoints.X,
                     TopLeftY = entity.TopLeftPoints.Y,
                     CurrentCapacity = (int)entity.CurrentCapacity,
-                    Productivity = (int)entity.Productivity
                 }
                 )];
 

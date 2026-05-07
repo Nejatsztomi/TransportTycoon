@@ -41,8 +41,7 @@ namespace TransportTycoon.Persistence
     public readonly record struct BuildingEntitySaveData(
         int TopLeftX,
         int TopLeftY,
-        int CurrentCapacity,
-        int Productivity
+        int CurrentCapacity
         );
 
     public enum VehicleType : byte
