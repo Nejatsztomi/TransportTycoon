@@ -24,6 +24,11 @@ namespace TransportTycoon.Model
     #region Private event Methods
     #endregion
 
+    /// <summary>
+    /// The <see cref="GameModel"/> class serves as the central component of the game's architecture, encapsulating the core game logic, state management, and interactions between various game entities.
+    /// It maintains the current state of the game world, including the map, vehicles, player balance, and game time, while also providing methods for modifying the game state in response to player actions and game events.
+    /// The class is designed to be flexible and extensible, allowing for easy integration of new features and mechanics as the game evolves.
+    /// </summary>
     public sealed class GameModel
     {
         #region Constants
@@ -51,15 +56,43 @@ namespace TransportTycoon.Model
         private readonly Vehicle?[,,] _tileOccupancy;
         #endregion
 
-        #region Properties
+        #region Public properties
+        #region Game state related data
+        /// <summary>
+        /// Gets the current game table representing the map layout and state.
+        /// </summary>
         public GameTable Map { get; private set; }
-        public IField? SelectedField { get; private set; }
-        public List<Stop> SelectedStopFields { get; private set; } = [];
-        public int Balance { get; private set; }
-        public string SaveName { get; }
-        public ulong GameTime { get; private set; }
-        public int Maintenance { get; private set; }
 
+        /// <summary>
+        /// Gets the list representing the current game's vehicles.
+        /// </summary>
+        public List<Vehicle> Vehicles { get; private set; } = [];
+
+        /// <summary>
+        /// Gets the player's current balance.
+        /// </summary>
+        public int Balance { get; private set; }
+
+        /// <summary>
+        /// Gets the name associated with the saved data.
+        /// </summary>
+        public string SaveName { get; }
+
+        /// <summary>
+        /// Gets the game current time (ticks passed after first creating a new game).
+        /// </summary>
+        public ulong GameTime { get; private set; }
+
+        /// <summary>
+        /// Gets the game current difficulty level.
+        /// </summary>
+        public Difficulty Difficulty { get; private set; }
+        #endregion
+
+        #region Game logic
+        /// <summary>
+        /// Gets or sets the mode of the game.
+        /// </summary>
         public GameMode Mode
         {
             get;
@@ -72,12 +105,15 @@ namespace TransportTycoon.Model
                 else
                 {
                     _timer.Start();
-                    //RebuildGraph();
                 }
                 GameModeChanged?.Invoke(this, value);
                 field = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the time speed of the game.
+        /// </summary>
         public TimeSpeed TimeSpeed
         {
             get;
@@ -87,31 +123,41 @@ namespace TransportTycoon.Model
                 field = value;
             }
         }
-        public Difficulty Difficulty { get; private set; }
-
-        public bool IsGameOver => Balance <= 0;
-
-        public List<Vehicle> Vehicles { get; private set; } = [];
-
-        public int NumberOfVehicles => Vehicles.Count;
 
         /// <summary>
         /// The game's graph representation of the map.
         /// </summary>
         public Graph.Graph GraphNetwork { get; private set; }
-        public Vehicle? GetVehicleAt(int x, int y)
-        {
-            return Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
-        }
+        public int Maintenance { get; private set; }
+        #endregion
+
+        public IField? SelectedField { get; private set; }
+        public List<Stop> SelectedStopFields { get; private set; } = [];
+        public bool IsGameOver => Balance <= 0;
         #endregion
 
         #region Events
+        /// <summary>
+        /// Occurs when a new game is created.
+        /// </summary>
         public event EventHandler? NewGameCreated;
+
+        /// <summary>
+        /// Occurs when the game mode is changed.
+        /// </summary>
         public event EventHandler<GameMode>? GameModeChanged;
+
+        /// <summary>
+        /// Occurs when the time speed value changes.
+        /// </summary>
         public event EventHandler<TimeSpeed>? TimeSpeedChanged;
         public event EventHandler<TransportTycoonEventArgs>? GameOver;
         public event EventHandler<TransportTycoonFieldEventArgs>? FieldChanged;
         public event EventHandler? BalanceChanged;
+
+        /// <summary>
+        /// Occurs when a game tick happens.
+        /// </summary>
         public event EventHandler? GameTicked;
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
@@ -124,6 +170,12 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Initializes a new instance of the GameModel class with the specified game map, timer, and creation data.
+        /// </summary>
+        /// <param name="map">The GameTable representing the map layout and state for the game.</param>
+        /// <param name="timer">The timer used to control game time progression and periodic updates.</param>
+        /// <param name="data">The GameCreationData containing initial configuration such as difficulty, balance, and save name.</param>
         public GameModel(GameTable map, ITimer timer, GameCreationData data)
         {
             Difficulty = data.Difficulty;
@@ -146,6 +198,20 @@ namespace TransportTycoon.Model
             _tileOccupancy = new Vehicle?[Map.Width, Map.Height, 4];
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameModel"/> class using the specified map, timer, save data, and save name.
+        /// Restores the game state from the provided save data, including map tiles, vehicles, and building entities.
+        /// </summary>
+        /// <remarks>
+        /// This constructor fully restores the game state from the provided save data, including map modifications, vehicles, and building entities.
+        /// It also sets up the timer and pathfinding network required for gameplay.
+        /// </remarks>
+        /// <param name="map">The <see cref="GameTable"/> representing the game map to be used for this game session.</param>
+        /// <param name="timer">The timer instance used to manage game time progression and periodic updates.</param>
+        /// <param name="data">The <see cref="GameSaveData"/> containing all persisted information required to restore the game state, including tiles, vehicles, and buildings.</param>
+        /// <param name="saveName">The name of the save file or save slot associated with this game session. Cannot be <see langword="null"/>.</param>
+        /// <exception cref="ArgumentException">Thrown if the save data contains an invalid vehicle type or load type.</exception>
+        /// <exception cref="Exception">Thrown if a building entity referenced in the save data cannot be found in the map.</exception>
         public GameModel(GameTable map, ITimer timer, GameSaveData data, string saveName)
         {
             Difficulty = (Difficulty)data.Difficulty;
@@ -167,106 +233,21 @@ namespace TransportTycoon.Model
             Map.Context = new(data.MapContextData);
             Map.GenerateMap();
 
-            _modifiedFields.Clear();
-
-            data.ModifiedTiles.ForEach(tile =>
-            {
-                int x = tile.X;
-                int y = tile.Y;
-                Map[x, y] = tile.Type switch
-                {
-                    SaveFieldType.Terrain => new Terrain(x, y, tile.Height),
-                    SaveFieldType.Road => new Road(x, y, Map.CalculateRoadType(x, y), tile.Height),
-                    SaveFieldType.Stop => new Stop(x, y, tile.Height),
-                    SaveFieldType.HorizontalYellowBridge => new YellowBridge(x, y, BridgeType.HorizontalYellowBridge, 0),
-                    SaveFieldType.VerticalYellowBridge => new YellowBridge(x, y, BridgeType.VerticalYellowBridge, 0),
-                    SaveFieldType.HorizontalRedBridge => new RedBridge(x, y, BridgeType.HorizontalRedBridge, 0),
-                    SaveFieldType.VerticalRedBridge => new RedBridge(x, y, BridgeType.VerticalRedBridge, 0),
-                    SaveFieldType.HorizontalGreenBridge => new GreenBridge(x, y, BridgeType.HorizontalGreenBridge, 0),
-                    SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
-                    _ => Map[x, y]
-                };
-                _modifiedFields.Add((x, y), Map[x, y]);
-            });
-
-            // Make sure roads have correct rotation
-            data.ModifiedTiles
-                .Where(tile => tile.Type == SaveFieldType.Road)
-                .ToList()
-                .ForEach(tile =>
-                {
-                    Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
-                });
-
-            RebuildGraph();
-
-            data.ModifiedTrees.ForEach(treeData =>
-            {
-                if (Map[treeData.X, treeData.Y] is Terrain terrain)
-                {
-                    terrain.Trees = treeData.Amount;
-                }
-            });
-
-            data.Vehicles.ForEach(vehicleData =>
-            {
-                Vehicle vehicle = vehicleData.Type switch
-                {
-                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
-                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
-                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
-                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
-                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
-                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
-                    _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
-                };
-
-                vehicle.SetCurrentCapacity(vehicleData.CurrentCapacity);
-
-                Load? load = vehicleData.CurrentLoad switch
-                {
-                    Persistence.LoadType.Wheat => new Wheat(),
-                    Persistence.LoadType.Oil => new Oil(),
-                    Persistence.LoadType.Wood => new Wood(),
-                    Persistence.LoadType.Flour => new Flour(),
-                    Persistence.LoadType.Rubber => new Rubber(),
-                    Persistence.LoadType.Paper => new Paper(),
-                    Persistence.LoadType.People => new People(),
-                    Persistence.LoadType.None => null,
-
-                    _ => throw new ArgumentException("Invalid load type in save data", nameof(vehicleData.CurrentLoad)),
-                };
-                vehicle.SetCurrentLoad(load);
-
-                var stops = vehicleData.Prouth.Stops
-                .Select(stop => Map[stop.X, stop.Y])
-                .Cast<Stop>()
-                .ToList();
-
-                if (stops.Any())
-                {
-                    var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
-                    vehicle.SetProuth(prouth, _pathFinder, new(GraphNetwork, new(Map)));
-                }
-
-                Vehicles.Add(vehicle);
-                _tileOccupancy[vehicle.MapX, vehicle.MapY, vehicle.GetLaneIdx()] = vehicle;
-            });
-
-
-            data.BuildingEntities.ForEach(buildingEntityData =>
-            {
-                BuildingEntity? buildingEntity = Map.BuildingEntities.
-                FirstOrDefault(entity => entity.TopLeftPoints.X == buildingEntityData.TopLeftX && entity.TopLeftPoints.Y == buildingEntityData.TopLeftY)
-                ?? throw new Exception($"Failed to find building entity at ({buildingEntityData.TopLeftX}, {buildingEntityData.TopLeftY}) in the map.");
-
-                buildingEntity.CurrentCapacity = buildingEntityData.CurrentCapacity;
-            });
+            LoadGameFromData(data);
         }
         #endregion
 
-        #region Public Methods
+        #region Public methods
         #region Persistence
+        /// <summary>
+        /// Creates a snapshot of the current game state for persistence or serialization.
+        /// </summary>
+        /// <remarks>Use this method to obtain a complete representation of the game's current state,
+        /// suitable for saving or transferring between sessions. The returned data reflects all modifications made
+        /// since the last load or save.</remarks>
+        /// <returns>A GameSaveData object containing the current map context, game time, player balance, difficulty, and all
+        /// modified tiles, trees, vehicles, and building entities.</returns>
+        /// <exception cref="Exception">Thrown if an invalid field or vehicle load type is encountered during the save data generation.</exception>
         public GameSaveData GetGameSaveData()
         {
             List<TileSaveData> tileSaveDatas = [.. _modifiedFields.Select(kv => new TileSaveData()
@@ -332,7 +313,6 @@ namespace TransportTycoon.Model
                 }
                 )];
 
-
             return new()
             {
                 MapContextData = new(Map.Context),
@@ -348,6 +328,14 @@ namespace TransportTycoon.Model
         }
         #endregion
 
+        public Vehicle? GetVehicleAt(int x, int y)
+        {
+            return Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
+        }
+
+        /// <summary>
+        /// Setups a new game.
+        /// </summary>
         public void NewGame()
         {
             Vehicles.Clear();
@@ -701,8 +689,9 @@ namespace TransportTycoon.Model
         /// <summary>
         /// Advances the state of all vehicles in the game if the game is currently running.
         /// </summary>
-        /// <remarks>This method iterates through the collection of vehicles and updates each one by
-        /// invoking the step operation. No action is taken if the game mode is not set to run.</remarks>
+        /// <remarks>
+        /// This method iterates through the collection of vehicles and updates each one invoking the step operation.
+        /// No action is taken if the game mode is not set to run.</remarks>
         public void StepAllVehicles(double deltaTime)
         {
             if (Mode != GameMode.Run) return;
@@ -805,6 +794,104 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Private Methods
+        private void LoadGameFromData(GameSaveData data)
+        {
+            _modifiedFields.Clear();
+            data.ModifiedTiles.ForEach(tile =>
+            {
+                int x = tile.X;
+                int y = tile.Y;
+                Map[x, y] = tile.Type switch
+                {
+                    SaveFieldType.Terrain => new Terrain(x, y, tile.Height),
+                    SaveFieldType.Road => new Road(x, y, Map.CalculateRoadType(x, y), tile.Height),
+                    SaveFieldType.Stop => new Stop(x, y, tile.Height),
+                    SaveFieldType.HorizontalYellowBridge => new YellowBridge(x, y, BridgeType.HorizontalYellowBridge, 0),
+                    SaveFieldType.VerticalYellowBridge => new YellowBridge(x, y, BridgeType.VerticalYellowBridge, 0),
+                    SaveFieldType.HorizontalRedBridge => new RedBridge(x, y, BridgeType.HorizontalRedBridge, 0),
+                    SaveFieldType.VerticalRedBridge => new RedBridge(x, y, BridgeType.VerticalRedBridge, 0),
+                    SaveFieldType.HorizontalGreenBridge => new GreenBridge(x, y, BridgeType.HorizontalGreenBridge, 0),
+                    SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
+                    _ => Map[x, y]
+                };
+                _modifiedFields.Add((x, y), Map[x, y]);
+            });
+
+            // Make sure roads have correct rotation
+            data.ModifiedTiles
+                .Where(tile => tile.Type == SaveFieldType.Road)
+                .ToList()
+                .ForEach(tile =>
+                {
+                    Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
+                });
+
+            RebuildGraph();
+
+            data.ModifiedTrees.ForEach(treeData =>
+            {
+                if (Map[treeData.X, treeData.Y] is Terrain terrain)
+                {
+                    terrain.Trees = treeData.Amount;
+                }
+            });
+
+            data.Vehicles.ForEach(vehicleData =>
+            {
+                Vehicle vehicle = vehicleData.Type switch
+                {
+                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
+                };
+
+                vehicle.SetCurrentCapacity(vehicleData.CurrentCapacity);
+
+                Load? load = vehicleData.CurrentLoad switch
+                {
+                    Persistence.LoadType.Wheat => new Wheat(),
+                    Persistence.LoadType.Oil => new Oil(),
+                    Persistence.LoadType.Wood => new Wood(),
+                    Persistence.LoadType.Flour => new Flour(),
+                    Persistence.LoadType.Rubber => new Rubber(),
+                    Persistence.LoadType.Paper => new Paper(),
+                    Persistence.LoadType.People => new People(),
+                    Persistence.LoadType.None => null,
+
+                    _ => throw new ArgumentException("Invalid load type in save data", nameof(vehicleData.CurrentLoad)),
+                };
+                vehicle.SetCurrentLoad(load);
+
+                var stops = vehicleData.Prouth.Stops
+                .Select(stop => Map[stop.X, stop.Y])
+                .Cast<Stop>()
+                .ToList();
+
+                if (stops.Any())
+                {
+                    var prouth = new Prouth(ProuthUtil.ConvertStopTilesToNodes(stops, GraphNetwork));
+                    vehicle.SetProuth(prouth, _pathFinder, new(GraphNetwork, new(Map)));
+                }
+
+                Vehicles.Add(vehicle);
+                _tileOccupancy[vehicle.MapX, vehicle.MapY, vehicle.GetLaneIdx()] = vehicle;
+            });
+
+
+            data.BuildingEntities.ForEach(buildingEntityData =>
+            {
+                BuildingEntity? buildingEntity = Map.BuildingEntities.
+                FirstOrDefault(entity => entity.TopLeftPoints.X == buildingEntityData.TopLeftX && entity.TopLeftPoints.Y == buildingEntityData.TopLeftY)
+                ?? throw new Exception($"Failed to find building entity at ({buildingEntityData.TopLeftX}, {buildingEntityData.TopLeftY}) in the map.");
+
+                buildingEntity.CurrentCapacity = buildingEntityData.CurrentCapacity;
+            });
+        }
+
         private void ApplyAntiCollision(Vehicle vehicle)
         {
             double targetSpeed = vehicle.TopSpeed;
@@ -938,7 +1025,7 @@ namespace TransportTycoon.Model
             _timer.Stop();
             Mode = GameMode.Paused;
             GameModeChanged?.Invoke(this, GameMode.Paused);
-            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, NumberOfVehicles, Maintenance));
+            GameOver?.Invoke(this, new TransportTycoonEventArgs(GameTime, Vehicles.Count, Maintenance));
         }
         /// <summary>
         /// Processes the transfer of goods between all vehicles and buildings at their respective stop locations on the
