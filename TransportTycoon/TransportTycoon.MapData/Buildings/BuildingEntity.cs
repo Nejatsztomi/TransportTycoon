@@ -31,7 +31,7 @@
         /// <summary>
         /// Stores the coordinates of the building on map
         /// </summary>
-        public Dictionary<(int X, int Y), IField> MapPoints { protected set; get; } = [];
+        public SortedDictionary<(int X, int Y), IField> MapPoints { protected set; get; } = [];
 
         public int Width { get; }
         public int Height { get; }
@@ -39,7 +39,7 @@
         /// <summary>
         /// Gets the coordinates of the top-left point of the building
         /// </summary>
-        public (int X, int Y) TopLeftPoints => MapPoints.Keys.OrderBy(p => p.X).ThenBy(p => p.Y).FirstOrDefault();
+        public (int X, int Y) TopLeftPoints => MapPoints.Keys.First();
 
         #endregion
 
