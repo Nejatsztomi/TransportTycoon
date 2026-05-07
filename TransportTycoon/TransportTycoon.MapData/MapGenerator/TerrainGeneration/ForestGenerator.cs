@@ -2,8 +2,16 @@
 
 namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
+    /// <summary>
+    /// A factory class for creating instances of <see cref="IForestGenerator"/>.
+    /// </summary>
     public static class ForestGeneratorFactory
     {
+        /// <summary>
+        /// Creates a new instance of an object that generates forests using the specified noise generator.
+        /// </summary>
+        /// <param name="noiseGenerator">The noise generator to use for procedural forest generation. Cannot be null.</param>
+        /// <returns>An object that implements the IForestGenerator interface and uses the provided noise generator.</returns>
         public static IForestGenerator Create(INoiseGenerator noiseGenerator) => new ForestGenerator(noiseGenerator);
     }
 
@@ -18,7 +26,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         #endregion
 
         #region Constructors
-        public ForestGenerator(INoiseGenerator noiseGenerator)
+        internal ForestGenerator(INoiseGenerator noiseGenerator)
         {
             _noiseGenerator = noiseGenerator;
         }
