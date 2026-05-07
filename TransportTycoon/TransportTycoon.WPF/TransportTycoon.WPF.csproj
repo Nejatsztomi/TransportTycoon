@@ -16,9 +16,6 @@
       <SelfContained>true</SelfContained>
       <!-- Bundle native .NET runtime DLLs into the single EXE -->
       <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-      <!-- Suppress debug files -->
-      <DebugType>None</DebugType>
-      <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <!-- Framework‑dependent release -->
@@ -27,8 +24,6 @@
       <SelfContained>false</SelfContained>
       <!-- Bundle even managed assemblies into the single EXE -->
       <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
-      <DebugType>None</DebugType>
-      <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
