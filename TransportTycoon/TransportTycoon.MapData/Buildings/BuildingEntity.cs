@@ -24,7 +24,7 @@
         {
             get => field * GetMultiplier();
             set;
-        }
+        } = 1.0;
 
         /// <summary>
         /// Factor that determines the production rate of the building.
