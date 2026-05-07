@@ -36,8 +36,8 @@ namespace TransportTycoon.Test.Persistence
                 Difficulty = diff,
                 ModifiedTiles = [new(1, 2, SaveFieldType.Road, 1)],
                 ModifiedTrees = [new(3, 4, 5)],
-                Vehicles = [new(VehicleType.Van, 6, 7, LoadType.Wheat, 8, new())],
-                BuildingEntities = [new(9, 10, 11, 12)]
+                Vehicles = [new(VehicleType.Van, 6, 7, LoadType.Wheat, 8, 9d, new([]))],
+                BuildingEntities = [new(9, 10, 11)]
             };
 
             Assert.Equal(42UL, data.GameTime);
@@ -67,8 +67,8 @@ namespace TransportTycoon.Test.Persistence
                 Difficulty = diff,
                 ModifiedTiles = [new(1, 2, SaveFieldType.Road, 1)],
                 ModifiedTrees = [new(3, 4, 5)],
-                Vehicles = [new(VehicleType.Van, 6, 7, LoadType.Wheat, 8, new())],
-                BuildingEntities = [new(9, 10, 11, 12)]
+                Vehicles = [new(VehicleType.Van, 6, 7, LoadType.Wheat, 8, 9d, new([]))],
+                BuildingEntities = [new(9, 10, 11)]
             };
             var options = new JsonSerializerOptions
             {

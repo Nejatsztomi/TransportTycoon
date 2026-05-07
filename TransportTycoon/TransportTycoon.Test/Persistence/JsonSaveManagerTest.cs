@@ -26,8 +26,8 @@ namespace TransportTycoon.Test.Persistence
                     PlayerBalance = 5678,
                     ModifiedTiles = [new(1, 2, SaveFieldType.Road, 1)],
                     ModifiedTrees = [new(3, 4, 10)],
-                    Vehicles = [new(VehicleType.Van, 5, 6, LoadType.Wheat, 20, new())],
-                    BuildingEntities = [new(7, 8, 30, 40)]
+                    Vehicles = [new(VehicleType.Van, 5, 6, LoadType.Wheat, 20, 0d, new([]))],
+                    BuildingEntities = [new(7, 8, 30)]
                 };
 
                 // Act
