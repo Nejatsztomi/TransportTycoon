@@ -18,7 +18,7 @@ namespace TransportTycoon.Test.Model.Graph
             var sequence = new GraphNS.SharedRoadSequence(fields);
 
             // Assert (using ForwardEnumerator)
-            Assert.Equal(fields, sequence.ForwardEnumerator().ToList());
+            Assert.Equal(fields, [.. sequence.ForwardEnumerator()]);
             // Assert (using BackwardEnumerator)
             Assert.Equal(fields.AsEnumerable().Reverse(), sequence.BackwardEnumerator());
         }
