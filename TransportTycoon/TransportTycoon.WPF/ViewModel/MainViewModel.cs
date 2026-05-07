@@ -137,7 +137,7 @@ namespace TransportTycoon.WPF.ViewModel
         private GameModel CreateNewGameModel(GameCreationData data)
         {
             var gameTable = new GameTable(MapGeneratorFactory.CreateMapGenerator(data.MapGenerationContext), data.MapGenerationContext);
-            var model = new GameModel(gameTable, new WpfDispatcherTimer(), data);
+            var model = new GameModel(gameTable, new WpfRenderingTimer(), data);
             model.GameOver += Model_GameOver;
             model.NewGame();
             return model;
@@ -148,7 +148,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             var context = new MapGenerationContext(data.MapContextData);
             var gameTable = new GameTable(MapGeneratorFactory.CreateMapGenerator(context), context);
-            var model = new GameModel(gameTable, new WpfDispatcherTimer(), data, saveName);
+            var model = new GameModel(gameTable, new WpfRenderingTimer(), data, saveName);
             model.GameOver += Model_GameOver;
             return model;
         }

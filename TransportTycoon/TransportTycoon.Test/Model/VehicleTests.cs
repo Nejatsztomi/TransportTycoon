@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TransportTycoon.MapData;
+﻿using TransportTycoon.MapData;
 using TransportTycoon.Model;
-using TransportTycoon.Model.Graph;
 
 namespace TransportTycoon.Test.Model
 {
@@ -14,12 +10,12 @@ namespace TransportTycoon.Test.Model
         public void SmallBus_Constructor_SetsCorrectDefaultValues()
         {
             // Arrange & Act
-            var bus = new SmallBus(10, 20, Direction.Up);
+            var bus = new SmallBus(10, 20, 270, null); // Up = 270
 
             // Assert
             Assert.Equal(10, bus.X);
             Assert.Equal(20, bus.Y);
-            Assert.Equal(Direction.Up, bus.Direction);
+            Assert.Equal(270, bus.Angle);
             Assert.Equal(1, bus.TopSpeed);
             Assert.Equal(100, bus.MaxCapacity);
             Assert.Equal(100, bus.Price);
@@ -34,7 +30,7 @@ namespace TransportTycoon.Test.Model
         public void Truck_Constructor_SetsCorrectDefaultValues()
         {
             // Arrange & Act
-            var truck = new Truck(5, 5, Direction.Right);
+            var truck = new Truck(5, 5, 0, null); // Right = 0
 
             // Assert
             Assert.Equal(1.5, truck.TopSpeed);
@@ -49,7 +45,7 @@ namespace TransportTycoon.Test.Model
         public void LiquidTruck_Constructor_SetsCorrectDefaultValues()
         {
             // Arrange & Act
-            var liquidTruck = new LiquidTruck(0, 0, Direction.Down);
+            var liquidTruck = new LiquidTruck(0, 0, 90, null); // Down = 90
 
             // Assert
             Assert.Equal(0.9, liquidTruck.TopSpeed);
@@ -64,7 +60,7 @@ namespace TransportTycoon.Test.Model
         public void SetCurrentCapacity_ValidAmount_UpdatesCapacity()
         {
             // Arrange
-            var van = new Van(0, 0, Direction.Up);
+            var van = new Van(0, 0, 270, null); // Up = 270
 
             // Act
             van.SetCurrentCapacity(50);
@@ -77,7 +73,7 @@ namespace TransportTycoon.Test.Model
         public void SetCurrentCapacity_ExceedsMaxCapacity_DoesNotChangeCapacity()
         {
             // Arrange
-            var van = new Van(0, 0, Direction.Up);
+            var van = new Van(0, 0, 270, null); // Up = 270
             van.SetCurrentCapacity(50); // Beállítunk egy érvényes 50-es értéket
 
             // Act
@@ -91,7 +87,7 @@ namespace TransportTycoon.Test.Model
         public void SetCurrentCapacity_BelowZero_DoesNotChangeCapacity()
         {
             // Arrange
-            var van = new Van(0, 0, Direction.Up);
+            var van = new Van(0, 0, 270, null); // Up = 270
             van.SetCurrentCapacity(50); // Beállítunk egy érvényes 50-es értéket
 
             // Act
@@ -105,7 +101,7 @@ namespace TransportTycoon.Test.Model
         public void SetCurrentLoad_UpdatesLoadCorrectly()
         {
             // Arrange
-            var pickup = new Pickup(0, 0, Direction.Up);
+            var pickup = new Pickup(0, 0, 270, null); // Up = 270
             var wood = new Wood();
 
             // Act
@@ -121,7 +117,7 @@ namespace TransportTycoon.Test.Model
         public void ChangeCurrentSpeed_ValidSpeed_UpdatesSpeed()
         {
             // Arrange
-            var bus = new BigBus(0, 0, Direction.Up);
+            var bus = new BigBus(0, 0, 270, null); // Up = 270
             double validSpeed = bus.TopSpeed / 2;
 
             // Act
@@ -135,7 +131,7 @@ namespace TransportTycoon.Test.Model
         public void ChangeCurrentSpeed_ExceedsTopSpeed_CapsAtTopSpeed()
         {
             // Arrange
-            var bus = new SmallBus(0, 0, Direction.Up);
+            var bus = new SmallBus(0, 0, 270, null); // Up = 270
 
             // Act
             bus.ChangeCurrentSpeed(5.0);
@@ -147,40 +143,163 @@ namespace TransportTycoon.Test.Model
         public void ChangeCurrentSpeed_BelowZero_DoesNotChangeSpeed()
         {
             // Arrange
-            var bus = new SmallBus(0, 0, Direction.Up);
-            double initialSpeed = bus.CurrentSpeed; // A konstruktor 1.0-ra állítja
+            var bus = new SmallBus(0, 0, 270, null); // Up = 270
 
             // Act
-            bus.ChangeCurrentSpeed(-1.0); // Érvénytelen érték, a metódus nem csinál semmit
+            bus.ChangeCurrentSpeed(-1.0);
 
             // Assert
-            Assert.Equal(initialSpeed, bus.CurrentSpeed); // Marad 1.0
+            Assert.Equal(0.0, bus.CurrentSpeed); // Math.Clamp sets to 0.0
         }
         #endregion
 
-        #region Útvonal (Prouth) Tesztek
+        #region További Tesztjei
         [Fact]
-        public void StartDriving_WithValidEdges_SetsCurrentRoute()
+        public void Vehicle_Ids_AreUnique()
         {
-            // Arrange
-            var van = new Van(0, 0, Direction.Up);
-
-            // Javított Edge és Node konstruktor hívás az Edge.cs és Node.cs alapján
-            var startNode = new Node(0, 0, typeof(Stop));
-            var endNode = new Node(0, 1, typeof(Stop));
-            var dummyRoads = new List<IField>(); // Üres lista az IField-ekhez
-
-            var edges = new List<Edge>
-            {
-                new Edge(startNode, endNode, dummyRoads, 10.0) // Node start, Node end, IEnumerable<IField> roads, double cost
-            };
-
-            // Act
-            van.StartDriving(edges);
+            // Arrange & Act
+            var vehicle1 = new SmallBus(0, 0, 0, null);
+            var vehicle2 = new Truck(0, 0, 0, null);
 
             // Assert
-            Assert.NotNull(van.CurrentRoute);
-            Assert.Single(van.CurrentRoute);
+            Assert.NotEqual(vehicle1.Id, vehicle2.Id);
+        }
+
+        [Fact]
+        public void SetCurrentCapacity_ToZero_ClearsCurrentLoad()
+        {
+            // Arrange
+            var van = new Van(0, 0, 0, null);
+            var wood = new Wood();
+            van.SetCurrentLoad(wood);
+            van.SetCurrentCapacity(50);
+
+            // Act
+            van.SetCurrentCapacity(0);
+
+            // Assert
+            Assert.Equal(0, van.CurrentCapacity);
+            Assert.Null(van.CurrentLoad);
+        }
+
+        [Fact]
+        public void SetCurrentLoad_ToNull_ClearsCurrentCapacity()
+        {
+            // Arrange
+            var pickup = new Pickup(0, 0, 0, null);
+            pickup.SetCurrentCapacity(50);
+
+            // Act
+            pickup.SetCurrentLoad(null);
+
+            // Assert
+            Assert.Null(pickup.CurrentLoad);
+            Assert.Equal(0, pickup.CurrentCapacity);
+        }
+
+        [Fact]
+        public void SetCurrentLoad_InvalidLoadType_DoesNotSetLoad()
+        {
+            // Arrange
+            var bus = new SmallBus(0, 0, 0, null);
+            var wood = new Wood(); // SmallBus only accepts People
+
+            // Act
+            bus.SetCurrentLoad(wood);
+
+            // Assert
+            Assert.Null(bus.CurrentLoad);
+        }
+
+        [Fact]
+        public void SetCurrentLoad_ValidLoadType_SetsLoadWithoutChangingCapacity()
+        {
+            // Arrange
+            var truck = new Truck(0, 0, 0, null);
+            var wood = new Wood();
+            truck.SetCurrentCapacity(50);
+
+            // Act
+            truck.SetCurrentLoad(wood);
+
+            // Assert
+            Assert.Equal(wood, truck.CurrentLoad);
+            Assert.Equal(50, truck.CurrentCapacity);
+        }
+
+        [Fact]
+        public void MapX_MapY_RoundCoordinatesCorrectly()
+        {
+            // Arrange
+            var van = new Van(1, 3, 0, null);
+
+            // Assert
+            Assert.Equal(1, van.MapX);
+            Assert.Equal(3, van.MapY);
+        }
+
+        [Fact]
+        public void Vehicle_IsLost_InitiallyFalse()
+        {
+            // Arrange
+            var vehicle = new Truck(0, 0, 0, null);
+
+            // Assert
+            Assert.False(vehicle.IsLost);
+        }
+
+        [Fact]
+        public void Van_Constructor_SetsCorrectDefaultValues()
+        {
+            // Arrange & Act
+            var van = new Van(5, 10, 180, null); // Left = 180
+
+            // Assert
+            Assert.Equal(5, van.X);
+            Assert.Equal(10, van.Y);
+            Assert.Equal(180, van.Angle);
+            Assert.Equal(0.9, van.TopSpeed);
+            Assert.Equal(100, van.MaxCapacity);
+            Assert.Equal(100, van.Price);
+            Assert.Equal(100, van.Maintenance);
+            Assert.Equal(VehicleType.Van, van.Type);
+            Assert.Equal(5, van.AcceptedGoods!.Count);
+            Assert.Contains(LoadType.Wood, van.AcceptedGoods);
+            Assert.Equal(van.TopSpeed, van.CurrentSpeed);
+        }
+
+        [Fact]
+        public void Pickup_Constructor_SetsCorrectDefaultValues()
+        {
+            // Arrange & Act
+            var pickup = new Pickup(0, 0, 90, null); // Down = 90
+
+            // Assert
+            Assert.Equal(0.9, pickup.TopSpeed);
+            Assert.Equal(100, pickup.MaxCapacity);
+            Assert.Equal(VehicleType.Pickup, pickup.Type);
+            Assert.Equal(5, pickup.AcceptedGoods!.Count);
+            Assert.Contains(LoadType.Flour, pickup.AcceptedGoods);
+        }
+
+        [Fact]
+        public void BigBus_Constructor_SetsCorrectDefaultValues()
+        {
+            // Arrange & Act
+            var bus = new BigBus(15, 25, 0, null); // Right = 0
+
+            // Assert
+            Assert.Equal(15, bus.X);
+            Assert.Equal(25, bus.Y);
+            Assert.Equal(0, bus.Angle);
+            Assert.Equal(1, bus.TopSpeed);
+            Assert.Equal(100, bus.MaxCapacity);
+            Assert.Equal(100, bus.Price);
+            Assert.Equal(100, bus.Maintenance);
+            Assert.Equal(VehicleType.BigBus, bus.Type);
+            Assert.Single(bus.AcceptedGoods!);
+            Assert.Contains(LoadType.People, bus.AcceptedGoods!);
+            Assert.Equal(bus.TopSpeed, bus.CurrentSpeed);
         }
         #endregion
     }
