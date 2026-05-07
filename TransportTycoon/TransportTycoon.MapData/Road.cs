@@ -21,7 +21,7 @@ namespace TransportTycoon.MapData
     {
         #region Public properties
         public RoadType RoadType { get; private set; }
-        public BuildingEntity? Pointer { get; }
+        public CityEntity? Pointer { get; }
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
@@ -29,7 +29,7 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Constructors
-        public Road(int x, int y, RoadType type, int height, BuildingEntity? pointer = null)
+        public Road(int x, int y, RoadType type, int height, CityEntity? pointer = null)
         {
             X = x;
             Y = y;
