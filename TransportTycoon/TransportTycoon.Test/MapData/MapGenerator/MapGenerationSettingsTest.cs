@@ -34,6 +34,66 @@ public class MapGenerationSettingsTest
         }
     }
 
+    public class RiverWidthTest
+    {
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(5)]
+        public void MinRiverWidth_CanBePositive(int width)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinRiverWidth = width };
+
+            // Assert
+            Assert.Equal(width, settings.MinRiverWidth);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void MinRiverWidth_MustBePositive(int width)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinRiverWidth = width
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 5)]
+        public void MaxRiverWidth_CanBeGreaterThanOrEqualMinRiverWidth(int minWidth, int maxWidth)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinRiverWidth = minWidth, MaxRiverWidth = maxWidth };
+
+            // Assert
+            Assert.Equal(minWidth, settings.MinRiverWidth);
+            Assert.Equal(maxWidth, settings.MaxRiverWidth);
+        }
+
+        [Theory]
+        [InlineData(1, 0)]
+        [InlineData(2, 1)]
+        public void MaxRiverWidth_MustBeGreaterThanOrEqualMinRiverWidth(int minWidth, int maxWidth)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinRiverWidth = minWidth,
+                    MaxRiverWidth = maxWidth
+                };
+            });
+        }
+    }
+
     public class ForestPercentageTest
     {
         [Theory]
@@ -51,6 +111,67 @@ public class MapGenerationSettingsTest
             // Assert
             Assert.Equal(forestPercentage, settings.ForestPercentage);
         }
+
+    public class StructureSizeTest
+    {
+        [Theory]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(5)]
+        public void StructureWidth_CanBeAtLeastTwo(int width)
+        {
+            // Act
+            MapGenerationSettings settings = new() { StructureWidth = width };
+
+            // Assert
+            Assert.Equal(width, settings.StructureWidth);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void StructureWidth_MustBeAtLeastTwo(int width)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    StructureWidth = width
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(5)]
+        public void StructureHeight_CanBeAtLeastTwo(int height)
+        {
+            // Act
+            MapGenerationSettings settings = new() { StructureHeight = height };
+
+            // Assert
+            Assert.Equal(height, settings.StructureHeight);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void StructureHeight_MustBeAtLeastTwo(int height)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    StructureHeight = height
+                };
+            });
+        }
+    }
 
         [Theory]
         [InlineData(-0.1f)]
@@ -284,6 +405,175 @@ public class MapGenerationSettingsTest
                 {
                     MinCities = 2,
                     MaxCities = 1
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(5)]
+        public void MinCityRange_CanBeNonNegative(int range)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinCityRange = range };
+
+            // Assert
+            Assert.Equal(range, settings.MinCityRange);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(-5)]
+        public void MinCityRange_MustBeNonNegative(int range)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinCityRange = range
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(2, 5)]
+        public void MaxCityRange_CanBeGreaterThanOrEqualMinCityRange(int minRange, int maxRange)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinCityRange = minRange, MaxCityRange = maxRange };
+
+            // Assert
+            Assert.Equal(minRange, settings.MinCityRange);
+            Assert.Equal(maxRange, settings.MaxCityRange);
+        }
+
+        [Theory]
+        [InlineData(0, -1)]
+        [InlineData(2, 1)]
+        public void MaxCityRange_MustBeGreaterThanOrEqualMinCityRange(int minRange, int maxRange)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinCityRange = minRange,
+                    MaxCityRange = maxRange
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public void CityWidth_CanBeAtLeastThree(int width)
+        {
+            // Act
+            MapGenerationSettings settings = new() { CityWidth = width };
+
+            // Assert
+            Assert.Equal(width, settings.CityWidth);
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void CityWidth_MustBeAtLeastThree(int width)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    CityWidth = width
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(4)]
+        [InlineData(5)]
+        [InlineData(6)]
+        public void CityHeight_CanBeGreaterThanThree(int height)
+        {
+            // Act
+            MapGenerationSettings settings = new() { CityHeight = height };
+
+            // Assert
+            Assert.Equal(height, settings.CityHeight);
+        }
+
+        [Theory]
+        [InlineData(3)]
+        [InlineData(2)]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void CityHeight_MustBeGreaterThanThree(int height)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    CityHeight = height
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void RoadLength_CanBePositive(int length)
+        {
+            // Act
+            MapGenerationSettings settings = new() { RoadLength = length };
+
+            // Assert
+            Assert.Equal(length, settings.RoadLength);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void RoadLength_MustBePositive(int length)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    RoadLength = length
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void BranchCount_CanBePositive(int count)
+        {
+            // Act
+            MapGenerationSettings settings = new() { BranchCount = count };
+
+            // Assert
+            Assert.Equal(count, settings.BranchCount);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void BranchCount_MustBePositive(int count)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    BranchCount = count
                 };
             });
         }
