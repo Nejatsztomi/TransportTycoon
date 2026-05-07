@@ -112,66 +112,66 @@ public class MapGenerationSettingsTest
             Assert.Equal(forestPercentage, settings.ForestPercentage);
         }
 
-    public class StructureSizeTest
-    {
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(5)]
-        public void StructureWidth_CanBeAtLeastTwo(int width)
+        public class StructureSizeTest
         {
-            // Act
-            MapGenerationSettings settings = new() { StructureWidth = width };
-
-            // Assert
-            Assert.Equal(width, settings.StructureWidth);
-        }
-
-        [Theory]
-        [InlineData(1)]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public void StructureWidth_MustBeAtLeastTwo(int width)
-        {
-            // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            [Theory]
+            [InlineData(2)]
+            [InlineData(3)]
+            [InlineData(5)]
+            public void StructureWidth_CanBeAtLeastTwo(int width)
             {
-                new MapGenerationSettings()
-                {
-                    StructureWidth = width
-                };
-            });
-        }
+                // Act
+                MapGenerationSettings settings = new() { StructureWidth = width };
 
-        [Theory]
-        [InlineData(2)]
-        [InlineData(3)]
-        [InlineData(5)]
-        public void StructureHeight_CanBeAtLeastTwo(int height)
-        {
-            // Act
-            MapGenerationSettings settings = new() { StructureHeight = height };
+                // Assert
+                Assert.Equal(width, settings.StructureWidth);
+            }
 
-            // Assert
-            Assert.Equal(height, settings.StructureHeight);
-        }
-
-        [Theory]
-        [InlineData(1)]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public void StructureHeight_MustBeAtLeastTwo(int height)
-        {
-            // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            [Theory]
+            [InlineData(1)]
+            [InlineData(0)]
+            [InlineData(-1)]
+            public void StructureWidth_MustBeAtLeastTwo(int width)
             {
-                new MapGenerationSettings()
+                // Act & Assert
+                Assert.Throws<ArgumentOutOfRangeException>(() =>
                 {
-                    StructureHeight = height
-                };
-            });
+                    new MapGenerationSettings()
+                    {
+                        StructureWidth = width
+                    };
+                });
+            }
+
+            [Theory]
+            [InlineData(2)]
+            [InlineData(3)]
+            [InlineData(5)]
+            public void StructureHeight_CanBeAtLeastTwo(int height)
+            {
+                // Act
+                MapGenerationSettings settings = new() { StructureHeight = height };
+
+                // Assert
+                Assert.Equal(height, settings.StructureHeight);
+            }
+
+            [Theory]
+            [InlineData(1)]
+            [InlineData(0)]
+            [InlineData(-1)]
+            public void StructureHeight_MustBeAtLeastTwo(int height)
+            {
+                // Act & Assert
+                Assert.Throws<ArgumentOutOfRangeException>(() =>
+                {
+                    new MapGenerationSettings()
+                    {
+                        StructureHeight = height
+                    };
+                });
+            }
         }
-    }
 
         [Theory]
         [InlineData(-0.1f)]

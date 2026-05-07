@@ -1,4 +1,3 @@
-using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.MapData.MapGenerator.StructureGeneration;
