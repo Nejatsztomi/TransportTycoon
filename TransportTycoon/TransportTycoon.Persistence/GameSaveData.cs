@@ -35,6 +35,7 @@ namespace TransportTycoon.Persistence
         int CurrentY,
         Persistence.LoadType CurrentLoad,
         int CurrentCapacity,
+        double Angle,
         ProuthData Prouth
         );
 

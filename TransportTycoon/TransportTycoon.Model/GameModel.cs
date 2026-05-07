@@ -212,12 +212,12 @@ namespace TransportTycoon.Model
             {
                 Vehicle vehicle = vehicleData.Type switch
                 {
-                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
-                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
-                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
-                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
-                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
-                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, 0.0, null),
+                    Persistence.VehicleType.Van => new Van(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.Pickup => new Pickup(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.Truck => new Truck(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.LiquidTruck => new LiquidTruck(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.SmallBus => new SmallBus(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
+                    Persistence.VehicleType.BigBus => new BigBus(vehicleData.CurrentX, vehicleData.CurrentY, vehicleData.Angle, null),
                     _ => throw new ArgumentException("Invalid vehicle type in save data", nameof(vehicleData.Type)),
                 };
 
@@ -319,6 +319,7 @@ namespace TransportTycoon.Model
                     _ => throw new Exception($"Invalid load type for vehicle at ({v.X}, {v.Y})")
                 },
                 CurrentCapacity = v.CurrentCapacity,
+                Angle = v.Angle,
                 Prouth = new(v.Prouth?.Stops.Select(stop => new Coordinate(stop.X, stop.Y)).ToList() ?? [])
             })];
 
@@ -923,24 +924,11 @@ namespace TransportTycoon.Model
 
         private void AllProduction()
         {
-            List<(int, int)> productionChanged = [];
-            HashSet<BuildingEntity> buildingEntities = [];
-            for (int i = 0; i < Map.Height; i++)
-            {
-                for (int j = 0; j < Map.Width; j++)
-                {
-                    if (Map[i, j] is IBuildingBlocks b)
-                    {
-                        buildingEntities.Add(b.BuildingEntity);
-                        productionChanged.Add((i, j));
-                    }
-                }
-            }
-            foreach (var item in buildingEntities)
+            foreach (var item in Map.BuildingEntities)
             {
                 item.Production();
             }
-            ProductionChanged?.Invoke(this, productionChanged);
+            ProductionChanged?.Invoke(this, [.. Map.BuildingEntities.Select(be => (be.TopLeftPoints))]);
         }
         #endregion
 
