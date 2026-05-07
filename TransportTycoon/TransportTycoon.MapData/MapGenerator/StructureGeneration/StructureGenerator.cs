@@ -79,7 +79,6 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 
         #region Private methods
 
-
         private (SiteEntity siteEntity, IndustryEntity industryEntity) GenerateRandomEntityPair(IRandom random)
         {
             //var pairs = new (SiteEntity siteEntity, IndustryEntity industryEntity)[]

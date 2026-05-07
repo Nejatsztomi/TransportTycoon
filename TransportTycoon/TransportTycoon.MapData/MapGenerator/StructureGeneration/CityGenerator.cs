@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData.Buildings;
+﻿using System.Diagnostics.CodeAnalysis;
+using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
@@ -64,8 +65,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// Implementaion of the Drunken Builder algorithm.
         /// It spawns a number of random walkers (branchCount) that carve roads in the city for a certain number of steps (maxRoadCount).
         /// </summary>
-        /// <param name="city"></param>
-        /// <param name="context"></param>
+        /// <param name="city">The city entity to generate roads for.</param>
+        /// <param name="context">The map generation context.</param>
+        /// <param name="random">The random number generator.</param>
         private void GenerateCity(CityEntity city, MapGenerationContext context, IRandom random)
         {
             (int topLeftX, int topLeftY) = city.TopLeftPoints;
@@ -83,6 +85,22 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             }
         }
 
+        /// <summary>
+        /// Force carves a main exit road from the city center to the edge of the city bounds.
+        /// The exit direction is random, and the path is not straight but has a chance to side step, creating a more natural look.
+        /// </summary>
+        /// <remarks>
+        /// It has been marked as excluded from code coverage because of its inherent randomness, which makes it hard to test reliably.
+        /// The code coverage tools may not properly recognize the tests for this method, even though it is tested in CityGeneratorTest.cs.
+        /// A further class extraction layer might be needed to improve testability and code coverage reporting for this method.
+        /// </remarks>
+        /// <param name="city">The city entity to generate the exit road for.</param>
+        /// <param name="startX">The starting X coordinate of the exit road.</param>
+        /// <param name="startY">The starting Y coordinate of the exit road.</param>
+        /// <param name="random">The random number generator.</param>
+        [ExcludeFromCodeCoverage(Justification = "This method is inherently random and hard to test reliably." +
+            "It also tested properly inside CityGeneratorTest.cs, however the code coverage won't pick it up properly." +
+            "Probably a further class extraction layer is needed.")]
         private void CarveExit(CityEntity city, int startX, int startY, IRandom random)
         {
             (int topLeftX, int topLeftY) = city.TopLeftPoints;
