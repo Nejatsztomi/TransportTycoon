@@ -10,6 +10,27 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <!-- Self‑contained release -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-SC'">
+      <PublishSingleFile>true</PublishSingleFile>
+      <SelfContained>true</SelfContained>
+      <!-- Bundle native .NET runtime DLLs into the single EXE -->
+      <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+      <!-- Suppress debug files -->
+      <DebugType>None</DebugType>
+      <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
+  <!-- Framework‑dependent release -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-FD'">
+      <PublishSingleFile>true</PublishSingleFile>
+      <SelfContained>false</SelfContained>
+      <!-- Bundle even managed assemblies into the single EXE -->
+      <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+      <DebugType>None</DebugType>
+      <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Assets\Fonts\PressStart2P.ttf" />
     <None Remove="Assets\Images\background.png" />
@@ -87,24 +108,24 @@
     <Resource Include="Assets\Images\background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Content Include="Assets\Images\Buildings\factory.png">
+    <Resource Include="Assets\Images\Buildings\factory.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\farm.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\farm.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\house.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\house.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\lumbercamp.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\lumbercamp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\mill.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\mill.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\plant.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\plant.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
     <Resource Include="Assets\Images\Icons\arrow.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
