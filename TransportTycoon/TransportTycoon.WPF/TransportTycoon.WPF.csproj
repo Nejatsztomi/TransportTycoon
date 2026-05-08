@@ -19,6 +19,7 @@
     <None Remove="Assets\Images\Buildings\house.png" />
     <None Remove="Assets\Images\Buildings\lumbercamp.png" />
     <None Remove="Assets\Images\Buildings\mill.png" />
+    <None Remove="Assets\Images\Buildings\mine.png" />
     <None Remove="Assets\Images\Buildings\plant.png" />
     <None Remove="Assets\Images\Icons\arrow.png" />
     <None Remove="Assets\Images\Icons\bridge.png" />
@@ -98,6 +99,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Buildings\mill.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Images\Buildings\mine.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Images\Buildings\plant.png">
@@ -268,9 +272,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Stop\stop.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Buildings\mine.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Terrain\field.png">
