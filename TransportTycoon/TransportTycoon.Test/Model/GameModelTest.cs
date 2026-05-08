@@ -1352,7 +1352,7 @@ public class GameModelTest
             Assert.NotNull(method); // Biztonsági ellenőrzés
 
             // Act: Meghívjuk a metódust (már csak a járművet kell átadni paraméterként!)
-            method.Invoke(model, new object[] { van });
+            method.Invoke(model, [van]);
 
             // Assert: A sebességének le kellett lassulnia a híd limitjére
             Assert.True(van.CurrentSpeed <= bridge.SpeedLimit);

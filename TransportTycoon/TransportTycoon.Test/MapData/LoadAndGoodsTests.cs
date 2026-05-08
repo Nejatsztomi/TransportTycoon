@@ -1,4 +1,5 @@
-﻿using TransportTycoon.MapData;
+﻿using System.Reflection;
+using TransportTycoon.MapData;
 
 namespace TransportTycoon.Test.MapData
 {
@@ -46,6 +47,31 @@ namespace TransportTycoon.Test.MapData
             Assert.Equal(expectedType, goods.LoadType);
         }
 
+        [Fact]
+        public void Goods_Value_ReturnsTaxTimesPrice_ForSeveralGoods()
+        {
+            // Arrange
+            Goods.SetGlobalTax(3); // deterministic tax
+            var cases = new (Goods good, int expectedPrice)[]
+            {
+                    (new Wheat(), 25),
+                    (new Oil(), 45),
+                    (new Wood(), 30),
+                    (new Flour(), 65),
+                    (new Rubber(), 110),
+                    (new Paper(), 75)
+            };
+
+            MethodInfo? valueMethod = typeof(Goods).GetMethod("Value", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(valueMethod);
+
+            // Act & Assert
+            foreach (var (good, basePrice) in cases)
+            {
+                int computed = (int)valueMethod!.Invoke(good, null)!;
+                Assert.Equal(Goods.Tax * basePrice, computed);
+            }
+        }
         [Fact]
         public void Goods_SetGlobalTax_UpdatesTax()
         {

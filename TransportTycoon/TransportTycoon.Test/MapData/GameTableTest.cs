@@ -251,95 +251,175 @@ public class GameTableTest
     }
     #endregion
 
-    //public class MapGenerationTest
-    //{
-    //    private GameTable _gameTable = null!;
+    #region CreateBridge extended tests
 
-    //    public MapGenerationTest
-    //    {
-    //        _gameTable = new(5, 5);
-    //    }
+    public class GameTableParameterizedTests
+    {
+        // Helper to fill map with Terrain of equal height
+        private static void FillWithTerrain(GameTable table, int height = 1)
+        {
+            for (int x = 0; x < table.Width; x++)
+            {
+                for (int y = 0; y < table.Height; y++)
+                {
+                    table.UpdateTable(x, y, new Terrain(x, y, height));
+                }
+            }
+        }
 
-    //    //[Fact]
-    //    //public void GenerateMap_MapIsGenerated()
-    //    //{
-    //    //    _gameTable.GenerateMap();
-    //    //    Assert.NotEmpty(_gameTable.Table);
-    //    //    bool hasInvalidField = false;
-    //    //    foreach (var field in _gameTable.Table)
-    //    //    {
-    //    //        if (field is null)
-    //    //        {
-    //    //            Assert.Fail("Each field in the map should be initialized");
-    //    //        }
+        // neighbors: up, down, right, left (bools)
+        // center point is (2,2) in a 5x5 table
+        [Theory]
+        // 0 neighbors => Vertical (default)
+        [InlineData(false, false, false, false, RoadType.Vertical)]
+        // single down or left => Horizontal (case 1 branch)
+        [InlineData(false, true, false, false, RoadType.Horizontal)] // down
+        [InlineData(false, false, false, true, RoadType.Horizontal)] // left
+        // single up or right => Vertical (stays default)
+        [InlineData(true, false, false, false, RoadType.Vertical)] // up
+        [InlineData(false, false, true, false, RoadType.Vertical)] // right
+        // two-neighbor combos
+        [InlineData(true, true, false, false, RoadType.UpperRightTurn)] // up + down
+        [InlineData(false, true, true, false, RoadType.RightTurn)] // down + right
+        [InlineData(false, false, true, true, RoadType.LeftTurn)] // right + left
+        [InlineData(true, false, false, true, RoadType.UpperLeftTurn)] // up + left
+        // three neighbors -> various TRoads
+        [InlineData(false, true, true, true, RoadType.DownTRoad)]   // missing up
+        [InlineData(true, false, true, true, RoadType.LeftTRoad)]   // missing down
+        [InlineData(true, true, false, true, RoadType.UpperTRoad)]  // missing right
+        [InlineData(true, true, true, false, RoadType.RightTRoad)]  // missing left
+        // four neighbors -> XRoad
+        [InlineData(true, true, true, true, RoadType.XRoad)]
+        public void CalculateRoadType_VariousNeighborCombinations_ReturnsExpected(
+            bool up, bool down, bool right, bool left, RoadType expected)
+        {
+            var gen = Substitute.For<IMapGenerator>();
+            var ctx = new MapGenerationContext(5, 5, 1, new MapGenerationSettings());
+            var table = new GameTable(gen, ctx);
+            FillWithTerrain(table);
 
-    //    //        if (!(field is Water || field is Terrain))
-    //    //        {
-    //    //            hasInvalidField = true;
-    //    //            break;
-    //    //        }
-    //    //    }
+            // center at (2,2)
+            int cx = 2, cy = 2;
 
-    //    //    Assert.False(hasInvalidField, "All fields in the map should be either Water or Terrain");
-    //    //}
+            if (up) table.UpdateTable(cx, cy - 1, new Road(cx, cy - 1, RoadType.Horizontal, 1));
+            if (down) table.UpdateTable(cx + 1, cy, new Road(cx + 1, cy, RoadType.Vertical, 1));
+            if (right) table.UpdateTable(cx, cy + 1, new Road(cx, cy + 1, RoadType.Horizontal, 1));
+            if (left) table.UpdateTable(cx - 1, cy, new Road(cx - 1, cy, RoadType.Vertical, 1));
 
-    //    //[Fact]
-    //    //public void GenerateMap_MapHasValidFields()
-    //    //{
-    //    //    _gameTable.GenerateMap();
+            var actual = table.CalculateRoadType(cx, cy);
+            Assert.Equal(expected, actual);
+        }
 
-    //    //    bool hasFieldNotInRange = false;
-    //    //    bool hasInvalidField = false;
-    //    //    foreach (var field in _gameTable.Table)
-    //    //    {
-    //    //        if (!(0 <= field.Height && field.Height <= 4))
-    //    //        {
-    //    //            hasFieldNotInRange = true;
-    //    //            break;
-    //    //        }
+        [Theory]
+        // Horizontal boundaries
+        [InlineData(13, "horizontal", BridgeType.HorizontalYellowBridge)]
+        [InlineData(14, "horizontal", BridgeType.HorizontalGreenBridge)]
+        [InlineData(15, "horizontal", BridgeType.HorizontalGreenBridge)]
+        [InlineData(16, "horizontal", BridgeType.HorizontalRedBridge)]
+        [InlineData(17, "horizontal", BridgeType.HorizontalRedBridge)]
+        [InlineData(18, "horizontal", BridgeType.Null)]
+        // Vertical boundaries
+        [InlineData(13, "vertical", BridgeType.VerticalYellowBridge)]
+        [InlineData(14, "vertical", BridgeType.VerticalGreenBridge)]
+        [InlineData(15, "vertical", BridgeType.VerticalGreenBridge)]
+        [InlineData(16, "vertical", BridgeType.VerticalRedBridge)]
+        [InlineData(17, "vertical", BridgeType.VerticalRedBridge)]
+        [InlineData(18, "vertical", BridgeType.Null)]
+        public void CalculateBridgeType_Boundaries_ReturnsExpected(int dif, string dir, BridgeType expected)
+        {
+            var mockGen = Substitute.For<IMapGenerator>();
+            var ctx = new MapGenerationContext(10, 10, 1, new MapGenerationSettings());
+            var table = new GameTable(mockGen, ctx);
 
-    //    //        if (!_gameTable.IsTileHeightPossible(field.X, field.Y, field.Height))
-    //    //        {
-    //    //            hasInvalidField = true;
-    //    //            break;
-    //    //        }
-    //    //    }
+            var actual = table.CalculateBridgeType(dif, dir);
+            Assert.Equal(expected, actual);
+        }
 
-    //    //    Assert.False(hasFieldNotInRange, "Each field should have height between 0 and 4");
-    //    //    Assert.False(hasInvalidField, "Each field should have a possible height respecting neighbouring tiles");
-    //    //}
+        [Theory]
+        [InlineData(BridgeType.HorizontalYellowBridge, typeof(YellowBridge))]
+        [InlineData(BridgeType.HorizontalGreenBridge, typeof(GreenBridge))]
+        [InlineData(BridgeType.HorizontalRedBridge, typeof(RedBridge))]
+        public void CreateHorizontalBridge_CreatesBridges_ReturnsCorrectCost_AndUpdatesChangedFields(
+            BridgeType bType, System.Type expectedBridgeType)
+        {
+            var mockGen = Substitute.For<IMapGenerator>();
+            var ctx = new MapGenerationContext(10, 10, 1, new MapGenerationSettings());
+            var table = new GameTable(mockGen, ctx);
 
-    //    //[Fact]
-    //    //public void GenerateMap_MapHasTrees()
-    //    //{
-    //    //    _gameTable.GenerateMap();
-    //    //    int treeCount = 0;
+            // initialize to Terrain
+            FillWithTerrain(table);
 
-    //    //    foreach (var field in _gameTable.Table)
-    //    //    {
-    //    //        treeCount += field.GetTrees();
-    //    //    }
+            int a = 2, b = 3, yCoord = 4;
+            // place roads adjacent so they will be recalculated/added to changedFields
+            table.UpdateTable(a - 1, yCoord, new Road(a - 1, yCoord, RoadType.Horizontal, 1));
+            table.UpdateTable(b + 1, yCoord, new Road(b + 1, yCoord, RoadType.Horizontal, 1));
 
-    //    //    Assert.True(treeCount > 0, "Generated map should contain trees");
-    //    //}
+            var changed = new List<(int, int)>();
+            int cost = table.CreateHorizontalBridge(yCoord, a, b, bType, ref changed);
 
-    //    //[Fact]
-    //    //public void GenerateMap_MapHasValidTrees()
-    //    //{
-    //    //    _gameTable.GenerateMap();
+            // expected cost is sum of per-bridge price
+            int expectedPricePerCell = bType switch
+            {
+                BridgeType.HorizontalYellowBridge => YellowBridge.Price,
+                BridgeType.HorizontalGreenBridge => GreenBridge.Price,
+                BridgeType.HorizontalRedBridge => RedBridge.Price,
+                _ => 0
+            };
+            Assert.Equal(expectedPricePerCell * (b - a + 1), cost);
 
-    //    //    bool hasFieldWithInvalidTrees = false;
-    //    //    foreach (var field in _gameTable.Table)
-    //    //    {
-    //    //        if (!(0 <= field.GetTrees() && field.GetTrees() <= 4))
-    //    //        {
-    //    //            hasFieldWithInvalidTrees = true;
-    //    //            break;
-    //    //        }
-    //    //    }
+            // changed should contain each new bridge cell
+            for (int i = a; i <= b; i++)
+            {
+                Assert.Contains((i, yCoord), changed);
+                Assert.IsType(expectedBridgeType, table[i, yCoord]);
+            }
 
-    //    //    Assert.False(hasFieldWithInvalidTrees, "Each field should have a valid number of trees between 0 and 4");
-    //    //}
-    //}
+            // and the adjacent roads updated
+            Assert.Contains((a - 1, yCoord), changed);
+            Assert.Contains((b + 1, yCoord), changed);
+        }
 
+        [Theory]
+        [InlineData(BridgeType.VerticalYellowBridge, typeof(YellowBridge))]
+        [InlineData(BridgeType.VerticalGreenBridge, typeof(GreenBridge))]
+        [InlineData(BridgeType.VerticalRedBridge, typeof(RedBridge))]
+        public void CreateVerticalBridge_CreatesBridges_ReturnsCorrectCost_AndUpdatesChangedFields(
+            BridgeType bType, System.Type expectedBridgeType)
+        {
+            var mockGen = Substitute.For<IMapGenerator>();
+            var ctx = new MapGenerationContext(10, 10, 1, new MapGenerationSettings());
+            var table = new GameTable(mockGen, ctx);
+
+            // initialize to Terrain
+            FillWithTerrain(table);
+
+            int xCoord = 5, a = 1, b = 2;
+            // place roads adjacent so they will be recalculated/added to changedFields
+            table.UpdateTable(xCoord, a - 1, new Road(xCoord, a - 1, RoadType.Vertical, 1));
+            table.UpdateTable(xCoord, b + 1, new Road(xCoord, b + 1, RoadType.Vertical, 1));
+
+            var changed = new List<(int, int)>();
+            int cost = table.CreateVerticalBridge(xCoord, a, b, bType, ref changed);
+
+            int expectedPricePerCell = bType switch
+            {
+                BridgeType.VerticalYellowBridge => YellowBridge.Price,
+                BridgeType.VerticalGreenBridge => GreenBridge.Price,
+                BridgeType.VerticalRedBridge => RedBridge.Price,
+                _ => 0
+            };
+            Assert.Equal(expectedPricePerCell * (b - a + 1), cost);
+
+            for (int i = a; i <= b; i++)
+            {
+                Assert.Contains((xCoord, i), changed);
+                Assert.IsType(expectedBridgeType, table[xCoord, i]);
+            }
+
+            // and the adjacent roads updated
+            Assert.Contains((xCoord, a - 1), changed);
+            Assert.Contains((xCoord, b + 1), changed);
+        }
+    }
+    #endregion
 }
