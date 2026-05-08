@@ -116,7 +116,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             // North, East, South, West
             (int dx, int dy) = _directions[random.Next(4)];
 
-            while (x <= topLeftX && x < topLeftX + city.Width &&
+            while (topLeftX <= x && x < topLeftX + city.Width &&
                     topLeftY <= y && y < topLeftY + city.Height)
             {
                 city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height);
@@ -128,11 +128,11 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                     // Tend to move in the other axis
                     if (dx == 0)
                     {
-                        x = Math.Clamp(x + sideStep, 0, city.Width - 1);
+                        x = Math.Clamp(x + sideStep, 0, topLeftX + city.Width - 1);
                     }
                     else
                     {
-                        y = Math.Clamp(y + sideStep, 0, city.Height - 1);
+                        y = Math.Clamp(y + sideStep, 0, topLeftY + city.Height - 1);
                     }
                     city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height, city);
                 }
