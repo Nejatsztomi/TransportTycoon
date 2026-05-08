@@ -7,71 +7,74 @@ namespace TransportTycoon.Test.Model.Graph
 {
     public class PathTracerTest
     {
-        public static IEnumerable<object[]> AllowedExitDirections =>
-        [
-            [RoadType.Vertical, (0, -1)],
-            [RoadType.Vertical, (0, 1)],
-            [RoadType.Horizontal, (1, 0)],
-            [RoadType.Horizontal, (-1, 0)],
-            [RoadType.UpperLeftTurn, (0, -1)],
-            [RoadType.UpperLeftTurn, (-1, 0)],
-            [RoadType.LeftTurn, (0, 1)],
-            [RoadType.LeftTurn, (-1, 0)],
-            [RoadType.RightTurn, (0, 1)],
-            [RoadType.RightTurn, (1, 0)],
-            [RoadType.UpperRightTurn, (0, -1)],
-            [RoadType.UpperRightTurn, (1, 0)],
-            [RoadType.DownTRoad, (-1, 0)],
-            [RoadType.DownTRoad, (0, 1)],
-            [RoadType.DownTRoad, (1, 0)],
-            [RoadType.UpperTRoad, (-1, 0)],
-            [RoadType.UpperTRoad, (0, -1)],
-            [RoadType.UpperTRoad, (1, 0)],
-            [RoadType.LeftTRoad, (0, -1)],
-            [RoadType.LeftTRoad, (0, 1)],
-            [RoadType.LeftTRoad, (-1, 0)],
-            [RoadType.RightTRoad, (0, -1)],
-            [RoadType.RightTRoad, (0, 1)],
-            [RoadType.RightTRoad, (1, 0)],
-            [RoadType.XRoad, (0, -1)],
-            [RoadType.XRoad, (0, 1)],
-            [RoadType.XRoad, (-1, 0)],
-            [RoadType.XRoad, (1, 0)]
-        ];
+        public static TheoryData<RoadType, (int dx, int dy)> AllowedExitDirections =>
+            new()
+            {
+                {RoadType.Vertical, (0, -1)},
+                {RoadType.Vertical, (0, 1)},
+                {RoadType.Horizontal, (1, 0)},
+                {RoadType.Horizontal, (-1, 0)},
+                {RoadType.UpperLeftTurn, (0, -1)},
+                {RoadType.UpperLeftTurn, (-1, 0)},
+                {RoadType.LeftTurn, (0, 1)},
+                {RoadType.LeftTurn, (-1, 0)},
+                {RoadType.RightTurn, (0, 1)},
+                {RoadType.RightTurn, (1, 0)},
+                {RoadType.UpperRightTurn, (0, -1)},
+                {RoadType.UpperRightTurn, (1, 0)},
+                {RoadType.DownTRoad, (-1, 0)},
+                {RoadType.DownTRoad, (0, 1)},
+                {RoadType.DownTRoad, (1, 0)},
+                {RoadType.UpperTRoad, (-1, 0)},
+                {RoadType.UpperTRoad, (0, -1)},
+                {RoadType.UpperTRoad, (1, 0)},
+                {RoadType.LeftTRoad, (0, -1)},
+                {RoadType.LeftTRoad, (0, 1)},
+                {RoadType.LeftTRoad, (-1, 0)},
+                {RoadType.RightTRoad, (0, -1)},
+                {RoadType.RightTRoad, (0, 1)},
+                {RoadType.RightTRoad, (1, 0)},
+                {RoadType.XRoad, (0, -1)},
+                {RoadType.XRoad, (0, 1)},
+                {RoadType.XRoad, (-1, 0)},
+                {RoadType.XRoad, (1, 0)},
+            };
 
-        public static IEnumerable<object[]> BlockedExitDirections =>
-        [
-            [RoadType.Vertical, (1, 0)],
-            [RoadType.Horizontal, (0, -1)],
-            [RoadType.UpperLeftTurn, (0, 1)],
-            [RoadType.LeftTurn, (0, -1)],
-            [RoadType.RightTurn, (-1, 0)],
-            [RoadType.UpperRightTurn, (0, 1)],
-            [RoadType.DownTRoad, (0, -1)],
-            [RoadType.UpperTRoad, (0, 1)],
-            [RoadType.LeftTRoad, (1, 0)],
-            [RoadType.RightTRoad, (-1, 0)]
-        ];
+        public static TheoryData<RoadType, (int dx, int dy)> BlockedExitDirections =>
+            new() {
+                {RoadType.Vertical, (1, 0)},
+                {RoadType.Horizontal, (0, -1)},
+                {RoadType.UpperLeftTurn, (0, 1)},
+                {RoadType.LeftTurn, (0, -1)},
+                {RoadType.RightTurn, (-1, 0)},
+                {RoadType.UpperRightTurn, (0, 1)},
+                {RoadType.DownTRoad, (0, -1)},
+                {RoadType.UpperTRoad, (0, 1)},
+                {RoadType.LeftTRoad, (1, 0)},
+                { RoadType.RightTRoad, (-1, 0)},
+            };
 
-        public static IEnumerable<object[]> VerticalBridgeDirections =>
-        [
-            [BridgeType.VerticalGreenBridge, (0, -1)],
-            [BridgeType.VerticalGreenBridge, (0, 1)],
-            [BridgeType.VerticalYellowBridge, (0, -1)],
-            [BridgeType.VerticalYellowBridge, (0, 1)],
-            [BridgeType.VerticalRedBridge, (0, -1)],
-            [BridgeType.VerticalRedBridge, (0, 1)]
-        ];
+        public static TheoryData<BridgeType, (int dx, int dy)> VerticalBridgeDirections =>
+            new()
+            {
+                {BridgeType.VerticalGreenBridge, (0, -1)},
+                {BridgeType.VerticalGreenBridge, (0, 1)},
+                {BridgeType.VerticalYellowBridge, (0, -1)},
+                {BridgeType.VerticalYellowBridge, (0, 1)},
+                {BridgeType.VerticalRedBridge, (0, -1)},
+                {BridgeType.VerticalRedBridge, (0, 1)},
+            };
 
-        public static IEnumerable<object[]> HorizontalBridgeDirections =>
-        [
-            [BridgeType.HorizontalGreenBridge, (1, 0)],
-            [BridgeType.HorizontalGreenBridge, (-1, 0)],
-            [BridgeType.HorizontalYellowBridge, (1, 0)],
-            [BridgeType.HorizontalYellowBridge, (-1, 0)],
-            [BridgeType.HorizontalRedBridge, (1, 0)],
-            [BridgeType.HorizontalRedBridge, (-1, 0)]
-        ];
+        public static TheoryData<BridgeType, (int dx, int dy)> HorizontalBridgeDirections =>
+            new()
+            {
+                {BridgeType.HorizontalGreenBridge, (1, 0)},
+                {BridgeType.HorizontalGreenBridge, (-1, 0)},
+                {BridgeType.HorizontalYellowBridge, (1, 0)},
+                {BridgeType.HorizontalYellowBridge, (-1, 0)},
+                {BridgeType.HorizontalRedBridge, (1, 0)},
+                {BridgeType.HorizontalRedBridge, (-1, 0)},
+            };
 
         [Theory]
         [MemberData(nameof(AllowedExitDirections))]
