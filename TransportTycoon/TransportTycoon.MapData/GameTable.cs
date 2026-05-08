@@ -44,6 +44,14 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Updates the cell at the specified row and column indices with the provided field.
+        /// </summary>
+        /// <remarks>Both indices must be within the bounds of the table. Supplying an out-of-range index
+        /// will result in an exception.</remarks>
+        /// <param name="x">The zero-based row index of the cell to update.</param>
+        /// <param name="y">The zero-based column index of the cell to update.</param>
+        /// <param name="field">The field to assign to the specified cell.</param>
         public void UpdateTable(int x, int y, IField field)
         {
             Table[x, y] = field;
@@ -57,13 +65,25 @@ namespace TransportTycoon.MapData
         /// <param name="y">The y-coordinate to check.</param>
         /// <returns><see langword="true"/> if both coordinates are within bounds; otherwise, <see langword="false"/>.</returns>
         public bool IsInBounds(int x, int y) => 0 <= x && x < Width && 0 <= y && y < Height;
-
+        
+        /// <summary>
+        /// Generates the map using the specified map generator and context.
+        /// </summary>
         public void GenerateMap()
         {
             (Table, BuildingEntities) = MapGenerator.GenerateMap(Context);
             IsMapGenerated = true;
         }
 
+        /// <summary>
+        /// Returns a list of adjacent fields that do not contain any trees.
+        /// </summary>
+        /// <remarks>Only immediate neighbors in the up, down, left, and right directions are considered.
+        /// Diagonal neighbors are not included.</remarks>
+        /// <param name="x">The zero-based x-coordinate of the field to check. Must be within the bounds of the table.</param>
+        /// <param name="y">The zero-based y-coordinate of the field to check. Must be within the bounds of the table.</param>
+        /// <returns>A list of neighboring fields that are directly adjacent to the specified position and do not contain any
+        /// trees. The list is empty if no such fields exist.</returns>
         public List<IField> CheckNeighboringTrees(int x, int y)
         {
             List<IField> neighbours = [];
@@ -79,7 +99,13 @@ namespace TransportTycoon.MapData
             return acceptedNeighbours;
         }
 
-        //Checks if the new field is possible
+        /// <summary>
+        /// Checks if the new field's height is possible based on the surrounding fields.
+        /// </summary>
+        /// <param name="x">The zero-based x-coordinate of the field to check. Must be within the bounds of the table.</param>
+        /// <param name="y">The zero-based y-coordinate of the field to check. Must be within the bounds of the table.</param>
+        /// <param name="height">The height to check for the new field.</param>
+        /// <returns><see langword="true"/> if the height is possible; otherwise, <see langword="false"/>.</returns>
         public bool IsTileHeightPossible(int x, int y, int height)
         {
             if (x < 0 || x >= Height || y < 0 || y >= Width) return false;
@@ -99,6 +125,20 @@ namespace TransportTycoon.MapData
             return true;
         }
 
+        /// <summary>
+        /// Retrieves the neighboring fields adjacent to the specified coordinates that are roads, stops, or bridges, if
+        /// accessible.
+        /// </summary>
+        /// <remarks>The method checks the height compatibility of neighboring fields to ensure valid
+        /// connections. It considers both horizontal and vertical bridges as valid neighbors, in addition to roads and
+        /// stops. The returned list contains neighbors in a fixed order corresponding to the four cardinal
+        /// directions.</remarks>
+        /// <param name="x">The x-coordinate of the field for which to find neighboring roads, stops, or bridges. Must be within the
+        /// bounds of the table.</param>
+        /// <param name="y">The y-coordinate of the field for which to find neighboring roads, stops, or bridges. Must be within the
+        /// bounds of the table.</param>
+        /// <returns>A list of up to four neighboring fields that are roads, stops, or bridges. Each element corresponds to a
+        /// direction and is null if no valid neighbor exists in that direction.</returns>
         public List<IField?> NeighboursOfRoadsAndStops(int x, int y)
         {
             List<IField?> result = [null, null, null, null];
@@ -125,11 +165,30 @@ namespace TransportTycoon.MapData
             return result;
         }
 
+        /// <summary>
+        /// Determines whether the heights of two fields differ by at most one unit.
+        /// </summary>
+        /// <remarks>Both parameters must be valid instances of IField. Passing a null value for either
+        /// parameter may result in an exception.</remarks>
+        /// <param name="a">The first field to compare. This parameter must not be null.</param>
+        /// <param name="b">The second field to compare. This parameter must not be null.</param>
+        /// <returns>true if the absolute difference between the heights of the two fields is less than or equal to one;
+        /// otherwise, false.</returns>
         public bool HeightCheck(IField a, IField b)
         {
             return Math.Abs(a.Height - b.Height) <= 1;
         }
 
+        /// <summary>
+        /// Determines the type of road at the specified grid coordinates based on adjacent roads and stops.
+        /// </summary>
+        /// <remarks>The method analyzes neighboring fields to classify the road as straight, a turn, a
+        /// T-intersection, or a four-way intersection. The result depends on the arrangement of adjacent roads and
+        /// stops.</remarks>
+        /// <param name="x">The x-coordinate of the grid position to evaluate.</param>
+        /// <param name="y">The y-coordinate of the grid position to evaluate.</param>
+        /// <returns>A value of the <see cref="RoadType"/> enumeration that indicates the road configuration at the specified
+        /// coordinates.</returns>
         public RoadType CalculateRoadType(int x, int y)
         {
             List<IField?> neighbourRoads = NeighboursOfRoadsAndStops(x, y);
@@ -175,6 +234,17 @@ namespace TransportTycoon.MapData
             return type;
         }
 
+        /// <summary>
+        /// Determines the type of bridge to use based on the specified difference and direction.
+        /// </summary>
+        /// <remarks>The method categorizes bridges into yellow, green, or red types based on the
+        /// difference value and direction. Ensure that the direction parameter is set to either "horizontal" or
+        /// "vertical"; other values will default to vertical bridge types.</remarks>
+        /// <param name="dif">The difference value that influences the bridge type selection. Must be a non-negative integer. Values
+        /// greater than 17 result in no bridge type being returned.</param>
+        /// <param name="dir">The direction of the bridge. Specify either "horizontal" or "vertical" to indicate the bridge orientation.</param>
+        /// <returns>A BridgeType value representing the appropriate bridge type for the given difference and direction. Returns
+        /// BridgeType.Null if the difference exceeds the supported range.</returns>
         public BridgeType CalculateBridgeType(int dif, string dir)
         {
             if (dir == "horizontal")
@@ -193,6 +263,21 @@ namespace TransportTycoon.MapData
             }
         }
 
+        /// <summary>
+        /// Creates a horizontal bridge of the specified type between two horizontal positions on the given row and
+        /// updates the affected fields.
+        /// </summary>
+        /// <remarks>This method also updates the road types of the fields immediately adjacent to the
+        /// created bridges to ensure consistency with the new bridge structures.</remarks>
+        /// <param name="y">The vertical position (y-coordinate) of the row where the bridge will be created.</param>
+        /// <param name="a">The starting horizontal position (x-coordinate) for the bridge creation. Must be less than or equal to
+        /// <paramref name="b"/>.</param>
+        /// <param name="b">The ending horizontal position (x-coordinate) for the bridge creation. Must be greater than or equal to
+        /// <paramref name="a"/>.</param>
+        /// <param name="b_type">The type of bridge to create, specified by the <see cref="BridgeType"/> enumeration.</param>
+        /// <param name="changedFields">A reference to a list that will be populated with the coordinates of all fields that are modified as a
+        /// result of the bridge creation.</param>
+        /// <returns>The total cost incurred for creating the bridges between the specified positions.</returns>
         public int CreateHorizontalBridge(int y, int a, int b, BridgeType b_type, ref List<(int, int)> changedFields)
         {
             int cost = 0;
@@ -235,6 +320,22 @@ namespace TransportTycoon.MapData
             return cost;
         }
 
+        /// <summary>
+        /// Creates a series of vertical bridges of the specified type along a column within the given y-coordinate
+        /// range and updates the list of affected fields.
+        /// </summary>
+        /// <remarks>This method also updates the road types immediately adjacent to the newly created
+        /// bridges to ensure consistency with the surrounding infrastructure. The <paramref name="changedFields"/> list
+        /// will include both the bridge locations and any adjacent roads that were updated.</remarks>
+        /// <param name="x">The x-coordinate of the column where the vertical bridges are to be created.</param>
+        /// <param name="a">The starting y-coordinate of the range in which bridges will be constructed. Must be less than or equal to
+        /// <paramref name="b"/>.</param>
+        /// <param name="b">The ending y-coordinate of the range in which bridges will be constructed. Must be greater than or equal to
+        /// <paramref name="a"/>.</param>
+        /// <param name="b_type">The type of bridge to create for each position in the specified range.</param>
+        /// <param name="changedFields">A reference to a list that will be populated with the coordinates of all fields modified during the bridge
+        /// creation process.</param>
+        /// <returns>The total cost incurred for constructing the vertical bridges within the specified range.</returns>
         public int CreateVerticalBridge(int x, int a, int b, BridgeType b_type, ref List<(int, int)> changedFields)
         {
             int cost = 0;
@@ -274,6 +375,13 @@ namespace TransportTycoon.MapData
             return cost;
         }
 
+        /// <summary>
+        /// creates a short bridge at the specified coordinates if the surrounding fields allow for it, and updates the list of
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="changedFields"></param>
+        /// <returns></returns>
         public int CreateShortBridge(int x, int y, ref List<(int, int)> changedFields)
         {
             int cost = 0;
@@ -299,6 +407,12 @@ namespace TransportTycoon.MapData
             return cost;
         }
 
+        /// <summary>
+        /// Creates a stop at the specified coordinates if the surrounding environment allows for it.
+        /// </summary>
+        /// <param name="x">The x-coordinate of the location where the stop is to be created.</param>
+        /// <param name="y">The y-coordinate of the location where the stop is to be created.</param>
+        /// <returns>True if a stop was successfully created; otherwise, false.</returns>
         public bool StopEnvironment(int x, int y)
         {
             bool result = false;
@@ -335,6 +449,12 @@ namespace TransportTycoon.MapData
             return result;
         }
 
+        /// <summary>
+        /// Destroys the bridge at the specified coordinates and updates the surrounding fields accordingly.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="changedFields"></param>
         public void DestroyBridge(int x, int y, ref List<(int, int)> changedFields)
         {
             if (Table[x, y] is IBridge bridge)

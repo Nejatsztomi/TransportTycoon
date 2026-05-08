@@ -79,7 +79,12 @@ namespace TransportTycoon.MapData
             }
             return buildings;
         }
-
+        /// <summary>
+        /// Adds the specified building block to the collection of connections, if the collection is not null.
+        /// </summary>
+        /// <remarks>If the Connections collection is null, the building block will not be
+        /// added.</remarks>
+        /// <param name="buildingBlock">The building block to add to the connections. This parameter must not be null.</param>
         public readonly void SetBuildingBlocks(IBuildingBlocks buildingBlock)
         {
             Connections?.Add(buildingBlock);
