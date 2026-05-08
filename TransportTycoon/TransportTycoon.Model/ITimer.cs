@@ -12,11 +12,6 @@
         /// </summary>
         /// 
         public bool Enabled { get; set; }
-
-        /// <summary>
-        /// The timer's interval in milliseconds.
-        /// </summary>
-        public double Interval { get; set; }
         #endregion
 
         #region Events
@@ -24,7 +19,7 @@
         /// <summary>
         /// The event that is raised when the timer elapses.
         /// </summary>
-        public event EventHandler? Elapsed;
+        public event Action<double>? Tick;
         #endregion
 
         #region Methods

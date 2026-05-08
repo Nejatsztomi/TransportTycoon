@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -151,9 +150,8 @@ namespace TransportTycoon.WPF.View.UserControls
         private async Task ShowFloatingMessage(string text, int tileX, int tileY)
         {
             //Pixel point coordinates
-            int TILE_SIZE = FastMapRenderer.TileSize;
-            double worldX = tileX * TILE_SIZE;
-            double worldY = tileY * TILE_SIZE;
+            double worldX = tileX * FastMapRenderer.TileSize;
+            double worldY = tileY * FastMapRenderer.TileSize;
 
             //Pixel point coordinates from screen's upper left corner
             double screenX = (worldX - InternalGameMapRenderer.CameraX) * InternalGameMapRenderer.ZoomLevel;
@@ -394,7 +392,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <summary>
         /// An eventhandler Middle/Wheel Mouse Button press.
         /// </summary>
-        private void GameMapRenderer_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        private void GameMapRenderer_PreviewMouseDown(object? _1, MouseButtonEventArgs e)
         {
             if (e.ChangedButton != MouseButton.Middle) return;
 

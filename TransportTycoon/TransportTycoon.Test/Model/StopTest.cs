@@ -1,9 +1,6 @@
 ﻿using NSubstitute;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 
@@ -54,7 +51,7 @@ namespace TransportTycoon.Test.Model
         public void ShowWhatTheBuildingsCanGet_EmptyConnections_ReturnsEmptyList()
         {
             var stop = new Stop(0, 0, 1);
-            var result = stop.ShowWhatTheBuildingsCanGet(new List<LoadType> { LoadType.Wood });
+            var result = stop.ShowWhatTheBuildingsCanGet([LoadType.Wood]);
             Assert.Empty(result);
         }
 
@@ -67,7 +64,7 @@ namespace TransportTycoon.Test.Model
             mockBlock.BuildingEntity.Returns(CreateRealEntity<CityEntity>(0, 100));
             stop.SetBuildingBlocks(mockBlock);
 
-            var result = stop.ShowWhatTheBuildingsCanGet(new List<LoadType> { LoadType.Wood });
+            var result = stop.ShowWhatTheBuildingsCanGet([LoadType.Wood]);
 
             Assert.Single(result);
             Assert.Contains(mockBlock, result);
@@ -85,7 +82,7 @@ namespace TransportTycoon.Test.Model
             stop.SetBuildingBlocks(mockBlock);
 
             // A járművünk olyan árut hoz, amit a malom NEM kér (pl. Olajat)
-            var result = stop.ShowWhatTheBuildingsCanGet(new List<LoadType> { LoadType.Oil });
+            var result = stop.ShowWhatTheBuildingsCanGet([LoadType.Oil]);
 
             Assert.Empty(result); // Nem fogadja be
         }
@@ -104,7 +101,7 @@ namespace TransportTycoon.Test.Model
             var expectedLoad = realEntity.GetConsumeLoad()?.LoadType ?? LoadType.Wheat;
 
             // A jármű pont azt hozza, amit a gyár kér!
-            var result = stop.ShowWhatTheBuildingsCanGet(new List<LoadType> { expectedLoad });
+            var result = stop.ShowWhatTheBuildingsCanGet([expectedLoad]);
 
             Assert.Single(result);
             Assert.Contains(mockBlock, result);
@@ -120,7 +117,7 @@ namespace TransportTycoon.Test.Model
             mockBlock.BuildingEntity.Returns(CreateRealEntity<CityEntity>(50, 100));
             stop.SetBuildingBlocks(mockBlock);
 
-            var result = stop.ShowWhatTheBuildingsCanGive(new List<LoadType> { LoadType.People });
+            var result = stop.ShowWhatTheBuildingsCanGive([LoadType.People]);
 
             Assert.Single(result);
             Assert.Contains(mockBlock, result);
@@ -138,7 +135,7 @@ namespace TransportTycoon.Test.Model
             stop.SetBuildingBlocks(mockBlock);
 
             // A járművünk csak Búzát bír elvinni
-            var result = stop.ShowWhatTheBuildingsCanGive(new List<LoadType> { LoadType.Wheat });
+            var result = stop.ShowWhatTheBuildingsCanGive([LoadType.Wheat]);
 
             Assert.Empty(result); // Nem tudjuk elvinni
         }
@@ -157,7 +154,7 @@ namespace TransportTycoon.Test.Model
             // Lekérjük, mit ad a Fatelep, és a jármű pont azt képes elvinni
             var providedLoad = realEntity.GetProvideLoad()?.LoadType ?? LoadType.Wood;
 
-            var result = stop.ShowWhatTheBuildingsCanGive(new List<LoadType> { providedLoad });
+            var result = stop.ShowWhatTheBuildingsCanGive([providedLoad]);
 
             Assert.Single(result);
             Assert.Contains(mockBlock, result);

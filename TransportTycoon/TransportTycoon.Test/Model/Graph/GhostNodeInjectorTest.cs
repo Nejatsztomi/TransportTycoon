@@ -16,7 +16,7 @@ namespace TransportTycoon.Test.Model.Graph
             var gameTable = new GameTable(mapGen, context);
             var node = new GraphNS.Node(0, 0, typeof(Stop));
             var graph = new GraphNS.Graph(new Dictionary<GraphNS.Node, List<GraphNS.Edge>> { { node, [] } });
-            var injector = new GraphNS.GhostNodeInjector(gameTable, graph);
+            var injector = new GraphNS.GhostNodeInjector(graph, new(gameTable));
             var field = new Stop(0, 0, 0);
 
             // Act
@@ -42,7 +42,7 @@ namespace TransportTycoon.Test.Model.Graph
             gameTable.Table[0, 1] = new Road(0, 1, RoadType.Horizontal, 0);
             gameTable.Table[1, 1] = new Road(1, 1, RoadType.Horizontal, 0);
             var graph = new GraphNS.Graph(new Dictionary<GraphNS.Node, List<GraphNS.Edge>> { { new GraphNS.Node(1, 0, typeof(Stop)), [] } });
-            var injector = new GraphNS.GhostNodeInjector(gameTable, graph);
+            var injector = new GraphNS.GhostNodeInjector(graph, new(gameTable));
             var field = road00;
 
             // Act
@@ -52,6 +52,41 @@ namespace TransportTycoon.Test.Model.Graph
             Assert.NotNull(resultNode);
             Assert.True(isGhost);
             Assert.Contains(resultNode, graph.AdjacencyList.Keys);
+        }
+
+        [Fact]
+        public void GetOrInjectGhostNode_SkipsUnmappedJunctions_AndStillInjectsGhostNode()
+        {
+            // Arrange
+            var mapGen = Substitute.For<IMapGenerator>();
+            var context = new MapGenerationContext(3, 3, 0, new MapGenerationSettings());
+            var gameTable = new GameTable(mapGen, context);
+
+            var ghostTile = new Road(1, 1, RoadType.Horizontal, 0);
+            var unmappedJunction = new Road(0, 1, RoadType.XRoad, 0);
+            var destinationStop = new Stop(2, 1, 0);
+
+            gameTable.Table[0, 1] = unmappedJunction;
+            gameTable.Table[1, 1] = ghostTile;
+            gameTable.Table[2, 1] = destinationStop;
+
+            var destinationNode = new GraphNS.Node(2, 1, typeof(Stop));
+            var graph = new GraphNS.Graph(new Dictionary<GraphNS.Node, List<GraphNS.Edge>>
+            {
+                { destinationNode, [] }
+            });
+
+            var injector = new GraphNS.GhostNodeInjector(graph, new GraphNS.PathTracer(gameTable));
+
+            // Act
+            var (resultNode, isGhost) = injector.GetOrInjectGhostNode(ghostTile);
+
+            // Assert
+            Assert.NotNull(resultNode);
+            Assert.True(isGhost);
+            Assert.Contains(resultNode, graph.AdjacencyList.Keys);
+            Assert.Single(graph.AdjacencyList[resultNode]);
+            Assert.Equal(destinationNode, graph.AdjacencyList[resultNode][0].EndNode);
         }
 
         [Fact]
@@ -67,7 +102,7 @@ namespace TransportTycoon.Test.Model.Graph
             gameTable.Table[0, 1] = new Road(0, 1, RoadType.Horizontal, 0);
             gameTable.Table[1, 1] = new Road(1, 1, RoadType.Horizontal, 0);
             var graph = new GraphNS.Graph([]);
-            var injector = new GraphNS.GhostNodeInjector(gameTable, graph);
+            var injector = new GraphNS.GhostNodeInjector(graph, new(gameTable));
             var field = new Road(0, 0, RoadType.Horizontal, 0);
 
             // Act
@@ -85,7 +120,7 @@ namespace TransportTycoon.Test.Model.Graph
             var gameTable = Substitute.For<GameTable>(Substitute.For<IMapGenerator>(), new MapGenerationContext(2, 2, 0, new MapGenerationSettings()));
             var ghostNode = new GraphNS.Node(0, 0, typeof(Road));
             var graph = new GraphNS.Graph(new Dictionary<GraphNS.Node, List<GraphNS.Edge>> { { ghostNode, [] } });
-            var injector = new GraphNS.GhostNodeInjector(gameTable, graph);
+            var injector = new GraphNS.GhostNodeInjector(graph, new(gameTable));
 
             // Act
             injector.RemoveGhostNode(ghostNode);

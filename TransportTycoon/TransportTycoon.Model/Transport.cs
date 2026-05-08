@@ -4,15 +4,21 @@ namespace TransportTycoon.Model
 {
     public abstract class Transport : Vehicle
     {
-        #region Field
-
+        #region Protected constructors
+        protected Transport(int x, int y, double angle, Prouth? route)
+        {
+            X = x;
+            Y = y;
+            Angle = angle;
+            Prouth = route;
+        }
         #endregion
     }
 
     public sealed class Van : Transport
     {
         #region Constructor 
-        public Van(int x, int y, Direction direction, Prouth route = null!)
+        public Van(int x, int y, double angle, Prouth? route) : base(x, y, angle, route)
         {
             //fixed fields
             TopSpeed = 0.9;
@@ -24,12 +30,6 @@ namespace TransportTycoon.Model
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
-            CurrentLoad = null;
-            CurrentCapacity = 0;
-            Prouth = route;
-            X = x;
-            Y = y;
-            Direction = direction; //get info from route?      
         }
         #endregion
     }
@@ -37,7 +37,7 @@ namespace TransportTycoon.Model
     public sealed class Pickup : Transport
     {
         #region Constructor
-        public Pickup(int x, int y, Direction direction, Prouth route = null!)
+        public Pickup(int x, int y, double angle, Prouth? route) : base(x, y, angle, route)
         {
             //fixed fields
             TopSpeed = 0.9;
@@ -49,12 +49,6 @@ namespace TransportTycoon.Model
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
-            CurrentLoad = null;
-            CurrentCapacity = 0;
-            Prouth = route;
-            X = x;
-            Y = y;
-            Direction = direction; //get info from route?      
         }
         #endregion
     }
@@ -62,7 +56,7 @@ namespace TransportTycoon.Model
     public sealed class Truck : Transport
     {
         #region Constructor
-        public Truck(int x, int y, Direction direction, Prouth route = null!)
+        public Truck(int x, int y, double angle, Prouth? route) : base(x, y, angle, route)
         {
             //fixed fields
             TopSpeed = 0.9;
@@ -74,12 +68,6 @@ namespace TransportTycoon.Model
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
-            CurrentLoad = null;
-            CurrentCapacity = 0;
-            Prouth = route;
-            X = x;
-            Y = y;
-            Direction = direction; //get info from route?      
         }
         #endregion
     }
@@ -87,7 +75,7 @@ namespace TransportTycoon.Model
     public sealed class LiquidTruck : Transport
     {
         #region Constructor
-        public LiquidTruck(int x, int y, Direction direction, Prouth route = null!)
+        public LiquidTruck(int x, int y, double angle, Prouth? route) : base(x, y, angle, route)
         {
             //fixed fields
             TopSpeed = 0.9;
@@ -99,12 +87,6 @@ namespace TransportTycoon.Model
 
             //modifiable fields
             CurrentSpeed = TopSpeed;
-            CurrentLoad = null;
-            CurrentCapacity = 0;
-            Prouth = route;
-            X = x;
-            Y = y;
-            Direction = direction; //get info from route?      
         }
         #endregion
     }

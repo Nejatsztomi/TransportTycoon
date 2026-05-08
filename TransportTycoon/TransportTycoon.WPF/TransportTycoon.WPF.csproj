@@ -6,6 +6,30 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <Configurations>Debug;Release;Release-SC;Release-FD</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <!-- Self‑contained release -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-SC'">
+      <PublishSingleFile>true</PublishSingleFile>
+      <SelfContained>true</SelfContained>
+      <!-- Bundle native .NET runtime DLLs into the single EXE -->
+      <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <!-- Framework‑dependent release -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-FD'">
+      <PublishSingleFile>true</PublishSingleFile>
+      <SelfContained>false</SelfContained>
+      <!-- Bundle even managed assemblies into the single EXE -->
+      <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+  </PropertyGroup>
+
+  <!-- Add naming to the output file  -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-SC' Or '$(Configuration)'=='Release-FD'">
+      <!-- Existing properties … -->
+      <AssemblyName>TransportTycoon</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -82,153 +106,153 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\Images\background.png">
+    <Resource Include="Assets\Images\background.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\factory.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\factory.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\farm.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\farm.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\house.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\house.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\lumbercamp.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\lumbercamp.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\mill.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\mill.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Buildings\plant.png">
+    </Resource>
+    <Resource Include="Assets\Images\Buildings\plant.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\arrow.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\arrow.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\bridge.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\bridge.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\camion.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\camion.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\car.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\car.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\city.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\city.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\coin.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\coin.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\connection.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\connection.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\construction.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\construction.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\fieldtype.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\fieldtype.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\forest.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\forest.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\fuel.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\fuel.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\hammer.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\hammer.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\largebus.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\largebus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\map.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\map.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\maxcap.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\maxcap.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\package.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\package.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\people.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\people.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\petrolcamion.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\petrolcamion.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\pickup.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\pickup.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\minus.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\minus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\plus.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\plus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\point.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\point.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\production.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\production.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\range.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\range.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\resource.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\resource.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\road.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\road.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\line.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\line.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\route.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\route.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\sea.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\sea.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\smallbus.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\smallbus.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\speedlimit.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\speedlimit.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\stop.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\stop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\tool.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\tool.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\hourglass.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\hourglass.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\pause.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\pause.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\speed.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\speed.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\terrain.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\terrain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\van.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\van.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\vehicle.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\vehicle.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\vehiclecap.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\vehiclecap.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\vehiclespeed.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\vehiclespeed.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Images\Icons\x.png">
+    </Resource>
+    <Resource Include="Assets\Images\Icons\x.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

@@ -2,8 +2,19 @@
 
 namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
+    /// <summary>
+    /// A factory class for creating instances of <see cref="IWaterGenerator"/>.
+    /// </summary>
     public static class RiverGeneratorFactory
     {
+        /// <summary>
+        /// Creates a new instance of an IWaterGenerator for generating rivers using the specified random provider and
+        /// map generation context.
+        /// </summary>
+        /// <param name="randomProvider">The random number provider used to introduce randomness into the river generation process. Cannot be null.</param>
+        /// <param name="context">The context containing map generation parameters and state information required for river generation. Cannot
+        /// be null.</param>
+        /// <returns>An IWaterGenerator instance configured to generate rivers based on the provided context and random provider.</returns>
         public static IWaterGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new RiverGenerator(randomProvider, context);
     }
 
@@ -20,7 +31,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         #endregion
 
         #region Constructors
-        public RiverGenerator(IRandomProvider randomProvider, MapGenerationContext context)
+        internal RiverGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {
             _randomProvider = randomProvider;
             _context = context;
