@@ -15,6 +15,8 @@
         //public FieldType FieldType { get; set; }
         public TerrainType TerrainType { get; set; }
         public readonly bool IsFull => Trees == 4;
+
+        static public readonly int Price = 200;
         #endregion
 
         public Terrain(int x, int y, int height)

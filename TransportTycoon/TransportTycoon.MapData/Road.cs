@@ -19,13 +19,17 @@ namespace TransportTycoon.MapData
 
     public struct Road : IInfrastructure
     {
-        #region Public properties
+        #region Static Fields
+        public static int Price { get; } = 10;
+        #endregion
+
+        #region Fields
         public RoadType RoadType { get; private set; }
         public CityEntity? Pointer { get; }
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public readonly int Price => 100;
+
         #endregion
 
         #region Constructors

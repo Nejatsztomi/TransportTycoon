@@ -25,17 +25,17 @@ namespace TransportTycoon.Test.MapData
             var people = new People();
 
             // Assert
-            Assert.Equal(120, people.Price);
+            Assert.Equal(3, people.Price);
             Assert.Equal(LoadType.People, people.LoadType);
         }
 
         [Theory]
-        [InlineData(typeof(Wheat), 150, LoadType.Wheat)]
-        [InlineData(typeof(Oil), 200, LoadType.Oil)]
-        [InlineData(typeof(Wood), 130, LoadType.Wood)]
-        [InlineData(typeof(Flour), 400, LoadType.Flour)]
-        [InlineData(typeof(Rubber), 260, LoadType.Rubber)]
-        [InlineData(typeof(Paper), 300, LoadType.Paper)]
+        [InlineData(typeof(Wheat), 25, LoadType.Wheat)]
+        [InlineData(typeof(Oil), 45, LoadType.Oil)]
+        [InlineData(typeof(Wood), 30, LoadType.Wood)]
+        [InlineData(typeof(Flour), 65, LoadType.Flour)]
+        [InlineData(typeof(Rubber), 110, LoadType.Rubber)]
+        [InlineData(typeof(Paper), 75, LoadType.Paper)]
         public void Goods_Constructors_SetCorrectProperties(Type goodsType, int expectedPrice, LoadType expectedType)
         {
             // Act - Dinamikusan példányosítjuk a megadott típust

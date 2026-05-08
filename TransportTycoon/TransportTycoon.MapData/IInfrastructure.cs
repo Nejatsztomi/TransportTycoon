@@ -2,8 +2,9 @@
 {
     public interface IInfrastructure : IField
     {
-        #region Field
-        public int Price { get; }
+
+        #region Static Fields
+        static abstract int Price { get; }
         #endregion
 
         #region Public methods

@@ -25,7 +25,7 @@
         #region Constructors
         public People()
         {
-            Price = 120;
+            Price = 3;
             LoadType = LoadType.People;
         }
         #endregion

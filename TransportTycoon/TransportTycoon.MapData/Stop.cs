@@ -4,11 +4,14 @@ namespace TransportTycoon.MapData
 {
     public struct Stop : IInfrastructure
     {
+        #region Static Fields
+        public static int Price { get; } = 300;
+        #endregion
+
         #region Fields
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public readonly int Price => 200;
         public List<IBuildingBlocks>? Connections { get; private set; } = [];
         #endregion
 

@@ -40,7 +40,7 @@ namespace TransportTycoon.Model
         /// <summary>
         /// Default starting balance for new game.
         /// </summary>
-        public const int DefaultBalance = 1_000_000;
+        public const int DefaultBalance = 10_000;
 
         /// <summary>
         /// Default starting difficulty for new game.
@@ -372,7 +372,7 @@ namespace TransportTycoon.Model
                             cost = -50;
                             Balance += cost;
                         }
-                        cost = -100;
+                        cost = -Terrain.Price;
                         Balance += cost;
                         terrain.IncreaseHeight();
 
@@ -413,7 +413,7 @@ namespace TransportTycoon.Model
                             cost = -50;
                             Balance += cost;
                         }
-                        cost = -100;
+                        cost = -Terrain.Price;
                         Balance += cost;
                         terrain.DecreaseHeight();
 
@@ -454,12 +454,12 @@ namespace TransportTycoon.Model
             int cost;
             if (oldTrees == 0)
             {
-                cost = -newRoad.Price;
+                cost = -Road.Price;
                 Balance += cost;
             }
             else
             {
-                cost = -newRoad.Price * 2;
+                cost = -Road.Price * 2;
                 Balance += cost;
             }
 
@@ -593,12 +593,12 @@ namespace TransportTycoon.Model
             int cost;
             if (oldTrees == 0)
             {
-                cost = -stop.Price;
+                cost = -Stop.Price;
                 Balance += cost;
             }
             else
             {
-                cost = -stop.Price * 2;
+                cost = -Stop.Price * 2;
                 Balance += cost;
             }
 

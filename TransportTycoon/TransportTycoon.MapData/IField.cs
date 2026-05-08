@@ -1,24 +1,5 @@
 ﻿namespace TransportTycoon.MapData
 {
-    //public enum FieldType
-    //{ 
-    //    Water,
-    //    Plain,
-    //    Hill,
-    //    Mountain,
-    //    HighMountain,
-    //    House,
-    //    Farm,
-    //    Mine,
-    //    LumberCamp,
-    //    Mill,
-    //    Factory,
-    //    Plant,
-    //    Road,
-    //    Bridge,
-    //    Stop,
-    //}
-
     public interface IField
     {
         #region Properties
