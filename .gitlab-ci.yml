@@ -169,7 +169,7 @@ publish_self_contained:
         - dotnet --version
     script:
         - echo "Publishing self-contained single-file WPF app..."
-        - dotnet publish ${WPF_PATH} --output .\publish-sc --configuration Release-SC --runtime win-x64 --verbosity diagnostic
+        - dotnet publish ${WPF_PATH} --output .\publish-sc --configuration Release-SC --runtime win-x64
     artifacts:
         name: 'TransportTycoon-${CI_COMMIT_TAG}-win-x64-self-contained'
         paths:
@@ -186,7 +186,7 @@ publish_framework_dependent:
         - dotnet --version
     script:
         - echo "Publishing framework-dependent single-file WPF app..."
-        - dotnet publish ${WPF_PATH} --output .\publish-fd --configuration Release-FD --runtime win-x64 --verbosity diagnostic
+        - dotnet publish ${WPF_PATH} --output .\publish-fd --configuration Release-FD --runtime win-x64
     artifacts:
         name: 'TransportTycoon-${CI_COMMIT_TAG}-win-x64-framework-dependent'
         paths:
@@ -195,7 +195,7 @@ publish_framework_dependent:
 
 create_release:
     stage: release
-    image: registry.gitlab.com/gitlab-org/release-cli:latest
+    image: registry.gitlab.com/gitlab-org/cli:latest
     rules:
         - if: $CI_COMMIT_TAG
     needs:
