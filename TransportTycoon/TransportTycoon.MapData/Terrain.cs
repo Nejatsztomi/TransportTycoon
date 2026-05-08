@@ -51,7 +51,7 @@
             Height--;
             SetFieldType();
         }
-        
+
         /// <summary>
         /// Attempts to increase the number of trees by one, if the current capacity allows.
         /// </summary>

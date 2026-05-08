@@ -456,7 +456,7 @@ namespace TransportTycoon.Model
                 return dy > 0 ? 2 : 0;
             }
         }
-        
+
         public (int X, int Y)? GetNextTileCoordinates()
         {
             if (_currentEdgeTiles is null || IsLost) return null;

@@ -51,7 +51,7 @@ namespace TransportTycoon.Model
     {
         #region Constructor
         public Truck(int x, int y, double angle, Prouth? route = null) : base(x, y, angle, route)
-        {  
+        {
             TopSpeed = 0.9;
             MaxCapacity = 20;
             Price = 1400;
