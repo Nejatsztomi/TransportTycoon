@@ -5,7 +5,7 @@ namespace TransportTycoon.Model
     public abstract class Transport : Vehicle
     {
         #region Protected constructors
-        protected Transport(int x, int y, double angle, Prouth? route)
+        protected Transport(int x, int y, double angle, Prouth? route = null)
         {
             X = x;
             Y = y;
@@ -18,7 +18,7 @@ namespace TransportTycoon.Model
     public sealed class Van : Transport
     {
         #region Constructor 
-        public Van(int x, int y, double angle, Prouth? route) : base(x, y, angle, route)
+        public Van(int x, int y, double angle, Prouth? route = null) : base(x, y, angle, route)
         {
             //fixed fields
             TopSpeed = 0.9;
@@ -56,7 +56,7 @@ namespace TransportTycoon.Model
     public sealed class Truck : Transport
     {
         #region Constructor
-        public Truck(int x, int y, double angle, Prouth? route) : base(x, y, angle, route)
+        public Truck(int x, int y, double angle, Prouth? route = null) : base(x, y, angle, route)
         {
             //fixed fields
             TopSpeed = 0.9;

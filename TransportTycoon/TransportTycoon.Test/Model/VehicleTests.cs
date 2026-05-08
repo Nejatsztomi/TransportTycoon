@@ -73,7 +73,7 @@ namespace TransportTycoon.Test.Model
         public void SetCurrentCapacity_ExceedsMaxCapacity_DoesNotChangeCapacity()
         {
             // Arrange
-            var van = new Van(0, 0, Direction.Up);
+            var van = new Van(0, 0, 90.0);
             van.SetCurrentCapacity(10); // Beállítunk egy érvényes 50-es értéket
 
             // Act
@@ -87,7 +87,7 @@ namespace TransportTycoon.Test.Model
         public void SetCurrentCapacity_BelowZero_DoesNotChangeCapacity()
         {
             // Arrange
-            var van = new Van(0, 0, Direction.Up);
+            var van = new Van(0, 0, 90.0);
             van.SetCurrentCapacity(10); // Beállítunk egy érvényes 50-es értéket
 
             // Act
@@ -217,14 +217,14 @@ namespace TransportTycoon.Test.Model
             // Arrange
             var truck = new Truck(0, 0, 0, null);
             var wood = new Wood();
-            truck.SetCurrentCapacity(50);
+            truck.SetCurrentCapacity(5);
 
             // Act
             truck.SetCurrentLoad(wood);
 
             // Assert
             Assert.Equal(wood, truck.CurrentLoad);
-            Assert.Equal(50, truck.CurrentCapacity);
+            Assert.Equal(5, truck.CurrentCapacity);
         }
 
         [Fact]
@@ -259,9 +259,9 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(10, van.Y);
             Assert.Equal(180, van.Angle);
             Assert.Equal(0.9, van.TopSpeed);
-            Assert.Equal(100, van.MaxCapacity);
-            Assert.Equal(100, van.Price);
-            Assert.Equal(100, van.Maintenance);
+            Assert.Equal(30, van.MaxCapacity);
+            Assert.Equal(2200, van.Price);
+            Assert.Equal(10, van.Maintenance);
             Assert.Equal(VehicleType.Van, van.Type);
             Assert.Equal(5, van.AcceptedGoods!.Count);
             Assert.Contains(LoadType.Wood, van.AcceptedGoods);
@@ -276,7 +276,7 @@ namespace TransportTycoon.Test.Model
 
             // Assert
             Assert.Equal(0.9, pickup.TopSpeed);
-            Assert.Equal(100, pickup.MaxCapacity);
+            Assert.Equal(10, pickup.MaxCapacity);
             Assert.Equal(VehicleType.Pickup, pickup.Type);
             Assert.Equal(5, pickup.AcceptedGoods!.Count);
             Assert.Contains(LoadType.Flour, pickup.AcceptedGoods);
@@ -293,9 +293,9 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(25, bus.Y);
             Assert.Equal(0, bus.Angle);
             Assert.Equal(1, bus.TopSpeed);
-            Assert.Equal(100, bus.MaxCapacity);
-            Assert.Equal(100, bus.Price);
-            Assert.Equal(100, bus.Maintenance);
+            Assert.Equal(25, bus.MaxCapacity);
+            Assert.Equal(1200, bus.Price);
+            Assert.Equal(5, bus.Maintenance);
             Assert.Equal(VehicleType.BigBus, bus.Type);
             Assert.Single(bus.AcceptedGoods!);
             Assert.Contains(LoadType.People, bus.AcceptedGoods!);

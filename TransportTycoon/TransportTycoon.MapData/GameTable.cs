@@ -207,8 +207,8 @@ namespace TransportTycoon.MapData
                     _ => new RedBridge(i, y, b_type, Table[i, y].Height)
                 };
 
-                UpdateTable(x, i, bridge);
-                changedFields.Add((x, i));
+                UpdateTable(i, y, bridge);
+                changedFields.Add((i, y));
                 cost += bridge switch
                 {
                     YellowBridge => YellowBridge.Price,
@@ -249,8 +249,8 @@ namespace TransportTycoon.MapData
                     _ => new RedBridge(x, i, b_type, Table[x, i].Height)
                 };
 
-                UpdateTable(i, y, bridge);
-                changedFields.Add((i, y));
+                UpdateTable(x, i, bridge);
+                changedFields.Add((x, i));
                 cost += bridge switch
                 {
                     YellowBridge => YellowBridge.Price,
