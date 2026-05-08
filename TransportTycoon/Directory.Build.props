@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- Default behaviour do nothing-->
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release-SC' Or '$(Configuration)'=='Release-FD'">
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+</Project>
