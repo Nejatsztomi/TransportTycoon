@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using TransportTycoon.MapData.Buildings;
+﻿using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
@@ -100,7 +99,6 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// The exit direction is random, and the path is not straight but has a chance to side step, creating a more natural look.
         /// </summary>
         /// <remarks>
-        /// It has been marked as excluded from code coverage because of its inherent randomness, which makes it hard to test reliably.
         /// The code coverage tools may not properly recognize the tests for this method, even though it is tested in CityGeneratorTest.cs.
         /// A further class extraction layer might be needed to improve testability and code coverage reporting for this method.
         /// </remarks>
@@ -108,9 +106,6 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// <param name="startX">The starting X coordinate of the exit road.</param>
         /// <param name="startY">The starting Y coordinate of the exit road.</param>
         /// <param name="random">The random number generator.</param>
-        [ExcludeFromCodeCoverage(Justification = "This method is inherently random and hard to test reliably." +
-            "It also tested properly inside CityGeneratorTest.cs, however the code coverage won't pick it up properly." +
-            "Probably a further class extraction layer is needed.")]
         private void CarveExit(CityEntity city, int startX, int startY, IRandom random)
         {
             (int topLeftX, int topLeftY) = city.TopLeftPoints;
