@@ -972,32 +972,34 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 for (int x = startCol; x < endCol; x++)
                 {
-                    if (skipStructureTiles.Contains((x, y))) continue;
-
                     IField currentField = currentMap[x, y];
                     Rect baseRect = new(x * TileSize, y * TileSize, TileSize, TileSize);
 
-                    DrawRoadLayer(ctx, currentField, baseRect);
-                    DrawBridgeLayer(ctx, currentField, baseRect);
-                    DrawTreesLayer(ctx, currentField, baseRect);
+                    bool skipStructure = skipStructureTiles.Contains((x, y));
 
-                    if (IsMultiTileMaster(currentField, out int mx, out int my, out int w, out int h, out ImageSource? largeTex) && largeTex != null)
+                    if (!skipStructure)
                     {
-                        Rect largeRect = new(mx * TileSize, my * TileSize, w * TileSize, h * TileSize);
-                        ctx.DrawImage(largeTex, largeRect);
+                        DrawRoadLayer(ctx, currentField, baseRect);
+                        DrawBridgeLayer(ctx, currentField, baseRect);
+                        DrawTreesLayer(ctx, currentField, baseRect);
 
-                        for (int dy = 0; dy < h; dy++)
+                        if (IsMultiTileMaster(currentField, out int mx, out int my, out int w, out int h, out ImageSource? largeTex) && largeTex != null)
                         {
-                            for (int dx = 0; dx < w; dx++)
+                            Rect largeRect = new(mx * TileSize, my * TileSize, w * TileSize, h * TileSize);
+                            ctx.DrawImage(largeTex, largeRect);
+
+                            for (int dy = 0; dy < h; dy++)
                             {
-                                if (!(dx == 0 && dy == 0)) skipStructureTiles.Add((mx + dx, my + dy));
-                            }
-                                
-                        }                 
-                    }
-                    else
-                    {
-                        DrawStructureLayer(ctx, currentField, baseRect);
+                                for (int dx = 0; dx < w; dx++)
+                                {
+                                    if (!(dx == 0 && dy == 0)) skipStructureTiles.Add((mx + dx, my + dy));
+                                } 
+                            }                 
+                        }
+                        else
+                        {
+                            DrawStructureLayer(ctx, currentField, baseRect);
+                        }
                     }
 
                     if (x == HoverX && y == HoverY)
