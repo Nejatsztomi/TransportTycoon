@@ -166,10 +166,10 @@ namespace TransportTycoon.Model.Graph
                 RoadType.Vertical => direction == up || direction == down,
                 RoadType.Horizontal => direction == right || direction == left,
 
-                RoadType.UpperLeftTurn => direction == up || direction == right,
+                RoadType.UpperLeftTurn => direction == up || direction == left,
                 RoadType.LeftTurn => direction == down || direction == left,
                 RoadType.RightTurn => direction == down || direction == right,
-                RoadType.UpperRightTurn => direction == up || direction == left,
+                RoadType.UpperRightTurn => direction == up || direction == right,
 
                 // Junctions
                 RoadType.DownTRoad => direction == left || direction == down || direction == right,
