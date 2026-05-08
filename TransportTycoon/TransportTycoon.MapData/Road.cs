@@ -6,13 +6,17 @@
     }
     public struct Road : IInfrastructure
     {
+        #region Static Fields
+        public static int Price { get; } = 10;
+        #endregion
+
         #region Fields
         public RoadType RoadType { get; private set; }
         public (int, int)? Pointer { get; private set; }
         public int X { get; set; }
         public int Y { get; set; }
         public int Height { get; set; }
-        public readonly int Price => 10;
+
         #endregion
 
         #region Constructors

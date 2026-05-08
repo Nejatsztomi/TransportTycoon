@@ -210,7 +210,13 @@ namespace TransportTycoon.MapData
 
                 UpdateTable(x, i, bridge);
                 changedFields.Add((x, i));
-                cost += bridge.Price;
+                cost += bridge switch
+                {
+                    YellowBridge => YellowBridge.Price,
+                    GreenBridge => GreenBridge.Price,
+                    RedBridge => RedBridge.Price,
+                    _ => 0
+                };
             }
 
             if (Table[x, a - 1] is Road road1)
@@ -246,7 +252,13 @@ namespace TransportTycoon.MapData
 
                 UpdateTable(i, y, bridge);
                 changedFields.Add((i, y));
-                cost += bridge.Price;
+                cost += bridge switch
+                {
+                    YellowBridge => YellowBridge.Price,
+                    GreenBridge => GreenBridge.Price,
+                    RedBridge => RedBridge.Price,
+                    _ => 0
+                };
             }
             if (Table[a - 1, y] is Road road1)
             {

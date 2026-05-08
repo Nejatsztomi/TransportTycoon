@@ -21,7 +21,7 @@ namespace TransportTycoon.Test.MapData
                 Assert.Equal(3, bridge.Height);
 
                 // Readonly / Constant property checks
-                Assert.Equal(60, bridge.Price);
+                Assert.Equal(60, YellowBridge.Price);
                 Assert.Equal(50, bridge.SpeedLimit);
                 Assert.Equal(13, bridge.Range);
             }
@@ -39,7 +39,7 @@ namespace TransportTycoon.Test.MapData
                 Assert.Equal(1, bridge.Height);
 
                 // Readonly / Constant property checks
-                Assert.Equal(80, bridge.Price);
+                Assert.Equal(80, GreenBridge.Price);
                 Assert.Equal(50, bridge.SpeedLimit);
                 Assert.Equal(15, bridge.Range);
             }
@@ -57,7 +57,7 @@ namespace TransportTycoon.Test.MapData
                 Assert.Equal(2, bridge.Height);
 
                 // Readonly / Constant property checks
-                Assert.Equal(100, bridge.Price);
+                Assert.Equal(100, RedBridge.Price);
                 Assert.Equal(50, bridge.SpeedLimit);
                 Assert.Equal(17, bridge.Range);
             }
@@ -77,7 +77,7 @@ namespace TransportTycoon.Test.MapData
                 Assert.Equal(RoadType.UpperRightTurn, road.RoadType);
                 Assert.Equal(2, road.Height);
                 Assert.Null(road.Pointer);
-                Assert.Equal(10, road.Price);
+                Assert.Equal(10, Road.Price);
             }
 
             [Fact]
@@ -119,7 +119,7 @@ namespace TransportTycoon.Test.MapData
                 Assert.Equal(5, stop.X);
                 Assert.Equal(6, stop.Y);
                 Assert.Equal(1, stop.Height);
-                Assert.Equal(300, stop.Price);
+                Assert.Equal(300, Stop.Price);
                 Assert.NotNull(stop.Connections);
                 Assert.Empty(stop.Connections);
             }
