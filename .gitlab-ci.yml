@@ -215,8 +215,8 @@ create_release:
         assets:
             links:
                 - name: 'TransportTycoon-${CI_COMMIT_TAG}-self-contained.exe'
-                  url: '${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_SHA}/file/publish-sc/TransportTycoon.Wpf.exe?job=publish_self_contained'
+                  url: '${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_SHA}/file/publish-sc/TransportTycoon.exe?job=publish_self_contained'
                   link_type: package
                 - name: 'TransportTycoon-${CI_COMMIT_TAG}-framework-dependent.exe'
-                  url: '${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_SHA}/file/publish-fd/TransportTycoon.Wpf.exe?job=publish_framework_dependent'
+                  url: '${CI_PROJECT_URL}/-/jobs/artifacts/${CI_COMMIT_SHA}/file/publish-fd/TransportTycoon.exe?job=publish_framework_dependent'
                   link_type: package
