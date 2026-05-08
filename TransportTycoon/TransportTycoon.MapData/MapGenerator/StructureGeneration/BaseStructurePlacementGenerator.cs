@@ -106,8 +106,6 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             var waterMap = context.WaterMap;
             var structureMap = context.StructureMap;
 
-            if (startX < 0 || startY < 0 || startX + buildingEntity.Width > context.Width || startY + buildingEntity.Height > context.Height) return false;
-
             // Valid tile check (no water, no structures)
             for (int i = 0; i < buildingEntity.Width; i++)
             {
