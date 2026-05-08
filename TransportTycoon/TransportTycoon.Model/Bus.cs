@@ -17,14 +17,11 @@ namespace TransportTycoon.Model
         #region Constructor
         public SmallBus(int x, int y, double angle, Prouth? route) : base(x, y, angle, route)
         {
-            //fixed fields
             TopSpeed = 1;
             MaxCapacity = 10;
             Price = 500;
             Maintenance = 2;
             Type = VehicleType.SmallBus;
-
-            //modifiable fields
             CurrentSpeed = TopSpeed;
         }
         #endregion
@@ -35,14 +32,11 @@ namespace TransportTycoon.Model
         #region Constructor
         public BigBus(int x, int y, double angle, Prouth? route) : base(x, y, angle, route)
         {
-            //fixed fields
             TopSpeed = 1;
             MaxCapacity = 25;
             Price = 1200;
             Maintenance = 5;
             Type = VehicleType.BigBus;
-
-            //modifiable fields
             CurrentSpeed = TopSpeed;
         }
         #endregion
