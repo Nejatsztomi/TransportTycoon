@@ -116,8 +116,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             // North, East, South, West
             (int dx, int dy) = _directions[random.Next(4)];
 
-            while (topLeftX <= x && x < topLeftX + city.Width &&
-                    topLeftY <= y && y < topLeftY + city.Height)
+            while (IsInsideTheCity(x, y, topLeftX, topLeftY, city.Width, city.Height))
             {
                 city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height);
 
@@ -128,11 +127,11 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                     // Tend to move in the other axis
                     if (dx == 0)
                     {
-                        x = Math.Clamp(x + sideStep, 0, topLeftX + city.Width - 1);
+                        x = Math.Clamp(x + sideStep, topLeftX, topLeftX + city.Width - 1);
                     }
                     else
                     {
-                        y = Math.Clamp(y + sideStep, 0, topLeftY + city.Height - 1);
+                        y = Math.Clamp(y + sideStep, topLeftY, topLeftY + city.Height - 1);
                     }
                     city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height, city);
                 }
@@ -164,12 +163,17 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 int nextY = y + currentDir.dy;
 
                 // If the road hits the edge of the city bounds, stop this branch
-                if (!(topLeftX <= nextX && nextX < topLeftX + city.Width) || !(topLeftY <= nextY && nextY < topLeftY + city.Height)) break;
+                if (!IsInsideTheCity(nextX, nextY, topLeftX, topLeftY, city.Width, city.Height)) break;
 
                 // Step the iteraion
                 x = nextX;
                 y = nextY;
             }
+        }
+
+        private bool IsInsideTheCity(int x, int y, int topLeftX, int topLeftY, int width, int height)
+        {
+            return topLeftX <= x && x < topLeftX + width && topLeftY <= y && y < topLeftY + height;
         }
         #endregion
     }
