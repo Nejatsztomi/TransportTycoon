@@ -3,8 +3,16 @@ using TransportTycoon.MapData.MapGenerator.CoordinateHasher;
 
 namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
 {
+    /// <summary>
+    /// A factory class for creating instances of <see cref="INoiseGenerator"/> that generate value noise.
+    /// </summary>
     public static class ValueNoiseGeneratorFactory
     {
+        /// <summary>
+        /// Creates a new instance of an object that generates value noise using the specified frequency.
+        /// </summary>
+        /// <param name="frequency">The frequency of the value noise. Higher values result in more rapid changes in the noise pattern.</param>
+        /// <returns>An instance of <see cref="INoiseGenerator"/> that generates value noise.</returns>
         public static INoiseGenerator Create(float frequency) => new ValueNoiseGenerator(frequency);
     }
 
@@ -20,7 +28,7 @@ namespace TransportTycoon.MapData.MapGenerator.NoiseGenerator
         #endregion
 
         #region Constructors
-        public ValueNoiseGenerator(float frequency = 0.05f)
+        internal ValueNoiseGenerator(float frequency = 0.05f)
         {
             _frequency = frequency;
         }

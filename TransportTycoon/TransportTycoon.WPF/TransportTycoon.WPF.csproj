@@ -6,6 +6,30 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <Configurations>Debug;Release;Release-SC;Release-FD</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <!-- Self‑contained release -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-SC'">
+      <PublishSingleFile>true</PublishSingleFile>
+      <SelfContained>true</SelfContained>
+      <!-- Bundle native .NET runtime DLLs into the single EXE -->
+      <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <!-- Framework‑dependent release -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-FD'">
+      <PublishSingleFile>true</PublishSingleFile>
+      <SelfContained>false</SelfContained>
+      <!-- Bundle even managed assemblies into the single EXE -->
+      <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+  </PropertyGroup>
+
+  <!-- Add naming to the output file  -->
+  <PropertyGroup Condition="'$(Configuration)'=='Release-SC' Or '$(Configuration)'=='Release-FD'">
+      <!-- Existing properties … -->
+      <AssemblyName>TransportTycoon</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

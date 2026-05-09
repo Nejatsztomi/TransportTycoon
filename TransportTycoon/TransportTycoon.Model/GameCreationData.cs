@@ -10,9 +10,26 @@ namespace TransportTycoon.Model
     public readonly record struct GameCreationData
     {
         #region Properties
+        /// <summary>
+        /// The name to use when saving the map.
+        /// This should be a non-empty string and is used to identify the saved game file.
+        /// It is important for organizing and retrieving saved games within the application.
+        /// </summary>
         public string SaveName { get; }
+
+        /// <summary>
+        /// Gets the difficulty level for the current context.
+        /// </summary>
         public Difficulty Difficulty { get; }
+
+        /// <summary>
+        /// Gets the current balance.
+        /// </summary>
         public int Balance { get; }
+
+        /// <summary>
+        /// Gets the context information used during map generation.
+        /// </summary>
         public MapGenerationContext MapGenerationContext { get; }
         #endregion
 
@@ -37,7 +54,10 @@ namespace TransportTycoon.Model
             Balance = balance;
         }
 
-        public GameCreationData() : this(new(), DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss")) { }
+        /// <summary>
+        /// The default constructor for the <see cref="GameCreationData"/> record struct, which initializes the properties with default values.
+        /// </summary>
+        public GameCreationData() : this(new(), DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")) { }
         #endregion
     }
 }

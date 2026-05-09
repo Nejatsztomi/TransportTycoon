@@ -76,6 +76,16 @@
                 AdjacencyList[node].Add(edge);
             }
         }
+
+        /// <summary>
+        /// Determines whether the graph contains the specified node.
+        /// </summary>
+        /// <param name="node">The node to check for existence in the graph.</param>
+        /// <returns><see langword="true"/> if the graph contains the specified node; otherwise, <see langword="false"/>.</returns>
+        public bool ContainsNode(Node node)
+        {
+            return AdjacencyList.ContainsKey(node);
+        }
         #endregion
 
         #region Private methods

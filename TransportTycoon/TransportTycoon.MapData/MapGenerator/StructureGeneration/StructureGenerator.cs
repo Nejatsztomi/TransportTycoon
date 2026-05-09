@@ -1,271 +1,108 @@
-﻿using System.Diagnostics;
-using TransportTycoon.MapData.Buildings;
+﻿using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
+    /// <summary>
+    /// A factory class for creating instances of <see cref="IStructureGenerator"/>.
+    /// This factory abstracts the instantiation logic and allows for easy swapping of different structure generator implementations without modifying the client code that uses it.
+    /// </summary>
     public static class StructureGeneratorFactory
     {
-        public static IStructureGenerator Create(ICityGenerator cityGenerator, IRandomProvider randomProvider, MapGenerationContext context) => new StructureGenerator(cityGenerator, randomProvider, context);
+        /// <summary>
+        /// Creates a new instance of an object that generates map structures using the specified random provider and
+        /// generation context.
+        /// </summary>
+        /// <param name="randomProvider">The random number provider used to control randomness during structure generation. Cannot be <see langword="null"/>.</param>
+        /// <param name="context">The context containing configuration and state information for map generation. Cannot be <see langword="null"/>.</param>
+        /// <returns>An object that implements <see cref="IStructureGenerator"/> and can be used to generate map structures
+        /// according to the provided context.</returns>
+        public static IStructureGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new StructureGenerator(randomProvider, context);
     }
 
-    internal class StructureGenerator : IStructureGenerator
+    internal class StructureGenerator : BaseStructurePlacementGenerator
     {
         #region Private fields
-        private readonly ICityGenerator _cityGenerator;
-        private readonly IRandomProvider _random;
-        private readonly MapGenerationContext _context;
         private const string PluginId = "BaseGame.Structures";
         #endregion
 
         #region Public properties
-        public GenerationPhase Phase => GenerationPhase.Structures;
+        public override GenerationPhase Phase => GenerationPhase.Structures;
         #endregion
 
         #region Constructors
-        public StructureGenerator(ICityGenerator cityGenerator, IRandomProvider randomProvider, MapGenerationContext context)
-        {
-            _cityGenerator = cityGenerator;
-            _random = randomProvider;
-            _context = context;
-        }
+        internal StructureGenerator(IRandomProvider randomProvider, MapGenerationContext context) : base(randomProvider, context) { }
         #endregion
 
         #region Public methods
-        public bool TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY)
+        public override List<BuildingEntity> GenerateStructures(MapGenerationContext context)
         {
-            IRandom random = _random.GetRandom(context.Seed, PluginId);
+            var random = _random.GetRandom(context.Seed, PluginId);
+            var structures = new List<BuildingEntity>(context.Settings.MaxStructure);
 
-            if (centerX >= 0 && centerY >= 0 && context.Settings.MaxCityRange > 0)
+            var validPoints = GetValidPointsForPlacement(context, 2, 2);
+
+            validPoints.RemoveAll(point =>
+                context.WaterMap[point.X, point.Y] ||
+                context.StructureMap[point.X, point.Y] ||
+                context.HeightMap[point.X, point.Y] >= 4);
+
+            for (int i = 1; i < context.Settings.MinStructure; i += 2)
             {
-                return TryPlaceNear(heightMap, waterMap, structureMap, buildingEntity, context, centerX, centerY, random);
+                (var siteEntity, var industryEntity) = GenerateRandomEntityPair(random);
+                ForcePlace(siteEntity, context, -1, -1, random, validPoints);
+                (int x, int y) = siteEntity.TopLeftPoints;
+                ForcePlace(industryEntity, context, x, y, random, validPoints);
+
+                structures.Add(siteEntity);
+                structures.Add(industryEntity);
             }
 
-            int maxAttempts = 50;
-            for (int attempt = 0; attempt < maxAttempts; attempt++)
+            // Handle odd number of structures if necessary
+            if (context.Settings.MinStructure % 2 != 0)
             {
-                int startX = random.Next(0, context.Width - buildingEntity.Width);
-                int startY = random.Next(0, context.Height - buildingEntity.Height);
-
-                if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
-                {
-                    buildingEntity.GenerateBuildingPoints(startX, startY, heightMap);
-
-                    FillStructureMap(structureMap, startX, startY, buildingEntity);
-
-                    if (buildingEntity is CityEntity city)
-                    {
-                        _cityGenerator.GenerateCity(city, context);
-                    }
-
-                    return true;
-                }
+                var buildingEntity = GenerateRandomEntity(random);
+                ForcePlace(buildingEntity, context, -1, -1, random, validPoints);
+                structures.Add(buildingEntity);
             }
 
-            return false;
-        }
-
-        public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY)
-        {
-            IRandom random = _random.GetRandom(context.Seed, PluginId);
-
-            Debug.WriteLine($"Force placing {buildingEntity.GetType().Name} at ({centerX}, {centerY})");
-            if (centerX >= 0 && centerY >= 0 && context.Settings.MaxCityRange > 0)
+            // Generate remaining structures without pairing
+            for (int i = context.Settings.MinStructure; i < context.Settings.MaxStructure; i++)
             {
-                ForcePlaceNear(buildingEntity, heightMap, waterMap, structureMap, centerX, centerY, context, random);
-                return;
+                var buildingEntity = GenerateRandomEntity(random);
+                TryPlace(buildingEntity, context, -1, -1, random, validPoints);
+                structures.Add(buildingEntity);
             }
 
-
-#pragma warning disable IDE0028 // Simplify collection initialization
-            List<(int X, int Y)> validPoints = new(context.Width * context.Height);
-#pragma warning restore IDE0028 // Simplify collection initialization
-
-            int structureWidth = buildingEntity.Width;
-            int structureHeight = buildingEntity.Height;
-
-            for (int i = 0; i < context.Width - structureWidth; i++)
-            {
-                for (int j = 0; j < context.Height - structureHeight; j++)
-                {
-                    if (waterMap[i, j] || structureMap[i, j]) continue;
-                    if (heightMap[i, j] >= 4) continue;
-                    validPoints.Add((i, j));
-                }
-            }
-
-            while (validPoints.Count > 0)
-            {
-                int randomIndex = random.Next(0, validPoints.Count);
-                (int x, int y) = validPoints[randomIndex];
-
-                if (TryTerraformAndPlace(x, y, buildingEntity, heightMap, waterMap, structureMap, context))
-                {
-                    return;
-                }
-
-                // validPoints[^1] == validPoints[validPoints.Count - 1]
-                validPoints[randomIndex] = validPoints[^1];
-                validPoints.RemoveAt(validPoints.Count - 1);
-            }
-            throw new Exception("Failed to generate structure!");
+            return structures;
         }
         #endregion
 
         #region Private methods
-        private void FillStructureMap(bool[,] structureMap, int startX, int startY, BuildingEntity buildingEntity)
+
+        private (SiteEntity siteEntity, IndustryEntity industryEntity) GenerateRandomEntityPair(IRandom random)
         {
-            for (int i = 0; i < buildingEntity.Width; i++)
+            //var pairs = new (SiteEntity siteEntity, IndustryEntity industryEntity)[]
+            //{
+            //    (new FarmEntity(), new MillEntity()),
+            //    (new MineEntity(), new FactoryEntity()),
+            //    (new LumberCampEntity(), new PlantEntity())
+            //};
+
+            //return pairs[random.Next(0, pairs.Length)];
+            return random.Next(0, 3) switch
             {
-                for (int j = 0; j < buildingEntity.Height; j++)
-                {
-                    structureMap[startX + i, startY + j] = true;
-                }
-            }
-        }
-
-        private bool TryTerraformAndPlace(int startX, int startY, BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap, MapGenerationContext context)
-        {
-            // Valid tile check (no water, no structures)
-            for (int i = 0; i < buildingEntity.Width; i++)
-            {
-                for (int j = 0; j < buildingEntity.Height; j++)
-                {
-                    if (waterMap[startX + i, startY + j] || structureMap[startX + i, startY + j])
-                        return false;
-                }
-            }
-
-            // TERRAFORM: Flatten to map to the avarage height
-            int sumHeight = 0;
-            for (int i = 0; i < buildingEntity.Width; i++)
-            {
-                for (int j = 0; j < buildingEntity.Height; j++)
-                {
-                    sumHeight += heightMap[startX + i, startY + j];
-                }
-            }
-
-            // TODO: check for invalid terrain and fix it
-            int targetHeight = (int)Math.Round((double)sumHeight / (buildingEntity.Width * buildingEntity.Height));
-            for (int i = 0; i < buildingEntity.Width; i++)
-            {
-                for (int j = 0; j < buildingEntity.Height; j++)
-                {
-                    heightMap[startX + i, startY + j] = targetHeight;
-                }
-            }
-
-            Debug.WriteLine($"Force placing {buildingEntity.GetType().Name} at ({startX}, {startY}) with terraforming to height {targetHeight}");
-
-            buildingEntity.GenerateBuildingPoints(startX, startY, heightMap);
-            FillStructureMap(structureMap, startX, startY, buildingEntity);
-
-            _cityGenerator.GenerateCity(buildingEntity, context);
-
-            return true;
-        }
-
-        private bool GetStartPosition(int centerX, int centerY, BuildingEntity buildingEntity, MapGenerationContext context, out int startX, out int startY, IRandom random)
-        {
-            int minRange = buildingEntity switch
-            {
-                CityEntity => context.Settings.MinCityRange,
-                _ => context.Settings.MinStructureRange,
+                0 => (new FarmEntity(), new MillEntity()),
+                1 => (new MineEntity(), new PlantEntity()),
+                _ => (new LumberCampEntity(), new FactoryEntity())
             };
-            int maxRange = buildingEntity switch
+        }
+
+        private BuildingEntity GenerateRandomEntity(IRandom random)
+        {
+            return GenerateRandomEntityPair(random) switch
             {
-                CityEntity => context.Settings.MaxCityRange,
-                _ => context.Settings.MaxStructureRange,
+                (SiteEntity siteEntity, IndustryEntity industryEntity) => random.Next(0, 2) == 0 ? siteEntity : industryEntity
             };
-
-            int dx = centerX + random.Next(-maxRange, maxRange + 1);
-            int dy = centerY + random.Next(-maxRange, maxRange + 1);
-            double distance = Math.Sqrt(dx * dx + dy * dy);
-
-            // Circle
-            if (distance < minRange || distance > maxRange)
-            {
-                startX = -1;
-                startY = -1;
-                return false;
-            }
-
-            // Clamp to map bounds
-            startX = Math.Clamp(centerX + dx, 0, context.Width - buildingEntity.Width);
-            startY = Math.Clamp(centerY + dy, 0, context.Height - buildingEntity.Height);
-            return true;
-        }
-
-        private void ForcePlaceNear(BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap, int centerX, int centerY, MapGenerationContext context, IRandom random)
-        {
-            for (int attempt = 0; attempt < 500; attempt++)
-            {
-                // Pick a spot within the circle
-                if (!GetStartPosition(centerX, centerY, buildingEntity, context, out int startX, out int startY, random))
-                {
-                    continue;
-                }
-
-                if (TryTerraformAndPlace(startX, startY, buildingEntity, heightMap, waterMap, structureMap, context))
-                {
-                    return;
-                }
-            }
-
-            ForcePlace(heightMap, waterMap, structureMap, buildingEntity, context, -1, -1);
-        }
-
-        private bool TryPlaceNear(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY, IRandom random)
-        {
-            int maxAttempts = 100;
-
-            for (int attempt = 0; attempt < maxAttempts; attempt++)
-            {
-                // Pick a spot within the circle
-                if (!GetStartPosition(centerX, centerY, buildingEntity, context, out int startX, out int startY, random))
-                {
-                    continue;
-                }
-
-                if (IsValidPlacement(startX, startY, buildingEntity, heightMap, waterMap, structureMap))
-                {
-                    buildingEntity.GenerateBuildingPoints(startX, startY, heightMap);
-                    FillStructureMap(structureMap, startX, startY, buildingEntity);
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private bool IsValidPlacement(int startX, int startY, BuildingEntity buildingEntity, int[,] heightMap, bool[,] waterMap, bool[,] structureMap)
-        {
-            // Top-left anchor
-            int targetHeight = heightMap[startX, startY];
-
-            // TODO: remove magic number, use TerrainHeight enum
-            // Higher than mountain tiles shouldn't have structures
-            if (targetHeight >= 4) return false;
-
-            for (int i = 0; i < buildingEntity.Width; i++)
-            {
-                for (int j = 0; j < buildingEntity.Height; j++)
-                {
-                    int currentX = startX + i;
-                    int currentY = startY + j;
-
-                    // Must not be water
-                    if (waterMap[currentX, currentY]) return false;
-
-                    // Must not be already occupied
-                    if (structureMap[currentX, currentY]) return false;
-
-                    // The tiles must have the same height as the top-left anchor tile
-                    if (heightMap[currentX, currentY] != targetHeight) return false;
-                }
-            }
-
-            return true;
         }
         #endregion
     }

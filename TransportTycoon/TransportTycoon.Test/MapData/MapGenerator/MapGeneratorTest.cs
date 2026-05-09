@@ -208,6 +208,7 @@ namespace TransportTycoon.Test.MapData.MapGenerator
                 terrainGen.GenerateTerrain(Arg.Any<float[,]>(), context).Returns(heightMap);
                 forestGen.GenerateForests(Arg.Any<int[,]>(), context).Returns(forestMap);
                 waterGen.GenerateWaterMap(Arg.Any<float[,]>(), Arg.Any<bool[,]>(), context).Returns(waterMap);
+                structureGen.GenerateStructures(context).Returns([]);
 
                 TransportTycoon.MapData.MapGenerator.MapGenerator mapGen = new([terrainGen, forestGen, waterGen, structureGen], Substitute.For<IRandomProvider>());
 
@@ -240,6 +241,7 @@ namespace TransportTycoon.Test.MapData.MapGenerator
                 terrainGen.GenerateTerrain(Arg.Any<float[,]>(), context).Returns(heightMap);
                 forestGen.GenerateForests(Arg.Any<int[,]>(), context).Returns(forestMap);
                 waterGen.GenerateWaterMap(Arg.Any<float[,]>(), Arg.Any<bool[,]>(), context).Returns(waterMap);
+                structureGen.GenerateStructures(context).Returns([]);
 
                 TransportTycoon.MapData.MapGenerator.MapGenerator mapGen = new([terrainGen, forestGen, waterGen, structureGen], Substitute.For<IRandomProvider>());
 

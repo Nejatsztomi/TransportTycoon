@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -406,20 +407,20 @@ namespace TransportTycoon.WPF.View.UserControls
             _roadTextures = new()
             {
                 // Straight
-                { RoadType.Horizontal, straightRoadTexture },
-                { RoadType.Vertical, RotateTexture(straightRoadTexture, 90.0) },
+                { RoadType.Vertical, straightRoadTexture },
+                { RoadType.Horizontal, RotateTexture(straightRoadTexture, 90.0) },
                 
                 // Turn
                 { RoadType.RightTurn, turnRoadTexture },
-                { RoadType.UpperRightTurn, RotateTexture(turnRoadTexture, 90.0) },
+                { RoadType.LeftTurn, RotateTexture(turnRoadTexture, 90.0) },
                 { RoadType.UpperLeftTurn, RotateTexture(turnRoadTexture, 180.0) },
-                { RoadType.LeftTurn, RotateTexture(turnRoadTexture, 270.0) },
+                { RoadType.UpperRightTurn, RotateTexture(turnRoadTexture, 270.0) },
                 
                 // Cross T
-                { RoadType.RightTRoad, crossTRoadTexture },
-                { RoadType.UpperTRoad, RotateTexture(crossTRoadTexture, 90.0) },
-                { RoadType.LeftTRoad, RotateTexture(crossTRoadTexture, 180.0) },
-                { RoadType.DownTRoad, RotateTexture(crossTRoadTexture, 270.0) },
+                { RoadType.DownTRoad, crossTRoadTexture },
+                { RoadType.LeftTRoad, RotateTexture(crossTRoadTexture, 90.0) },
+                { RoadType.UpperTRoad, RotateTexture(crossTRoadTexture, 180.0) },
+                { RoadType.RightTRoad, RotateTexture(crossTRoadTexture, 270.0) },
                 
                 // Cross X
                 { RoadType.XRoad, crossXRoadTexture },
@@ -430,13 +431,13 @@ namespace TransportTycoon.WPF.View.UserControls
             var yellowBridgeTexture = LoadTexture(new Uri("pack://application:,,,/Assets/Images/Bridge/yellowBridge.png"));
             _bridgeTextures = new()
             {
-                { BridgeType.HorizontalGreenBridge, greenBridgeTexture },
-                { BridgeType.HorizontalRedBridge, redBridgeTexture },
-                { BridgeType.HorizontalYellowBridge, yellowBridgeTexture },
+                { BridgeType.VerticalGreenBridge, greenBridgeTexture },
+                { BridgeType.VerticalRedBridge, redBridgeTexture },
+                { BridgeType.VerticalYellowBridge, yellowBridgeTexture },
 
-                { BridgeType.VerticalGreenBridge, RotateTexture(greenBridgeTexture, 90.0) },
-                { BridgeType.VerticalRedBridge, RotateTexture(redBridgeTexture, 90.0) },
-                { BridgeType.VerticalYellowBridge, RotateTexture(yellowBridgeTexture, 90.0) },
+                { BridgeType.HorizontalGreenBridge, RotateTexture(greenBridgeTexture, 90.0) },
+                { BridgeType.HorizontalRedBridge, RotateTexture(redBridgeTexture, 90.0) },
+                { BridgeType.HorizontalYellowBridge, RotateTexture(yellowBridgeTexture, 90.0) },
             };
 
             _vehicleTextures = new()
@@ -541,24 +542,6 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 _stopTextures[i] = GenerateRouteStopTexture(i);
             }
-        }
-
-        /// <summary>
-        /// Converts a vehicle's movement direction to its corresponding rotation angle in degrees.
-        /// </summary>
-        /// <param name="direction">The direction in which the vehicle is moving.</param>
-        /// <returns>An <see langword="double"/> representing the rotation angle in degrees that corresponds to the specified direction.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private double VehicleDirectionToRotation(Direction direction)
-        {
-            return direction switch
-            {
-                Direction.Down => 90.0, // balra
-                Direction.Up => 270.0, // jobbra
-                Direction.Right => 180.0, // fel
-                Direction.Left => 0.0, // le
-                _ => 0.0,
-            };
         }
 
         private bool IsMultiTileMaster(IField field, out int masterX, out int masterY, out int width, out int height, out ImageSource? texture)
@@ -805,33 +788,19 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             if (Vehicles is null) return;
 
-            const double LaneOffsetPixels = 10.0;
+            const double LANE_OFFSET_PIXEL = 10.0;
 
             foreach (Vehicle vehicle in Vehicles)
             {
-                double shiftX = 0.0;
-                double shiftY = 0.0;
+                double angle = vehicle.Angle;
 
-                switch (vehicle.Direction)
-                {
-                    case Direction.Right: // fel
-                        shiftX = -LaneOffsetPixels;
-                        break;
-                    case Direction.Left: // le
-                        shiftX = LaneOffsetPixels;
-                        break;
-                    case Direction.Down: // balra
-                        shiftY = LaneOffsetPixels;
-                        break;
-                    case Direction.Up: // jobbra
-                        shiftY = -LaneOffsetPixels;
-                        break;
-                    default:
-                        break;
-                }
+                double rightAngleRad = (angle + 90.0) * (Math.PI / 180.0);
 
-                double pixelX = vehicle.X * TileSize + shiftX;
-                double pixelY = vehicle.Y * TileSize + shiftY;
+                double shiftX = Math.Cos(rightAngleRad) * LANE_OFFSET_PIXEL;
+                double shiftY = Math.Sin(rightAngleRad) * LANE_OFFSET_PIXEL;
+
+                double pixelX = (vehicle.X * TileSize) + shiftX;
+                double pixelY = (vehicle.Y * TileSize) + shiftY;
 
                 Rect vehicleRect = new(pixelX, pixelY, TileSize, TileSize);
 
@@ -841,18 +810,18 @@ namespace TransportTycoon.WPF.View.UserControls
                 if (_vehicleTextures.TryGetValue(ConvertVehicleType(vehicle.Type), out var texture))
                 {
                     // Calculate the rotation center, match the size to the given rectangle
-                    double centerX = vehicleRect.X + (vehicleRect.Width / 2);
-                    double centerY = vehicleRect.Y + (vehicleRect.Height / 2);
+                    double centerX = vehicleRect.X + (vehicleRect.Width / 2.0);
+                    double centerY = vehicleRect.Y + (vehicleRect.Height / 2.0);
 
                     if (!_vehicleRotationCache.TryGetValue(vehicle.Id, out var transform))
                     {
-                        transform = new RotateTransform(VehicleDirectionToRotation(vehicle.Direction), centerX, centerY);
+                        transform = new RotateTransform(angle + 90, centerX, centerY);
                         _vehicleRotationCache[vehicle.Id] = transform;
                     }
 
                     transform.CenterX = centerX;
                     transform.CenterY = centerY;
-                    transform.Angle = VehicleDirectionToRotation(vehicle.Direction);
+                    transform.Angle = angle + 90;
 
                     ctx.PushTransform(transform);
 
@@ -921,6 +890,7 @@ namespace TransportTycoon.WPF.View.UserControls
                     BitmapSource generatedTexture = GenerateRouteStopTexture(stop.Order);
                     _stopTextures[stop.Order] = generatedTexture;
                     ctx.DrawImage(generatedTexture, stopRect);
+                    Debug.WriteLine($"Cached a new image with order: {stop.Order}!");
                 }
             }
         }
@@ -1014,6 +984,9 @@ namespace TransportTycoon.WPF.View.UserControls
 
             Rect visibleWorldRect = new(CameraX, CameraY, visibleWorldWidth, visibleWorldHeight);
             DrawVehiclesLayer(ctx, visibleWorldRect);
+
+            // Stop order layer
+            DrawRouteStopsLayer(ctx);
 
             ctx.Pop();
         }

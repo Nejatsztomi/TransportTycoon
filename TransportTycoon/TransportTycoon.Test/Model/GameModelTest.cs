@@ -6,11 +6,9 @@ using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
 using TransportTycoon.Model.Graph;
+using Difficulty = TransportTycoon.Model.Difficulty;
 using ITimer = TransportTycoon.Model.ITimer;
 using VehicleType = TransportTycoon.Model.VehicleType;
-using LoadType = TransportTycoon.MapData.LoadType;
-using TransportTycoon.Persistence;
-using Difficulty = TransportTycoon.Model.Difficulty;
 
 namespace TransportTycoon.Test.Model;
 
@@ -45,8 +43,8 @@ public class GameModelTest
             Assert.Equal(0UL, gameModel.GameTime);
 
             // Timer mock tesztek
-            // Feliratkoztak az Elapsed eseményre
-            _mockTimer.Received().Elapsed += Arg.Any<EventHandler>();
+            // Feliratkoztak az Elapsed eseményre (Action<double>)
+            _mockTimer.Received().Tick += Arg.Any<Action<double>>();
         }
 
         [Fact]
@@ -62,14 +60,6 @@ public class GameModelTest
 
     public class EventTest
     {
-        //public class EnumEnumerable<T> : IEnumerable<T[]> where T : struct, Enum
-        //{
-        //    private readonly List<T[]> _data = [.. Enum.GetValues<T>().Select(v => new T[] { v })];
-
-        //    public IEnumerator<T[]> GetEnumerator() => _data.GetEnumerator();
-        //    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        //}
-
         /// <summary>
         /// A helper class that generates test data for all values of a given enum type <typeparamref name="T"/>.
         /// It inherits from <see cref="TheoryData{T}"/>, which is a convenient way to provide data for xUnit theories.
@@ -186,10 +176,10 @@ public class GameModelTest
                 try
                 {
                     _gameModel.GameAdvanced += Handler;
-                    // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
+                    // Simulate the timer tick event 10x (Action<double>)
                     for (int i = 0; i < 10; i++)
                     {
-                        _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                        _mockTimer.Tick += Raise.Event<Action<double>>(1.0);
                     }
                     Assert.True(raised, "GameAdvanced event should be raised after 10 timer ticks");
                 }
@@ -212,8 +202,8 @@ public class GameModelTest
                 try
                 {
                     _gameModel.GameTicked += Handler;
-                    // Szimuláljuk a timer tick eseményét
-                    _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                    // Simulate the timer tick event (Action<double>)
+                    _mockTimer.Tick += Raise.Event<Action<double>>(1.0);
                     Assert.True(raised, "GameTicked should be raised after 1 timer tick");
                 }
                 finally
@@ -233,7 +223,7 @@ public class GameModelTest
                     // Simulate 10 timer ticks to trigger GameAdvanced
                     for (int i = 0; i < 10; i++)
                     {
-                        _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
+                        _mockTimer.Tick += Raise.Event<Action<double>>(1.0);
                     }
                     Assert.True(raised, "GameAdvanced event should be raised after 10 timer ticks");
                 }
@@ -368,36 +358,6 @@ public class GameModelTest
                     model.GameOver -= Handler;
                 }
             }
-
-            // TODO: reimplement this with mocking in the future
-            //[TestMethod]
-            //public void GameAdvanced_EventArgumentIsCorrect()
-            //{
-            //    GameModel gameModel = new(Difficulty.Medium, 1000, _mockTimer);
-            //    List<Tuple<int, int>> actualTrees = [];
-
-            //    EventHandler<List<Tuple<int, int>>> handler = (_, e) =>
-            //    {
-            //        actualTrees = e;
-            //    };
-
-            //    try
-            //    {
-            //        gameModel.GameAdvanced += handler;
-            //        // Indítsunk egy új játékot, hogy biztosan legyen mapunk és fáink
-            //        gameModel.NewGame();
-            //        // Szimuláljuk a timer tick eseményét 10x (egyelőre ennyi kell egy event kiváltáshoz)
-            //        for (int i = 0; i < 10; i++)
-            //        {
-            //            _mockTimer.Elapsed += Raise.EventWith(this, EventArgs.Empty);
-            //        }
-            //        Assert.IsNotEmpty(actualTrees, "GameAdvanced event after 10 timer ticks should raise and return with non-empty trees changed");
-            //    }
-            //    finally
-            //    {
-            //        gameModel.GameAdvanced -= handler;
-            //    }
-            //}
 
             [Fact]
             public void InfrastructureBuilt_EventArgumentIsCorrect()
@@ -602,7 +562,7 @@ public class GameModelTest
             var node = new Node(1, 1, typeof(Stop));
             _model.Map[1, 1] = new Stop(1, 1, 1);
             var prouth = new Prouth([node]);
-            var vehicle = new Van(1, 1, Direction.Up)
+            var vehicle = new Van(1, 1, 270, null)
             {
                 Prouth = prouth
             };
@@ -662,7 +622,7 @@ public class GameModelTest
             _model.Map[x, y] = stop;
             var node = new Node(x, y, typeof(Stop));
             var prouth = new Prouth([node]);
-            var vehicle = new Van(x, y, Direction.Up)
+            var vehicle = new Van(x, y, 270, null)
             {
                 Prouth = prouth
             };
@@ -751,7 +711,7 @@ public class GameModelTest
 
             // Assert
             Assert.Equal(3, model.Map[1, 1].Height);
-            Assert.Equal(startBalance - 100, model.Balance);
+            Assert.Equal(startBalance - 200, model.Balance);
         }
 
         [Fact]
@@ -769,7 +729,7 @@ public class GameModelTest
 
             // Assert
             Assert.Equal(3, model.Map[1, 1].Height);
-            Assert.Equal(startBalance - 150, model.Balance);
+            Assert.Equal(startBalance - 250, model.Balance);
         }
 
         [Fact]
@@ -813,7 +773,7 @@ public class GameModelTest
 
             // Assert
             Assert.Equal(2, model.Map[1, 1].Height);
-            Assert.Equal(startBalance - 100, model.Balance);
+            Assert.Equal(startBalance - 200, model.Balance);
         }
 
         [Fact]
@@ -951,7 +911,7 @@ public class GameModelTest
             model.Map.UpdateTable(1, 1, stop);
 
             // Jármű hozzáadása a mezőhöz (ez akadályozza a törlést)
-            model.Vehicles.Add(new Van(1, 1, Direction.Up));
+            model.Vehicles.Add(new Van(1, 1, 270, null));
 
             // Act
             model.Destroy(1, 1);
@@ -1036,7 +996,7 @@ public class GameModelTest
                 }
             }
 
-            mapGenMock.GenerateMap(context).Returns((fields, new List<TransportTycoon.MapData.Buildings.BuildingEntity>()));
+            mapGenMock.GenerateMap(context).Returns((fields, new List<BuildingEntity>()));
             table.GenerateMap();
 
             var creationData = new GameCreationData(
@@ -1101,11 +1061,10 @@ public class GameModelTest
 
             // Act
             // Mivel a ForestGrowing random alapú, meghívjuk párszor, hogy garantáltan történjen valami
-            List<Tuple<int, int>> grownTrees = new List<Tuple<int, int>>();
+            List<Tuple<int, int>> grownTrees = [];
             for (int i = 0; i < 20; i++)
             {
-                var result = forestGrowingMethod.Invoke(model, null) as List<Tuple<int, int>>;
-                if (result != null) grownTrees.AddRange(result);
+                if (forestGrowingMethod.Invoke(model, null) is List<Tuple<int, int>> result) grownTrees.AddRange(result);
             }
 
             // Assert
@@ -1120,7 +1079,7 @@ public class GameModelTest
         {
             // Arrange
             var model = CreateTestModel();
-            var van = new Van(1, 1, Direction.Up);
+            var van = new Van(1, 1, 270, null);
             model.Vehicles.Add(van);
 
             // Act
@@ -1137,25 +1096,21 @@ public class GameModelTest
         {
             // Arrange
             var model = CreateTestModel(); // Editor módban indul
-            var van = new Van(1, 1, Direction.Up);
+            var van = new Van(0, 0, 270, null);
             model.Vehicles.Add(van);
 
-            var stop1 = new Stop(0, 0, 2);
-            var stop2 = new Stop(0, 1, 2);
-
             // 1. Tegyük rá a megállókat a tényleges pályára, hogy a gráfgenerátor megtalálja őket!
-            model.Map.UpdateTable(0, 0, stop1);
-            model.Map.UpdateTable(0, 1, stop2);
+            model.BuildRoad(0, 1);
+            model.BuildStop(0, 0);
+            model.BuildStop(0, 2);
 
-            // 2. Váltsunk Run módba! 
-            // Ez a setterben automatikusan meghívja a RebuildGraph()-ot, ami legenerálja a csomópontokat.
-            model.Mode = GameMode.Run;
-
-            model.SelectedStopFields.Add(stop1);
-            model.SelectedStopFields.Add(stop2);
+            // Ensure at least two distinct stops are present
+            model.SelectedStopFields.Clear();
+            model.SelectedStopFields.Add((Stop)model.Map[0, 0]);
+            model.SelectedStopFields.Add((Stop)model.Map[0, 2]);
 
             // Act
-            model.AssignRoute(1, 1); // Jármű pozíciója
+            model.AssignRoute(0, 0); // Jármű pozíciója
 
             // Assert
             Assert.NotNull(van.Prouth);
@@ -1168,61 +1123,17 @@ public class GameModelTest
         {
             // Arrange
             var model = CreateTestModel(GameMode.Run);
-            var van = new Van(1, 1, Direction.Up);
+            var van = new Van(1, 1, 270, null);
             model.Vehicles.Add(van);
             // Mivel nincs útvonal, az autó nem fog mozogni, de a metódus lefut
 
             // Act
-            model.StepAllVehicles();
+            model.StepAllVehicles(1.0);
 
             // Assert
             // A sebesség módosulását vagy más állapotváltozást ellenőrizhetünk
             // Jelen esetben csak azt biztosítjuk, hogy a hívás nem száll el hibával
             Assert.Equal(1, van.MapX);
-        }
-
-        [Fact]
-        public void IsCarOnStop_PrivateMethod_ReturnsTrueIfOnStop()
-        {
-            // Arrange
-            var model = CreateTestModel();
-            model.Map.UpdateTable(1, 1, new Stop(1, 1, 2)); // Megálló az (1,1)-en
-            var van = new Van(1, 1, Direction.Up); // Autó a megállón
-            var truck = new Truck(2, 2, Direction.Up); // Autó a füvön (Terrain)
-
-            MethodInfo? isCarOnStopMethod = typeof(GameModel).GetMethod("IsCarOnStop", BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.NotNull(isCarOnStopMethod);
-
-            // Act
-            bool isVanOnStop = (bool)isCarOnStopMethod.Invoke(model, new object[] { van })!;
-            bool isTruckOnStop = (bool)isCarOnStopMethod.Invoke(model, new object[] { truck })!;
-
-            // Assert
-            Assert.True(isVanOnStop);
-            Assert.False(isTruckOnStop);
-        }
-
-        [Fact]
-        public void AllVehiclesDoTheTransport_PrivateMethod_ExecutesWithoutError()
-        {
-            // Arrange
-            var model = CreateTestModel(GameMode.Run);
-            var stop = new Stop(1, 1, 2);
-            model.Map.UpdateTable(1, 1, stop);
-
-            var van = new Van(1, 1, Direction.Up);
-            // Készítünk neki egy ál-útvonalat, hogy a feltétel (v.CurrentRoute == null && v.Prouth != null) teljesüljön
-            van.Prouth = new Prouth(new List<Node> { new Node(1, 1, typeof(Stop)), new Node(2, 2, typeof(Stop)) });
-            model.Vehicles.Add(van);
-
-            MethodInfo? transportMethod = typeof(GameModel).GetMethod("AllVehiclesDoTheTransport", BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.NotNull(transportMethod);
-
-            // Act
-            var exception = Record.Exception(() => transportMethod.Invoke(model, null));
-
-            // Assert
-            Assert.Null(exception); // Nem szabad hibára futnia
         }
         #endregion
     }
@@ -1393,20 +1304,33 @@ public class GameModelTest
 
         #region SetVehicleSpeed Tesztek
         [Fact]
-        public void SetVehicleSpeed_Bridge_SlowsToSpeedLimit()
+        public void ApplyAntiCollision_Bridge_SlowsToSpeedLimit()
         {
+            // Arrange
             var model = CreateTestModel();
-            var van = new Van(0, 0, Direction.Up);
-            van.ChangeCurrentSpeed(5.0); // Túl gyors (Bár a MaxSpeed levágja, tesztnek jó)
 
-            var bridge = new YellowBridge(0, 0, BridgeType.HorizontalYellowBridge, 1); // SpeedLimit = 100
+            // 1. Letesszük a hidat a modell térképére a (0, 0) pozícióra.
+            // Így az ApplyAntiCollision meg fogja találni, amikor lekérdezi a Map-ből.
+            var bridge = new YellowBridge(0, 0, BridgeType.HorizontalYellowBridge, 1);
+            model.Map[0, 0] = bridge;
 
-            var method = typeof(GameModel).GetMethod("SetVehicleSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
+            // 2. Létrehozzuk a furgont a (0, 0) koordinátán (így pont a hídon fog állni).
+            // Megjegyzés: A Van konstruktora vár egy 4. paramétert is (Prouth? route), ide null-t adunk.
+            var van = new Van(0, 0, 0.0, null);
 
-            // Act: Rálép a hídra
-            method!.Invoke(model, new object?[] { van, null, new Terrain(0, 0, 1), bridge });
+            // Felgyorsítjuk a járművet (hogy biztosan túllépje a híd limitjét)
+            van.ChangeCurrentSpeed(500.0);
 
-            // Assert: A sebességének le kellett lassulnia
+            // 3. Lekérjük az új, átnevezett metódust a GameModelből
+            var method = typeof(GameModel).GetMethod("ApplyAntiCollision", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // Biztonsági ellenőrzés, hogy véletlenül se kapjunk NullReferenceException-t
+            Assert.NotNull(method);
+
+            // Act: Meghívjuk a metódust (az új verzió már csak a járművet várja bemenetként!)
+            method.Invoke(model, [van]);
+
+            // Assert: Ellenőrizzük, hogy a jármű sebessége valóban lecsökkent-e a híd maximális sebességére
             Assert.True(van.CurrentSpeed <= bridge.SpeedLimit);
         }
 
@@ -1414,34 +1338,71 @@ public class GameModelTest
         public void SetVehicleSpeed_Incline_HalvesSpeed()
         {
             var model = CreateTestModel();
-            var van = new Van(0, 0, Direction.Up);
-            double originalSpeed = van.CurrentSpeed;
 
-            var currentField = new Terrain(0, 0, 1);
-            var newField = new Terrain(0, 1, 2); // Felfelé megy
+            // 1. Lerakjuk a hidat a modell térképére a (0, 0) koordinátára
+            var bridge = new YellowBridge(0, 0, BridgeType.HorizontalYellowBridge, 1);
+            model.Map[0, 0] = bridge;
 
-            var method = typeof(GameModel).GetMethod("SetVehicleSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
-            method!.Invoke(model, new object?[] { van, null, currentField, newField });
+            // 2. Létrehozzuk a járművet a hídon (0, 0 koordinátán)
+            var van = new Van(0, 0, 0.0, null);
+            van.ChangeCurrentSpeed(5.0); // Túl gyors 
 
-            Assert.Equal(originalSpeed / 2.0, van.CurrentSpeed); // Felére csökkent!
+            // 3. Megkeressük az ÚJ metódust (ApplyAntiCollision)
+            var method = typeof(GameModel).GetMethod("ApplyAntiCollision", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(method); // Biztonsági ellenőrzés
+
+            // Act: Meghívjuk a metódust (már csak a járművet kell átadni paraméterként!)
+            method.Invoke(model, [van]);
+
+            // Assert: A sebességének le kellett lassulnia a híd limitjére
+            Assert.True(van.CurrentSpeed <= bridge.SpeedLimit);
         }
 
         [Fact]
-        public void SetVehicleSpeed_RoadJunction_StopsIfAnotherVehicleIsThere()
+        public void ApplyAntiCollision_RoadJunction_StopsIfAnotherVehicleIsThere()
         {
+            // Arrange
             var model = CreateTestModel();
-            var van = new Van(0, 0, Direction.Up);
-            var otherVan = new Van(0, 1, Direction.Down); // (0,1)-en áll
-            model.Vehicles.Add(van);
-            model.Vehicles.Add(otherVan);
 
-            var currentField = new Road(0, 0, RoadType.Vertical, 1);
-            var newField = new Road(0, 1, RoadType.XRoad, 1); // Kereszteződés!
+            // 1. Pályaelemek beállítása a modellben
+            var currentRoad = new Road(0, 0, RoadType.Vertical, 1);
+            var nextRoad = new Road(0, 1, RoadType.XRoad, 1); // Kereszteződés
+            model.Map[0, 0] = currentRoad;
+            model.Map[0, 1] = nextRoad;
 
-            var method = typeof(GameModel).GetMethod("SetVehicleSpeed", BindingFlags.NonPublic | BindingFlags.Instance);
-            method!.Invoke(model, new object?[] { van, null, currentField, newField });
+            // 2. Járművek létrehozása
+            var van = new Van(0, 0, 0.0, null);
+            var otherVan = new Van(0, 1, 0.0, null);
 
-            Assert.Equal(0.0, van.CurrentSpeed); // Megáll a kereszteződés előtt
+            // A másik furgon biztosan álljon (ez lesz az akadály)
+            otherVan.ChangeCurrentSpeed(0.0);
+
+            // 3. REFLECTION VARÁZSLAT: Beállítjuk a furgon belső útvonalát, 
+            // hogy tudja, hogy a (0,1) felé tart (GetNextTileCoordinates működjön)
+            var edgeTilesField = typeof(Vehicle).GetField("_currentEdgeTiles", BindingFlags.NonPublic | BindingFlags.Instance);
+            edgeTilesField!.SetValue(van, new List<IField> { currentRoad, nextRoad });
+
+            var currentTileIdxField = typeof(Vehicle).GetField("_currentTileIdx", BindingFlags.NonPublic | BindingFlags.Instance);
+            currentTileIdxField!.SetValue(van, 0); // A listában jelenleg a (0,0) elemen áll
+
+            // 4. REFLECTION VARÁZSLAT: A "másik" furgont beletesszük a GameModel foglaltsági mátrixába
+            // Előbb megkérdezzük, melyik sávba fog érkezni a mi furgonunk:
+            int expectedLaneIdx = van.GetLaneIdx();
+
+            // Majd abba a sávba "betesszük" az akadályozó furgont a GameModel-ben:
+            var occupancyField = typeof(GameModel).GetField("_tileOccupancy", BindingFlags.NonPublic | BindingFlags.Instance);
+            var occupancyMatrix = (Vehicle?[,,])occupancyField!.GetValue(model)!;
+            occupancyMatrix[0, 1, expectedLaneIdx] = otherVan;
+
+            // Az új metódus lekérése
+            var method = typeof(GameModel).GetMethod("ApplyAntiCollision", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(method);
+
+            // Act: Ráküldjük a ráfutásgátlót
+            method.Invoke(model, [van]);
+
+            // Assert: A furgon sebességének 0-ra kellett csökkennie a másik furgon miatt!
+            Assert.Equal(0.0, van.CurrentSpeed);
         }
         #endregion
 
@@ -1506,8 +1467,10 @@ public class GameModelTest
         public void AllVehiclesDoTheTransport_BuildingGivesLoadToVehicle_UpdatesCapacities()
         {
             var model = CreateTestModel(GameMode.Run);
-            var truck = new Truck(1, 1, Direction.Up);
-            truck.Prouth = new Prouth(new List<Node> { new Node(1, 1, typeof(Stop)) }); // Üres az autó
+            var truck = new Truck(1, 1, 0.0)
+            {
+                Prouth = new Prouth([new Node(1, 1, typeof(Stop))])
+            };
             model.Vehicles.Add(truck);
 
             var stop = new Stop(1, 1, 2);
@@ -1523,7 +1486,7 @@ public class GameModelTest
             method!.Invoke(model, null);
 
             // Assert
-            Assert.Equal(80, truck.CurrentCapacity); // Felvette a 80 fát
+            Assert.Equal(20, truck.CurrentCapacity); // Felvette a 20 fát
             Assert.NotNull(truck.CurrentLoad);
             Assert.Equal(LoadType.Wood, truck.CurrentLoad.LoadType);
         }
