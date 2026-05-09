@@ -993,8 +993,8 @@ namespace TransportTycoon.WPF.View.UserControls
                                 for (int dx = 0; dx < w; dx++)
                                 {
                                     if (!(dx == 0 && dy == 0)) skipStructureTiles.Add((mx + dx, my + dy));
-                                } 
-                            }                 
+                                }
+                            }
                         }
                         else
                         {

@@ -258,7 +258,7 @@ namespace TransportTycoon.WPF.View.UserControls
 
                 if (dragMousePos.X < 0 || dragMousePos.Y < 0 ||
                     dragMousePos.X > InternalGameMapRenderer.ActualWidth || dragMousePos.Y > InternalGameMapRenderer.ActualHeight)
-                {               
+                {
                     return;
                 }
 
