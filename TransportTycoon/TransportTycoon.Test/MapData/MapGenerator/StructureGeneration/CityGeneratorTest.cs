@@ -85,7 +85,7 @@ public class CityGeneratorTest
         int centerX = topLeftX + city.Width / 2;
         int centerY = topLeftY + city.Height / 2;
 
-        AssertCityCenterRoadOnly(city, centerX, centerY);
+        AssertRoadPath(city, [(centerX, centerY), (centerX, centerY - 1), (centerX, centerY - 2)]);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class CityGeneratorTest
         int centerX = topLeftX + city.Width / 2;
         int centerY = topLeftY + city.Height / 2;
 
-        AssertCityCenterRoadOnly(city, centerX, centerY);
+        AssertRoadPath(city, [(centerX, centerY), (centerX + 1, centerY), (centerX + 2, centerY)]);
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class CityGeneratorTest
         int centerX = topLeftX + city.Width / 2;
         int centerY = topLeftY + city.Height / 2;
 
-        AssertCityCenterRoadOnly(city, centerX, centerY);
+        AssertRoadPath(city, [(centerX, centerY), (centerX + 1, centerY), (centerX + 1, centerY - 1), (centerX + 1, centerY - 2)]);
     }
 
     private static MapGenerationContext CreateContext(int width, int height, int seed, int minCities, int maxCities, int branchCount = 3, int roadLength = 10)
@@ -178,17 +178,22 @@ public class CityGeneratorTest
         Assert.Equal(occupiedCells, structureMapCells);
     }
 
-    private static void AssertCityCenterRoadOnly(CityEntity city, int centerX, int centerY)
+    private static void AssertRoadPath(CityEntity city, params (int X, int Y)[] expectedRoads)
     {
+        HashSet<(int X, int Y)> expectedRoadSet = [.. expectedRoads];
+        int roadCount = 0;
+
         for (int x = 0; x < city.Width; x++)
         {
             for (int y = 0; y < city.Height; y++)
             {
-                IField field = city.MapPoints[(city.TopLeftPoints.X + x, city.TopLeftPoints.Y + y)];
+                (int currentX, int currentY) = (city.TopLeftPoints.X + x, city.TopLeftPoints.Y + y);
+                IField field = city.MapPoints[(currentX, currentY)];
 
-                if (city.TopLeftPoints.X + x == centerX && city.TopLeftPoints.Y + y == centerY)
+                if (expectedRoadSet.Contains((currentX, currentY)))
                 {
                     Assert.IsType<Road>(field);
+                    roadCount++;
                 }
                 else
                 {
@@ -196,6 +201,8 @@ public class CityGeneratorTest
                 }
             }
         }
+
+        Assert.Equal(expectedRoads.Length, roadCount);
     }
 
     private sealed class AlwaysMinimumRandomProvider : IRandomProvider

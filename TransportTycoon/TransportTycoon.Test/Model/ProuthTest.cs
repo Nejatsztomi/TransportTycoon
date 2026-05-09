@@ -135,5 +135,48 @@ namespace TransportTycoon.Test.Model
             Assert.Contains(stop2, stops);
             Assert.Equal(2, stops.Count);
         }
+
+        [Fact]
+        public void ConvertNodestoStopTiles_IgnoresNullFields()
+        {
+            // Arrange
+            var mapGen = Substitute.For<IMapGenerator>();
+            var context = new MapGenerationContext(1, 1, 0, new MapGenerationSettings());
+            var gameTable = new GameTable(mapGen, context);
+            var node = new GraphNS.Node(0, 0, typeof(Stop));
+            var nodes = new List<GraphNS.Node> { node };
+
+            // Act
+            var stops = ProuthUtil.ConvertNodestoStopTiles(nodes, gameTable);
+
+            // Assert
+            Assert.Empty(stops);
+        }
+
+        [Fact]
+        public void ConvertNodestoStopTiles_IgnoresNonStopFields()
+        {
+            // Arrange
+            var mapGen = Substitute.For<IMapGenerator>();
+            var context = new MapGenerationContext(2, 1, 0, new MapGenerationSettings());
+            var gameTable = new GameTable(mapGen, context);
+            var road = new Road(0, 0, RoadType.Horizontal, 0);
+            gameTable.Table[0, 0] = road;
+
+            var stop = new Stop(1, 0, 0);
+            gameTable.Table[1, 0] = stop;
+
+            var roadNode = new GraphNS.Node(0, 0, typeof(Road));
+            var stopNode = new GraphNS.Node(1, 0, typeof(Stop));
+            var nodes = new List<GraphNS.Node> { roadNode, stopNode };
+
+            // Act
+            var stops = ProuthUtil.ConvertNodestoStopTiles(nodes, gameTable);
+
+            // Assert
+            Assert.Single(stops);
+            Assert.Contains(stop, stops);
+            Assert.DoesNotContain(stops, x => x.X == road.X && x.Y == road.Y);
+        }
     }
 }

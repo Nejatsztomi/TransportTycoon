@@ -1137,6 +1137,305 @@ public class GameModelTest
         }
         #endregion
     }
+
+    public class StepAllVehiclesTests
+    {
+        private sealed class TestVehicle : Transport
+        {
+            public TestVehicle(int x, int y, double topSpeed) : base(x, y, 0, null)
+            {
+                TopSpeed = topSpeed;
+                CurrentSpeed = topSpeed;
+                MaxCapacity = 1;
+                Price = 1;
+                Maintenance = 1;
+                Type = VehicleType.Van;
+            }
+
+            public void SetRoute((int X, int Y) target, (int X, int Y)? nextTile = null)
+            {
+                (int X, int Y) finalTile = nextTile ?? target;
+                CurrentRoute = [new Edge(
+                    new Node(target.X, target.Y, typeof(Stop)),
+                    new Node(finalTile.X, finalTile.Y, typeof(Stop)),
+                    [new Terrain(target.X, target.Y, 1), new Terrain(finalTile.X, finalTile.Y, 1)],
+                    0)];
+
+                StartDrivingFromStopToStop();
+            }
+
+            public void SetCurrentSpeed(double speed)
+            {
+                CurrentSpeed = speed;
+            }
+
+            public void SetLastState(int x, int y, int laneIdx)
+            {
+                LastMapX = x;
+                LastMapY = y;
+                LastLaneIdx = laneIdx;
+            }
+
+            public void MakeLost(GameTable map)
+            {
+                var pathFinder = Substitute.For<IPathFinder>();
+                pathFinder.FindPath(Arg.Any<Node>(), Arg.Any<Node>()).Returns((List<Edge>?)null);
+
+                var injector = new GhostNodeInjector(new TransportTycoon.Model.Graph.Graph([]), new PathTracer(map));
+                SetProuth(new Prouth([new Node((int)X, (int)Y, typeof(Stop)), new Node((int)X, (int)Y + 1, typeof(Stop))]), pathFinder, injector);
+            }
+        }
+
+        private static GameModel CreateModel(int width = 3, int height = 3)
+        {
+            var mapGen = Substitute.For<IMapGenerator>();
+            var context = new MapGenerationContext(width, height, 1, new MapGenerationSettings());
+            var fields = new IField[width, height];
+
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    fields[i, j] = new Terrain(i, j, 1);
+                }
+            }
+
+            mapGen.GenerateMap(context).Returns((fields, []));
+
+            var map = new GameTable(mapGen, context);
+            map.GenerateMap();
+
+            return new GameModel(
+                map,
+                Substitute.For<ITimer>(),
+                new GameCreationData(context, "TestSave", Difficulty.Medium, 1000));
+        }
+
+        private static TestVehicle CreateVehicle(
+            int x,
+            int y,
+            (int X, int Y) target,
+            (int X, int Y)? nextTile = null,
+            double topSpeed = 0.9,
+            double currentSpeed = 0.9,
+            int lastX = -1,
+            int lastY = -1,
+            int lastLaneIdx = -1)
+        {
+            var vehicle = new TestVehicle(x, y, topSpeed);
+            vehicle.SetRoute(target, nextTile);
+            vehicle.SetCurrentSpeed(currentSpeed);
+            vehicle.SetLastState(lastX, lastY, lastLaneIdx);
+            return vehicle;
+        }
+
+        [Fact]
+        public void StepAllVehicles_WhenModeIsNotRun_DoesNothing()
+        {
+            var model = CreateModel();
+            var vehicle = CreateVehicle(1, 1, (2, 1), currentSpeed: 0.4);
+            model.Vehicles.Add(vehicle);
+
+            model.Mode = GameMode.Paused;
+            model.StepAllVehicles(1.0);
+
+            Assert.Equal(0.4, vehicle.CurrentSpeed, 5);
+            Assert.Equal(1, vehicle.MapX);
+            Assert.Equal(1, vehicle.MapY);
+        }
+
+        [Fact]
+        public void StepAllVehicles_WhenVehicleIsLost_DoesNotAffectFollowingVehicle()
+        {
+            var model = CreateModel();
+
+            var lostVehicle = CreateVehicle(1, 1, (1, 0), currentSpeed: 0.2);
+            lostVehicle.MakeLost(model.Map);
+
+            var followingVehicle = CreateVehicle(1, 2, (1, 1), currentSpeed: 0.9);
+
+            model.Vehicles.Add(lostVehicle);
+            model.Vehicles.Add(followingVehicle);
+
+            model.StepAllVehicles(1.0);
+
+            Assert.Equal(0.9, followingVehicle.CurrentSpeed, 5);
+        }
+
+        [Fact]
+        public void StepAllVehicles_WhenVehicleMoves_ClearsOldTileAndSetsNewTile()
+        {
+            var model = CreateModel();
+
+            var movedVehicle = CreateVehicle(1, 1, (1, 0), topSpeed: 0.4, currentSpeed: 0.4, lastX: 0, lastY: 1, lastLaneIdx: 0);
+            var newTileObserver = CreateVehicle(1, 2, (1, 1), currentSpeed: 0.9);
+            var oldTileObserver = CreateVehicle(0, 2, (0, 1), currentSpeed: 0.9);
+
+            model.Vehicles.Add(movedVehicle);
+            model.Vehicles.Add(newTileObserver);
+            model.Vehicles.Add(oldTileObserver);
+
+            model.StepAllVehicles(1.0);
+
+            Assert.Equal(0.4, newTileObserver.CurrentSpeed, 5);
+            Assert.Equal(0.9, oldTileObserver.CurrentSpeed, 5);
+        }
+
+        [Fact]
+        public void StepAllVehicles_WhenVehicleChangesLaneOnSameTile_UpdatesLaneSpecificOccupancy()
+        {
+            var model = CreateModel();
+
+            var laneChangedVehicle = CreateVehicle(1, 1, (2, 1), topSpeed: 0.4, currentSpeed: 0.4, lastX: 1, lastY: 1, lastLaneIdx: 0);
+            var oldLaneObserver = CreateVehicle(1, 2, (1, 1), currentSpeed: 0.9);
+            var newLaneObserver = CreateVehicle(0, 1, (1, 1), currentSpeed: 0.9);
+
+            model.Vehicles.Add(laneChangedVehicle);
+            model.Vehicles.Add(oldLaneObserver);
+            model.Vehicles.Add(newLaneObserver);
+
+            model.StepAllVehicles(1.0);
+
+            Assert.Equal(0.9, oldLaneObserver.CurrentSpeed, 5);
+            Assert.Equal(0.4, newLaneObserver.CurrentSpeed, 5);
+        }
+
+        [Fact]
+        public void StepAllVehicles_WhenVehicleHasNoPreviousCoordinates_SetsOccupancyWithoutClearing()
+        {
+            var model = CreateModel();
+
+            var newVehicle = CreateVehicle(1, 1, (1, 0), topSpeed: 0.4, currentSpeed: 0.4, lastX: -1, lastY: -1, lastLaneIdx: -1);
+            var observer = CreateVehicle(1, 2, (1, 1), currentSpeed: 0.9);
+
+            model.Vehicles.Add(newVehicle);
+            model.Vehicles.Add(observer);
+
+            model.StepAllVehicles(1.0);
+
+            Assert.Equal(0.4, observer.CurrentSpeed, 5);
+        }
+
+        [Fact]
+        public void StepAllVehicles_WhenVehicleStateIsUnchanged_KeepsExistingOccupancy()
+        {
+            var model = CreateModel();
+
+            var stationaryVehicle = CreateVehicle(1, 1, (1, 0), topSpeed: 0.4, currentSpeed: 0.4, lastX: -1, lastY: -1, lastLaneIdx: -1);
+            model.Vehicles.Add(stationaryVehicle);
+            model.StepAllVehicles(1.0);
+
+            var observer = CreateVehicle(1, 2, (1, 1), currentSpeed: 0.9);
+            model.Vehicles.Add(observer);
+
+            model.StepAllVehicles(1.0);
+
+            Assert.Equal(0.4, observer.CurrentSpeed, 5);
+        }
+
+        [Fact]
+        public void StepAllVehicles_WhenVehicleIsOnBridge_ClampsSpeedToBridgeLimit()
+        {
+            var model = CreateModel();
+            model.Map.UpdateTable(1, 1, new YellowBridge(1, 1, BridgeType.HorizontalYellowBridge, 1));
+
+            var vehicle = CreateVehicle(1, 1, (2, 1), topSpeed: 100.0, currentSpeed: 100.0);
+            model.Vehicles.Add(vehicle);
+
+            model.StepAllVehicles(0.0);
+
+            Assert.Equal(50.0, vehicle.CurrentSpeed, 5);
+        }
+    }
+
+    public class ReasignVehiclesProuthTests
+    {
+        private static GameModel CreateModel()
+        {
+            var mapGen = Substitute.For<IMapGenerator>();
+            var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
+            var fields = new IField[3, 3];
+
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    fields[i, j] = new Terrain(i, j, 1);
+                }
+            }
+
+            mapGen.GenerateMap(context).Returns((fields, []));
+
+            var map = new GameTable(mapGen, context);
+            map.GenerateMap();
+
+            return new GameModel(
+                map,
+                Substitute.For<ITimer>(),
+                new GameCreationData(context, "TestSave", Difficulty.Medium, 1000))
+            {
+                Mode = GameMode.Editor
+            };
+        }
+
+        [Fact]
+        public void ReasignVehiclesProuth_WhenProuthIsNull_KeepsItNull()
+        {
+            var model = CreateModel();
+            var vehicle = new Van(1, 1, 270, null);
+            model.Vehicles.Add(vehicle);
+
+            model.BuildRoad(1, 1);
+
+            Assert.Null(vehicle.Prouth);
+        }
+
+        [Fact]
+        public void ReasignVehiclesProuth_WhenProuthHasNoStops_KeepsEmptyProuth()
+        {
+            var model = CreateModel();
+            var prouth = new Prouth();
+            var vehicle = new Van(1, 1, 270, null)
+            {
+                Prouth = prouth
+            };
+            model.Vehicles.Add(vehicle);
+
+            model.BuildRoad(1, 1);
+
+            Assert.Same(prouth, vehicle.Prouth);
+            Assert.Empty(vehicle.Prouth!.Stops);
+        }
+
+        [Fact]
+        public void ReasignVehiclesProuth_WhenProuthHasStops_ReassignsToCurrentGraphNodes()
+        {
+            var model = CreateModel();
+
+            model.BuildRoad(0, 1);
+            model.BuildStop(0, 0);
+            model.BuildStop(0, 2);
+
+            var originalProuth = new Prouth([
+                new Node(0, 0, typeof(Stop)),
+                new Node(0, 2, typeof(Stop))]);
+
+            var vehicle = new Van(0, 0, 270, null)
+            {
+                Prouth = originalProuth
+            };
+
+            model.Vehicles.Add(vehicle);
+
+            model.BuildRoad(1, 1);
+
+            Assert.NotSame(originalProuth, vehicle.Prouth);
+            Assert.Equal(2, vehicle.Prouth!.Stops.Count);
+            Assert.Same(model.GraphNetwork.GetNodeAt(0, 0), vehicle.Prouth.Stops[0]);
+            Assert.Same(model.GraphNetwork.GetNodeAt(0, 2), vehicle.Prouth.Stops[1]);
+        }
+    }
+
     public class GameModelAdvancedTransportTests
     {
         #region Segédmetódusok a Setup-hoz

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using TransportTycoon.MapData.Buildings;
+﻿using TransportTycoon.MapData.Buildings;
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
@@ -100,7 +99,6 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// The exit direction is random, and the path is not straight but has a chance to side step, creating a more natural look.
         /// </summary>
         /// <remarks>
-        /// It has been marked as excluded from code coverage because of its inherent randomness, which makes it hard to test reliably.
         /// The code coverage tools may not properly recognize the tests for this method, even though it is tested in CityGeneratorTest.cs.
         /// A further class extraction layer might be needed to improve testability and code coverage reporting for this method.
         /// </remarks>
@@ -108,9 +106,6 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         /// <param name="startX">The starting X coordinate of the exit road.</param>
         /// <param name="startY">The starting Y coordinate of the exit road.</param>
         /// <param name="random">The random number generator.</param>
-        [ExcludeFromCodeCoverage(Justification = "This method is inherently random and hard to test reliably." +
-            "It also tested properly inside CityGeneratorTest.cs, however the code coverage won't pick it up properly." +
-            "Probably a further class extraction layer is needed.")]
         private void CarveExit(CityEntity city, int startX, int startY, IRandom random)
         {
             (int topLeftX, int topLeftY) = city.TopLeftPoints;
@@ -121,8 +116,7 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             // North, East, South, West
             (int dx, int dy) = _directions[random.Next(4)];
 
-            while (x <= topLeftX && x < topLeftX + city.Width &&
-                    topLeftY <= y && y < topLeftY + city.Height)
+            while (IsInsideTheCity(x, y, topLeftX, topLeftY, city.Width, city.Height))
             {
                 city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height);
 
@@ -133,11 +127,11 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                     // Tend to move in the other axis
                     if (dx == 0)
                     {
-                        x = Math.Clamp(x + sideStep, 0, city.Width - 1);
+                        x = Math.Clamp(x + sideStep, topLeftX, topLeftX + city.Width - 1);
                     }
                     else
                     {
-                        y = Math.Clamp(y + sideStep, 0, city.Height - 1);
+                        y = Math.Clamp(y + sideStep, topLeftY, topLeftY + city.Height - 1);
                     }
                     city.MapPoints[(x, y)] = new Road(x, y, RoadType.XRoad, city.MapPoints[(x, y)].Height, city);
                 }
@@ -169,12 +163,17 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
                 int nextY = y + currentDir.dy;
 
                 // If the road hits the edge of the city bounds, stop this branch
-                if (!(topLeftX <= nextX && nextX < topLeftX + city.Width) || !(topLeftY <= nextY && nextY < topLeftY + city.Height)) break;
+                if (!IsInsideTheCity(nextX, nextY, topLeftX, topLeftY, city.Width, city.Height)) break;
 
                 // Step the iteraion
                 x = nextX;
                 y = nextY;
             }
+        }
+
+        private bool IsInsideTheCity(int x, int y, int topLeftX, int topLeftY, int width, int height)
+        {
+            return topLeftX <= x && x < topLeftX + width && topLeftY <= y && y < topLeftY + height;
         }
         #endregion
     }

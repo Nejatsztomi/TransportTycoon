@@ -41,7 +41,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             var heightMap = context.HeightMap;
             var structureMap = context.StructureMap;
 
-            if (centerX >= 0 && centerY >= 0 && context.Settings.MaxCityRange > 0)
+            int maxRange = buildingEntity is CityEntity ? context.Settings.MaxCityRange : context.Settings.MaxStructureRange;
+
+            if (centerX >= 0 && centerY >= 0 && maxRange > 0)
             {
                 return TryPlaceNear(buildingEntity, context, centerX, centerY, random, validPoints);
             }
@@ -66,7 +68,9 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
         protected void ForcePlace(BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY, IRandom random, List<(int X, int Y)> validPoints)
         {
             Debug.WriteLine($"Force placing {buildingEntity.GetType().Name} at ({centerX}, {centerY})");
-            if (centerX >= 0 && centerY >= 0 && context.Settings.MaxCityRange > 0)
+            int maxRange = buildingEntity is CityEntity ? context.Settings.MaxCityRange : context.Settings.MaxStructureRange;
+
+            if (centerX >= 0 && centerY >= 0 && maxRange > 0)
             {
                 ForcePlaceNear(buildingEntity, context, centerX, centerY, random, validPoints);
                 return;
@@ -105,8 +109,6 @@ namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
             var heightMap = context.HeightMap;
             var waterMap = context.WaterMap;
             var structureMap = context.StructureMap;
-
-            if (startX < 0 || startY < 0 || startX + buildingEntity.Width > context.Width || startY + buildingEntity.Height > context.Height) return false;
 
             // Valid tile check (no water, no structures)
             for (int i = 0; i < buildingEntity.Width; i++)

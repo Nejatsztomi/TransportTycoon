@@ -1,10 +1,105 @@
 ﻿using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
+using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
+using TransportTycoon.Model.Graph;
+using GraphModel = TransportTycoon.Model.Graph.Graph;
 
 namespace TransportTycoon.Test.Model
 {
     public class VehicleTests
     {
+        private sealed class TestMapGenerator : IMapGenerator
+        {
+            public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
+            {
+                return (new IField[context.Width, context.Height], []);
+            }
+        }
+
+        private sealed class TestPathFinder : IPathFinder
+        {
+            private readonly List<Edge>? _result;
+
+            public TestPathFinder(List<Edge>? result)
+            {
+                _result = result;
+            }
+
+            public List<Edge>? FindPath(Node startNode, Node endNode) => _result;
+        }
+
+        private sealed class SequencedPathFinder : IPathFinder
+        {
+            private readonly Queue<List<Edge>?> _results;
+
+            public SequencedPathFinder(params List<Edge>?[] results)
+            {
+                _results = new Queue<List<Edge>?>(results);
+            }
+
+            public int CallCount { get; private set; }
+
+            public List<Edge>? FindPath(Node startNode, Node endNode)
+            {
+                CallCount++;
+                return _results.Count > 0 ? _results.Dequeue() : null;
+            }
+        }
+
+        private sealed class TestVehicle : Vehicle
+        {
+            public TestVehicle(List<LoadType>? acceptedGoods, int maxCapacity = 0, int x = 0, int y = 0, double angle = 0, double topSpeed = 1.0) : base(x, y, angle, null)
+            {
+                AcceptedGoods = acceptedGoods;
+                MaxCapacity = maxCapacity;
+                TopSpeed = topSpeed;
+                CurrentSpeed = topSpeed;
+            }
+
+            public void SetCurrentRouteValue(List<Edge>? route) => CurrentRoute = route;
+        }
+
+        private static Edge CreateEdge(params IField[] roads)
+        {
+            return new Edge(new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop)), roads, 1);
+        }
+
+        private static GhostNodeInjector CreateInjector(IField[,] table, Dictionary<Node, List<Edge>>? adjacencyList = null)
+        {
+            var context = new MapGenerationContext(table.GetLength(0), table.GetLength(1), 0, new MapGenerationSettings());
+            var gameTable = new GameTable(new TestMapGenerator(), context);
+
+            for (int x = 0; x < table.GetLength(0); x++)
+            {
+                for (int y = 0; y < table.GetLength(1); y++)
+                {
+                    gameTable.UpdateTable(x, y, table[x, y]);
+                }
+            }
+
+            return new GhostNodeInjector(new GraphModel(adjacencyList ?? []), new PathTracer(gameTable));
+        }
+
+        private static GhostNodeInjector CreateInjectorWithStopNode(int x, int y, int width = 3, int height = 3)
+        {
+            var table = new IField[width, height];
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    table[i, j] = new Water(i, j);
+                }
+            }
+
+            table[x, y] = new Stop(x, y, 1);
+
+            return CreateInjector(table, new Dictionary<Node, List<Edge>>
+            {
+                [new Node(x, y, typeof(Stop))] = []
+            });
+        }
+
         #region Konstruktor és Alaptulajdonságok Tesztjei
         [Fact]
         public void SmallBus_Constructor_SetsCorrectDefaultValues()
@@ -109,6 +204,475 @@ namespace TransportTycoon.Test.Model
 
             // Assert
             Assert.Equal(wood, pickup.CurrentLoad);
+        }
+
+        [Fact]
+        public void SetCurrentLoad_WhenAcceptedGoodsIsNull_DoesNotSetLoad()
+        {
+            // Arrange
+            var vehicle = new TestVehicle(null, 100);
+            var wood = new Wood();
+            vehicle.SetCurrentCapacity(25);
+
+            // Act
+            vehicle.SetCurrentLoad(wood);
+
+            // Assert
+            Assert.Null(vehicle.CurrentLoad);
+            Assert.Equal(25, vehicle.CurrentCapacity);
+        }
+
+        [Fact]
+        public void SetCurrentLoad_WhenAcceptedGoodsDoesNotContainLoad_DoesNotSetLoad()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People], 100);
+            var wood = new Wood();
+            vehicle.SetCurrentCapacity(25);
+
+            // Act
+            vehicle.SetCurrentLoad(wood);
+
+            // Assert
+            Assert.Null(vehicle.CurrentLoad);
+            Assert.Equal(25, vehicle.CurrentCapacity);
+        }
+        #endregion
+
+        #region Indulás Tesztek
+        [Fact]
+        public void StartDrivingFromStopToStop_WhenVehicleIsLost_DoesNothing()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]),
+                PathFinder = new TestPathFinder(null)
+            };
+            var injector = CreateInjectorWithStopNode(0, 0);
+            var route = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Stop(1, 0, 1)) };
+
+            vehicle.RecalculateRoute(injector);
+            vehicle.SetCurrentRouteValue(route);
+
+            // Act
+            vehicle.StartDrivingFromStopToStop();
+
+            // Assert
+            Assert.True(vehicle.IsLost);
+            Assert.Same(route, vehicle.CurrentRoute);
+            Assert.Null(vehicle.GetNextTileCoordinates());
+        }
+
+        [Fact]
+        public void StartDrivingFromStopToStop_WhenCurrentRouteIsNull_ResetsRouteState()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People]);
+            vehicle.SetCurrentRouteValue(null);
+
+            // Act
+            vehicle.StartDrivingFromStopToStop();
+
+            // Assert
+            Assert.Null(vehicle.CurrentRoute);
+            Assert.Null(vehicle.GetNextTileCoordinates());
+        }
+
+        [Fact]
+        public void StartDrivingFromStopToStop_WhenCurrentRouteIsEmpty_ResetsRouteState()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People]);
+            vehicle.SetCurrentRouteValue([]);
+
+            // Act
+            vehicle.StartDrivingFromStopToStop();
+
+            // Assert
+            Assert.Empty(vehicle.CurrentRoute!);
+            Assert.Null(vehicle.GetNextTileCoordinates());
+        }
+
+        [Fact]
+        public void GetNextRoute_WhenPathFinderIsNull_ReturnsNull()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))])
+            };
+
+            // Act
+            var route = vehicle.GetNextRoute();
+
+            // Assert
+            Assert.Null(route);
+        }
+
+        [Fact]
+        public void GetNextRoute_WhenProuthIsNull_ReturnsNull()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                PathFinder = new TestPathFinder([])
+            };
+
+            // Act
+            var route = vehicle.GetNextRoute();
+
+            // Assert
+            Assert.Null(route);
+        }
+
+        [Fact]
+        public void GetNextRoute_WhenProuthHasLessThanTwoStops_ReturnsNull()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop))]),
+                PathFinder = new TestPathFinder([])
+            };
+
+            // Act
+            var route = vehicle.GetNextRoute();
+
+            // Assert
+            Assert.Null(route);
+        }
+
+        [Fact]
+        public void GetNextRoute_WhenNoPathIsFound_MarksVehicleLost()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]),
+                PathFinder = new TestPathFinder(null)
+            };
+
+            // Act
+            var route = vehicle.GetNextRoute();
+
+            // Assert
+            Assert.Null(route);
+            Assert.True(vehicle.IsLost);
+        }
+        #endregion
+
+        #region Újraszámolt Útvonal Tesztek
+        [Fact]
+        public void RecalculateRoute_WhenPathFinderIsNull_DoesNothing()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))])
+            };
+            var currentRoute = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Road(0, 1, RoadType.Vertical, 1)) };
+            vehicle.SetCurrentRouteValue(currentRoute);
+            var injector = CreateInjector(new IField[5, 5]);
+
+            // Act
+            vehicle.RecalculateRoute(injector);
+
+            // Assert
+            Assert.False(vehicle.IsLost);
+            Assert.Same(currentRoute, vehicle.CurrentRoute);
+        }
+
+        [Fact]
+        public void RecalculateRoute_WhenStopPairCannotBeDetermined_DoesNothing()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                PathFinder = new TestPathFinder([])
+            };
+            var injector = CreateInjector(new IField[5, 5]);
+            vehicle.Prouth = new Prouth([new Node(0, 0, typeof(Stop))]);
+            var currentRoute = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Road(0, 1, RoadType.Vertical, 1)) };
+            vehicle.SetCurrentRouteValue(currentRoute);
+
+            // Act
+            vehicle.RecalculateRoute(injector);
+
+            // Assert
+            Assert.False(vehicle.IsLost);
+            Assert.Same(currentRoute, vehicle.CurrentRoute);
+        }
+
+        [Fact]
+        public void RecalculateRoute_WhenGhostNodeCannotBeInjected_MarksVehicleLost()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))]),
+                PathFinder = new TestPathFinder([])
+            };
+            var injector = CreateInjector(new IField[3, 3]);
+
+            // Act
+            vehicle.RecalculateRoute(injector);
+
+            // Assert
+            Assert.True(vehicle.IsLost);
+        }
+
+        [Fact]
+        public void RecalculateRoute_WhenPathFinderReturnsNull_MarksVehicleLost()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))]),
+                PathFinder = new TestPathFinder(null)
+            };
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(1, 1, 1), new Road(1, 2, RoadType.Vertical, 1))]);
+            var injector = CreateInjectorWithStopNode(1, 1);
+
+            // Act
+            vehicle.RecalculateRoute(injector);
+
+            // Assert
+            Assert.True(vehicle.IsLost);
+            Assert.NotNull(vehicle.CurrentRoute); // remains unchanged
+        }
+
+        [Fact]
+        public void RecalculateRoute_WhenPathFinderReturnsEmptyRoute_UsesNextRoute()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People], x: 1, y: 1)
+            {
+                Prouth = new Prouth([new Node(1, 3, typeof(Stop)), new Node(2, 3, typeof(Stop))])
+            };
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(1, 1, 1), new Road(1, 2, RoadType.Vertical, 1), new Stop(1, 3, 1))]);
+
+            var pathFinder = new SequencedPathFinder(
+                [],
+                [CreateEdge(new Road(1, 1, RoadType.Vertical, 1), new Road(1, 2, RoadType.Vertical, 1), new Stop(1, 3, 1))]
+            );
+
+            vehicle.PathFinder = pathFinder;
+            var injector = CreateInjectorWithStopNode(1, 1);
+
+            // Act
+            vehicle.RecalculateRoute(injector);
+
+            // Assert
+            Assert.Equal(2, pathFinder.CallCount);
+            Assert.NotNull(vehicle.CurrentRoute);
+            Assert.NotEmpty(vehicle.CurrentRoute!);
+            Assert.Equal((1, 2), vehicle.GetNextTileCoordinates());
+        }
+
+        [Fact]
+        public void RecalculateRoute_WhenNewRouteExists_UpdatesCurrentRouteAndTileState()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))])
+            };
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1))]);
+
+            var route = new List<Edge>
+            {
+                CreateEdge(
+                    new Stop(0, 0, 1),
+                    new Road(0, 1, RoadType.Vertical, 1),
+                    new Road(0, 2, RoadType.Vertical, 1),
+                    new Stop(1, 3, 1)
+                )
+            };
+
+            vehicle.PathFinder = new TestPathFinder(route);
+            var injector = CreateInjectorWithStopNode(0, 0);
+
+            // Act
+            vehicle.RecalculateRoute(injector);
+
+            // Assert
+            Assert.False(vehicle.IsLost);
+            Assert.Equal(route, vehicle.CurrentRoute);
+            Assert.Equal((0, 1), vehicle.GetNextTileCoordinates());
+        }
+        #endregion
+
+        #region Lane Index Tesztek
+        [Theory]
+        [InlineData(-1, 0, 3)] // Left
+        [InlineData(1, 0, 1)]  // Right
+        [InlineData(0, -1, 0)] // Up
+        [InlineData(0, 1, 2)]  // Down
+        public void GetLaneIdx_ReturnsExpectedLaneIndexForEachDirection(int targetX, int targetY, int expectedLaneIdx)
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People]);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(targetX, targetY, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+
+            // Act
+            var laneIdx = vehicle.GetLaneIdx();
+
+            // Assert
+            Assert.Equal(expectedLaneIdx, laneIdx);
+        }
+        #endregion
+
+        #region Következő Csempe Tesztek
+        [Fact]
+        public void GetNextTileCoordinates_WhenCurrentEdgeTilesIsNull_ReturnsNull()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People]);
+
+            // Act
+            var nextTile = vehicle.GetNextTileCoordinates();
+
+            // Assert
+            Assert.Null(nextTile);
+        }
+
+        [Fact]
+        public void GetNextTileCoordinates_WhenVehicleIsLost_ReturnsNull()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]),
+                PathFinder = new TestPathFinder(null)
+            };
+            vehicle.RecalculateRoute(CreateInjectorWithStopNode(0, 0));
+
+            // Act
+            var nextTile = vehicle.GetNextTileCoordinates();
+
+            // Assert
+            Assert.Null(nextTile);
+        }
+
+        [Fact]
+        public void GetNextTileCoordinates_WhenNextTileExists_ReturnsNextTileCoordinates()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People]);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1), new Stop(2, 3, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+
+            // Act
+            var nextTile = vehicle.GetNextTileCoordinates();
+
+            // Assert
+            Assert.Equal((2, 3), nextTile);
+        }
+
+        [Fact]
+        public void GetNextTileCoordinates_WhenEndOfEdgeAndNextEdgeExists_ReturnsFirstTileOfNextEdge()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People]);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1)), CreateEdge(new Stop(4, 5, 1), new Stop(6, 7, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+
+            // Act
+            var nextTile = vehicle.GetNextTileCoordinates();
+
+            // Assert
+            Assert.Equal((4, 5), nextTile);
+        }
+
+        [Fact]
+        public void GetNextTileCoordinates_WhenEndOfEdgeAndCurrentRouteIsNull_ReturnsNull()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People]);
+            vehicle.SetCurrentRouteValue(null);
+
+            // Act
+            var nextTile = vehicle.GetNextTileCoordinates();
+
+            // Assert
+            Assert.Null(nextTile);
+        }
+
+        [Fact]
+        public void GetNextTileCoordinates_WhenNextEdgeHasNoRoads_ReturnsNull()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People]);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1)), CreateEdge()]);
+            vehicle.StartDrivingFromStopToStop();
+
+            // Act
+            var nextTile = vehicle.GetNextTileCoordinates();
+
+            // Assert
+            Assert.Null(nextTile);
+        }
+        #endregion
+
+        #region Folyamatos Mozgás Tesztek
+        [Fact]
+        public void Step_UpdatesXAndY_WhenMovingAlongRoute()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People], x: 0, y: 0, angle: 90, topSpeed: 1)
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(2, 0, typeof(Stop))])
+            };
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1), new Road(1, 0, RoadType.Vertical, 1), new Stop(2, 0, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+            vehicle.ChangeCurrentSpeed(1);
+
+            // Act
+            vehicle.Step(1.0);
+            vehicle.Step(0.5);
+
+            // Assert
+            Assert.Equal(0.5, vehicle.X, 3);
+            Assert.Equal(0.0, vehicle.Y, 3);
+        }
+
+        [Fact]
+        public void Step_ChangesAngle_AndHandlesFullCircleWrapCorrectly()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People], x: 0, y: 0, angle: 350, topSpeed: 1)
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(2, 0, typeof(Stop))])
+            };
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1), new Road(1, 0, RoadType.Vertical, 1), new Stop(2, 0, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+            vehicle.ChangeCurrentSpeed(1);
+
+            // Act
+            vehicle.Step(1.0);
+            vehicle.Step(0.25);
+
+            // Assert
+            Assert.Equal(0.0, vehicle.Angle, 3);
+        }
+
+        [Fact]
+        public void Step_DoesNotChangeAngle_WhenMovementDeltaIsTooSmall()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People], x: 0, y: 0, angle: 123, topSpeed: 0.1);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+
+            // Act
+            vehicle.Step(0.5);
+
+            // Assert
+            Assert.Equal(123, vehicle.Angle, 3);
+            Assert.Equal(0.0, vehicle.X, 3);
+            Assert.Equal(0.0, vehicle.Y, 3);
         }
         #endregion
 
