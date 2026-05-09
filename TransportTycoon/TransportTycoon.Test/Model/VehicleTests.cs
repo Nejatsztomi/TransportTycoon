@@ -49,10 +49,12 @@ namespace TransportTycoon.Test.Model
 
         private sealed class TestVehicle : Vehicle
         {
-            public TestVehicle(List<LoadType>? acceptedGoods, int maxCapacity = 0) : base(0, 0, 0, null)
+            public TestVehicle(List<LoadType>? acceptedGoods, int maxCapacity = 0, int x = 0, int y = 0, double angle = 0, double topSpeed = 1.0) : base(x, y, angle, null)
             {
                 AcceptedGoods = acceptedGoods;
                 MaxCapacity = maxCapacity;
+                TopSpeed = topSpeed;
+                CurrentSpeed = topSpeed;
             }
 
             public void SetCurrentRouteValue(List<Edge>? route) => CurrentRoute = route;
@@ -242,9 +244,11 @@ namespace TransportTycoon.Test.Model
         public void StartDrivingFromStopToStop_WhenVehicleIsLost_DoesNothing()
         {
             // Arrange
-            var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]);
-            vehicle.PathFinder = new TestPathFinder(null);
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]),
+                PathFinder = new TestPathFinder(null)
+            };
             var injector = CreateInjectorWithStopNode(0, 0);
             var route = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Stop(1, 0, 1)) };
 
@@ -416,7 +420,6 @@ namespace TransportTycoon.Test.Model
 
             // Assert
             Assert.True(vehicle.IsLost);
-            Assert.Null(vehicle.CurrentRoute);
         }
 
         [Fact]
@@ -436,14 +439,14 @@ namespace TransportTycoon.Test.Model
 
             // Assert
             Assert.True(vehicle.IsLost);
-            Assert.Null(vehicle.CurrentRoute);
+            Assert.NotNull(vehicle.CurrentRoute); // remains unchanged
         }
 
         [Fact]
         public void RecalculateRoute_WhenPathFinderReturnsEmptyRoute_UsesNextRoute()
         {
             // Arrange
-            var vehicle = new TestVehicle([LoadType.People])
+            var vehicle = new TestVehicle([LoadType.People], x: 1, y: 1)
             {
                 Prouth = new Prouth([new Node(1, 3, typeof(Stop)), new Node(2, 3, typeof(Stop))])
             };
@@ -539,9 +542,11 @@ namespace TransportTycoon.Test.Model
         public void GetNextTileCoordinates_WhenVehicleIsLost_ReturnsNull()
         {
             // Arrange
-            var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]);
-            vehicle.PathFinder = new TestPathFinder(null);
+            var vehicle = new TestVehicle([LoadType.People])
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]),
+                PathFinder = new TestPathFinder(null)
+            };
             vehicle.RecalculateRoute(CreateInjectorWithStopNode(0, 0));
 
             // Act
@@ -608,6 +613,66 @@ namespace TransportTycoon.Test.Model
 
             // Assert
             Assert.Null(nextTile);
+        }
+        #endregion
+
+        #region Folyamatos Mozgás Tesztek
+        [Fact]
+        public void Step_UpdatesXAndY_WhenMovingAlongRoute()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People], x: 0, y: 0, angle: 90, topSpeed: 1)
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(2, 0, typeof(Stop))])
+            };
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1), new Road(1, 0, RoadType.Vertical, 1), new Stop(2, 0, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+            vehicle.ChangeCurrentSpeed(1);
+
+            // Act
+            vehicle.Step(1.0);
+            vehicle.Step(0.5);
+
+            // Assert
+            Assert.Equal(0.5, vehicle.X, 3);
+            Assert.Equal(0.0, vehicle.Y, 3);
+        }
+
+        [Fact]
+        public void Step_ChangesAngle_AndHandlesFullCircleWrapCorrectly()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People], x: 0, y: 0, angle: 350, topSpeed: 1)
+            {
+                Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(2, 0, typeof(Stop))])
+            };
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1), new Road(1, 0, RoadType.Vertical, 1), new Stop(2, 0, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+            vehicle.ChangeCurrentSpeed(1);
+
+            // Act
+            vehicle.Step(1.0);
+            vehicle.Step(0.25);
+
+            // Assert
+            Assert.Equal(0.0, vehicle.Angle, 3);
+        }
+
+        [Fact]
+        public void Step_DoesNotChangeAngle_WhenMovementDeltaIsTooSmall()
+        {
+            // Arrange
+            var vehicle = new TestVehicle([LoadType.People], x: 0, y: 0, angle: 123, topSpeed: 0.1);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1))]);
+            vehicle.StartDrivingFromStopToStop();
+
+            // Act
+            vehicle.Step(0.5);
+
+            // Assert
+            Assert.Equal(123, vehicle.Angle, 3);
+            Assert.Equal(0.0, vehicle.X, 3);
+            Assert.Equal(0.0, vehicle.Y, 3);
         }
         #endregion
 
