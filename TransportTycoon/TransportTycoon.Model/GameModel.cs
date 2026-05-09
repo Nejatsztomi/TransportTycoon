@@ -328,13 +328,22 @@ namespace TransportTycoon.Model
         }
         #endregion
 
+        /// <summary>
+        /// Retrieves the first vehicle located at the specified map coordinates.
+        /// </summary>
+        /// <remarks>If multiple vehicles occupy the same coordinates, only the first one found is
+        /// returned. Coordinates are compared for exact equality.</remarks>
+        /// <param name="x">The x-coordinate of the map position to search for a vehicle.</param>
+        /// <param name="y">The y-coordinate of the map position to search for a vehicle.</param>
+        /// <returns>A <see cref="Vehicle"/> object if a vehicle exists at the specified coordinates; otherwise, <see
+        /// langword="null"/>.</returns>
         public Vehicle? GetVehicleAt(int x, int y)
         {
             return Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
         }
 
         /// <summary>
-        /// Setups a new game.
+        /// Starts a new game session: clears vehicles and building entities, generates a fresh map, starts the timer and raises the <see cref="NewGameCreated"/> event.
         /// </summary>
         public void NewGame()
         {
@@ -346,6 +355,13 @@ namespace TransportTycoon.Model
             NewGameCreated?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Sets the currently selected field on the map based on the specified coordinates.
+        /// </summary>
+        /// <remarks>This method raises the SelectedFieldChanged event after updating the selected field.
+        /// Passing -1 for both x and y will deselect any currently selected field.</remarks>
+        /// <param name="x">The zero-based x-coordinate of the field to select. If both x and y are -1, the selected field is cleared.</param>
+        /// <param name="y">The zero-based y-coordinate of the field to select. If both x and y are -1, the selected field is cleared.</param>
         public void SetSelectedField(int x, int y)
         {
             if (x == -1 && y == -1) SelectedField = null;
@@ -353,6 +369,11 @@ namespace TransportTycoon.Model
             SelectedFieldChanged?.Invoke(this, (x, y));
         }
 
+        /// <summary>
+        /// Increases the height of the tile, if its Terrain
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void IncreaseHeight(int x, int y)
         {
             if (Mode == GameMode.Editor)
@@ -394,6 +415,11 @@ namespace TransportTycoon.Model
             }
         }
 
+        /// <summary>
+        /// Decreases the height of the tile, if its Terrain
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void DecreaseHeight(int x, int y)
         {
             if (Mode == GameMode.Editor)
@@ -437,6 +463,16 @@ namespace TransportTycoon.Model
             }
         }
 
+        /// <summary>
+        /// Builds a road at the specified map coordinates if the game is in editor mode and the terrain at the location
+        /// allows road construction.
+        /// </summary>
+        /// <remarks>This method only builds a road if the current game mode is set to editor and the
+        /// specified location is a valid terrain with a height of 3 or less. The method updates the map, adjusts the
+        /// balance based on the number of trees present, and triggers related events such as infrastructure updates and
+        /// balance changes. If the game ends as a result of this action, the game over event is raised.</remarks>
+        /// <param name="x">The x-coordinate of the map location where the road is to be built. Must be within the bounds of the map.</param>
+        /// <param name="y">The y-coordinate of the map location where the road is to be built. Must be within the bounds of the map.</param>
         public void BuildRoad(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
@@ -480,6 +516,12 @@ namespace TransportTycoon.Model
             RebuildGraph();
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void BuildBridge(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Water)
@@ -576,7 +618,16 @@ namespace TransportTycoon.Model
             if (cost != 0) BalanceMessage?.Invoke(this, (x, y, cost));
             RebuildGraph();
         }
-
+        /// <summary>
+        /// Attempts to build a stop at the specified map coordinates, updating the game state and player balance if
+        /// successful.
+        /// </summary>
+        /// <remarks>This method only performs the operation if the game is not in editor mode and the
+        /// specified location is valid for building a stop. The player's balance is adjusted based on the number of
+        /// trees present at the location. The method also triggers events related to infrastructure changes and balance
+        /// updates.</remarks>
+        /// <param name="x">The x-coordinate on the map where the stop is to be constructed. Must be within the bounds of the map.</param>
+        /// <param name="y">The y-coordinate on the map where the stop is to be constructed. Must be within the bounds of the map.</param>
         public void BuildStop(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not Terrain || Map[x, y].Height > 3) return;
@@ -620,6 +671,12 @@ namespace TransportTycoon.Model
             BalanceMessage?.Invoke(this, (x, y, cost));
         }
 
+        /// <summary>
+        /// Destroys infrastructure at the specified coordinates when in Editor mode and allowed.
+        /// Replaces roads/stops with terrain or destroys bridge chains; updates modified fields and rebuilds graph.
+        /// </summary>
+        /// <param name="x">Target tile X coordinate.</param>
+        /// <param name="y">Target tile Y coordinate.</param>
         public void Destroy(int x, int y)
         {
             if (Mode != GameMode.Editor || Map[x, y] is not IInfrastructure || (Map[x, y] is Road r && r.InCity())
@@ -654,7 +711,14 @@ namespace TransportTycoon.Model
             RebuildGraph();
         }
 
-        //Create a new Vehicle based on the given type and coordinates, and add it to the player's collection if they have enough balance. Returns the created Vehicle.
+        /// <summary>
+        /// Create a new Vehicle based on the given type and coordinates, and add it to the player's collection if they have enough balance. Returns the created Vehicle.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public Vehicle? BuyVehicle(int x, int y, VehicleType type)
         {
             if (Map[x, y] is not Stop) return null;
@@ -728,6 +792,13 @@ namespace TransportTycoon.Model
             }
         }
 
+        /// <summary>
+        /// Adds a stop at the specified map coordinates to the current route if it is not already selected.
+        /// </summary>
+        /// <remarks>If the stop at the specified coordinates is not already part of the selected route,
+        /// it is added and an event is raised to notify subscribers of the change.</remarks>
+        /// <param name="x">The zero-based x-coordinate of the stop on the map. Must be within the bounds of the map array.</param>
+        /// <param name="y">The zero-based y-coordinate of the stop on the map. Must be within the bounds of the map array.</param>
         public void DefineRoute(int x, int y)
         {
             if (Map[x, y] is not Stop stop) return;
@@ -738,6 +809,16 @@ namespace TransportTycoon.Model
             }
         }
 
+        /// <summary>
+        /// Queries the route for a vehicle located at the specified coordinates and updates the selected stop fields
+        /// accordingly.
+        /// </summary>
+        /// <remarks>If a vehicle is found at the given coordinates and it has an assigned route, the
+        /// route is converted to stop tiles and the selected stop fields are updated. If no vehicle is found, the
+        /// method exits without making changes. This method also raises the SelectedStopFieldsChanged event when the
+        /// selected stop fields are updated.</remarks>
+        /// <param name="x">The x-coordinate used to locate the vehicle on the map.</param>
+        /// <param name="y">The y-coordinate used to locate the vehicle on the map.</param>
         public void QueryRoute(int x, int y)
         {
             Vehicle? selectedVehcile = Vehicles.Find(v => Math.Abs(v.X - x) < 0.0001 && Math.Abs(v.Y - y) < 0.0001);
@@ -751,6 +832,14 @@ namespace TransportTycoon.Model
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
 
+        /// <summary>
+        /// Assigns a route to the vehicle located at the specified coordinates using the currently selected stops.
+        /// </summary>
+        /// <remarks>This method requires that at least one stop is selected before invocation. If no
+        /// vehicle exists at the specified coordinates, the method performs no action. After assigning the route, the
+        /// selected stops are cleared and an event is raised to notify subscribers of the change.</remarks>
+        /// <param name="x">The X coordinate of the vehicle to which the route will be assigned.</param>
+        /// <param name="y">The Y coordinate of the vehicle to which the route will be assigned.</param>
         public void AssignRoute(int x, int y)
         {
             if (SelectedStopFields.Count == 0) return;
@@ -778,6 +867,11 @@ namespace TransportTycoon.Model
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
 
+        /// <summary>
+        /// delete the car's route
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         public void DeleteRoute(int x, int y)
         {
             if (SelectedStopFields.Count == 0) return;

@@ -44,11 +44,19 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Changes the roadtype of the road to the specified type. This method can be used to change the type of the road when building bridges or when connecting roads to cities. For example, when building a horizontal bridge, the roadtype of the road will be changed to Horizontal, and when connecting a road to a city, the roadtype will be changed to RightTurn or LeftTurn depending on the direction of the connection.
+        /// </summary>
+        /// <param name="type"></param>
         public void ChangeType(RoadType type)
         {
             RoadType = type;
         }
 
+        /// <summary>
+        /// Decides if the road is in a city by checking if the pointer to the city is not null. If the pointer is not null, it means that the road is connected to a city and therefore is considered to be in a city.
+        /// </summary>
+        /// <returns></returns>
         public readonly bool InCity()
         {
             return Pointer is not null;

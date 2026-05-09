@@ -4,11 +4,20 @@
     {
         public static int Tax { get; protected set; }
 
+
+        /// <summary>
+        /// Calculates the total value by multiplying the tax rate by the price.
+        /// </summary>
+        /// <returns>The product of the tax rate and the price.</returns>
         protected int Value()
         {
             return Tax * Price;
         }
 
+        /// <summary>
+        /// Sets the global tax value that is used to calculate the value of goods. The value of goods is calculated by multiplying the price of the good by the global tax. This method can be used to change the global tax value when needed, for example, when the player wants to increase or decrease the tax rate in the game.
+        /// </summary>
+        /// <param name="tax"></param>
         public static void SetGlobalTax(int tax)
         {
             Tax = tax;
