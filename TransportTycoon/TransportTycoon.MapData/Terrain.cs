@@ -110,6 +110,15 @@
         {
             Trees = 1;
         }
+
+        /// <summary>
+        /// Gets the number of trees associated with the current instance.
+        /// </summary>
+        /// <returns>The number of trees as an integer.</returns>
+        public override int GetTrees()
+        {
+            return Trees;
+        }
         #endregion
 
         #region Private methods
