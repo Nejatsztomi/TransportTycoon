@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using TransportTycoon.MapData;
+﻿using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
 using TransportTycoon.Model;
@@ -57,22 +56,6 @@ namespace TransportTycoon.Test.Model
             }
 
             public void SetCurrentRouteValue(List<Edge>? route) => CurrentRoute = route;
-
-            public void SetIsLostValue(bool isLost)
-            {
-                typeof(Vehicle).GetProperty(nameof(IsLost), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)!
-                    .SetValue(this, isLost);
-            }
-
-            public void SetPrivateField<T>(string fieldName, T value)
-            {
-                typeof(Vehicle).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(this, value);
-            }
-
-            public T GetPrivateField<T>(string fieldName)
-            {
-                return (T)typeof(Vehicle).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(this)!;
-            }
         }
 
         private static Edge CreateEdge(params IField[] roads)
@@ -260,24 +243,21 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.SetPrivateField("_currentEdgeIdx", 7);
-            vehicle.SetPrivateField("_currentTileIdx", 3);
-            vehicle.SetPrivateField("_tileProgress", 0.75);
-            vehicle.SetPrivateField("_lerpX", 12.5);
-            vehicle.SetPrivateField("_lerpY", 34.5);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField>());
-            vehicle.SetIsLostValue(true);
+            vehicle.Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]);
+            vehicle.PathFinder = new TestPathFinder(null);
+            var injector = CreateInjectorWithStopNode(0, 0);
+            var route = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Stop(1, 0, 1)) };
+
+            vehicle.RecalculateRoute(injector);
+            vehicle.SetCurrentRouteValue(route);
 
             // Act
             vehicle.StartDrivingFromStopToStop();
 
             // Assert
             Assert.True(vehicle.IsLost);
-            Assert.Equal(7, vehicle.GetPrivateField<int>("_currentEdgeIdx"));
-            Assert.Equal(3, vehicle.GetPrivateField<int>("_currentTileIdx"));
-            Assert.Equal(0.75, vehicle.GetPrivateField<double>("_tileProgress"));
-            Assert.Equal(12.5, vehicle.GetPrivateField<double>("_lerpX"));
-            Assert.Equal(34.5, vehicle.GetPrivateField<double>("_lerpY"));
+            Assert.Same(route, vehicle.CurrentRoute);
+            Assert.Null(vehicle.GetNextTileCoordinates());
         }
 
         [Fact]
@@ -285,24 +265,14 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.SetPrivateField("_currentEdgeIdx", 7);
-            vehicle.SetPrivateField("_currentTileIdx", 3);
-            vehicle.SetPrivateField("_tileProgress", 0.75);
-            vehicle.SetPrivateField("_lerpX", 12.5);
-            vehicle.SetPrivateField("_lerpY", 34.5);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField>());
             vehicle.SetCurrentRouteValue(null);
 
             // Act
             vehicle.StartDrivingFromStopToStop();
 
             // Assert
-            Assert.Equal(0, vehicle.GetPrivateField<int>("_currentEdgeIdx"));
-            Assert.Equal(0, vehicle.GetPrivateField<int>("_currentTileIdx"));
-            Assert.Equal(0.0, vehicle.GetPrivateField<double>("_tileProgress"));
-            Assert.Equal(vehicle.X, vehicle.GetPrivateField<double>("_lerpX"));
-            Assert.Equal(vehicle.Y, vehicle.GetPrivateField<double>("_lerpY"));
-            Assert.Empty(vehicle.GetPrivateField<List<IField>>("_currentEdgeTiles"));
+            Assert.Null(vehicle.CurrentRoute);
+            Assert.Null(vehicle.GetNextTileCoordinates());
         }
 
         [Fact]
@@ -310,24 +280,14 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.SetPrivateField("_currentEdgeIdx", 7);
-            vehicle.SetPrivateField("_currentTileIdx", 3);
-            vehicle.SetPrivateField("_tileProgress", 0.75);
-            vehicle.SetPrivateField("_lerpX", 12.5);
-            vehicle.SetPrivateField("_lerpY", 34.5);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField>());
             vehicle.SetCurrentRouteValue([]);
 
             // Act
             vehicle.StartDrivingFromStopToStop();
 
             // Assert
-            Assert.Equal(0, vehicle.GetPrivateField<int>("_currentEdgeIdx"));
-            Assert.Equal(0, vehicle.GetPrivateField<int>("_currentTileIdx"));
-            Assert.Equal(0.0, vehicle.GetPrivateField<double>("_tileProgress"));
-            Assert.Equal(vehicle.X, vehicle.GetPrivateField<double>("_lerpX"));
-            Assert.Equal(vehicle.Y, vehicle.GetPrivateField<double>("_lerpY"));
-            Assert.Empty(vehicle.GetPrivateField<List<IField>>("_currentEdgeTiles"));
+            Assert.Empty(vehicle.CurrentRoute!);
+            Assert.Null(vehicle.GetNextTileCoordinates());
         }
 
         [Fact]
@@ -407,12 +367,9 @@ namespace TransportTycoon.Test.Model
             {
                 Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))])
             };
-            vehicle.SetCurrentRouteValue([CreateEdge(new Road(1, 1, RoadType.Vertical, 1))]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField> { new Road(1, 1, RoadType.Vertical, 1) });
-            vehicle.SetPrivateField("_currentTileIdx", 0);
+            var currentRoute = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Road(0, 1, RoadType.Vertical, 1)) };
+            vehicle.SetCurrentRouteValue(currentRoute);
             var injector = CreateInjector(new IField[5, 5]);
-            var currentRoute = vehicle.CurrentRoute;
-            var currentTileIdx = vehicle.GetPrivateField<int>("_currentTileIdx");
 
             // Act
             vehicle.RecalculateRoute(injector);
@@ -420,7 +377,6 @@ namespace TransportTycoon.Test.Model
             // Assert
             Assert.False(vehicle.IsLost);
             Assert.Same(currentRoute, vehicle.CurrentRoute);
-            Assert.Equal(currentTileIdx, vehicle.GetPrivateField<int>("_currentTileIdx"));
         }
 
         [Fact]
@@ -433,8 +389,8 @@ namespace TransportTycoon.Test.Model
             };
             var injector = CreateInjector(new IField[5, 5]);
             vehicle.Prouth = new Prouth([new Node(0, 0, typeof(Stop))]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField> { new Road(1, 1, RoadType.Vertical, 1) });
-            var currentRoute = vehicle.CurrentRoute;
+            var currentRoute = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Road(0, 1, RoadType.Vertical, 1)) };
+            vehicle.SetCurrentRouteValue(currentRoute);
 
             // Act
             vehicle.RecalculateRoute(injector);
@@ -453,7 +409,6 @@ namespace TransportTycoon.Test.Model
                 Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))]),
                 PathFinder = new TestPathFinder([])
             };
-            vehicle.SetPrivateField<List<IField>?>("_currentEdgeTiles", null);
             var injector = CreateInjector(new IField[3, 3]);
 
             // Act
@@ -473,9 +428,7 @@ namespace TransportTycoon.Test.Model
                 Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))]),
                 PathFinder = new TestPathFinder(null)
             };
-            vehicle.SetCurrentRouteValue([CreateEdge(new Road(1, 1, RoadType.Vertical, 1))]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField> { new Road(1, 1, RoadType.Vertical, 1) });
-            vehicle.SetPrivateField("_currentTileIdx", 0);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(1, 1, 1), new Road(1, 2, RoadType.Vertical, 1))]);
             var injector = CreateInjectorWithStopNode(1, 1);
 
             // Act
@@ -495,13 +448,6 @@ namespace TransportTycoon.Test.Model
                 Prouth = new Prouth([new Node(1, 3, typeof(Stop)), new Node(2, 3, typeof(Stop))])
             };
             vehicle.SetCurrentRouteValue([CreateEdge(new Stop(1, 1, 1), new Road(1, 2, RoadType.Vertical, 1), new Stop(1, 3, 1))]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField>
-            {
-                new Stop(1, 1, 1),
-                new Road(1, 2, RoadType.Vertical, 1),
-                new Stop(1, 3, 1)
-            });
-            vehicle.SetPrivateField("_currentTileIdx", 0);
 
             var pathFinder = new SequencedPathFinder(
                 [],
@@ -518,8 +464,7 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(2, pathFinder.CallCount);
             Assert.NotNull(vehicle.CurrentRoute);
             Assert.NotEmpty(vehicle.CurrentRoute!);
-            Assert.Equal(0, vehicle.GetPrivateField<int>("_currentEdgeIdx"));
-            Assert.NotNull(vehicle.GetPrivateField<List<IField>>("_currentEdgeTiles"));
+            Assert.Equal((1, 2), vehicle.GetNextTileCoordinates());
         }
 
         [Fact]
@@ -530,7 +475,7 @@ namespace TransportTycoon.Test.Model
             {
                 Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))])
             };
-            vehicle.SetCurrentRouteValue(null);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1))]);
 
             var route = new List<Edge>
             {
@@ -551,10 +496,7 @@ namespace TransportTycoon.Test.Model
             // Assert
             Assert.False(vehicle.IsLost);
             Assert.Equal(route, vehicle.CurrentRoute);
-            Assert.Equal(0, vehicle.GetPrivateField<int>("_currentEdgeIdx"));
-            Assert.Equal(0, vehicle.GetPrivateField<int>("_currentTileIdx"));
-            Assert.Equal(vehicle.X, vehicle.GetPrivateField<double>("_lerpX"));
-            Assert.Equal(vehicle.Y, vehicle.GetPrivateField<double>("_lerpY"));
+            Assert.Equal((0, 1), vehicle.GetNextTileCoordinates());
         }
         #endregion
 
@@ -568,10 +510,8 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField> { new Stop(targetX, targetY, 1) });
-            vehicle.SetPrivateField("_currentTileIdx", 0);
-            vehicle.SetPrivateField("_lerpX", 0.0);
-            vehicle.SetPrivateField("_lerpY", 0.0);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(targetX, targetY, 1))]);
+            vehicle.StartDrivingFromStopToStop();
 
             // Act
             var laneIdx = vehicle.GetLaneIdx();
@@ -587,7 +527,6 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.SetPrivateField<List<IField>?>("_currentEdgeTiles", null);
 
             // Act
             var nextTile = vehicle.GetNextTileCoordinates();
@@ -601,8 +540,9 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField> { new Stop(0, 0, 1) });
-            vehicle.SetIsLostValue(true);
+            vehicle.Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop))]);
+            vehicle.PathFinder = new TestPathFinder(null);
+            vehicle.RecalculateRoute(CreateInjectorWithStopNode(0, 0));
 
             // Act
             var nextTile = vehicle.GetNextTileCoordinates();
@@ -616,12 +556,8 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField>
-            {
-                new Stop(0, 0, 1),
-                new Stop(2, 3, 1)
-            });
-            vehicle.SetPrivateField("_currentTileIdx", 0);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1), new Stop(2, 3, 1))]);
+            vehicle.StartDrivingFromStopToStop();
 
             // Act
             var nextTile = vehicle.GetNextTileCoordinates();
@@ -635,13 +571,8 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            var firstEdge = CreateEdge(new Stop(0, 0, 1));
-            var secondEdge = CreateEdge(new Stop(4, 5, 1), new Stop(6, 7, 1));
-
-            vehicle.SetCurrentRouteValue([firstEdge, secondEdge]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField> { new Stop(0, 0, 1) });
-            vehicle.SetPrivateField("_currentTileIdx", 0);
-            vehicle.SetPrivateField("_currentEdgeIdx", 0);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1)), CreateEdge(new Stop(4, 5, 1), new Stop(6, 7, 1))]);
+            vehicle.StartDrivingFromStopToStop();
 
             // Act
             var nextTile = vehicle.GetNextTileCoordinates();
@@ -655,9 +586,6 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField> { new Stop(0, 0, 1) });
-            vehicle.SetPrivateField("_currentTileIdx", 0);
-            vehicle.SetPrivateField("_currentEdgeIdx", 0);
             vehicle.SetCurrentRouteValue(null);
 
             // Act
@@ -672,13 +600,8 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var vehicle = new TestVehicle([LoadType.People]);
-            var firstEdge = CreateEdge(new Stop(0, 0, 1));
-            var secondEdge = CreateEdge();
-
-            vehicle.SetCurrentRouteValue([firstEdge, secondEdge]);
-            vehicle.SetPrivateField("_currentEdgeTiles", new List<IField> { new Stop(0, 0, 1) });
-            vehicle.SetPrivateField("_currentTileIdx", 0);
-            vehicle.SetPrivateField("_currentEdgeIdx", 0);
+            vehicle.SetCurrentRouteValue([CreateEdge(new Stop(0, 0, 1)), CreateEdge()]);
+            vehicle.StartDrivingFromStopToStop();
 
             // Act
             var nextTile = vehicle.GetNextTileCoordinates();
