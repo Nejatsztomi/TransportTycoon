@@ -908,6 +908,7 @@ namespace TransportTycoon.Model
                     SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
                     _ => Map[x, y]
                 };
+
                 _modifiedFields.Add((x, y), Map[x, y]);
             });
 
@@ -918,6 +919,14 @@ namespace TransportTycoon.Model
                 .ForEach(tile =>
                 {
                     Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
+                });
+
+            data.ModifiedTiles
+                .Where(tile => tile.Type == SaveFieldType.Stop)
+                .ToList()
+                .ForEach(stop =>
+                {
+                    Map.StopEnvironment(stop.X, stop.Y);
                 });
 
             RebuildGraph();
@@ -1134,7 +1143,8 @@ namespace TransportTycoon.Model
         {
             foreach (var vehicle in Vehicles)
             {
-                if (IsCarOnStop(vehicle) && vehicle.CurrentRoute == null && vehicle.Prouth != null)
+                //  && vehicle.CurrentRoute == null && vehicle.Prouth != null
+                if (IsCarOnStop(vehicle))
                 {
                     Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
