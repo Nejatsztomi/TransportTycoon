@@ -32,11 +32,17 @@ namespace TransportTycoon.WPF.View
 
             if (viewModel.IsPaused)
             {
-                viewModel.ResumeGame();
+                if (viewModel.NormalSpeedCommand.CanExecute(null))
+                {
+                    viewModel.NormalSpeedCommand.Execute(null);
+                }
             }
             else
             {
-                viewModel.PauseGame();
+                if (viewModel.PauseGameCommand.CanExecute(null))
+                {
+                    viewModel.PauseGameCommand.Execute(null);
+                }
             }
 
             Focus();

@@ -12,6 +12,23 @@
 
     <UserControl.Resources>
         <conv:SelectedButtonConverter x:Key="SelectedButtonConverter"/>
+        <!-- TOOLTIP -->
+        <Style TargetType="ToolTip">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="ContentTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding}" Margin="3,0,2,0" VerticalAlignment="Center" 
+                                       FontFamily="/Assets/Fonts/#Press Start 2P" Foreground="Black" FontSize="14"/>
+                            <Image Source="/Assets/Images/Icons/coin.png" Width="25" Height="25" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         <!-- BASE -->
         <DataTemplate DataType="{x:Type vm:FieldInfoViewModel}">
             <StackPanel>
@@ -325,8 +342,8 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="60"/>
-                    <RowDefinition Height="440" />
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="420" />
                 </Grid.RowDefinitions>
 
                 <Grid.Resources>
@@ -376,6 +393,7 @@
                             <Setter Property="BorderThickness" Value="2"/>
                             <Setter Property="Background" Value="White"/>
                             <Setter Property="Margin" Value="8"/>
+                            <Setter Property="ToolTipService.InitialShowDelay" Value="200"/>
 
                             <Setter Property="Template">
                                 <Setter.Value>
@@ -445,10 +463,16 @@
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="11"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=11}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/minus.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="12"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=12}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/plus.png" Stretch="Uniform"/>
                             </RadioButton>
                         </WrapPanel>
@@ -461,14 +485,23 @@
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="21"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=21}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/road.png" Stretch="UniformToFill"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="22"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=22}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/bridge.png" Stretch="UniformToFill"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="23"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=23}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/stop.png" Stretch="UniformToFill"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="24"
@@ -485,26 +518,44 @@
                         <WrapPanel Margin="14" HorizontalAlignment="Center">
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=31}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/pickup.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=32}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/van.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=33}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/camion.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=34}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/petrolcamion.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Margin="74,8,8,8" Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=35}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/smallBus.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=36}">
+                                <RadioButton.ToolTip>
+                                    <ToolTip Content="200"/>
+                                </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/largeBus.png" Stretch="Uniform"/>
                             </RadioButton>
                         </WrapPanel>
@@ -540,7 +591,7 @@
 
                 </TabControl>
 
-                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
                     <TextBlock Text="{Binding Maintenance, StringFormat=Maintenance: {0}}" FontSize="14" Margin="12,0,1,0" Foreground="White" VerticalAlignment="Center"/>
                     <Image Source="/Assets/Images/Icons/coin.png" Width="25" VerticalAlignment="Center"/>
                 </StackPanel>
@@ -556,7 +607,7 @@
                         <TextBlock Text="Field Info" HorizontalAlignment="Center"
                                    FontSize="14"
                                    FontWeight="Bold"
-                                   Margin="0,20,0,30"/>
+                                   Margin="0,15,0,20"/>
 
                         <ContentControl Content="{Binding CurrentFieldInfo}" FontFamily="/Assets/Fonts/#Press Start 2P"/>
                     </StackPanel>

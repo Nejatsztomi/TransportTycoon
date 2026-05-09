@@ -149,6 +149,10 @@ namespace TransportTycoon.WPF.View.UserControls
         private readonly TransformGroup _cameraTransformGroup = new();
 
         private readonly Dictionary<UInt64, RotateTransform> _vehicleRotationCache = new(100);
+        /// <summary>
+        /// Maps building types to large textures for multi-tile buildings (e.g., 2x2 factories).
+        /// </summary>
+        private readonly Dictionary<Type, ImageSource> _multiTileBuildingTextures;
         #endregion
 
         #region Bindings
@@ -374,14 +378,18 @@ namespace TransportTycoon.WPF.View.UserControls
 
             _structureTextures = new()
             {
-                { FieldType.Farm, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/farm.png")) },
-                { FieldType.LumberCamp, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/lumbercamp.png")) },
-                { FieldType.Mine, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/mine.jpg")) },
-                { FieldType.Mill, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/mill.png")) },
-                { FieldType.Plant, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/plant.png")) },
-                { FieldType.Factory, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/factory.png")) },
                 { FieldType.House, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/house.png")) },
                 { FieldType.Stop, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Stop/stop.png")) },
+            };
+
+            _multiTileBuildingTextures = new()
+            {
+                { typeof(Farm), LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/farm.png")) },
+                { typeof(LumberCamp), LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/lumbercamp.png")) },
+                { typeof(Mine), LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/mine.png")) },
+                { typeof(Mill), LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/mill.png")) },
+                { typeof(Factory), LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/factory.png")) },
+                { typeof(Plant), LoadTexture(new Uri("pack://application:,,,/Assets/Images/Buildings/plant.png")) },
             };
 
             _treesTextures = new()
@@ -536,6 +544,30 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
+        private bool IsMultiTileMaster(IField field, out int masterX, out int masterY, out int width, out int height, out ImageSource? texture)
+        {
+            masterX = masterY = width = height = 0;
+            texture = null;
+
+            if (field is IBuildingBlocks building && building.BuildingEntity != null)
+            {
+                var entity = building.BuildingEntity;
+                if (entity.Width > 1 || entity.Height > 1)
+                {
+                    var top = entity.TopLeftPoints;
+                    if (field.X == top.X && field.Y == top.Y)
+                    {
+                        masterX = top.X;
+                        masterY = top.Y;
+                        width = entity.Width;
+                        height = entity.Height;
+                        _multiTileBuildingTextures.TryGetValue(field.GetType(), out texture);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         #region Enum converters
         /// <summary>
         /// Converts a <see cref="MapData.FieldType"/> to the corresponding <see cref="FieldType"/> for texture lookup.
@@ -892,6 +924,7 @@ namespace TransportTycoon.WPF.View.UserControls
             int endCol = Math.Min(width, (int)((CameraX + visibleWorldWidth) / TileSize) + 1);
             int endRow = Math.Min(height, (int)((CameraY + visibleWorldHeight) / TileSize) + 1);
 
+            // 1. Round: Only terrain
             for (int y = startRow; y < endRow; y++)
             {
                 for (int x = startCol; x < endCol; x++)
@@ -899,27 +932,57 @@ namespace TransportTycoon.WPF.View.UserControls
                     IField currentField = currentMap[x, y];
                     Rect baseRect = new(x * TileSize, y * TileSize, TileSize, TileSize);
                     DrawTerrainLayer(ctx, currentField, baseRect);
-                    DrawStructureLayer(ctx, currentField, baseRect);
-                    DrawRoadLayer(ctx, currentField, baseRect);
-                    DrawBridgeLayer(ctx, currentField, baseRect);
-                    DrawTreesLayer(ctx, currentField, baseRect);
-
-                    // Hover effect
-                    if (x == HoverX && y == HoverY)
-                    {
-                        AddHoverEffectLayer(ctx, baseRect);
-                    }
-
-                    // Selection effect
-                    if (currentField.X == SelectedTile?.X && currentField.Y == SelectedTile?.Y)
-                    {
-                        AddSelectionEffectLayer(ctx, baseRect);
-                    }
                 }
             }
-            Rect visibleWorldRect = new(CameraX, CameraY, visibleWorldWidth, visibleWorldHeight);
 
-            // Vehicle layer
+            // 2. Round: Other objects
+            HashSet<(int x, int y)> skipStructureTiles = new();
+
+            for (int y = startRow; y < endRow; y++)
+            {
+                for (int x = startCol; x < endCol; x++)
+                {
+                    IField currentField = currentMap[x, y];
+                    Rect baseRect = new(x * TileSize, y * TileSize, TileSize, TileSize);
+
+                    bool skipStructure = skipStructureTiles.Contains((x, y));
+
+                    if (!skipStructure)
+                    {
+                        DrawRoadLayer(ctx, currentField, baseRect);
+                        DrawBridgeLayer(ctx, currentField, baseRect);
+                        DrawTreesLayer(ctx, currentField, baseRect);
+
+                        if (IsMultiTileMaster(currentField, out int mx, out int my, out int w, out int h, out ImageSource? largeTex) && largeTex != null)
+                        {
+                            Rect largeRect = new(mx * TileSize, my * TileSize, w * TileSize, h * TileSize);
+                            ctx.DrawImage(largeTex, largeRect);
+
+                            for (int dy = 0; dy < h; dy++)
+                            {
+                                for (int dx = 0; dx < w; dx++)
+                                {
+                                    if (!(dx == 0 && dy == 0)) skipStructureTiles.Add((mx + dx, my + dy));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            DrawStructureLayer(ctx, currentField, baseRect);
+                        }
+                    }
+
+                    if (x == HoverX && y == HoverY)
+                        AddHoverEffectLayer(ctx, baseRect);
+
+                    if (currentField.X == SelectedTile?.X && currentField.Y == SelectedTile?.Y)
+                        AddSelectionEffectLayer(ctx, baseRect);
+                }
+            }
+
+            DrawRouteStopsLayer(ctx);
+
+            Rect visibleWorldRect = new(CameraX, CameraY, visibleWorldWidth, visibleWorldHeight);
             DrawVehiclesLayer(ctx, visibleWorldRect);
 
             // Stop order layer
