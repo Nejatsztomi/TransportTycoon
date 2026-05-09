@@ -34,7 +34,7 @@ namespace TransportTycoon.Model.Graph
         /// </summary>
         /// <param name="currentTile">The current tile of the vehicle.</param>
         /// <returns>A tuple containing the <see cref="Node"/> to use and a <see langword="bool"> indicating if it is a ghost node.</returns>
-        public (Node? nodeToUse, bool isGhost) GetOrInjectGhostNode(IField currentTile)
+        public (Node? nodeToUse, bool isGhost) GetOrInjectGhostNode(Field currentTile)
         {
             if (_graph.GetNodeAt(currentTile.X, currentTile.Y) is Node realNode) return (realNode, false);
 

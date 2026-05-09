@@ -15,7 +15,7 @@ namespace TransportTycoon.Test.Model
             var context = new MapGenerationContext(width, height, 1, new MapGenerationSettings());
             var table = new GameTable(mapGenMock, context);
 
-            var fields = new IField[height, width];
+            var fields = new Field[height, width];
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
@@ -208,7 +208,7 @@ namespace TransportTycoon.Test.Model
         {
             // Arrange
             var table = CreateTestTable(3, 3, 2);
-            var mockBuilding = Substitute.For<IBuildingBlocks>();
+            var mockBuilding = Substitute.For<BuildingBlocks>();
             mockBuilding.Height.Returns(2); // Azonos magasság a HeightCheck miatt
             table.UpdateTable(0, 1, mockBuilding); // Épület felette (x-1, y)
 
@@ -247,7 +247,7 @@ namespace TransportTycoon.Test.Model
             var context = new MapGenerationContext(width, height, 1, new MapGenerationSettings());
             var table = new GameTable(mapGenMock, context);
 
-            var fields = new IField[height, width];
+            var fields = new Field[height, width];
             for (int i = 0; i < height; i++)
             {
                 for (int j = 0; j < width; j++)
@@ -418,7 +418,7 @@ namespace TransportTycoon.Test.Model
         public void StopEnvironment_BuildingAbove_CreatesStopAndConnects()
         {
             var table = CreateTestTable();
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
             mockBlock.Height.Returns(2);
             table.UpdateTable(0, 1, mockBlock); // Felül (x-1)
 
@@ -432,7 +432,7 @@ namespace TransportTycoon.Test.Model
         public void StopEnvironment_BuildingRight_CreatesStopAndConnects()
         {
             var table = CreateTestTable();
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
             mockBlock.Height.Returns(2);
             table.UpdateTable(1, 2, mockBlock); // Jobbra (y+1)
 
@@ -446,7 +446,7 @@ namespace TransportTycoon.Test.Model
         public void StopEnvironment_BuildingBelow_CreatesStopAndConnects()
         {
             var table = CreateTestTable();
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
             mockBlock.Height.Returns(2);
             table.UpdateTable(2, 1, mockBlock); // Alul (x+1)
 
@@ -460,7 +460,7 @@ namespace TransportTycoon.Test.Model
         public void StopEnvironment_BuildingLeft_CreatesStopAndConnects()
         {
             var table = CreateTestTable();
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
             mockBlock.Height.Returns(2);
             table.UpdateTable(1, 0, mockBlock); // Balra (y-1)
 

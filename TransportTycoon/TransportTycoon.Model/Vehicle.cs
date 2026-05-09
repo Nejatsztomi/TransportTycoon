@@ -56,7 +56,7 @@ namespace TransportTycoon.Model
         /// <summary>
         /// The current edge's tiles.
         /// </summary>
-        private List<IField>? _currentEdgeTiles = null;
+        private List<Field>? _currentEdgeTiles = null;
         private double _lerpX;
         private double _lerpY;
         #endregion
@@ -384,7 +384,7 @@ namespace TransportTycoon.Model
             if (PathFinder is null) return;
             if (GetCurrentStopNodePair() is not (Node _, Node end)) return;
 
-            IField currentTile;
+            Field currentTile;
             if (IsLost || CurrentRoute is null || _currentEdgeTiles is null)
             {
                 currentTile = new Stop(MapX, MapY, 1);

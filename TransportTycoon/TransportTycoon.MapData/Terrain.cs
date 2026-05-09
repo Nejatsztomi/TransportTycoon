@@ -1,23 +1,59 @@
 ﻿namespace TransportTycoon.MapData
 {
+    /// <summary>
+    /// Specifies the types of terrain available for classification or processing.
+    /// </summary>
+    /// <remarks>Use this enumeration to represent or distinguish between different terrain categories, such
+    /// as plains, hills, and mountains, in mapping, simulation, or geographic applications. The values are ordered by
+    /// increasing elevation and ruggedness.</remarks>
     public enum TerrainType
     {
-        Plain = 1, Hill = 2, Mountain = 3, HighMountain = 4
+        Plain = 1,
+        Hill = 2,
+        Mountain = 3,
+        HighMountain = 4,
     }
-    public struct Terrain : IField
-    {
-        #region Fields
-        public int Trees { set; get; }
-        public readonly bool Modifiable => true;
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Height { get; set; }
-        public TerrainType TerrainType { get; set; }
-        public readonly bool IsFull => Trees == 4;
 
+    /// <summary>
+    /// Represents a terrain field with configurable height, tree count, and terrain type properties.
+    /// </summary>
+    /// <remarks>The Terrain class provides methods and properties to manage the state of a terrain field,
+    /// including its position, height, number of trees, and terrain type. It supports operations to increase or
+    /// decrease height within defined limits and to manage tree growth. The class exposes read-only properties to
+    /// indicate whether the terrain is modifiable and whether it has reached its maximum tree capacity. Use this class
+    /// to model and manipulate terrain elements within a field-based environment.</remarks>
+    public class Terrain : Field
+    {
+        #region Static fields
         static public readonly int Price = 200;
         #endregion
 
+        #region Public properties
+        public override bool Modifiable => true;
+
+        /// <summary>
+        /// Gets or sets the number of trees.
+        /// </summary>
+        public int Trees { set; get; }
+
+        /// <summary>
+        /// Gets or sets the type of terrain associated with this instance.
+        /// </summary>
+        public TerrainType TerrainType { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the collection contains the maximum number of trees.
+        /// </summary>
+        public bool IsFull => Trees == 4;
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the Terrain class with the specified coordinates and height.
+        /// </summary>
+        /// <param name="x">The X-coordinate of the terrain location.</param>
+        /// <param name="y">The Y-coordinate of the terrain location.</param>
+        /// <param name="height">The height value to assign to the terrain.</param>
         public Terrain(int x, int y, int height)
         {
             X = x;
@@ -26,6 +62,7 @@
             Trees = 0;
             SetFieldType();
         }
+        #endregion
 
         #region Public methods
         /// <summary>
@@ -73,12 +110,6 @@
         {
             Trees = 1;
         }
-
-        /// <summary>
-        /// Gets the total number of trees in the terrain.
-        /// </summary>
-        /// <returns>The total number of trees as an integer.</returns>
-        public readonly int GetTrees() => Trees;
         #endregion
 
         #region Private methods

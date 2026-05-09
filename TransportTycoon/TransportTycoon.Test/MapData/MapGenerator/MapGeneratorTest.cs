@@ -246,7 +246,7 @@ namespace TransportTycoon.Test.MapData.MapGenerator
                 TransportTycoon.MapData.MapGenerator.MapGenerator mapGen = new([terrainGen, forestGen, waterGen, structureGen], Substitute.For<IRandomProvider>());
 
                 // Act
-                (IField[,] result, _) = mapGen.GenerateMap(context);
+                (Field[,] result, _) = mapGen.GenerateMap(context);
 
                 // Assert
                 Assert.Equal(width, result.GetLength(0));
@@ -341,7 +341,7 @@ namespace TransportTycoon.Test.MapData.MapGenerator
                 var result = mapGen.GenerateMap(context);
 
                 // Assert
-                Assert.True(result.Item1.Cast<IField>().All(cell => cell.Height == 0));
+                Assert.True(result.Item1.Cast<Field>().All(cell => cell.Height == 0));
                 Assert.Empty(result.Item2); // No structures should be generated
             }
         }

@@ -517,7 +517,7 @@ public class GameModelTest
                 ci =>
                     {
                         var ctx = _context;
-                        var table = new IField[ctx.Width, ctx.Height];
+                        var table = new Field[ctx.Width, ctx.Height];
                         for (int i = 0; i < ctx.Width; i++)
                         {
                             for (int j = 0; j < ctx.Height; j++)
@@ -681,7 +681,7 @@ public class GameModelTest
             var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
             var table = new GameTable(mapGenMock, context);
             // 3x3-as pálya feltöltése Terrain-ekkel
-            var fields = new IField[3, 3];
+            var fields = new Field[3, 3];
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -835,7 +835,7 @@ public class GameModelTest
             var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
             var table = new GameTable(mapGenMock, context);
             // 3x3-as pálya feltöltése Terrain-ekkel (Magasság: 2)
-            var fields = new IField[3, 3];
+            var fields = new Field[3, 3];
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -987,7 +987,7 @@ public class GameModelTest
             var table = new GameTable(mapGenMock, context);
 
             // 3x3-as pálya, alapból Terrain
-            var fields = new IField[3, 3];
+            var fields = new Field[3, 3];
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -1190,7 +1190,7 @@ public class GameModelTest
         {
             var mapGen = Substitute.For<IMapGenerator>();
             var context = new MapGenerationContext(width, height, 1, new MapGenerationSettings());
-            var fields = new IField[width, height];
+            var fields = new Field[width, height];
 
             for (int i = 0; i < width; i++)
             {
@@ -1354,7 +1354,7 @@ public class GameModelTest
         {
             var mapGen = Substitute.For<IMapGenerator>();
             var context = new MapGenerationContext(3, 3, 1, new MapGenerationSettings());
-            var fields = new IField[3, 3];
+            var fields = new Field[3, 3];
 
             for (int i = 0; i < 3; i++)
             {
@@ -1447,7 +1447,7 @@ public class GameModelTest
             var context = new MapGenerationContext(5, 5, 1, new MapGenerationSettings());
             var table = new GameTable(mapGenMock, context);
 
-            var fields = new IField[5, 5];
+            var fields = new Field[5, 5];
             for (int i = 0; i < 5; i++)
             {
                 for (int j = 0; j < 5; j++)
@@ -1679,7 +1679,7 @@ public class GameModelTest
             // 3. REFLECTION VARÁZSLAT: Beállítjuk a furgon belső útvonalát, 
             // hogy tudja, hogy a (0,1) felé tart (GetNextTileCoordinates működjön)
             var edgeTilesField = typeof(Vehicle).GetField("_currentEdgeTiles", BindingFlags.NonPublic | BindingFlags.Instance);
-            edgeTilesField!.SetValue(van, new List<IField> { currentRoad, nextRoad });
+            edgeTilesField!.SetValue(van, new List<Field> { currentRoad, nextRoad });
 
             var currentTileIdxField = typeof(Vehicle).GetField("_currentTileIdx", BindingFlags.NonPublic | BindingFlags.Instance);
             currentTileIdxField!.SetValue(van, 0); // A listában jelenleg a (0,0) elemen áll
@@ -1773,7 +1773,7 @@ public class GameModelTest
             model.Vehicles.Add(truck);
 
             var stop = new Stop(1, 1, 2);
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
             var lumberCamp = CreateRealEntity<LumberCampEntity>(80, 100); // 80 Fát tud adni
             mockBlock.BuildingEntity.Returns(lumberCamp);
             stop.SetBuildingBlocks(mockBlock);

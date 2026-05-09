@@ -11,9 +11,9 @@ namespace TransportTycoon.Test.Model
     {
         private sealed class TestMapGenerator : IMapGenerator
         {
-            public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
+            public (Field[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
             {
-                return (new IField[context.Width, context.Height], []);
+                return (new Field[context.Width, context.Height], []);
             }
         }
 
@@ -60,12 +60,12 @@ namespace TransportTycoon.Test.Model
             public void SetCurrentRouteValue(List<Edge>? route) => CurrentRoute = route;
         }
 
-        private static Edge CreateEdge(params IField[] roads)
+        private static Edge CreateEdge(params Field[] roads)
         {
             return new Edge(new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop)), roads, 1);
         }
 
-        private static GhostNodeInjector CreateInjector(IField[,] table, Dictionary<Node, List<Edge>>? adjacencyList = null)
+        private static GhostNodeInjector CreateInjector(Field[,] table, Dictionary<Node, List<Edge>>? adjacencyList = null)
         {
             var context = new MapGenerationContext(table.GetLength(0), table.GetLength(1), 0, new MapGenerationSettings());
             var gameTable = new GameTable(new TestMapGenerator(), context);
@@ -83,7 +83,7 @@ namespace TransportTycoon.Test.Model
 
         private static GhostNodeInjector CreateInjectorWithStopNode(int x, int y, int width = 3, int height = 3)
         {
-            var table = new IField[width, height];
+            var table = new Field[width, height];
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -373,7 +373,7 @@ namespace TransportTycoon.Test.Model
             };
             var currentRoute = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Road(0, 1, RoadType.Vertical, 1)) };
             vehicle.SetCurrentRouteValue(currentRoute);
-            var injector = CreateInjector(new IField[5, 5]);
+            var injector = CreateInjector(new Field[5, 5]);
 
             // Act
             vehicle.RecalculateRoute(injector);
@@ -391,7 +391,7 @@ namespace TransportTycoon.Test.Model
             {
                 PathFinder = new TestPathFinder([])
             };
-            var injector = CreateInjector(new IField[5, 5]);
+            var injector = CreateInjector(new Field[5, 5]);
             vehicle.Prouth = new Prouth([new Node(0, 0, typeof(Stop))]);
             var currentRoute = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Road(0, 1, RoadType.Vertical, 1)) };
             vehicle.SetCurrentRouteValue(currentRoute);
@@ -413,7 +413,7 @@ namespace TransportTycoon.Test.Model
                 Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))]),
                 PathFinder = new TestPathFinder([])
             };
-            var injector = CreateInjector(new IField[3, 3]);
+            var injector = CreateInjector(new Field[3, 3]);
 
             // Act
             vehicle.RecalculateRoute(injector);

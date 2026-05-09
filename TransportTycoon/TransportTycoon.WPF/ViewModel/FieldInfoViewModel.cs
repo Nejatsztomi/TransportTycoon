@@ -67,7 +67,7 @@ namespace TransportTycoon.WPF.ViewModel
 
     public static class FieldInfoFactory
     {
-        public static FieldInfoViewModel CreateField(IField field)
+        public static FieldInfoViewModel CreateField(Field field)
         {
             return field switch
             {
@@ -90,7 +90,7 @@ namespace TransportTycoon.WPF.ViewModel
                     InCity = r.InCity()
                 },
 
-                IBridge b => new BridgeFieldInfoViewModel
+                Bridge b => new BridgeFieldInfoViewModel
                 {
                     Type = b.GetType().Name,
                     Height = b.Height,
@@ -121,7 +121,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Productivity = Math.Round(h.BuildingEntity.Productivity, 2),
                 },
 
-                ISite s => new SiteFieldInfoViewModel
+                Site s => new SiteFieldInfoViewModel
                 {
                     Type = s.GetType().Name,
                     Height = s.Height,
@@ -132,7 +132,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Productivity = Math.Round(s.BuildingEntity.Productivity, 2),
                 },
 
-                IIndustry i => new IndustryFieldInfoViewModel
+                Industry i => new IndustryFieldInfoViewModel
                 {
                     Type = i.GetType().Name,
                     Height = i.Height,
@@ -154,7 +154,7 @@ namespace TransportTycoon.WPF.ViewModel
                 }
             };
         }
-        public static FieldInfoViewModel ShowVehicle(Vehicle v, IField f)
+        public static FieldInfoViewModel ShowVehicle(Vehicle v, Field f)
         {
             return new VehicleFieldInfoViewModel
             {

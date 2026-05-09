@@ -21,8 +21,8 @@ namespace TransportTycoon.Model.Graph
     /// <param name="BackwardCost">The total cost accumulated when tracing from the end tile back to the start, if applicable. The value is typically non-negative.</param>
     /// <param name="Status">The final status of the trace operation, indicating success, failure, or other relevant outcome.</param>
     public readonly record struct TraceResult(
-        IField? EndTile,
-        List<IField> PathTaken,
+        Field? EndTile,
+        List<Field> PathTaken,
         double ForwardCost,
         double BackwardCost,
         TraceStatus Status
@@ -66,10 +66,10 @@ namespace TransportTycoon.Model.Graph
         /// <returns>A TraceResult containing information about the traced path, including the endpoint (if found), the sequence
         /// of tiles traversed, accumulated forward and backward costs, and the status indicating how the trace
         /// terminated.</returns>
-        public TraceResult TraceSegment(IField startTile, (int dx, int dy) initialMomentum)
+        public TraceResult TraceSegment(Field startTile, (int dx, int dy) initialMomentum)
         {
-            List<IField> pathTaken = [startTile];
-            IField currentTile = startTile;
+            List<Field> pathTaken = [startTile];
+            Field currentTile = startTile;
             var momentum = initialMomentum;
 
             double forwardCost = 0.0;
@@ -82,7 +82,7 @@ namespace TransportTycoon.Model.Graph
 
                 if (!IsValidRoad(nextX, nextY)) return new TraceResult(null, pathTaken, 0.0, 0.0, TraceStatus.DeadEnd);
 
-                IField nextTile = _gameTable[nextX, nextY];
+                Field nextTile = _gameTable[nextX, nextY];
                 if (!CanMoveTo(currentTile, nextTile, momentum)) return new TraceResult(null, pathTaken, 0.0, 0.0, TraceStatus.DeadEnd);
 
                 if (nextTile.X == startTile.X && nextTile.Y == startTile.Y) return new TraceResult(null, pathTaken, 0.0, 0.0, TraceStatus.ClosedCircle);
@@ -106,7 +106,7 @@ namespace TransportTycoon.Model.Graph
 
                     if (_gameTable.IsInBounds(neighborX, neighborY))
                     {
-                        IField neighbor = _gameTable[neighborX, neighborY];
+                        Field neighbor = _gameTable[neighborX, neighborY];
 
                         if (CanMoveTo(currentTile, neighbor, dir))
                         {
@@ -125,10 +125,10 @@ namespace TransportTycoon.Model.Graph
         #region Private methods
         private bool IsValidRoad(int x, int y)
         {
-            return _gameTable.IsInBounds(x, y) && _gameTable[x, y] is IInfrastructure;
+            return _gameTable.IsInBounds(x, y) && _gameTable[x, y] is Infrastructure;
         }
 
-        private bool CanMoveTo(IField currentTile, IField nextTile, (int dx, int dy) momentum)
+        private bool CanMoveTo(Field currentTile, Field nextTile, (int dx, int dy) momentum)
         {
             if (Math.Abs(nextTile.Height - currentTile.Height) > 1) return false;
 
@@ -136,7 +136,7 @@ namespace TransportTycoon.Model.Graph
             {
                 Road currentRoad => HasExit(currentRoad.RoadType, momentum),
                 Stop => true,
-                IBridge currentBridge => IsValidBridgeDirection(currentBridge, momentum),
+                Bridge currentBridge => IsValidBridgeDirection(currentBridge, momentum),
                 _ => false
             };
 
@@ -147,7 +147,7 @@ namespace TransportTycoon.Model.Graph
             {
                 Road nextRoad => HasExit(nextRoad.RoadType, (enterDx, enterDy)),
                 Stop => true,
-                IBridge nextBridge => IsValidBridgeDirection(nextBridge, (enterDx, enterDy)),
+                Bridge nextBridge => IsValidBridgeDirection(nextBridge, (enterDx, enterDy)),
                 _ => false
             };
 
@@ -183,7 +183,7 @@ namespace TransportTycoon.Model.Graph
             };
         }
 
-        private bool IsValidBridgeDirection(IBridge bridge, (int dx, int dy) direction)
+        private bool IsValidBridgeDirection(Bridge bridge, (int dx, int dy) direction)
         {
             var up = (0, -1);
             var down = (0, 1);
@@ -229,7 +229,7 @@ namespace TransportTycoon.Model.Graph
         /// </remarks>
         /// <param name="field">The field to evaluate for junction status.</param>
         /// <returns><see langword="true"/> if the field is a road and its road type represents a junction; otherwise, <see langword="false"/>.</returns>
-        private bool IsJunction(IField field)
+        private bool IsJunction(Field field)
         {
             if (field is not Road road) return false;
 
@@ -245,7 +245,7 @@ namespace TransportTycoon.Model.Graph
         /// </summary>
         /// <param name="field">The field to evaluate for termination status.</param>
         /// <returns><see langword="true"/> if the field is a stop or a junction; otherwise, <see langword="false"/>.</returns>
-        private bool IsTerminatingField(IField field)
+        private bool IsTerminatingField(Field field)
         {
             return field is Stop || IsJunction(field);
         }

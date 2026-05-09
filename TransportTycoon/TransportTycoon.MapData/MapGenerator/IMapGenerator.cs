@@ -14,7 +14,7 @@ namespace TransportTycoon.MapData.MapGenerator
         /// <param name="context">The context containing parameters and settings that influence map generation. Cannot be null.</param>
         /// <returns>A tuple containing a two-dimensional array of fields representing the generated map, and a list of building
         /// entities placed on the map. The array and list may be empty if no fields or buildings are generated.</returns>
-        public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context);
+        public (Field[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context);
         #endregion
     }
 }

@@ -102,7 +102,6 @@ namespace TransportTycoon.Test.MapData
             // Assert
             Assert.True(result);
             Assert.Equal(1, terrain.Trees);
-            Assert.Equal(1, terrain.GetTrees());
         }
 
         [Fact]

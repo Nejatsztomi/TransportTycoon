@@ -11,13 +11,13 @@ namespace TransportTycoon.MapData
         #endregion
 
         #region Properties
-        public IField[,] Table { get; private set; }
+        public Field[,] Table { get; private set; }
         public int Width => Context.Width;
         public int Height => Context.Height;
 
         public List<BuildingEntity> BuildingEntities { get; private set; }
 
-        public ref IField this[int x, int y]
+        public ref Field this[int x, int y]
         {
             get => ref Table[x, y];
         }
@@ -37,7 +37,7 @@ namespace TransportTycoon.MapData
             Context = context;
             BuildingEntities = [];
 
-            Table = new IField[Width, Height];
+            Table = new Field[Width, Height];
             IsMapGenerated = false;
             MapGenerator = mapGenerator;
         }
@@ -52,7 +52,7 @@ namespace TransportTycoon.MapData
         /// <param name="x">The zero-based row index of the cell to update.</param>
         /// <param name="y">The zero-based column index of the cell to update.</param>
         /// <param name="field">The field to assign to the specified cell.</param>
-        public void UpdateTable(int x, int y, IField field)
+        public void UpdateTable(int x, int y, Field field)
         {
             Table[x, y] = field;
         }
@@ -84,10 +84,10 @@ namespace TransportTycoon.MapData
         /// <param name="y">The zero-based y-coordinate of the field to check. Must be within the bounds of the table.</param>
         /// <returns>A list of neighboring fields that are directly adjacent to the specified position and do not contain any
         /// trees. The list is empty if no such fields exist.</returns>
-        public List<IField> CheckNeighboringTrees(int x, int y)
+        public List<Field> CheckNeighboringTrees(int x, int y)
         {
-            List<IField> neighbours = [];
-            List<IField> acceptedNeighbours = [];
+            List<Field> neighbours = [];
+            List<Field> acceptedNeighbours = [];
             if (x - 1 >= 0) neighbours.Add(Table[x - 1, y]);
             if (y + 1 <= Width - 1) neighbours.Add(Table[x, y + 1]);
             if (x + 1 <= Height - 1) neighbours.Add(Table[x + 1, y]);
@@ -139,27 +139,27 @@ namespace TransportTycoon.MapData
         /// bounds of the table.</param>
         /// <returns>A list of up to four neighboring fields that are roads, stops, or bridges. Each element corresponds to a
         /// direction and is null if no valid neighbor exists in that direction.</returns>
-        public List<IField?> NeighboursOfRoadsAndStops(int x, int y)
+        public List<Field?> NeighboursOfRoadsAndStops(int x, int y)
         {
-            List<IField?> result = [null, null, null, null];
+            List<Field?> result = [null, null, null, null];
             if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]))
             {
-                if (Table[x - 1, y] is IBridge bridge && bridge.BridgeType.ToString().Contains("Horizontal")) result[3] = Table[x - 1, y];
+                if (Table[x - 1, y] is Bridge bridge && bridge.BridgeType.ToString().Contains("Horizontal")) result[3] = Table[x - 1, y];
                 else if (Table[x - 1, y] is Road || Table[x - 1, y] is Stop) result[3] = Table[x - 1, y];
             }
             if (y + 1 <= Width - 1 && HeightCheck(Table[x, y + 1], Table[x, y]))
             {
-                if (Table[x, y + 1] is IBridge bridge && bridge.BridgeType.ToString().Contains("Vertical")) result[2] = Table[x, y + 1];
+                if (Table[x, y + 1] is Bridge bridge && bridge.BridgeType.ToString().Contains("Vertical")) result[2] = Table[x, y + 1];
                 else if (Table[x, y + 1] is Road || Table[x, y + 1] is Stop) result[2] = Table[x, y + 1];
             }
             if (x + 1 <= Height - 1 && HeightCheck(Table[x + 1, y], Table[x, y]))
             {
-                if (Table[x + 1, y] is IBridge bridge && bridge.BridgeType.ToString().Contains("Horizontal")) result[1] = Table[x + 1, y];
+                if (Table[x + 1, y] is Bridge bridge && bridge.BridgeType.ToString().Contains("Horizontal")) result[1] = Table[x + 1, y];
                 else if (Table[x + 1, y] is Road || Table[x + 1, y] is Stop) result[1] = Table[x + 1, y];
             }
             if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]))
             {
-                if (Table[x, y - 1] is IBridge bridge && bridge.BridgeType.ToString().Contains("Vertical")) result[0] = Table[x, y - 1];
+                if (Table[x, y - 1] is Bridge bridge && bridge.BridgeType.ToString().Contains("Vertical")) result[0] = Table[x, y - 1];
                 else if (Table[x, y - 1] is Road || Table[x, y - 1] is Stop) result[0] = Table[x, y - 1];
             }
             return result;
@@ -174,7 +174,7 @@ namespace TransportTycoon.MapData
         /// <param name="b">The second field to compare. This parameter must not be null.</param>
         /// <returns>true if the absolute difference between the heights of the two fields is less than or equal to one;
         /// otherwise, false.</returns>
-        public bool HeightCheck(IField a, IField b)
+        public bool HeightCheck(Field a, Field b)
         {
             return Math.Abs(a.Height - b.Height) <= 1;
         }
@@ -191,7 +191,7 @@ namespace TransportTycoon.MapData
         /// coordinates.</returns>
         public RoadType CalculateRoadType(int x, int y)
         {
-            List<IField?> neighbourRoads = NeighboursOfRoadsAndStops(x, y);
+            List<Field?> neighbourRoads = NeighboursOfRoadsAndStops(x, y);
             RoadType type = RoadType.Vertical;
             switch (neighbourRoads.Count(x => x is not null))
             {
@@ -283,7 +283,7 @@ namespace TransportTycoon.MapData
             int cost = 0;
             for (int i = a; i <= b; i++)
             {
-                IBridge bridge = b_type
+                Bridge bridge = b_type
                 switch
                 {
                     BridgeType.HorizontalYellowBridge => new YellowBridge(i, y, b_type, Table[i, y].Height),
@@ -341,7 +341,7 @@ namespace TransportTycoon.MapData
             int cost = 0;
             for (int i = a; i <= b; i++)
             {
-                IBridge bridge = b_type
+                Bridge bridge = b_type
                 switch
                 {
                     BridgeType.VerticalYellowBridge => new YellowBridge(x, i, b_type, Table[x, i].Height),
@@ -386,13 +386,13 @@ namespace TransportTycoon.MapData
         {
             int cost = 0;
             if (x - 1 < 0 || y - 1 < 0 || x + 1 > Height - 1 || y + 1 > Width - 1) return 0;
-            if ((Table[x, y - 1] is IInfrastructure && Table[x, y - 1].Height == 1 && Table[x, y + 1].Height == 1)
-                || (Table[x, y + 1] is IInfrastructure && Table[x, y + 1].Height == 1 && Table[x, y - 1].Height == 1))
+            if ((Table[x, y - 1] is Infrastructure && Table[x, y - 1].Height == 1 && Table[x, y + 1].Height == 1)
+                || (Table[x, y + 1] is Infrastructure && Table[x, y + 1].Height == 1 && Table[x, y - 1].Height == 1))
             {
                 cost = CreateHorizontalBridge(x, y, y, BridgeType.HorizontalYellowBridge, ref changedFields);
             }
-            else if ((Table[x - 1, y] is IInfrastructure && Table[x - 1, y].Height == 1 && Table[x + 1, y].Height == 1)
-                || (Table[x + 1, y] is IInfrastructure && Table[x + 1, y].Height == 1 && Table[x - 1, y].Height == 1))
+            else if ((Table[x - 1, y] is Infrastructure && Table[x - 1, y].Height == 1 && Table[x + 1, y].Height == 1)
+                || (Table[x + 1, y] is Infrastructure && Table[x + 1, y].Height == 1 && Table[x - 1, y].Height == 1))
             {
                 cost = CreateVerticalBridge(y, x, x, BridgeType.VerticalYellowBridge, ref changedFields);
             }
@@ -416,31 +416,31 @@ namespace TransportTycoon.MapData
         public bool StopEnvironment(int x, int y)
         {
             bool result = false;
-            if (NeighboursOfRoadsAndStops(x, y).Any(n => n is Road or IBridge))
+            if (NeighboursOfRoadsAndStops(x, y).Any(n => n is Road or Bridge))
             {
                 Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 result = true;
             }
 
-            if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]) && Table[x, y - 1] is IBuildingBlocks blocks3)
+            if (y - 1 >= 0 && HeightCheck(Table[x, y - 1], Table[x, y]) && Table[x, y - 1] is BuildingBlocks blocks3)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 ((Stop)Table[x, y]).SetBuildingBlocks(blocks3);
                 result = true;
             }
-            if (x + 1 < Height && HeightCheck(Table[x + 1, y], Table[x, y]) && Table[x + 1, y] is IBuildingBlocks blocks2)
+            if (x + 1 < Height && HeightCheck(Table[x + 1, y], Table[x, y]) && Table[x + 1, y] is BuildingBlocks blocks2)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 ((Stop)Table[x, y]).SetBuildingBlocks(blocks2);
                 result = true;
             }
-            if (y + 1 < Width && HeightCheck(Table[x, y + 1], Table[x, y]) && Table[x, y + 1] is IBuildingBlocks blocks1)
+            if (y + 1 < Width && HeightCheck(Table[x, y + 1], Table[x, y]) && Table[x, y + 1] is BuildingBlocks blocks1)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 ((Stop)Table[x, y]).SetBuildingBlocks(blocks1);
                 result = true;
             }
-            if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]) && Table[x - 1, y] is IBuildingBlocks blocks)
+            if (x - 1 >= 0 && HeightCheck(Table[x - 1, y], Table[x, y]) && Table[x - 1, y] is BuildingBlocks blocks)
             {
                 if (!result) Table[x, y] = new Stop(x, y, Table[x, y].Height);
                 ((Stop)Table[x, y]).SetBuildingBlocks(blocks);
@@ -457,14 +457,14 @@ namespace TransportTycoon.MapData
         /// <param name="changedFields"></param>
         public void DestroyBridge(int x, int y, ref List<(int, int)> changedFields)
         {
-            if (Table[x, y] is IBridge bridge)
+            if (Table[x, y] is Bridge bridge)
             {
                 Table[x, y] = new Water(x, y);
                 changedFields.Add((x, y));
                 if (bridge.BridgeType.ToString().Contains("Horizontal"))
                 {
                     int left = x - 1;
-                    while (Table[left, y] is IBridge)
+                    while (Table[left, y] is Bridge)
                     {
                         Table[left, y] = new Water(left, y);
                         changedFields.Add((left, y));
@@ -479,7 +479,7 @@ namespace TransportTycoon.MapData
                     }
 
                     int right = x + 1;
-                    while (Table[right, y] is IBridge)
+                    while (Table[right, y] is Bridge)
                     {
                         Table[right, y] = new Water(right, y);
                         changedFields.Add((right, y));
@@ -496,7 +496,7 @@ namespace TransportTycoon.MapData
                 else
                 {
                     int up = y - 1;
-                    while (Table[x, up] is IBridge)
+                    while (Table[x, up] is Bridge)
                     {
                         Table[x, up] = new Water(x, up);
                         changedFields.Add((x, up));
@@ -509,7 +509,7 @@ namespace TransportTycoon.MapData
                         changedFields.Add((x, up));
                     }
                     int down = y + 1;
-                    while (Table[x, down] is IBridge)
+                    while (Table[x, down] is Bridge)
                     {
                         Table[x, down] = new Water(x, down);
                         changedFields.Add((x, down));

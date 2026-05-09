@@ -35,9 +35,9 @@ namespace TransportTycoon.WPF.ViewModel
         public GameTable Map => Model.Map;
         public int Width => Model.Map.Width;
         public int Height => Model.Map.Height;
-        public IField[,] Tiles { get; }
+        public Field[,] Tiles { get; }
         public WriteableBitmap MinimapImage { get; set; }
-        public IField? SelectedField => Model.SelectedField;
+        public Field? SelectedField => Model.SelectedField;
         public Vehicle? ShownVehicle { get; private set; }
         #endregion
 
@@ -128,7 +128,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    IField tile = Map[x, y];
+                    Field tile = Map[x, y];
 
                     int index = (y * Width) + x;
 
@@ -255,7 +255,7 @@ namespace TransportTycoon.WPF.ViewModel
         /// </summary>
         /// <param name="tile">The field.</param>
         /// <returns>The <see cref="uint"/> ARGB format.</returns>
-        private uint ConvertTileToColor(IField tile)
+        private uint ConvertTileToColor(Field tile)
         {
             // Moved from FieldViewModel
             Color colorName = tile switch
@@ -270,7 +270,7 @@ namespace TransportTycoon.WPF.ViewModel
 
                 // Infrastructure
                 Road => Colors.DarkGray,
-                IBridge => Colors.Red,
+                Bridge => Colors.Red,
                 Stop => Colors.Red,
 
                 // Terrain
@@ -452,7 +452,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             foreach (var (x, y) in changedFields)
             {
-                IField tile = Tiles[x, y];
+                Field tile = Tiles[x, y];
                 UpdateMinimapTile(x, y, ConvertTileToColor(tile));
                 RefreshFieldInfo(x, y);
             }

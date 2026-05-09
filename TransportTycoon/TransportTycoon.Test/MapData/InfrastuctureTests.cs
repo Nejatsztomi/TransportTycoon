@@ -224,7 +224,7 @@ namespace TransportTycoon.Test.MapData
             {
                 // Arrange
                 var stop = new Stop(0, 0, 1);
-                var mockBuildingBlock = Substitute.For<IBuildingBlocks>(); // NSubstitute mock
+                var mockBuildingBlock = Substitute.For<BuildingBlocks>(); // NSubstitute mock
 
                 // Act
                 stop.SetBuildingBlocks(mockBuildingBlock);

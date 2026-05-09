@@ -87,7 +87,7 @@ public class GameTableTest
         var context = new MapGenerationContext(width, height, 1, new MapGenerationSettings());
         var table = new GameTable(mapGenMock, context);
 
-        var fields = new IField[height, width];
+        var fields = new Field[height, width];
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)

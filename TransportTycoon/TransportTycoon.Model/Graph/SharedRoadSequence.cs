@@ -12,7 +12,7 @@ namespace TransportTycoon.Model.Graph
         /// <summary>
         /// The underlying data.
         /// </summary>
-        private readonly IField[] _fields;
+        private readonly Field[] _fields;
         #endregion
 
         #region Constructors
@@ -20,7 +20,7 @@ namespace TransportTycoon.Model.Graph
         /// Initializes a new instance of this class with the specified collection of fields.
         /// </summary>
         /// <param name="fields">The list of fields to include in the sequence.</param>
-        public SharedRoadSequence(List<IField> fields)
+        public SharedRoadSequence(List<Field> fields)
         {
             _fields = [.. fields];
         }
@@ -31,7 +31,7 @@ namespace TransportTycoon.Model.Graph
         /// Returns an enumerable that iterates through the collection of fields in forward order.
         /// </summary>
         /// <returns>An enumerable for the collection of fields, starting from the first field and proceeding in order to the last field.</returns>
-        public IEnumerable<IField> ForwardEnumerator()
+        public IEnumerable<Field> ForwardEnumerator()
         {
             for (int i = 0; i < _fields.Length; i++)
             {
@@ -43,7 +43,7 @@ namespace TransportTycoon.Model.Graph
         /// Returns an enumerable that iterates through the collection of fields in reversed order.
         /// </summary>
         /// <returns>An enumerable for the collection of fields, starting from the last field and proceeding in reverse order to the starting field.</returns>
-        public IEnumerable<IField> BackwardEnumerator()
+        public IEnumerable<Field> BackwardEnumerator()
         {
             for (int i = _fields.Length - 1; i >= 0; i--)
             {

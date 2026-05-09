@@ -10,9 +10,9 @@ namespace TransportTycoon.Test.Model.Graph
         public void Constructor_SetsFieldsProperly()
         {
             // Arrange
-            var field1 = Substitute.For<IField>();
-            var field2 = Substitute.For<IField>();
-            var fields = new List<IField> { field1, field2 };
+            var field1 = Substitute.For<Field>();
+            var field2 = Substitute.For<Field>();
+            var fields = new List<Field> { field1, field2 };
 
             // Act
             var sequence = new GraphNS.SharedRoadSequence(fields);

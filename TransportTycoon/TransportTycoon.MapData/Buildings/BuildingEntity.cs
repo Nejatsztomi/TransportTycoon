@@ -40,7 +40,7 @@
         /// <summary>
         /// Stores the coordinates of the building on map
         /// </summary>
-        public SortedDictionary<(int X, int Y), IField> MapPoints { protected set; get; } = [];
+        public SortedDictionary<(int X, int Y), Field> MapPoints { protected set; get; } = [];
 
         /// <summary>
         /// The width of the entity on the map, in terms of number of tiles it occupies horizontally.

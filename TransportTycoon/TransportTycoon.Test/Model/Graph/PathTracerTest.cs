@@ -380,7 +380,7 @@ namespace TransportTycoon.Test.Model.Graph
             return new GameTable(mapGen, context);
         }
 
-        private static IField CreateBridge(BridgeType bridgeType, int x, int y, int height)
+        private static Field CreateBridge(BridgeType bridgeType, int x, int y, int height)
         {
             return bridgeType switch
             {
