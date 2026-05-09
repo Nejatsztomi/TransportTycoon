@@ -980,6 +980,7 @@ namespace TransportTycoon.Model
                     vehicle.SetProuth(prouth, _pathFinder, new(GraphNetwork, new(Map)));
                 }
 
+                Maintenance += vehicle.Maintenance;
                 Vehicles.Add(vehicle);
                 _tileOccupancy[vehicle.MapX, vehicle.MapY, vehicle.GetLaneIdx()] = vehicle;
             });
@@ -1144,7 +1145,7 @@ namespace TransportTycoon.Model
             foreach (var vehicle in Vehicles)
             {
                 //  && vehicle.CurrentRoute == null && vehicle.Prouth != null
-                if (IsCarOnStop(vehicle))
+                if (IsCarOnStop(vehicle) && vehicle.Prouth is not null && vehicle.Prouth.Stops.Count > 1 && !vehicle.IsLost)
                 {
                     Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
@@ -1305,12 +1306,12 @@ namespace TransportTycoon.Model
 
             double scaledDeltaTime = deltaTime * (double)TimeSpeed;
             StepAllVehicles(scaledDeltaTime);
+            AllVehiclesDoTheTransport();
             _timeAccumulator += scaledDeltaTime;
 
             while (_timeAccumulator >= 1)
             {
                 GameTime++;
-                AllVehiclesDoTheTransport();
                 AllProduction();
                 if (GameTime > 0 && GameTime % 10 == 0)
                 {
