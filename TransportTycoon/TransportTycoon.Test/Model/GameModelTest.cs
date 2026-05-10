@@ -451,13 +451,13 @@ public class GameModelTest
             // We assume Van is a valid class derived from Vehicle
             Assert.Equal(typeof(Van).Name, result.GetType().Name);
 
-            Assert.Equal(5000 - result.Price, _gameModel.Balance);
+            Assert.Equal(5000 - Van.Price, _gameModel.Balance);
             Assert.Contains(result, _gameModel.Vehicles);
             Assert.True(eventRaised, "BalanceChanged event should be invoked.");
         }
 
         [Fact]
-        public void BuyVehicle_InsufficientBalance_DoesNotDeductBalanceOrAddToList()
+        public void BuyVehicle_WithZeroBalance_DeductsBalanceIntoNegativeAndAddsVehicle()
         {
             // Arrange
             int x = 2, y = 2;
@@ -474,14 +474,17 @@ public class GameModelTest
             var result = _gameModel.BuyVehicle(x, y, VehicleType.Truck);
 
             // Assert
-            // Note: Based on the current implementation in GameModel, it STILL returns the instantiated vehicle object, 
-            // but does not deduct balance or add it to the list.
             Assert.NotNull(result);
             Assert.Equal(typeof(Truck).Name, result.GetType().Name);
 
-            Assert.Equal(0, _gameModel.Balance);
-            Assert.DoesNotContain(result, _gameModel.Vehicles);
-            Assert.False(eventRaised);
+            // Itt a lényeg: a pénz le kell menjen 0 alá, tehát mínusz Truck.Price lesz!
+            Assert.Equal(-Truck.Price, _gameModel.Balance);
+
+            // A járműnek be kell kerülnie a játékos járművei közé
+            Assert.Contains(result, _gameModel.Vehicles);
+
+            // Az egyenlegváltozás eseménynek is le kell futnia
+            Assert.True(eventRaised);
         }
 
         [Fact]
@@ -956,11 +959,11 @@ public class GameModelTest
             Assert.Equal(1, vehicle.MapX);
             Assert.Equal(1, vehicle.MapY);
             Assert.True(balanceChangedFired);
-            Assert.Equal(startBalance - vehicle.Price, model.Balance);
+            Assert.Equal(startBalance - Truck.Price, model.Balance);
         }
 
         [Fact]
-        public void BuyVehicle_InsufficientBalance_DoesNotBuy()
+        public void BuyVehicle_InsufficientBalance_AllowsPurchaseAndGoesIntoDebt()
         {
             // Arrange
             var model = CreateTestModelWithMap(initialBalance: 10); // Nincs elég pénz (10 credit)
@@ -970,9 +973,12 @@ public class GameModelTest
             var vehicle = model.BuyVehicle(1, 1, VehicleType.Truck);
 
             // Assert
-            Assert.NotNull(vehicle); // A kódod jelenleg leteszi a járművet (objektum létrejön) a metódus elején, de...
-            Assert.Empty(model.Vehicles); // ...nem adja hozzá a listához, ha nincs pénz!
-            Assert.Equal(10, model.Balance); // A pénz maradt 10
+            Assert.NotNull(vehicle);
+
+            Assert.Single(model.Vehicles);
+            Assert.Contains(vehicle, model.Vehicles);
+
+            Assert.Equal(10 - Truck.Price, model.Balance);
         }
     }
     public class GameModelAdvancedTests
@@ -1147,7 +1153,6 @@ public class GameModelTest
                 TopSpeed = topSpeed;
                 CurrentSpeed = topSpeed;
                 MaxCapacity = 1;
-                Price = 1;
                 Maintenance = 1;
                 Type = VehicleType.Van;
             }
