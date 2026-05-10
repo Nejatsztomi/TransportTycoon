@@ -28,7 +28,7 @@ namespace TransportTycoon.WPF.ViewModel
     {
         public string BridgeType { get; init; } = "";
         public int Range { get; init; }
-        public int SpeedLimit { get; init; }
+        public double SpeedLimit { get; init; }
     }
 
     public class StopFieldInfoViewModel : FieldInfoViewModel
