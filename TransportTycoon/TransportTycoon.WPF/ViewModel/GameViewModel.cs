@@ -484,6 +484,7 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_MaintenanceChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(Maintenance));
+            OnPropertyChanged(nameof(Vehicles));
         }
         #endregion
 

@@ -107,6 +107,8 @@
 
                 <StatusBarItem Grid.Column="2" HorizontalAlignment="Right">
                     <StackPanel Orientation="Horizontal">
+                        <Image Source="/Assets/Images/Icons/car.png" Width="35"/>
+                        <TextBlock Margin="9,0,15,0" VerticalAlignment="Center" Text="{Binding Vehicles.Count}"/>
                         <Image Source="/Assets/Images/Icons/coin.png" Width="35"/>
                         <TextBlock Margin="5,0,15,0" VerticalAlignment="Center" Text="{Binding Balance}"/>
                         <Image Source="/Assets/Images/Icons/hourglass.png" Width="35"/>
