@@ -22,7 +22,7 @@ namespace TransportTycoon.Model
         {
             TopSpeed = 0.9;
             MaxCapacity = 30;
-            Price = 2200;
+            Price = 1200;
             Maintenance = 10;
             Type = VehicleType.Van;
             AcceptedGoods = [LoadType.Flour, LoadType.Paper, LoadType.Wood, LoadType.Rubber, LoadType.Wheat];
