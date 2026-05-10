@@ -723,6 +723,17 @@ namespace TransportTycoon.Model
         {
             if (Map[x, y] is not Stop) return null;
 
+            int price = type switch
+            {
+                VehicleType.Van => Van.Price,
+                VehicleType.Pickup => Pickup.Price,
+                VehicleType.Truck => Truck.Price,
+                VehicleType.LiquidTruck => LiquidTruck.Price,
+                VehicleType.SmallBus => SmallBus.Price,
+                VehicleType.BigBus => BigBus.Price,
+                _ => throw new ArgumentException("Invalid vehicle type", nameof(type)),
+            };
+
             Vehicle vehicle = type switch
             {
                 VehicleType.Van => new Van(x, y, 0.0, null),
@@ -734,18 +745,15 @@ namespace TransportTycoon.Model
                 _ => throw new ArgumentException("Invalid vehicle type", nameof(type)),
             };
 
-            if (Balance >= vehicle.Price)
+            Balance -= price;
+            Vehicles.Add(vehicle);
+            Maintenance += vehicle.Maintenance;
+            BalanceChanged?.Invoke(this, EventArgs.Empty);
+            BalanceMessage?.Invoke(this, (x, y, -price));
+            MaintenanceChanged?.Invoke(this, EventArgs.Empty);
+            if (IsGameOver)
             {
-                Balance -= vehicle.Price;
-                Vehicles.Add(vehicle);
-                Maintenance += vehicle.Maintenance;
-                BalanceChanged?.Invoke(this, EventArgs.Empty);
-                BalanceMessage?.Invoke(this, (x, y, -vehicle.Price));
-                MaintenanceChanged?.Invoke(this, EventArgs.Empty);
-                if (IsGameOver)
-                {
-                    OnGameOver();
-                }
+                OnGameOver();
             }
             return vehicle;
         }

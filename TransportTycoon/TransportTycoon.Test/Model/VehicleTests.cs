@@ -113,7 +113,7 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(270, bus.Angle);
             Assert.Equal(1, bus.TopSpeed);
             Assert.Equal(10, bus.MaxCapacity);
-            Assert.Equal(500, bus.Price);
+            Assert.Equal(500, SmallBus.Price);
             Assert.Equal(2, bus.Maintenance);
             Assert.Equal(VehicleType.SmallBus, bus.Type);
             Assert.Single(bus.AcceptedGoods!);
@@ -824,7 +824,7 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(180, van.Angle);
             Assert.Equal(0.9, van.TopSpeed);
             Assert.Equal(30, van.MaxCapacity);
-            Assert.Equal(2200, van.Price);
+            Assert.Equal(2200, Van.Price);
             Assert.Equal(10, van.Maintenance);
             Assert.Equal(VehicleType.Van, van.Type);
             Assert.Equal(5, van.AcceptedGoods!.Count);
@@ -858,7 +858,7 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(0, bus.Angle);
             Assert.Equal(1, bus.TopSpeed);
             Assert.Equal(25, bus.MaxCapacity);
-            Assert.Equal(1200, bus.Price);
+            Assert.Equal(1200, BigBus.Price);
             Assert.Equal(5, bus.Maintenance);
             Assert.Equal(VehicleType.BigBus, bus.Type);
             Assert.Single(bus.AcceptedGoods!);
