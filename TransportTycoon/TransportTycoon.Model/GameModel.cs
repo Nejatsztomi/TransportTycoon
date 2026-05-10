@@ -722,7 +722,7 @@ namespace TransportTycoon.Model
         public Vehicle? BuyVehicle(int x, int y, VehicleType type)
         {
             if (Map[x, y] is not Stop) return null;
-            if(Vehicles.Any(v => v.MapX==x && v.MapY==y)) return null;
+            if (Vehicles.Any(v => v.MapX == x && v.MapY == y)) return null;
 
             int price = type switch
             {
