@@ -1256,13 +1256,7 @@ namespace TransportTycoon.Model
             int y = v.MapY;
 
             if (0 > x || x >= Map.Height || 0 > y || y >= Map.Width) return false;
-            Field currentField = Map[x, y];
-
-            if (currentField is Stop)
-            {
-                return true;
-            }
-            return false;
+            return Map[x, y] is Stop;
         }
 
         private bool CheckDestroyBridge(int x, int y)
