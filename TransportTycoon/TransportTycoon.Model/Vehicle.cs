@@ -84,11 +84,6 @@ namespace TransportTycoon.Model
         public VehicleType Type { get; protected init; }
 
         /// <summary>
-        /// Gets the price associated with the vehicle.
-        /// </summary>
-        public int Price { get; protected init; }
-
-        /// <summary>
         /// Gets the maintenance cost associated with the vehicle.
         /// </summary>
         public int Maintenance { get; protected init; }
