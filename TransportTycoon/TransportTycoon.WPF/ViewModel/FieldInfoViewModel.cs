@@ -142,7 +142,7 @@ namespace TransportTycoon.WPF.ViewModel
                     ConsumeCapacity = Math.Round(((IndustryEntity)i.BuildingEntity).ConsumeCapacity),
                     MaxCapacity = i.BuildingEntity.MaxCapacity,
                     CurrentCapacity = Math.Round(i.BuildingEntity.CurrentCapacity),
-                    Productivity = Math.Round(i.BuildingEntity.Productivity, 2),
+                    Productivity = Math.Round(((IndustryEntity)i.BuildingEntity).ConsumeCapacity) > 0 ? Math.Round(i.BuildingEntity.Productivity, 2) : 0,
                 },
 
                 _ => new FieldInfoViewModel
