@@ -8,10 +8,6 @@
     /// property to specify the cost associated with the specific infrastructure.</remarks>
     public abstract class Infrastructure : Field
     {
-        #region Static Fields
-        public static int Price { get; }
-        #endregion
-
         #region Public methods
         public void Place() { }
 
