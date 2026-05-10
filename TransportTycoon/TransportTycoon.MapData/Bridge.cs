@@ -29,7 +29,7 @@
         /// <summary>
         /// Gets the maximum allowed speed for the associated entity.
         /// </summary>
-        public abstract int SpeedLimit { get; }
+        public abstract double SpeedLimit { get; }
 
         /// <summary>
         /// Gets the range value represented by this property.
@@ -55,7 +55,7 @@
         #endregion
 
         #region Public properties
-        public override int SpeedLimit => 1;
+        public override double SpeedLimit => 0.5;
         public override int Range => 13;
         #endregion
 
@@ -91,7 +91,7 @@
         #endregion
 
         #region Public properties
-        public override int SpeedLimit => 1;
+        public override double SpeedLimit => 0.5;
         public override int Range => 15;
         #endregion
 
@@ -126,7 +126,7 @@
         #endregion
 
         #region Public properties
-        public override int SpeedLimit => 1;
+        public override double SpeedLimit => 0.5;
         public override int Range => 17;
         #endregion
 
