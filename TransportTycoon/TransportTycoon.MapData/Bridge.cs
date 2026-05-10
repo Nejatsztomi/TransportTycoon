@@ -50,12 +50,12 @@
     /// price, speed limit, and range. Use this class when a bridge with these characteristics is required.</remarks>
     public class YellowBridge : Bridge
     {
-        #region static Fields
+        #region Static fields
         public static int Price { get; } = 60;
         #endregion
 
-        #region Properties
-        public override int SpeedLimit => 50;
+        #region Public properties
+        public override int SpeedLimit => 1;
         public override int Range => 13;
         #endregion
 
@@ -86,12 +86,12 @@
     /// required.</remarks>
     public class GreenBridge : Bridge
     {
-        #region static Fields
+        #region Static fields
         public static int Price { get; } = 80;
         #endregion
 
-        #region Properties
-        public override int SpeedLimit => 50;
+        #region Public properties
+        public override int SpeedLimit => 1;
         public override int Range => 15;
         #endregion
 
@@ -121,12 +121,12 @@
     /// required.</remarks>
     public class RedBridge : Bridge
     {
-        #region Static Fields
+        #region Static fields
         public static int Price { get; } = 100;
         #endregion
 
-        #region Properties
-        public override int SpeedLimit => 50;
+        #region Public properties
+        public override int SpeedLimit => 1;
         public override int Range => 17;
         #endregion
 

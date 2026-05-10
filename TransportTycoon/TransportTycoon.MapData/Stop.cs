@@ -12,7 +12,7 @@ namespace TransportTycoon.MapData
     /// initialized.</remarks>
     public class Stop : Infrastructure
     {
-        #region Static Fields
+        #region Static fields
         public static int Price { get; } = 300;
         #endregion
 
