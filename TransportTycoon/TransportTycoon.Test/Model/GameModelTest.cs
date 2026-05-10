@@ -1342,14 +1342,15 @@ public class GameModelTest
         public void StepAllVehicles_WhenVehicleIsOnBridge_ClampsSpeedToBridgeLimit()
         {
             var model = CreateModel();
-            model.Map.UpdateTable(1, 1, new YellowBridge(1, 1, BridgeType.HorizontalYellowBridge, 1));
+            var bridge = new YellowBridge(1, 1, BridgeType.HorizontalYellowBridge, 1);
+            model.Map.UpdateTable(1, 1, bridge);
 
             var vehicle = CreateVehicle(1, 1, (2, 1), topSpeed: 100.0, currentSpeed: 100.0);
             model.Vehicles.Add(vehicle);
 
             model.StepAllVehicles(0.0);
 
-            Assert.Equal(50.0, vehicle.CurrentSpeed, 5);
+            Assert.Equal(bridge.SpeedLimit, vehicle.CurrentSpeed, 5);
         }
     }
 
