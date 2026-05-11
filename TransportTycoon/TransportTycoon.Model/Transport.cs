@@ -18,7 +18,7 @@ namespace TransportTycoon.Model
     public sealed class Van : Transport
     {
         #region Static Fields
-        public static int Price { get; } = 2200;
+        public static int Price { get; } = 1200;
         #endregion
         #region Constructor 
         public Van(int x, int y, double angle, Prouth? route = null) : base(x, y, angle, route)

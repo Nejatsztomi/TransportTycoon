@@ -12,11 +12,11 @@ namespace TransportTycoon.WPF.ViewModel
         public int RoadPrice { get; } = Road.Price;
         public int BridgePrice { get; } = 100;
         public int StopPrice { get; } = Stop.Price;
-        public int PickupPrice { get; } = 600;
-        public int VanPrice { get; } = 1200;
-        public int TruckPrice { get; } = 1400;
-        public int LiquidTruckPrice { get; } = 1800;
-        public int SmallBusPrice { get; } = 500;
-        public int BigBusPrice { get; } = 1200;
+        public int PickupPrice { get; } = Pickup.Price;
+        public int VanPrice { get; } = Van.Price;
+        public int TruckPrice { get; } = Truck.Price;
+        public int LiquidTruckPrice { get; } = LiquidTruck.Price;
+        public int SmallBusPrice { get; } = SmallBus.Price;
+        public int BigBusPrice { get; } = BigBus.Price;
     }
 }
