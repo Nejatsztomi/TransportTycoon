@@ -41,7 +41,7 @@ namespace TransportTycoon.Model
         /// <summary>
         /// Gets the default price value.
         /// </summary>
-        public static int Price { get; } = 2200;
+        public static int Price { get; } = 1200;
         #endregion
 
         #region Constructors

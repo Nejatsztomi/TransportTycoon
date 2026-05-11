@@ -464,14 +464,14 @@
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="11"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=11}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.TerrainPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/minus.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="12"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=12}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.TerrainPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/plus.png" Stretch="Uniform"/>
                             </RadioButton>
@@ -486,21 +486,21 @@
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="21"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=21}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.RoadPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/road.png" Stretch="UniformToFill"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="22"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=22}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.BridgePrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/bridge.png" Stretch="UniformToFill"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="23"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=23}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.StopPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/stop.png" Stretch="UniformToFill"/>
                             </RadioButton>
@@ -519,42 +519,42 @@
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="31"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=31}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.PickupPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/pickup.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="32"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=32}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.VanPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/van.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="33"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=33}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.TruckPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/camion.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="34"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=34}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.LiquidTruckPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/petrolcamion.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Margin="74,8,8,8" Command="{Binding SetSelectedButtonCommand}" CommandParameter="35"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=35}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.SmallBusPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/smallBus.png" Stretch="Uniform"/>
                             </RadioButton>
                             <RadioButton Command="{Binding SetSelectedButtonCommand}" CommandParameter="36"
                                          IsChecked="{Binding SelectedButton, Mode=TwoWay, Converter={StaticResource SelectedButtonConverter}, ConverterParameter=36}">
                                 <RadioButton.ToolTip>
-                                    <ToolTip Content="200"/>
+                                    <ToolTip Content="{Binding Prices.BigBusPrice}"/>
                                 </RadioButton.ToolTip>
                                 <Image Source="/Assets/Images/Icons/largeBus.png" Stretch="Uniform"/>
                             </RadioButton>

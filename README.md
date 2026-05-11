@@ -6,7 +6,7 @@ A MÁV-csoport\* bemutatja a népszerű [Transport Tycoon](https://www.openttd.o
 
 - [Fényes Ádám](mailto:nwxzrb@inf.elte.hu)
 - [Kis Tamás](mailto:iscbst@inf.elte.hu)
-- Kocsmár Balázs
+- [Kocsmár Balázs](mailto:y3trse@inf.elte.hu)
 
 ## Játékbeli lehetőségek 🎮
 
@@ -38,7 +38,7 @@ A MÁV-csoport\* bemutatja a népszerű [Transport Tycoon](https://www.openttd.o
 
 ## Képernyőképek és videók a játékról 📸🎥
 
-Jelenleg még nem áll rendelkezésre.
+[Képek a játékról](../../wikis/Képek)
 
 ## Dokumentáció 📚
 

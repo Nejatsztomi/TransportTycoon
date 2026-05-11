@@ -829,7 +829,7 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(1.5, van.TopSpeed, 4);
             Assert.Equal(360 * 1.5, van.TurnSpeed, 4);
             Assert.Equal(30, van.MaxCapacity);
-            Assert.Equal(2200, Van.Price);
+            Assert.Equal(1200, Van.Price);
             Assert.Equal(10, van.Maintenance);
             Assert.Equal(VehicleType.Van, van.Type);
             Assert.Equal(5, van.AcceptedGoods!.Count);
