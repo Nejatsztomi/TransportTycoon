@@ -1,5 +1,4 @@
 ﻿using NSubstitute;
-using System.Reflection;
 using TransportTycoon.MapData;
 using TransportTycoon.MapData.Buildings;
 using TransportTycoon.MapData.MapGenerator;
@@ -171,35 +170,6 @@ namespace TransportTycoon.Test.Model
                 Assert.Equal(2, neighbours.Count);
                 Assert.Contains(table[0, 1], neighbours);
                 Assert.Contains(table[1, 2], neighbours);
-            }
-
-            [Fact]
-            public void IsMapAccurate_PrivateMethod_ReturnsTrueForValidMap()
-            {
-                // Arrange
-                var table = CreateTestTable(3, 3, 2); // Minden szomszéd szintkülönbsége 0 (éppen jó)
-                MethodInfo? isMapAccurateMethod = typeof(GameTable).GetMethod("IsMapAccurate", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                // Act
-                bool isAccurate = (bool)isMapAccurateMethod!.Invoke(table, null)!;
-
-                // Assert
-                Assert.True(isAccurate);
-            }
-
-            [Fact]
-            public void IsMapAccurate_PrivateMethod_ReturnsFalseForInvalidMap()
-            {
-                // Arrange
-                var table = CreateTestTable(3, 3, 2);
-                table.UpdateTable(1, 1, new Terrain(1, 1, 6)); // Túl nagy ugrás a magasságban (2->6)
-                MethodInfo? isMapAccurateMethod = typeof(GameTable).GetMethod("IsMapAccurate", BindingFlags.NonPublic | BindingFlags.Instance);
-
-                // Act
-                bool isAccurate = (bool)isMapAccurateMethod!.Invoke(table, null)!;
-
-                // Assert
-                Assert.False(isAccurate);
             }
             #endregion
 

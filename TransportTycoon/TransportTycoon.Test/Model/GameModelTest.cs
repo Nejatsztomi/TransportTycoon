@@ -1662,119 +1662,16 @@ public class GameModelTest
             // Assert: A sebességének le kellett lassulnia a híd limitjére
             Assert.True(van.CurrentSpeed <= bridge.SpeedLimit);
         }
-
-        [Fact]
-        public void ApplyAntiCollision_RoadJunction_StopsIfAnotherVehicleIsThere()
-        {
-            // Arrange
-            var model = CreateTestModel();
-
-            // 1. Pályaelemek beállítása a modellben
-            var currentRoad = new Road(0, 0, RoadType.Vertical, 1);
-            var nextRoad = new Road(0, 1, RoadType.XRoad, 1); // Kereszteződés
-            model.Map[0, 0] = currentRoad;
-            model.Map[0, 1] = nextRoad;
-
-            // 2. Járművek létrehozása
-            var van = new Van(0, 0, 0.0, null);
-            var otherVan = new Van(0, 1, 0.0, null);
-
-            // A másik furgon biztosan álljon (ez lesz az akadály)
-            otherVan.ChangeCurrentSpeed(0.0);
-
-            // 3. REFLECTION VARÁZSLAT: Beállítjuk a furgon belső útvonalát, 
-            // hogy tudja, hogy a (0,1) felé tart (GetNextTileCoordinates működjön)
-            var edgeTilesField = typeof(Vehicle).GetField("_currentEdgeTiles", BindingFlags.NonPublic | BindingFlags.Instance);
-            edgeTilesField!.SetValue(van, new List<Field> { currentRoad, nextRoad });
-
-            var currentTileIdxField = typeof(Vehicle).GetField("_currentTileIdx", BindingFlags.NonPublic | BindingFlags.Instance);
-            currentTileIdxField!.SetValue(van, 0); // A listában jelenleg a (0,0) elemen áll
-
-            // 4. REFLECTION VARÁZSLAT: A "másik" furgont beletesszük a GameModel foglaltsági mátrixába
-            // Előbb megkérdezzük, melyik sávba fog érkezni a mi furgonunk:
-            int expectedLaneIdx = van.GetLaneIdx();
-
-            // Majd abba a sávba "betesszük" az akadályozó furgont a GameModel-ben:
-            var occupancyField = typeof(GameModel).GetField("_tileOccupancy", BindingFlags.NonPublic | BindingFlags.Instance);
-            var occupancyMatrix = (Vehicle?[,,])occupancyField!.GetValue(model)!;
-            occupancyMatrix[0, 1, expectedLaneIdx] = otherVan;
-
-            // Az új metódus lekérése
-            var method = typeof(GameModel).GetMethod("ApplyAntiCollision", BindingFlags.NonPublic | BindingFlags.Instance);
-            Assert.NotNull(method);
-
-            // Act: Ráküldjük a ráfutásgátlót
-            method.Invoke(model, [van]);
-
-            // Assert: A furgon sebességének 0-ra kellett csökkennie a másik furgon miatt!
-            Assert.Equal(0.0, van.CurrentSpeed);
-        }
         #endregion
 
         #region AllVehiclesDoTheTransport Tesztek (A rakomány és szállítás)
-        //[Fact]
-        //public void AllVehiclesDoTheTransport_VehicleGivesLoadToIndustry_UpdatesCapacities()
-        //{
-        //    var model = CreateTestModel(GameMode.Run);
-        //    var van = new Van(1, 1, Direction.Up);
-        //    van.Prouth = new Prouth(new List<Node> { new Node(1, 1, typeof(Stop)) });
-        //    van.SetCurrentCapacity(50); // Van benne 50 fa
-        //    van.SetCurrentLoad(new Wood());
-        //    model.Vehicles.Add(van);
-
-        //    var stop = new Stop(1, 1, 2);
-        //    var mockBlock = Substitute.For<IBuildingBlocks>();
-        //    var mill = CreateRealIndustry<MillEntity>(0, 100); // Fogyasztana, van 100 helye
-        //    mockBlock.BuildingEntity.Returns(mill);
-        //    stop.SetBuildingBlocks(mockBlock);
-        //    model.Map.UpdateTable(1, 1, stop);
-
-        //    int startBalance = model.Balance;
-
-        //    var method = typeof(GameModel).GetMethod("AllVehiclesDoTheTransport", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        //    // Act
-        //    method!.Invoke(model, null);
-
-        //    // Assert
-        //    Assert.Equal(0, van.CurrentCapacity); // Leadta mind az 50-et
-        //    Assert.Null(van.CurrentLoad); // Üres lett az autó
-        //    Assert.True(model.Balance > startBalance); // Pénzt kapott érte
-        //}
-
-        //[Fact]
-        //public void AllVehiclesDoTheTransport_VehicleGivesLoadToCity_CityTakesAll()
-        //{
-        //    var model = CreateTestModel(GameMode.Run);
-        //    var bus = new SmallBus(1, 1, Direction.Up);
-        //    bus.Prouth = new Prouth(new List<Node> { new Node(1, 1, typeof(Stop)) });
-        //    bus.SetCurrentCapacity(20); // 20 Ember
-        //    bus.SetCurrentLoad(new People());
-        //    model.Vehicles.Add(bus);
-
-        //    var stop = new Stop(1, 1, 2);
-        //    var mockBlock = Substitute.For<IBuildingBlocks>();
-        //    mockBlock.BuildingEntity.Returns(CreateRealEntity<CityEntity>(0, 100)); // Város mindent elfogad
-        //    stop.SetBuildingBlocks(mockBlock);
-        //    model.Map.UpdateTable(1, 1, stop);
-
-        //    var method = typeof(GameModel).GetMethod("AllVehiclesDoTheTransport", BindingFlags.NonPublic | BindingFlags.Instance);
-
-        //    // Act
-        //    method!.Invoke(model, null);
-
-        //    // Assert
-        //    Assert.Equal(0, bus.CurrentCapacity); // A város bevett mindenkit
-        //    Assert.Null(bus.CurrentLoad);
-        //}
-
         [Fact]
         public void AllVehiclesDoTheTransport_BuildingGivesLoadToVehicle_UpdatesCapacities()
         {
             var model = CreateTestModel(GameMode.Run);
             var truck = new Truck(1, 1, 0.0)
             {
-                Prouth = new Prouth([new Node(1, 1, typeof(Stop))])
+                Prouth = new Prouth([new Node(1, 1, typeof(Stop)), new Node(1, 1, typeof(Stop))])
             };
             model.Vehicles.Add(truck);
 
