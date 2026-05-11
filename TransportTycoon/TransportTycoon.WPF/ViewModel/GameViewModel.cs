@@ -59,8 +59,6 @@ namespace TransportTycoon.WPF.ViewModel
         /// </summary>
         public event Action? MapUpdated;
 
-        public event Action<UInt64>? VehicleDestroyed;
-
         /// <summary>
         /// A simple event to notify the view that the user wants to go back to the main menu.
         /// </summary>
@@ -89,7 +87,6 @@ namespace TransportTycoon.WPF.ViewModel
             model.FieldChanged += Model_FieldChanged;
             model.BalanceChanged += Model_BalanceChanged;
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
-            model.VehicleChanged += Model_VehicleChanged;
             model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
             model.ProductionChanged += Model_ProductionChanged;
             model.MaintenanceChanged += Model_MaintenanceChanged;
@@ -442,12 +439,6 @@ namespace TransportTycoon.WPF.ViewModel
             RefreshFieldInfo(_2.X, _2.Y);
         }
 
-        private void Model_VehicleChanged(object? _1, Vehicle e)
-        {
-            OnPropertyChanged(nameof(Vehicles));
-            if (ShownVehicle is not null) RefreshFieldInfo(ShownVehicle.MapX, ShownVehicle.MapY);
-        }
-
         private void Model_InfrastructureBuilt(object? _1, List<(int X, int Y)> changedFields)
         {
             foreach (var (x, y) in changedFields)
@@ -497,7 +488,6 @@ namespace TransportTycoon.WPF.ViewModel
             Model.FieldChanged -= Model_FieldChanged;
             Model.BalanceChanged -= Model_BalanceChanged;
             Model.SelectedFieldChanged -= Model_SelectedFieldChanged;
-            Model.VehicleChanged -= Model_VehicleChanged;
         }
         #endregion
     }
