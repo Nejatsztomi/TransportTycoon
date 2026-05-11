@@ -787,7 +787,14 @@ namespace TransportTycoon.Model
                     if (0 <= vehicle.MapX && vehicle.MapX < Map.Width
                         && 0 <= vehicle.MapY && vehicle.MapY < Map.Height)
                     {
-                        _tileOccupancy[vehicle.MapX, vehicle.MapY, currentLaneIdx] = vehicle;
+                        if (_tileOccupancy[vehicle.MapX, vehicle.MapY, currentLaneIdx] is null)
+                        {
+                            _tileOccupancy[vehicle.MapX, vehicle.MapY, currentLaneIdx] = vehicle;
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
 
                     // Update the tracker
@@ -1009,7 +1016,7 @@ namespace TransportTycoon.Model
         {
             double targetSpeed = vehicle.TopSpeed;
 
-            Field currentField = Map[vehicle.MapX, vehicle.MapY];
+            var currentField = Map[vehicle.MapX, vehicle.MapY];
             if (currentField is Bridge bridge)
             {
                 targetSpeed = Math.Min(targetSpeed, bridge.SpeedLimit);
@@ -1017,8 +1024,18 @@ namespace TransportTycoon.Model
 
             if (vehicle.GetNextTileCoordinates() is (int nextX, int nextY))
             {
+
+                if (Map[nextX, nextY].Height > Map[vehicle.LastMapX, vehicle.LastMapY].Height)
+                {
+                    targetSpeed *= 0.8;
+                }
+                else if (Map[nextX, nextY].Height < Map[vehicle.LastMapX, vehicle.LastMapY].Height)
+                {
+                    targetSpeed *= 1.3;
+                }
+
                 int nextLaneIdx = vehicle.GetLaneIdx();
-                Vehicle? vehicleAhead = _tileOccupancy[nextX, nextY, nextLaneIdx];
+                var vehicleAhead = _tileOccupancy[nextX, nextY, nextLaneIdx];
 
                 if (vehicleAhead is not null && vehicleAhead != vehicle)
                 {

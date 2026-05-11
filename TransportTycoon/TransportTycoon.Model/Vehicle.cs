@@ -175,6 +175,11 @@ namespace TransportTycoon.Model
         public int LastLaneIdx { get; set; } = -1;
 
         /// <summary>
+        /// Gets the current progress along the current tile, represented as a value between 0.0 and 1.0, where 0.0 indicates the start of the tile and 1.0 indicates the end of the tile.
+        /// </summary>
+        public double TileProgress => _tileProgress;
+
+        /// <summary>
         /// Gets the list of load types that are accepted.
         /// </summary>
         public List<LoadType>? AcceptedGoods { get; protected set; } = [];
