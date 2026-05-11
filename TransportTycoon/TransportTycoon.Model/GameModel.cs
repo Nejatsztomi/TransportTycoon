@@ -50,7 +50,7 @@ namespace TransportTycoon.Model
 
         #region Private fields
         private readonly ITimer _timer;
-        private readonly Dictionary<(int X, int Y), IField> _modifiedFields = [];
+        private readonly Dictionary<(int X, int Y), Field> _modifiedFields = [];
         private double _timeAccumulator = 0.0;
         private IPathFinder _pathFinder;
         private readonly Vehicle?[,,] _tileOccupancy;
@@ -131,7 +131,7 @@ namespace TransportTycoon.Model
         public int Maintenance { get; private set; }
         #endregion
 
-        public IField? SelectedField { get; private set; }
+        public Field? SelectedField { get; private set; }
         public List<Stop> SelectedStopFields { get; private set; } = [];
         public bool IsGameOver => Balance <= 0;
         #endregion
@@ -162,7 +162,6 @@ namespace TransportTycoon.Model
         public event EventHandler<List<Tuple<int, int>>>? GameAdvanced;
         public event EventHandler<List<(int, int)>>? InfrastructureBuilt;
         public event EventHandler<(int, int)>? SelectedFieldChanged;
-        public event EventHandler<Vehicle>? VehicleChanged;
         public event EventHandler<List<Stop>>? SelectedStopFieldsChanged;
         public event EventHandler<List<(int, int)>>? ProductionChanged;
         public event EventHandler<(int X, int Y, int Value)>? BalanceMessage;
@@ -270,7 +269,7 @@ namespace TransportTycoon.Model
                 Height = kv.Value.Height
             })];
 
-            List<TreeSaveData> treesData = [.. Map.Table.Cast<IField>()
+            List<TreeSaveData> treesData = [.. Map.Table.Cast<Field>()
                 .Where(field => field.GetTrees() > 0)
                 .Select(field => new TreeSaveData()
                 {
@@ -378,7 +377,7 @@ namespace TransportTycoon.Model
         {
             if (Mode == GameMode.Editor)
             {
-                IField field = Map[x, y];
+                Field field = Map[x, y];
 
                 if (field is Terrain terrain)
                 {
@@ -424,7 +423,7 @@ namespace TransportTycoon.Model
         {
             if (Mode == GameMode.Editor)
             {
-                IField field = Map[x, y];
+                Field field = Map[x, y];
 
                 if (field is Terrain terrain)
                 {
@@ -499,7 +498,7 @@ namespace TransportTycoon.Model
                 Balance += cost;
             }
 
-            foreach (IField? e in Map.NeighboursOfRoadsAndStops(x, y))
+            foreach (Field? e in Map.NeighboursOfRoadsAndStops(x, y))
             {
                 if (e is not null && e is Road road)
                 {
@@ -679,7 +678,7 @@ namespace TransportTycoon.Model
         /// <param name="y">Target tile Y coordinate.</param>
         public void Destroy(int x, int y)
         {
-            if (Mode != GameMode.Editor || Map[x, y] is not IInfrastructure || (Map[x, y] is Road r && r.InCity())
+            if (Mode != GameMode.Editor || Map[x, y] is not Infrastructure || (Map[x, y] is Road r && r.InCity())
                 || Vehicles.Any(v => v.MapX == x && v.MapY == y)) return;
             List<(int X, int Y)> changedFields = [];
 
@@ -787,7 +786,14 @@ namespace TransportTycoon.Model
                     if (0 <= vehicle.MapX && vehicle.MapX < Map.Width
                         && 0 <= vehicle.MapY && vehicle.MapY < Map.Height)
                     {
-                        _tileOccupancy[vehicle.MapX, vehicle.MapY, currentLaneIdx] = vehicle;
+                        if (_tileOccupancy[vehicle.MapX, vehicle.MapY, currentLaneIdx] is null)
+                        {
+                            _tileOccupancy[vehicle.MapX, vehicle.MapY, currentLaneIdx] = vehicle;
+                        }
+                        else
+                        {
+                            continue;
+                        }
                     }
 
                     // Update the tracker
@@ -889,8 +895,8 @@ namespace TransportTycoon.Model
             else
             {
                 Stop? removeItem = SelectedStopFields.Find(s => s.X == x && s.Y == y);
-                if (!removeItem.HasValue) return;
-                SelectedStopFields.Remove(removeItem.Value);
+                if (removeItem is null) return;
+                SelectedStopFields.Remove(removeItem);
             }
             SelectedStopFieldsChanged?.Invoke(this, SelectedStopFields);
         }
@@ -917,6 +923,7 @@ namespace TransportTycoon.Model
                     SaveFieldType.VerticalGreenBridge => new GreenBridge(x, y, BridgeType.VerticalGreenBridge, 0),
                     _ => Map[x, y]
                 };
+
                 _modifiedFields.Add((x, y), Map[x, y]);
             });
 
@@ -927,6 +934,14 @@ namespace TransportTycoon.Model
                 .ForEach(tile =>
                 {
                     Map[tile.X, tile.Y] = new Road(tile.X, tile.Y, Map.CalculateRoadType(tile.X, tile.Y), Map[tile.X, tile.Y].Height);
+                });
+
+            data.ModifiedTiles
+                .Where(tile => tile.Type == SaveFieldType.Stop)
+                .ToList()
+                .ForEach(stop =>
+                {
+                    Map.StopEnvironment(stop.X, stop.Y);
                 });
 
             RebuildGraph();
@@ -980,6 +995,7 @@ namespace TransportTycoon.Model
                     vehicle.SetProuth(prouth, _pathFinder, new(GraphNetwork, new(Map)));
                 }
 
+                Maintenance += vehicle.Maintenance;
                 Vehicles.Add(vehicle);
                 _tileOccupancy[vehicle.MapX, vehicle.MapY, vehicle.GetLaneIdx()] = vehicle;
             });
@@ -999,16 +1015,26 @@ namespace TransportTycoon.Model
         {
             double targetSpeed = vehicle.TopSpeed;
 
-            IField currentField = Map[vehicle.MapX, vehicle.MapY];
-            if (currentField is IBridge bridge)
+            var currentField = Map[vehicle.MapX, vehicle.MapY];
+            if (currentField is Bridge bridge)
             {
                 targetSpeed = Math.Min(targetSpeed, bridge.SpeedLimit);
             }
 
             if (vehicle.GetNextTileCoordinates() is (int nextX, int nextY))
             {
+
+                if (Map[nextX, nextY].Height > Map[vehicle.LastMapX, vehicle.LastMapY].Height)
+                {
+                    targetSpeed *= 0.4;
+                }
+                else if (Map[nextX, nextY].Height < Map[vehicle.LastMapX, vehicle.LastMapY].Height)
+                {
+                    targetSpeed *= 1.3;
+                }
+
                 int nextLaneIdx = vehicle.GetLaneIdx();
-                Vehicle? vehicleAhead = _tileOccupancy[nextX, nextY, nextLaneIdx];
+                var vehicleAhead = _tileOccupancy[nextX, nextY, nextLaneIdx];
 
                 if (vehicleAhead is not null && vehicleAhead != vehicle)
                 {
@@ -1075,7 +1101,7 @@ namespace TransportTycoon.Model
             List<Tuple<int, int>> grownTrees = [];
 
             Random rnd = new(Map.Context.Seed);
-            HashSet<IField> spreadedFields = [];
+            HashSet<Field> spreadedFields = [];
             for (int i = 0; i < Map.Height; i++)
             {
                 for (int j = 0; j < Map.Width; j++)
@@ -1099,7 +1125,7 @@ namespace TransportTycoon.Model
                 }
             }
 
-            foreach (IField field in spreadedFields)
+            foreach (Field field in spreadedFields)
             {
                 if (field is Terrain terrain && rnd.Next(1, 101) <= 100)
                 {
@@ -1143,15 +1169,20 @@ namespace TransportTycoon.Model
         {
             foreach (var vehicle in Vehicles)
             {
-                if (IsCarOnStop(vehicle) && vehicle.CurrentRoute == null && vehicle.Prouth != null)
+                if (IsCarOnStop(vehicle)
+                    && vehicle.Prouth is not null
+                    && vehicle.Prouth.Stops.Count > 1
+                    && !vehicle.IsLost
+                    && vehicle.CurrentRoute is not null
+                    )
                 {
-                    IField currentField = Map[vehicle.MapX, vehicle.MapY];
+                    Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
                     {
                         List<LoadType> vehicleAcceptedGoods = vehicle.AcceptedGoods!;
 
-                        List<IBuildingBlocks> buildings_giver = stop.ShowWhatTheBuildingsCanGive(vehicleAcceptedGoods);
-                        List<IBuildingBlocks> buildings_taker = stop.ShowWhatTheBuildingsCanGet(vehicleAcceptedGoods);
+                        List<BuildingBlocks> buildings_giver = stop.ShowWhatTheBuildingsCanGive(vehicleAcceptedGoods);
+                        List<BuildingBlocks> buildings_taker = stop.ShowWhatTheBuildingsCanGet(vehicleAcceptedGoods);
 
                         if (buildings_giver.Count == 0 && buildings_taker.Count == 0) continue;
 
@@ -1254,37 +1285,31 @@ namespace TransportTycoon.Model
             int y = v.MapY;
 
             if (0 > x || x >= Map.Height || 0 > y || y >= Map.Width) return false;
-            IField currentField = Map[x, y];
-
-            if (currentField is Stop)
-            {
-                return true;
-            }
-            return false;
+            return Map[x, y] is Stop;
         }
 
         private bool CheckDestroyBridge(int x, int y)
         {
             int up = y - 1;
-            while (Map[x, up] is IBridge)
+            while (Map[x, up] is Bridge)
             {
                 if (Vehicles.Any(v => v.MapX == x && v.MapY == up)) return false;
                 up--;
             }
             int down = y + 1;
-            while (Map[x, down] is IBridge)
+            while (Map[x, down] is Bridge)
             {
                 if (Vehicles.Any(v => v.MapX == x && v.MapY == down)) return false;
                 down++;
             }
             int left = x - 1;
-            while (Map[left, y] is IBridge)
+            while (Map[left, y] is Bridge)
             {
                 if (Vehicles.Any(v => v.MapX == left && v.MapY == y)) return false;
                 left--;
             }
             int right = x + 1;
-            while (Map[right, y] is IBridge)
+            while (Map[right, y] is Bridge)
             {
                 if (Vehicles.Any(v => v.MapX == right && v.MapY == y)) return false;
                 right++;
@@ -1304,12 +1329,12 @@ namespace TransportTycoon.Model
 
             double scaledDeltaTime = deltaTime * (double)TimeSpeed;
             StepAllVehicles(scaledDeltaTime);
+            AllVehiclesDoTheTransport();
             _timeAccumulator += scaledDeltaTime;
 
             while (_timeAccumulator >= 1)
             {
                 GameTime++;
-                AllVehiclesDoTheTransport();
                 AllProduction();
                 if (GameTime > 0 && GameTime % 10 == 0)
                 {

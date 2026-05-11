@@ -59,7 +59,7 @@ namespace TransportTycoon.Test.Model
         public void ShowWhatTheBuildingsCanGet_CityEntity_AlwaysAdded()
         {
             var stop = new Stop(0, 0, 1);
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
             // A város mindent kérdés nélkül elfogad
             mockBlock.BuildingEntity.Returns(CreateRealEntity<CityEntity>(0, 100));
             stop.SetBuildingBlocks(mockBlock);
@@ -74,7 +74,7 @@ namespace TransportTycoon.Test.Model
         public void ShowWhatTheBuildingsCanGet_NormalEntity_HasCapacityButNotAcceptedLoad_NotAdded()
         {
             var stop = new Stop(0, 0, 1);
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
 
             // Van hely (50/100)
             var realEntity = CreateRealEntity<MillEntity>(50, 100);
@@ -91,7 +91,7 @@ namespace TransportTycoon.Test.Model
         public void ShowWhatTheBuildingsCanGet_NormalEntity_HasCapacityAndAcceptedLoad_Added()
         {
             var stop = new Stop(0, 0, 1);
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
 
             // Van hely (50/100)
             var realEntity = CreateRealEntity<MillEntity>(50, 100);
@@ -113,7 +113,7 @@ namespace TransportTycoon.Test.Model
         public void ShowWhatTheBuildingsCanGive_CityEntity_AlwaysAdded()
         {
             var stop = new Stop(0, 0, 1);
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
             mockBlock.BuildingEntity.Returns(CreateRealEntity<CityEntity>(50, 100));
             stop.SetBuildingBlocks(mockBlock);
 
@@ -127,7 +127,7 @@ namespace TransportTycoon.Test.Model
         public void ShowWhatTheBuildingsCanGive_NormalEntity_HasCapacityButVehicleDoesNotAccept_NotAdded()
         {
             var stop = new Stop(0, 0, 1);
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
 
             // Van készlete a Fatelepen (50/100)
             var realEntity = CreateRealEntity<LumberCampEntity>(50, 100);
@@ -144,7 +144,7 @@ namespace TransportTycoon.Test.Model
         public void ShowWhatTheBuildingsCanGive_NormalEntity_HasCapacityAndVehicleAccepts_Added()
         {
             var stop = new Stop(0, 0, 1);
-            var mockBlock = Substitute.For<IBuildingBlocks>();
+            var mockBlock = Substitute.For<BuildingBlocks>();
 
             // Van készlet
             var realEntity = CreateRealEntity<LumberCampEntity>(50, 100);
@@ -165,7 +165,7 @@ namespace TransportTycoon.Test.Model
         [Fact]
         public void IInfrastructure_PlaceAndRemove_ExecuteWithoutExceptions()
         {
-            IInfrastructure infrastructure = new Stop(0, 0, 1);
+            Infrastructure infrastructure = new Stop(0, 0, 1);
 
             var exceptionPlace = Record.Exception(() => infrastructure.Place());
             var exceptionRemove = Record.Exception(() => infrastructure.Remove());

@@ -40,7 +40,7 @@
         /// <summary>
         /// Stores the coordinates of the building on map
         /// </summary>
-        public SortedDictionary<(int X, int Y), IField> MapPoints { protected set; get; } = [];
+        public SortedDictionary<(int X, int Y), Field> MapPoints { protected set; get; } = [];
 
         /// <summary>
         /// The width of the entity on the map, in terms of number of tiles it occupies horizontally.
@@ -59,6 +59,12 @@
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the BuildingEntity class with the specified width and height.
+        /// </summary>
+        /// <param name="width">The width of the building entity. Must be greater than 0. The default value is 2.</param>
+        /// <param name="height">The height of the building entity. Must be greater than 0. The default value is 2.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when width or height is less than or equal to 0.</exception>
         protected BuildingEntity(int width = 2, int height = 2)
         {
             if (width <= 0) throw new ArgumentOutOfRangeException(nameof(width), "Width must be greater than 0.");
@@ -105,6 +111,14 @@
         #endregion
 
         #region Protected methods
+        /// <summary>
+        /// Calculates a time-varying multiplier value that oscillates smoothly between 1.0 and 2.0 based on the current
+        /// time of day.
+        /// </summary>
+        /// <remarks>The multiplier changes continuously over a fixed period, creating a smooth
+        /// oscillation effect. The value is determined by the current time and an offset, if specified in the
+        /// containing class.</remarks>
+        /// <returns>A double value between 1.0 and 2.0 representing the current multiplier.</returns>
         protected double GetMultiplier()
         {
             double period = 300;
@@ -182,6 +196,9 @@
     public abstract class SiteEntity : BuildingEntity
     {
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the SiteEntity class.
+        /// </summary>
         protected SiteEntity()
         {
             Scaler = 1;
@@ -329,6 +346,11 @@
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the IndustryEntity class.
+        /// </summary>
+        /// <remarks>This protected constructor is intended for use by derived classes or for
+        /// deserialization scenarios. It sets the initial value of the Scaler property.</remarks>
         protected IndustryEntity()
         {
             Scaler = 2;

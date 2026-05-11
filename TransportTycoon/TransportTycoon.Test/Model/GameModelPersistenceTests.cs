@@ -102,9 +102,9 @@ namespace TransportTycoon.Test.Model
             });
 
             Assert.IsType(expectedFieldType, restored.Map[startX, startY]);
-            Assert.Equal(expectedBridgeType, ((IBridge)restored.Map[startX, startY]).BridgeType);
+            Assert.Equal(expectedBridgeType, ((Bridge)restored.Map[startX, startY]).BridgeType);
             Assert.IsType(expectedFieldType, restored.Map[endX, endY]);
-            Assert.Equal(expectedBridgeType, ((IBridge)restored.Map[endX, endY]).BridgeType);
+            Assert.Equal(expectedBridgeType, ((Bridge)restored.Map[endX, endY]).BridgeType);
             Assert.True(distance > 0);
         }
 
@@ -358,9 +358,9 @@ namespace TransportTycoon.Test.Model
         // DummyMapGenerator returns a plain terrain grid
         private class DummyMapGenerator : IMapGenerator
         {
-            public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
+            public (Field[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
             {
-                var fields = new IField[context.Width, context.Height];
+                var fields = new Field[context.Width, context.Height];
                 for (int i = 0; i < context.Width; i++)
                     for (int j = 0; j < context.Height; j++)
                         fields[i, j] = new Terrain(i, j, 1);
@@ -379,19 +379,19 @@ namespace TransportTycoon.Test.Model
 
         private sealed class ScenarioMapGenerator : IMapGenerator
         {
-            private readonly Func<MapGenerationContext, (IField[,], List<BuildingEntity>)> _generate;
+            private readonly Func<MapGenerationContext, (Field[,], List<BuildingEntity>)> _generate;
 
-            public ScenarioMapGenerator(Func<MapGenerationContext, (IField[,], List<BuildingEntity>)> generate)
+            public ScenarioMapGenerator(Func<MapGenerationContext, (Field[,], List<BuildingEntity>)> generate)
             {
                 _generate = generate;
             }
 
-            public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context) => _generate(context);
+            public (Field[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context) => _generate(context);
         }
 
         private static (GameModel Saved, GameModel Restored, TPersistence.GameSaveData SaveData) RoundTrip(
             MapGenerationContext context,
-            Func<MapGenerationContext, (IField[,], List<BuildingEntity>)> mapFactory,
+            Func<MapGenerationContext, (Field[,], List<BuildingEntity>)> mapFactory,
             string saveName,
             TransportTycoon.Model.Difficulty difficulty,
             int balance,
@@ -406,7 +406,7 @@ namespace TransportTycoon.Test.Model
 
         private static GameModel CreateEditorModel(
             MapGenerationContext context,
-            Func<MapGenerationContext, (IField[,], List<BuildingEntity>)> mapFactory,
+            Func<MapGenerationContext, (Field[,], List<BuildingEntity>)> mapFactory,
             string saveName,
             TransportTycoon.Model.Difficulty difficulty,
             int balance)
@@ -423,7 +423,7 @@ namespace TransportTycoon.Test.Model
 
         private static GameModel CreateRestoredModel(
             MapGenerationContext context,
-            Func<MapGenerationContext, (IField[,], List<BuildingEntity>)> mapFactory,
+            Func<MapGenerationContext, (Field[,], List<BuildingEntity>)> mapFactory,
             TPersistence.GameSaveData saveData,
             string saveName)
         {
@@ -431,9 +431,9 @@ namespace TransportTycoon.Test.Model
             return new GameModel(table, Substitute.For<ITimer>(), saveData, saveName);
         }
 
-        private static (IField[,], List<BuildingEntity>) CreatePlainTerrainMap(MapGenerationContext context) => (CreateTerrainGrid(context), []);
+        private static (Field[,], List<BuildingEntity>) CreatePlainTerrainMap(MapGenerationContext context) => (CreateTerrainGrid(context), []);
 
-        private static (IField[,], List<BuildingEntity>) CreateTerrainMapWithTrees(MapGenerationContext context, params (int X, int Y, int Amount)[] trees)
+        private static (Field[,], List<BuildingEntity>) CreateTerrainMapWithTrees(MapGenerationContext context, params (int X, int Y, int Amount)[] trees)
         {
             var fields = CreateTerrainGrid(context);
             foreach (var (x, y, amount) in trees)
@@ -446,7 +446,7 @@ namespace TransportTycoon.Test.Model
             return (fields, []);
         }
 
-        private static Func<MapGenerationContext, (IField[,], List<BuildingEntity>)> CreateTerrainMapWithWaterAt(int waterX, int waterY)
+        private static Func<MapGenerationContext, (Field[,], List<BuildingEntity>)> CreateTerrainMapWithWaterAt(int waterX, int waterY)
         {
             return context =>
             {
@@ -456,7 +456,7 @@ namespace TransportTycoon.Test.Model
             };
         }
 
-        private static (IField[,], List<BuildingEntity>) CreateBridgeMap(MapGenerationContext context)
+        private static (Field[,], List<BuildingEntity>) CreateBridgeMap(MapGenerationContext context)
         {
             var fields = CreateTerrainGrid(context);
 
@@ -493,7 +493,7 @@ namespace TransportTycoon.Test.Model
             return (fields, []);
         }
 
-        private static (IField[,], List<BuildingEntity>) CreateBuildingMap(MapGenerationContext context)
+        private static (Field[,], List<BuildingEntity>) CreateBuildingMap(MapGenerationContext context)
         {
             var fields = CreateTerrainGrid(context);
             var heightMap = CreateHeightMap(context, 1);
@@ -519,9 +519,9 @@ namespace TransportTycoon.Test.Model
             return (fields, [city, camp]);
         }
 
-        private static IField[,] CreateTerrainGrid(MapGenerationContext context, int height = 1)
+        private static Field[,] CreateTerrainGrid(MapGenerationContext context, int height = 1)
         {
-            var fields = new IField[context.Width, context.Height];
+            var fields = new Field[context.Width, context.Height];
             for (int x = 0; x < context.Width; x++)
             {
                 for (int y = 0; y < context.Height; y++)

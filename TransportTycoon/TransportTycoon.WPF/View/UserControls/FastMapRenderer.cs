@@ -163,7 +163,7 @@ namespace TransportTycoon.WPF.View.UserControls
         public static readonly DependencyProperty MapProperty =
             DependencyProperty.Register(
                 nameof(Map),
-                typeof(IField[,]),
+                typeof(Field[,]),
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
@@ -242,7 +242,7 @@ namespace TransportTycoon.WPF.View.UserControls
         public static readonly DependencyProperty SelectedTileProperty =
             DependencyProperty.Register(
                 nameof(SelectedTile),
-                typeof(IField),
+                typeof(Field),
                 typeof(FastMapRenderer),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
 
@@ -261,9 +261,9 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <summary>
         /// The underlying property for <see cref="MapProperty"/>.
         /// </summary>
-        public IField[,] Map
+        public Field[,] Map
         {
-            get => (IField[,])GetValue(MapProperty);
+            get => (Field[,])GetValue(MapProperty);
             set
             {
                 SetValue(MapProperty, value);
@@ -327,9 +327,9 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <summary>
         /// The underlying property for <see cref="SelectedTileProperty"/>.
         /// </summary>
-        public IField? SelectedTile
+        public Field? SelectedTile
         {
-            get => (IField?)GetValue(SelectedTileProperty);
+            get => (Field?)GetValue(SelectedTileProperty);
             set => SetValue(SelectedTileProperty, value);
         }
 
@@ -369,11 +369,11 @@ namespace TransportTycoon.WPF.View.UserControls
             // TODO: Later maybe JSON or .rex format
             _terrainTextures = new()
             {
-                { FieldType.Water, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/water2.png")) },
+                { FieldType.Water, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/water.png")) },
                 { FieldType.Plain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/plain.png")) },
                 { FieldType.Hill, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/hill.png")) },
-                { FieldType.Mountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/mountain3.png")) },
-                { FieldType.HighMountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/highmountain3.png")) },
+                { FieldType.Mountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/mountain.png")) },
+                { FieldType.HighMountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/highmountain.png")) },
             };
 
             _structureTextures = new()
@@ -544,12 +544,12 @@ namespace TransportTycoon.WPF.View.UserControls
             }
         }
 
-        private bool IsMultiTileMaster(IField field, out int masterX, out int masterY, out int width, out int height, out ImageSource? texture)
+        private bool IsMultiTileMaster(Field field, out int masterX, out int masterY, out int width, out int height, out ImageSource? texture)
         {
             masterX = masterY = width = height = 0;
             texture = null;
 
-            if (field is IBuildingBlocks building && building.BuildingEntity != null)
+            if (field is BuildingBlocks building && building.BuildingEntity != null)
             {
                 var entity = building.BuildingEntity;
                 if (entity.Width > 1 || entity.Height > 1)
@@ -579,7 +579,7 @@ namespace TransportTycoon.WPF.View.UserControls
         /// <returns>The corresponding <see cref="FieldType"/>.</returns>
         /// <exception cref="NotImplementedException">Thrown if the <paramref name="type"/> is not supported.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private FieldType? ConvertFieldType(IField type)
+        private FieldType? ConvertFieldType(Field type)
         {
             return type switch
             {
@@ -592,8 +592,8 @@ namespace TransportTycoon.WPF.View.UserControls
                 Plant => FieldType.Plant,
                 Road => FieldType.Road,
                 Stop => FieldType.Stop,
-                IBridge => FieldType.Bridge,
-                IField => null,
+                Bridge => FieldType.Bridge,
+                Field => null,
                 _ => throw new NotImplementedException($"Unsupported field type: {type}"),
             };
         }
@@ -686,10 +686,10 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Rendering remains efficient to JIT inlining.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="IField"/> object, which we want to draw.</param>
+        /// <param name="field">The <see cref="Field"/> object, which we want to draw.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void DrawTerrainLayer(DrawingContext ctx, IField field, Rect baseRect)
+        private void DrawTerrainLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (_terrainTextures.TryGetValue((FieldType)field.Height, out var texture))
             {
@@ -704,10 +704,10 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Rendering remains efficient to JIT inlining.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="IField"/> object, which we want to draw.</param>
+        /// <param name="field">The <see cref="Field"/> object, which we want to draw.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void DrawStructureLayer(DrawingContext ctx, IField field, Rect baseRect)
+        private void DrawStructureLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (ConvertFieldType(field) is FieldType fieldType && _structureTextures.TryGetValue(fieldType, out var texture))
             {
@@ -722,10 +722,10 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Rendering remains efficient to JIT inlining.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="IField"/> object, that contains the road and it's rotataion.</param>
+        /// <param name="field">The <see cref="Field"/> object, that contains the road and it's rotataion.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void DrawRoadLayer(DrawingContext ctx, IField field, Rect baseRect)
+        private void DrawRoadLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (field is not null &&
                 ConvertFieldType(field) == FieldType.Road &&
@@ -743,14 +743,14 @@ namespace TransportTycoon.WPF.View.UserControls
         /// Rendering remains efficient to JIT inlining.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="IField"/> object, that contains the bridge and it's rotation.</param>
+        /// <param name="field">The <see cref="Field"/> object, that contains the bridge and it's rotation.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void DrawBridgeLayer(DrawingContext ctx, IField field, Rect baseRect)
+        private void DrawBridgeLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (field is not null &&
                 ConvertFieldType(field) == FieldType.Bridge &&
-                field is IBridge bridge
+                field is Bridge bridge
                 && _bridgeTextures.TryGetValue(ConvertBridgeType(bridge.BridgeType), out var texture))
             {
                 ctx.DrawImage(texture, baseRect);
@@ -765,10 +765,10 @@ namespace TransportTycoon.WPF.View.UserControls
         /// This should be one the last layers to draw, since trees can be on top of roads and structures.
         /// </remarks>
         /// <param name="ctx">The <see cref="DrawingContext"/> object, on which the images appears.</param>
-        /// <param name="field">The <see cref="IField"/> object, that contains the tree count.</param>
+        /// <param name="field">The <see cref="Field"/> object, that contains the tree count.</param>
         /// <param name="baseRect">The <see cref="Rect"/> rectangle object, that tells where we draw the image on <see cref="DrawingContext"/>.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void DrawTreesLayer(DrawingContext ctx, IField field, Rect baseRect)
+        private void DrawTreesLayer(DrawingContext ctx, Field field, Rect baseRect)
         {
             if (field.GetTrees() > 0 && _treesTextures.TryGetValue(field.GetTrees(), out var texture))
             {
@@ -906,7 +906,7 @@ namespace TransportTycoon.WPF.View.UserControls
         {
             base.OnRender(ctx);
             // Cache the map reference for performance
-            IField[,] currentMap = Map;
+            Field[,] currentMap = Map;
             if (currentMap is null) return;
 
             int width = currentMap.GetLength(0);
@@ -929,7 +929,7 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 for (int x = startCol; x < endCol; x++)
                 {
-                    IField currentField = currentMap[x, y];
+                    Field currentField = currentMap[x, y];
                     Rect baseRect = new(x * TileSize, y * TileSize, TileSize, TileSize);
                     DrawTerrainLayer(ctx, currentField, baseRect);
                 }
@@ -942,7 +942,7 @@ namespace TransportTycoon.WPF.View.UserControls
             {
                 for (int x = startCol; x < endCol; x++)
                 {
-                    IField currentField = currentMap[x, y];
+                    Field currentField = currentMap[x, y];
                     Rect baseRect = new(x * TileSize, y * TileSize, TileSize, TileSize);
 
                     bool skipStructure = skipStructureTiles.Contains((x, y));

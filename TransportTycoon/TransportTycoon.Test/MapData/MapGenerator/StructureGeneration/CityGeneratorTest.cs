@@ -188,7 +188,7 @@ public class CityGeneratorTest
             for (int y = 0; y < city.Height; y++)
             {
                 (int currentX, int currentY) = (city.TopLeftPoints.X + x, city.TopLeftPoints.Y + y);
-                IField field = city.MapPoints[(currentX, currentY)];
+                Field field = city.MapPoints[(currentX, currentY)];
 
                 if (expectedRoadSet.Contains((currentX, currentY)))
                 {

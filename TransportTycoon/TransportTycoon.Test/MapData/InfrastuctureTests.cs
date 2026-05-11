@@ -23,7 +23,7 @@ namespace TransportTycoon.Test.MapData
 
                 // Readonly / Constant property checks
                 Assert.Equal(60, YellowBridge.Price);
-                Assert.Equal(50, bridge.SpeedLimit);
+                Assert.Equal(0.5, bridge.SpeedLimit, 2);
                 Assert.Equal(13, bridge.Range);
             }
 
@@ -41,7 +41,7 @@ namespace TransportTycoon.Test.MapData
 
                 // Readonly / Constant property checks
                 Assert.Equal(80, GreenBridge.Price);
-                Assert.Equal(50, bridge.SpeedLimit);
+                Assert.Equal(0.5, bridge.SpeedLimit, 2);
                 Assert.Equal(15, bridge.Range);
             }
 
@@ -59,7 +59,7 @@ namespace TransportTycoon.Test.MapData
 
                 // Readonly / Constant property checks
                 Assert.Equal(100, RedBridge.Price);
-                Assert.Equal(50, bridge.SpeedLimit);
+                Assert.Equal(0.5, bridge.SpeedLimit, 2);
                 Assert.Equal(17, bridge.Range);
             }
 
@@ -224,7 +224,7 @@ namespace TransportTycoon.Test.MapData
             {
                 // Arrange
                 var stop = new Stop(0, 0, 1);
-                var mockBuildingBlock = Substitute.For<IBuildingBlocks>(); // NSubstitute mock
+                var mockBuildingBlock = Substitute.For<BuildingBlocks>(); // NSubstitute mock
 
                 // Act
                 stop.SetBuildingBlocks(mockBuildingBlock);

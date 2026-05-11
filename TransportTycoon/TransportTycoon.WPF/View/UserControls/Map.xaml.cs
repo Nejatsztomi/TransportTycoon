@@ -134,10 +134,8 @@ namespace TransportTycoon.WPF.View.UserControls
             GameViewModel? oldVm = e.OldValue as GameViewModel;
             GameViewModel? newVm = e.NewValue as GameViewModel;
 
-            oldVm?.VehicleDestroyed -= map.GameViewModel_OnVehichleDestroyed;
             oldVm?.ShowBalanceMessage -= map.GameViewModel_OnShowBalanceMessage;
 
-            newVm?.VehicleDestroyed += map.GameViewModel_OnVehichleDestroyed;
             newVm?.ShowBalanceMessage += map.GameViewModel_OnShowBalanceMessage;
         }
 

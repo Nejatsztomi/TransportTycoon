@@ -11,9 +11,9 @@ namespace TransportTycoon.Test.Model
     {
         private sealed class TestMapGenerator : IMapGenerator
         {
-            public (IField[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
+            public (Field[,], List<BuildingEntity>) GenerateMap(MapGenerationContext context)
             {
-                return (new IField[context.Width, context.Height], []);
+                return (new Field[context.Width, context.Height], []);
             }
         }
 
@@ -60,12 +60,12 @@ namespace TransportTycoon.Test.Model
             public void SetCurrentRouteValue(List<Edge>? route) => CurrentRoute = route;
         }
 
-        private static Edge CreateEdge(params IField[] roads)
+        private static Edge CreateEdge(params Field[] roads)
         {
             return new Edge(new Node(0, 0, typeof(Stop)), new Node(1, 1, typeof(Stop)), roads, 1);
         }
 
-        private static GhostNodeInjector CreateInjector(IField[,] table, Dictionary<Node, List<Edge>>? adjacencyList = null)
+        private static GhostNodeInjector CreateInjector(Field[,] table, Dictionary<Node, List<Edge>>? adjacencyList = null)
         {
             var context = new MapGenerationContext(table.GetLength(0), table.GetLength(1), 0, new MapGenerationSettings());
             var gameTable = new GameTable(new TestMapGenerator(), context);
@@ -83,7 +83,7 @@ namespace TransportTycoon.Test.Model
 
         private static GhostNodeInjector CreateInjectorWithStopNode(int x, int y, int width = 3, int height = 3)
         {
-            var table = new IField[width, height];
+            var table = new Field[width, height];
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -111,14 +111,15 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(10, bus.X);
             Assert.Equal(20, bus.Y);
             Assert.Equal(270, bus.Angle);
-            Assert.Equal(1, bus.TopSpeed);
+            Assert.Equal(2.0, bus.TopSpeed, 4);
+            Assert.Equal(360 * 2, bus.TurnSpeed, 4);
             Assert.Equal(10, bus.MaxCapacity);
             Assert.Equal(500, SmallBus.Price);
             Assert.Equal(2, bus.Maintenance);
             Assert.Equal(VehicleType.SmallBus, bus.Type);
             Assert.Single(bus.AcceptedGoods!);
             Assert.Contains(LoadType.People, bus.AcceptedGoods!);
-            Assert.Equal(bus.TopSpeed, bus.CurrentSpeed);
+            Assert.Equal(bus.TopSpeed, bus.CurrentSpeed, 4);
         }
 
         [Fact]
@@ -128,7 +129,8 @@ namespace TransportTycoon.Test.Model
             var truck = new Truck(5, 5, 0, null); // Right = 0
 
             // Assert
-            Assert.Equal(0.9, truck.TopSpeed);
+            Assert.Equal(0.8, truck.TopSpeed, 4);
+            Assert.Equal(0.8 * 360, truck.TurnSpeed, 4);
             Assert.Equal(20, truck.MaxCapacity);
             Assert.Equal(VehicleType.Truck, truck.Type);
             Assert.Equal(5, truck.AcceptedGoods!.Count);
@@ -143,7 +145,8 @@ namespace TransportTycoon.Test.Model
             var liquidTruck = new LiquidTruck(0, 0, 90, null); // Down = 90
 
             // Assert
-            Assert.Equal(0.9, liquidTruck.TopSpeed);
+            Assert.Equal(0.6, liquidTruck.TopSpeed, 4);
+            Assert.Equal(360 * 0.6, liquidTruck.TurnSpeed, 4);
             Assert.Equal(VehicleType.LiquidTruck, liquidTruck.Type);
             Assert.Single(liquidTruck.AcceptedGoods!);
             Assert.Contains(LoadType.Oil, liquidTruck.AcceptedGoods!);
@@ -373,7 +376,7 @@ namespace TransportTycoon.Test.Model
             };
             var currentRoute = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Road(0, 1, RoadType.Vertical, 1)) };
             vehicle.SetCurrentRouteValue(currentRoute);
-            var injector = CreateInjector(new IField[5, 5]);
+            var injector = CreateInjector(new Field[5, 5]);
 
             // Act
             vehicle.RecalculateRoute(injector);
@@ -391,7 +394,7 @@ namespace TransportTycoon.Test.Model
             {
                 PathFinder = new TestPathFinder([])
             };
-            var injector = CreateInjector(new IField[5, 5]);
+            var injector = CreateInjector(new Field[5, 5]);
             vehicle.Prouth = new Prouth([new Node(0, 0, typeof(Stop))]);
             var currentRoute = new List<Edge> { CreateEdge(new Stop(0, 0, 1), new Road(0, 1, RoadType.Vertical, 1)) };
             vehicle.SetCurrentRouteValue(currentRoute);
@@ -413,7 +416,7 @@ namespace TransportTycoon.Test.Model
                 Prouth = new Prouth([new Node(0, 0, typeof(Stop)), new Node(1, 3, typeof(Stop))]),
                 PathFinder = new TestPathFinder([])
             };
-            var injector = CreateInjector(new IField[3, 3]);
+            var injector = CreateInjector(new Field[3, 3]);
 
             // Act
             vehicle.RecalculateRoute(injector);
@@ -701,8 +704,9 @@ namespace TransportTycoon.Test.Model
             bus.ChangeCurrentSpeed(5.0);
 
             // Assert
-            Assert.Equal(1.0, bus.CurrentSpeed);
+            Assert.Equal(2.0, bus.CurrentSpeed, 4);
         }
+
         [Fact]
         public void ChangeCurrentSpeed_BelowZero_DoesNotChangeSpeed()
         {
@@ -713,7 +717,7 @@ namespace TransportTycoon.Test.Model
             bus.ChangeCurrentSpeed(-1.0);
 
             // Assert
-            Assert.Equal(0.0, bus.CurrentSpeed); // Math.Clamp sets to 0.0
+            Assert.Equal(0.0, bus.CurrentSpeed, 4); // Math.Clamp sets to 0.0
         }
         #endregion
 
@@ -822,14 +826,15 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(5, van.X);
             Assert.Equal(10, van.Y);
             Assert.Equal(180, van.Angle);
-            Assert.Equal(0.9, van.TopSpeed);
+            Assert.Equal(1.5, van.TopSpeed, 4);
+            Assert.Equal(360 * 1.5, van.TurnSpeed, 4);
             Assert.Equal(30, van.MaxCapacity);
             Assert.Equal(1200, Van.Price);
             Assert.Equal(10, van.Maintenance);
             Assert.Equal(VehicleType.Van, van.Type);
             Assert.Equal(5, van.AcceptedGoods!.Count);
             Assert.Contains(LoadType.Wood, van.AcceptedGoods);
-            Assert.Equal(van.TopSpeed, van.CurrentSpeed);
+            Assert.Equal(van.TopSpeed, van.CurrentSpeed, 4);
         }
 
         [Fact]
@@ -839,7 +844,8 @@ namespace TransportTycoon.Test.Model
             var pickup = new Pickup(0, 0, 90, null); // Down = 90
 
             // Assert
-            Assert.Equal(0.9, pickup.TopSpeed);
+            Assert.Equal(1.2, pickup.TopSpeed, 4);
+            Assert.Equal(1.2 * 360, pickup.TurnSpeed, 4);
             Assert.Equal(10, pickup.MaxCapacity);
             Assert.Equal(VehicleType.Pickup, pickup.Type);
             Assert.Equal(5, pickup.AcceptedGoods!.Count);
@@ -856,14 +862,15 @@ namespace TransportTycoon.Test.Model
             Assert.Equal(15, bus.X);
             Assert.Equal(25, bus.Y);
             Assert.Equal(0, bus.Angle);
-            Assert.Equal(1, bus.TopSpeed);
+            Assert.Equal(1.7, bus.TopSpeed, 4);
+            Assert.Equal(360 * 1.7, bus.TurnSpeed, 4);
             Assert.Equal(25, bus.MaxCapacity);
             Assert.Equal(1200, BigBus.Price);
             Assert.Equal(5, bus.Maintenance);
             Assert.Equal(VehicleType.BigBus, bus.Type);
             Assert.Single(bus.AcceptedGoods!);
             Assert.Contains(LoadType.People, bus.AcceptedGoods!);
-            Assert.Equal(bus.TopSpeed, bus.CurrentSpeed);
+            Assert.Equal(bus.TopSpeed, bus.CurrentSpeed, 4);
         }
         #endregion
     }

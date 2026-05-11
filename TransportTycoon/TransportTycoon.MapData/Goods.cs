@@ -1,9 +1,17 @@
 ﻿namespace TransportTycoon.MapData
 {
+    /// <summary>
+    /// Represents an abstract base class for goods that includes tax calculation functionality.
+    /// </summary>
+    /// <remarks>The Goods class provides a static tax value shared across all instances and methods for
+    /// calculating and updating the tax applied to goods. Inherit from this class to implement specific types of goods
+    /// that require tax-based value calculations.</remarks>
     public abstract class Goods : Load
     {
+        /// <summary>
+        /// Gets or sets the tax value used in calculations.
+        /// </summary>
         public static int Tax { get; protected set; }
-
 
         /// <summary>
         /// Calculates the total value by multiplying the tax rate by the price.
@@ -24,8 +32,16 @@
         }
     }
 
+    /// <summary>
+    /// Represents wheat as a type of goods with predefined price and load type.
+    /// </summary>
+    /// <remarks>This class is sealed and cannot be inherited. It is typically used to model wheat in
+    /// inventory, trading, or logistics scenarios where goods are categorized by type.</remarks>
     public sealed class Wheat : Goods
     {
+        /// <summary>
+        /// Initializes a new instance of the Wheat class with default values for price and load type.
+        /// </summary>
         public Wheat()
         {
             Price = 25;
@@ -33,8 +49,16 @@
         }
     }
 
+    /// <summary>
+    /// Represents oil as a type of goods with predefined price and load type.
+    /// </summary>
+    /// <remarks>This class is sealed and cannot be inherited. It sets the price and load type specific to oil
+    /// upon initialization.</remarks>
     public sealed class Oil : Goods
     {
+        /// <summary>
+        /// Initializes a new instance of the Oil class with default values for price and load type.
+        /// </summary>
         public Oil()
         {
             Price = 45;
@@ -42,8 +66,14 @@
         }
     }
 
+    /// <summary>
+    /// Represents a goods item of type wood with a predefined price and load type.
+    /// </summary>
     public sealed class Wood : Goods
     {
+        /// <summary>
+        /// Initializes a new instance of the Wood class with default values for price and load type.
+        /// </summary>
         public Wood()
         {
             Price = 30;
@@ -51,8 +81,16 @@
         }
     }
 
+    /// <summary>
+    /// Represents flour as a type of goods with predefined price and load type.
+    /// </summary>
+    /// <remarks>This class is sealed and cannot be inherited. It initializes the price and load type specific
+    /// to flour upon creation.</remarks>
     public sealed class Flour : Goods
     {
+        /// <summary>
+        /// Initializes a new instance of the Flour class with default values.
+        /// </summary>
         public Flour()
         {
             Price = 65;
@@ -60,8 +98,14 @@
         }
     }
 
+    /// <summary>
+    /// Represents goods of type rubber with predefined price and load type settings.
+    /// </summary>
     public sealed class Rubber : Goods
     {
+        /// <summary>
+        /// Initializes a new instance of the Rubber class with default values for price and load type.
+        /// </summary>
         public Rubber()
         {
             Price = 110;
@@ -69,8 +113,14 @@
         }
     }
 
+    /// <summary>
+    /// Represents a goods item of type paper with predefined price and load type.
+    /// </summary>
     public sealed class Paper : Goods
     {
+        /// <summary>
+        /// Initializes a new instance of the Paper class with default values.
+        /// </summary>
         public Paper()
         {
             Price = 75;

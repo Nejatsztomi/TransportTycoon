@@ -26,7 +26,7 @@ namespace TransportTycoon.Model.Graph
             {
                 for (int y = 0; y < table.Height; y++)
                 {
-                    IField field = table[x, y];
+                    Field field = table[x, y];
                     if (field is Stop)
                     {
                         Node startNode = new(x, y, field.GetType());
@@ -47,7 +47,7 @@ namespace TransportTycoon.Model.Graph
                     int startStepY = currentTile.Y + dir.dy;
 
                     if (!table.IsInBounds(startStepX, startStepY)) continue;
-                    if (table[startStepX, startStepY] is not IInfrastructure) continue;
+                    if (table[startStepX, startStepY] is not Infrastructure) continue;
                     if (visitedRoadTiles.Contains((startStepX, startStepY))) continue;
 
                     var result = tracer.TraceSegment(currentTile, dir);

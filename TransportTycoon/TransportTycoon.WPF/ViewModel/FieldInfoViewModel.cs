@@ -28,7 +28,7 @@ namespace TransportTycoon.WPF.ViewModel
     {
         public string BridgeType { get; init; } = "";
         public int Range { get; init; }
-        public int SpeedLimit { get; init; }
+        public double SpeedLimit { get; init; }
     }
 
     public class StopFieldInfoViewModel : FieldInfoViewModel
@@ -67,7 +67,7 @@ namespace TransportTycoon.WPF.ViewModel
 
     public static class FieldInfoFactory
     {
-        public static FieldInfoViewModel CreateField(IField field)
+        public static FieldInfoViewModel CreateField(Field field)
         {
             return field switch
             {
@@ -90,7 +90,7 @@ namespace TransportTycoon.WPF.ViewModel
                     InCity = r.InCity()
                 },
 
-                IBridge b => new BridgeFieldInfoViewModel
+                Bridge b => new BridgeFieldInfoViewModel
                 {
                     Type = b.GetType().Name,
                     Height = b.Height,
@@ -121,7 +121,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Productivity = h.BuildingEntity.MaxCapacity > Math.Round(h.BuildingEntity.CurrentCapacity) ? Math.Round(h.BuildingEntity.Productivity, 2) : 0,
                 },
 
-                ISite s => new SiteFieldInfoViewModel
+                Site s => new SiteFieldInfoViewModel
                 {
                     Type = s.GetType().Name,
                     Height = s.Height,
@@ -132,7 +132,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Productivity = s.BuildingEntity.MaxCapacity > Math.Round(s.BuildingEntity.CurrentCapacity) ? Math.Round(s.BuildingEntity.Productivity, 2) : 0,
                 },
 
-                IIndustry i => new IndustryFieldInfoViewModel
+                Industry i => new IndustryFieldInfoViewModel
                 {
                     Type = i.GetType().Name,
                     Height = i.Height,
@@ -157,7 +157,7 @@ namespace TransportTycoon.WPF.ViewModel
                 }
             };
         }
-        public static FieldInfoViewModel ShowVehicle(Vehicle v, IField f)
+        public static FieldInfoViewModel ShowVehicle(Vehicle v, Field f)
         {
             return new VehicleFieldInfoViewModel
             {

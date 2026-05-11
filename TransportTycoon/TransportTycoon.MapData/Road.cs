@@ -2,6 +2,12 @@
 
 namespace TransportTycoon.MapData
 {
+    /// <summary>
+    /// Specifies the type of road segment, indicating its orientation or intersection pattern within a road network.
+    /// </summary>
+    /// <remarks>Use this enumeration to represent different road shapes, such as straight segments, turns,
+    /// T-junctions, and crossroads, when modeling or rendering road layouts. The values correspond to common road
+    /// configurations encountered in grid-based or map-based systems.</remarks>
     public enum RoadType : byte
     {
         Horizontal = 0,
@@ -17,22 +23,42 @@ namespace TransportTycoon.MapData
         XRoad = 10,
     }
 
-    public struct Road : IInfrastructure
+    /// <summary>
+    /// Represents a road infrastructure element within a city, including its type, position, and optional connection to
+    /// a city entity.
+    /// </summary>
+    /// <remarks>A Road can be associated with a specific type, coordinates, height, and may optionally be
+    /// linked to a city entity via the Pointer property. The static Price property indicates the cost associated with
+    /// constructing a road. This class is typically used to model roads, bridges, and their connections within a city
+    /// simulation or infrastructure management context.</remarks>
+    public class Road : Infrastructure
     {
         #region Static Fields
         public static int Price { get; } = 10;
         #endregion
 
         #region Fields
+        /// <summary>
+        /// Gets the type of road associated with this instance.
+        /// </summary>
         public RoadType RoadType { get; private set; }
-        public CityEntity? Pointer { get; }
-        public int X { get; set; }
-        public int Y { get; set; }
-        public int Height { get; set; }
 
+        /// <summary>
+        /// Gets the referenced city entity, if available.
+        /// </summary>
+        public CityEntity? Pointer { get; }
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the Road class with the specified coordinates, road type, height, and optional
+        /// city entity pointer.
+        /// </summary>
+        /// <param name="x">The horizontal coordinate of the road.</param>
+        /// <param name="y">The vertical coordinate of the road.</param>
+        /// <param name="type">The type of the road to create.</param>
+        /// <param name="height">The height value associated with the road.</param>
+        /// <param name="pointer">An optional reference to a related city entity. May be null if no association is required.</param>
         public Road(int x, int y, RoadType type, int height, CityEntity? pointer = null)
         {
             X = x;
@@ -56,11 +82,8 @@ namespace TransportTycoon.MapData
         /// <summary>
         /// Decides if the road is in a city by checking if the pointer to the city is not null. If the pointer is not null, it means that the road is connected to a city and therefore is considered to be in a city.
         /// </summary>
-        /// <returns></returns>
-        public readonly bool InCity()
-        {
-            return Pointer is not null;
-        }
+        /// <returns>True if the road is connected to a city; otherwise, false.</returns>
+        public bool InCity() => Pointer is not null;
         #endregion
     }
 }

@@ -56,7 +56,7 @@ namespace TransportTycoon.Model
         /// <summary>
         /// The current edge's tiles.
         /// </summary>
-        private List<IField>? _currentEdgeTiles = null;
+        private List<Field>? _currentEdgeTiles = null;
         private double _lerpX;
         private double _lerpY;
         #endregion
@@ -173,6 +173,11 @@ namespace TransportTycoon.Model
         /// used to track the most recently accessed lane in scenarios where multiple lanes are available.
         /// </remarks>
         public int LastLaneIdx { get; set; } = -1;
+
+        /// <summary>
+        /// Gets the current progress along the current tile, represented as a value between 0.0 and 1.0, where 0.0 indicates the start of the tile and 1.0 indicates the end of the tile.
+        /// </summary>
+        public double TileProgress => _tileProgress;
 
         /// <summary>
         /// Gets the list of load types that are accepted.
@@ -379,7 +384,7 @@ namespace TransportTycoon.Model
             if (PathFinder is null) return;
             if (GetCurrentStopNodePair() is not (Node _, Node end)) return;
 
-            IField currentTile;
+            Field currentTile;
             if (IsLost || CurrentRoute is null || _currentEdgeTiles is null)
             {
                 currentTile = new Stop(MapX, MapY, 1);

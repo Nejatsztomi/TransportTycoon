@@ -12,7 +12,7 @@ namespace TransportTycoon.Test.Model.Graph
             // Arrange
             var start = new GraphNS.Node(1, 2, typeof(Stop));
             var end = new GraphNS.Node(3, 4, typeof(Stop));
-            var roads = new List<IField> { Substitute.For<IField>() };
+            var roads = new List<Field> { Substitute.For<Field>() };
             double cost = 5.5;
 
             // Act
@@ -31,7 +31,7 @@ namespace TransportTycoon.Test.Model.Graph
             // Arrange
             var start = new GraphNS.Node(1, 2, typeof(Stop));
             var end = new GraphNS.Node(3, 4, typeof(Stop));
-            var roads = new List<IField>();
+            var roads = new List<Field>();
             double cost = 1.0;
 
             // Act
