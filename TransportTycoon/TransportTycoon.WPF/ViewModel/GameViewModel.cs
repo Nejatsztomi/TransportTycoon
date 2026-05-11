@@ -180,7 +180,7 @@ namespace TransportTycoon.WPF.ViewModel
                     break;
                 case 31:
                     Model.BuyVehicle(tile.X, tile.Y, VehicleType.Pickup);
-                    Debug.WriteLine("Vehicle bought!");               
+                    Debug.WriteLine("Vehicle bought!");
                     break;
                 case 32:
                     Model.BuyVehicle(tile.X, tile.Y, VehicleType.Van);

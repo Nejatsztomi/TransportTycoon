@@ -143,8 +143,8 @@ namespace TransportTycoon.WPF.ViewModel
                     MaxCapacity = i.BuildingEntity.MaxCapacity,
                     CurrentCapacity = Math.Round(i.BuildingEntity.CurrentCapacity),
                     Productivity = Math.Round(((IndustryEntity)i.BuildingEntity).ConsumeCapacity) > 0
-                                   ? i.BuildingEntity.MaxCapacity > Math.Round(i.BuildingEntity.CurrentCapacity) 
-                                        ? Math.Round(i.BuildingEntity.Productivity, 2) : 0 
+                                   ? i.BuildingEntity.MaxCapacity > Math.Round(i.BuildingEntity.CurrentCapacity)
+                                        ? Math.Round(i.BuildingEntity.Productivity, 2) : 0
                                    : 0,
                 },
 
