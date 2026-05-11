@@ -89,15 +89,8 @@
     <None Remove="Assets\Images\Road\turn.png" />
     <None Remove="Assets\Images\Stop\stop.png" />
     <None Remove="Assets\Images\Terrain\field.png" />
-    <None Remove="Assets\Images\Terrain\highmountain.png" />
-    <None Remove="Assets\Images\Terrain\highmountain2.png" />
-    <None Remove="Assets\Images\Terrain\highmountain3.png" />
     <None Remove="Assets\Images\Terrain\hill.png" />
-    <None Remove="Assets\Images\Terrain\mountain.png" />
-    <None Remove="Assets\Images\Terrain\mountain2.png" />
-    <None Remove="Assets\Images\Terrain\mountain3.png" />
     <None Remove="Assets\Images\Terrain\plain.png" />
-    <None Remove="Assets\Images\Terrain\water2.png" />
     <None Remove="Assets\Images\Trees\tree1.png" />
     <None Remove="Assets\Images\Trees\tree2.png" />
     <None Remove="Assets\Images\Trees\tree3.png" />
@@ -301,25 +294,19 @@
     <Resource Include="Assets\Images\Terrain\field.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Terrain\highmountain2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Terrain\highmountain3.png">
+    <Resource Include="Assets\Images\Terrain\highmountain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Terrain\hill.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Terrain\mountain2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Terrain\mountain3.png">
+    <Resource Include="Assets\Images\Terrain\mountain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Terrain\plain.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="Assets\Images\Terrain\water2.png">
+    <Resource Include="Assets\Images\Terrain\water.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Assets\Images\Trees\tree1.png">
@@ -346,12 +333,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Assets\Images\Terrain\highmountain.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Assets\Images\Terrain\mountain.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Assets\Images\Vehicle\pickup.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

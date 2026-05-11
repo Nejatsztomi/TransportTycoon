@@ -369,11 +369,11 @@ namespace TransportTycoon.WPF.View.UserControls
             // TODO: Later maybe JSON or .rex format
             _terrainTextures = new()
             {
-                { FieldType.Water, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/water2.png")) },
+                { FieldType.Water, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/water.png")) },
                 { FieldType.Plain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/plain.png")) },
                 { FieldType.Hill, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/hill.png")) },
-                { FieldType.Mountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/mountain3.png")) },
-                { FieldType.HighMountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/highmountain3.png")) },
+                { FieldType.Mountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/mountain.png")) },
+                { FieldType.HighMountain, LoadTexture(new Uri("pack://application:,,,/Assets/Images/Terrain/highmountain.png")) },
             };
 
             _structureTextures = new()
