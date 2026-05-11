@@ -13,10 +13,16 @@ namespace TransportTycoon.MapData
     public class Stop : Infrastructure
     {
         #region Static fields
+        /// <summary>
+        /// Gets the default price value.
+        /// </summary>
         public static int Price { get; } = 300;
         #endregion
 
-        #region Fields
+        #region Public properties
+        /// <summary>
+        /// Gets the collection of building block connections associated with this instance.
+        /// </summary>
         public List<BuildingBlocks>? Connections { get; private set; } = [];
         #endregion
 

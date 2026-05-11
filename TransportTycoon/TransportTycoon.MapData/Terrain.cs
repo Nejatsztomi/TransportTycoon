@@ -25,7 +25,10 @@
     public class Terrain : Field
     {
         #region Static fields
-        static public readonly int Price = 200;
+        /// <summary>
+        /// Represents the default price value used by the application.
+        /// </summary>
+        public static readonly int Price = 200;
         #endregion
 
         #region Public properties

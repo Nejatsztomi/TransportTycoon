@@ -56,6 +56,12 @@ namespace TransportTycoon.Persistence
         public static IPersistence Get() => new JsonSaveManager();
     }
 
+    /// <summary>
+    /// Provides methods for asynchronously loading and saving game data using JSON serialization.
+    /// </summary>
+    /// <remarks>Implements the IPersistence interface to support persistent storage of game save data in JSON
+    /// format. This class overwrites existing files when saving and uses custom JSON converters for domain-specific
+    /// types.</remarks>
     internal class JsonSaveManager : IPersistence
     {
         #region Private fields
