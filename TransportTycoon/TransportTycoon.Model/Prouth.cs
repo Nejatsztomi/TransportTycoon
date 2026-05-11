@@ -16,11 +16,20 @@ namespace TransportTycoon.Model
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the Prouth class with the specified list of stops.
+        /// </summary>
+        /// <param name="stops">The list of Node objects representing the stops to include in the route. Cannot be null.</param>
         public Prouth(List<Node> stops)
         {
             Stops = stops;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the Prouth class.
+        /// </summary>
+        /// <remarks>This constructor initializes the Stops collection to an empty list. Use this
+        /// constructor when creating a new Prouth instance with no predefined stops.</remarks>
         public Prouth()
         {
             Stops = [];
@@ -47,6 +56,9 @@ namespace TransportTycoon.Model
         #endregion
     }
 
+    /// <summary>
+    /// Provides utility methods for converting between stop tiles and nodes within a graph or game table.
+    /// </summary>
     public static class ProuthUtil
     {
         /// <summary>
