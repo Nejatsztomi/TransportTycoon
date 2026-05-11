@@ -9,8 +9,14 @@
     public abstract class Infrastructure : Field
     {
         #region Public methods
+        /// <summary>
+        /// Performs the primary placement operation. The specific behavior depends on the implementation.
+        /// </summary>
         public void Place() { }
 
+        /// <summary>
+        /// Removes the current item from the collection.
+        /// </summary>
         public void Remove() { }
         #endregion
     }

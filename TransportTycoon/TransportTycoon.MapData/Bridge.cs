@@ -51,6 +51,9 @@
     public class YellowBridge : Bridge
     {
         #region Static fields
+        /// <summary>
+        /// Gets the default price value.
+        /// </summary>
         public static int Price { get; } = 60;
         #endregion
 
@@ -87,6 +90,9 @@
     public class GreenBridge : Bridge
     {
         #region Static fields
+        /// <summary>
+        /// Gets the default price value.
+        /// </summary>
         public static int Price { get; } = 80;
         #endregion
 
@@ -122,6 +128,9 @@
     public class RedBridge : Bridge
     {
         #region Static fields
+        /// <summary>
+        /// Gets the default price value.
+        /// </summary>
         public static int Price { get; } = 100;
         #endregion
 

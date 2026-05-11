@@ -3,20 +3,62 @@ using TransportTycoon.MapData.MapGenerator;
 
 namespace TransportTycoon.MapData
 {
+    /// <summary>
+    /// Represents a two-dimensional game table that manages fields, buildings, and infrastructure, and provides methods
+    /// for map generation, terrain manipulation, and infrastructure placement.
+    /// </summary>
+    /// <remarks>The GameTable class encapsulates the state and operations for a grid-based map, including
+    /// support for generating the map, updating fields, checking terrain constraints, and managing roads, bridges, and
+    /// stops. It exposes methods for modifying the map and querying its structure, and maintains collections of fields
+    /// and building entities. The class is designed to be used as the central data structure for map-based gameplay or
+    /// simulation scenarios.</remarks>
     public class GameTable
     {
         #region Constants
+        /// <summary>
+        /// Represents the default width value used for initialization or layout purposes.
+        /// </summary>
         public const int DefaultWidth = 100;
+
+        /// <summary>
+        /// Represents the default height value used when no specific height is provided.
+        /// </summary>
         public const int DefaultHeight = 100;
         #endregion
 
+        #region Private fields
+        private readonly IMapGenerator _mapGenerator;
+        #endregion
+
         #region Properties
+        /// <summary>
+        /// Gets the two-dimensional array representing the table of fields.
+        /// </summary>
         public Field[,] Table { get; private set; }
+
+        /// <summary>
+        /// Gets the width of the current context.
+        /// </summary>
         public int Width => Context.Width;
+
+        /// <summary>
+        /// Gets the height of the current context.
+        /// </summary>
         public int Height => Context.Height;
 
+        /// <summary>
+        /// Gets the collection of building entities associated with this instance.
+        /// </summary>
         public List<BuildingEntity> BuildingEntities { get; private set; }
 
+        /// <summary>
+        /// Gets a reference to the field at the specified coordinates in the table.
+        /// </summary>
+        /// <remarks>Modifying the returned reference will update the underlying field in the
+        /// table.</remarks>
+        /// <param name="x">The zero-based column index of the field to retrieve.</param>
+        /// <param name="y">The zero-based row index of the field to retrieve.</param>
+        /// <returns>A reference to the field located at the specified column and row.</returns>
         public ref Field this[int x, int y]
         {
             get => ref Table[x, y];
@@ -27,11 +69,19 @@ namespace TransportTycoon.MapData
         /// This is used to prevent accessing the map before it is generated, which can cause errors.
         /// </summary>
         public bool IsMapGenerated { get; private set; }
-        private IMapGenerator MapGenerator { get; }
+
+        /// <summary>
+        /// Gets or sets the context information used during map generation.
+        /// </summary>
         public MapGenerationContext Context { get; set; }
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the GameTable class with the specified map generator and generation context.
+        /// </summary>
+        /// <param name="mapGenerator">The map generator used to create the game table's map. Cannot be null.</param>
+        /// <param name="context">The context information used for map generation. Cannot be null.</param>
         public GameTable(IMapGenerator mapGenerator, MapGenerationContext context)
         {
             Context = context;
@@ -39,7 +89,7 @@ namespace TransportTycoon.MapData
 
             Table = new Field[Width, Height];
             IsMapGenerated = false;
-            MapGenerator = mapGenerator;
+            _mapGenerator = mapGenerator;
         }
         #endregion
 
@@ -71,7 +121,7 @@ namespace TransportTycoon.MapData
         /// </summary>
         public void GenerateMap()
         {
-            (Table, BuildingEntities) = MapGenerator.GenerateMap(Context);
+            (Table, BuildingEntities) = _mapGenerator.GenerateMap(Context);
             IsMapGenerated = true;
         }
 
@@ -523,21 +573,6 @@ namespace TransportTycoon.MapData
                     }
                 }
             }
-        }
-        #endregion
-
-        #region Private methods
-        private bool IsMapAccurate()
-        {
-            bool isAccurate = true;
-            for (int i = 0; i < Table.GetLength(0); i++)
-            {
-                for (int j = 0; j < Table.GetLength(1); j++)
-                {
-                    isAccurate = isAccurate && IsTileHeightPossible(i, j, Table[i, j].Height);
-                }
-            }
-            return isAccurate;
         }
         #endregion
     }

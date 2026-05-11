@@ -56,6 +56,11 @@
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the Water class at the specified coordinates.
+        /// </summary>
+        /// <param name="x">The horizontal coordinate of the water instance.</param>
+        /// <param name="y">The vertical coordinate of the water instance.</param>
         public Water(int x, int y)
         {
             X = x;
