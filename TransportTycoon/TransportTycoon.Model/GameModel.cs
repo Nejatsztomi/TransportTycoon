@@ -1026,7 +1026,7 @@ namespace TransportTycoon.Model
 
                 if (Map[nextX, nextY].Height > Map[vehicle.LastMapX, vehicle.LastMapY].Height)
                 {
-                    targetSpeed *= 0.8;
+                    targetSpeed *= 0.4;
                 }
                 else if (Map[nextX, nextY].Height < Map[vehicle.LastMapX, vehicle.LastMapY].Height)
                 {
@@ -1169,8 +1169,12 @@ namespace TransportTycoon.Model
         {
             foreach (var vehicle in Vehicles)
             {
-                //  && vehicle.CurrentRoute == null && vehicle.Prouth != null
-                if (IsCarOnStop(vehicle) && vehicle.Prouth is not null && vehicle.Prouth.Stops.Count > 1 && !vehicle.IsLost)
+                if (IsCarOnStop(vehicle)
+                    && vehicle.Prouth is not null
+                    && vehicle.Prouth.Stops.Count > 1
+                    && !vehicle.IsLost
+                    && vehicle.CurrentRoute is not null
+                    )
                 {
                     Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
