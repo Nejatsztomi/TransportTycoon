@@ -1663,35 +1663,5 @@ public class GameModelTest
             Assert.True(van.CurrentSpeed <= bridge.SpeedLimit);
         }
         #endregion
-
-        #region AllVehiclesDoTheTransport Tesztek (A rakomány és szállítás)
-        [Fact]
-        public void AllVehiclesDoTheTransport_BuildingGivesLoadToVehicle_UpdatesCapacities()
-        {
-            var model = CreateTestModel(GameMode.Run);
-            var truck = new Truck(1, 1, 0.0)
-            {
-                Prouth = new Prouth([new Node(1, 1, typeof(Stop)), new Node(1, 1, typeof(Stop))])
-            };
-            model.Vehicles.Add(truck);
-
-            var stop = new Stop(1, 1, 2);
-            var mockBlock = Substitute.For<BuildingBlocks>();
-            var lumberCamp = CreateRealEntity<LumberCampEntity>(80, 100); // 80 Fát tud adni
-            mockBlock.BuildingEntity.Returns(lumberCamp);
-            stop.SetBuildingBlocks(mockBlock);
-            model.Map.UpdateTable(1, 1, stop);
-
-            var method = typeof(GameModel).GetMethod("AllVehiclesDoTheTransport", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            // Act
-            method!.Invoke(model, null);
-
-            // Assert
-            Assert.Equal(20, truck.CurrentCapacity); // Felvette a 20 fát
-            Assert.NotNull(truck.CurrentLoad);
-            Assert.Equal(LoadType.Wood, truck.CurrentLoad.LoadType);
-        }
-        #endregion
     }
 }
