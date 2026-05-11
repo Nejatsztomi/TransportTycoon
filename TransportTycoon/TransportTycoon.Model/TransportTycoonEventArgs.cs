@@ -1,5 +1,11 @@
 ﻿namespace TransportTycoon.Model
 {
+    /// <summary>
+    /// Provides data for Transport Tycoon game-related events, including the current game time, maintenance status, and
+    /// the number of vehicles.
+    /// </summary>
+    /// <remarks>Use this class to access event information relevant to the state of the game at the time the
+    /// event is raised. All properties are read-only and reflect the state when the event occurred.</remarks>
     public sealed class TransportTycoonEventArgs : EventArgs
     {
         #region Fields
@@ -28,6 +34,14 @@
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Initializes a new instance of the TransportTycoonEventArgs class with the specified game time, number of
+        /// vehicles, and maintenance value.
+        /// </summary>
+        /// <param name="gameTime">The current game time, in ticks, at which the event occurs.</param>
+        /// <param name="numberOfVehicles">The number of vehicles involved in the event. Must be zero or greater.</param>
+        /// <param name="maintenance">The maintenance value associated with the event. Represents the maintenance cost or count, depending on
+        /// context.</param>
         public TransportTycoonEventArgs(ulong gameTime, int numberOfVehicles, int maintenance)
         {
             _gameTime = gameTime;
