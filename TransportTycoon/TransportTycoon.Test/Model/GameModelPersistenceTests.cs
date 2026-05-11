@@ -558,7 +558,7 @@ namespace TransportTycoon.Test.Model
                 Type = type;
                 TopSpeed = 1.0;
                 MaxCapacity = 100;
-                Price = 10;
+
                 Maintenance = 1;
                 CurrentSpeed = TopSpeed;
                 CurrentLoad = load;
