@@ -118,7 +118,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Y = h.Y,
                     MaxCapacity = h.BuildingEntity.MaxCapacity,
                     CurrentCapacity = Math.Round(h.BuildingEntity.CurrentCapacity),
-                    Productivity = Math.Round(h.BuildingEntity.Productivity, 2),
+                    Productivity = h.BuildingEntity.MaxCapacity > Math.Round(h.BuildingEntity.CurrentCapacity) ? Math.Round(h.BuildingEntity.Productivity, 2) : 0,
                 },
 
                 ISite s => new SiteFieldInfoViewModel
@@ -129,7 +129,7 @@ namespace TransportTycoon.WPF.ViewModel
                     Y = s.Y,
                     MaxCapacity = s.BuildingEntity.MaxCapacity,
                     CurrentCapacity = Math.Round(s.BuildingEntity.CurrentCapacity),
-                    Productivity = Math.Round(s.BuildingEntity.Productivity, 2),
+                    Productivity = s.BuildingEntity.MaxCapacity > Math.Round(s.BuildingEntity.CurrentCapacity) ? Math.Round(s.BuildingEntity.Productivity, 2) : 0,
                 },
 
                 IIndustry i => new IndustryFieldInfoViewModel
@@ -142,7 +142,10 @@ namespace TransportTycoon.WPF.ViewModel
                     ConsumeCapacity = Math.Round(((IndustryEntity)i.BuildingEntity).ConsumeCapacity),
                     MaxCapacity = i.BuildingEntity.MaxCapacity,
                     CurrentCapacity = Math.Round(i.BuildingEntity.CurrentCapacity),
-                    Productivity = Math.Round(i.BuildingEntity.Productivity, 2),
+                    Productivity = Math.Round(((IndustryEntity)i.BuildingEntity).ConsumeCapacity) > 0
+                                   ? i.BuildingEntity.MaxCapacity > Math.Round(i.BuildingEntity.CurrentCapacity)
+                                        ? Math.Round(i.BuildingEntity.Productivity, 2) : 0
+                                   : 0,
                 },
 
                 _ => new FieldInfoViewModel

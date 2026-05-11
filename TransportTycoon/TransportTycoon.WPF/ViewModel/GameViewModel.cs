@@ -23,7 +23,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         public List<Vehicle> Vehicles => Model.Vehicles;
         public List<StopData> Stops { get; private set; } = [];
-
+        public PriceViewModel Prices { get; } = new PriceViewModel();
         public int Balance => Model.Balance;
         public int Maintenance => Model.Maintenance;
         public ulong GameTime => Model.GameTime;
@@ -179,11 +179,11 @@ namespace TransportTycoon.WPF.ViewModel
                     Model.Destroy(tile.X, tile.Y);
                     break;
                 case 31:
-                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Van);
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Pickup);
                     Debug.WriteLine("Vehicle bought!");
                     break;
                 case 32:
-                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Pickup);
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Van);
                     Debug.WriteLine("Vehicle bought!");
                     break;
                 case 33:
@@ -484,6 +484,7 @@ namespace TransportTycoon.WPF.ViewModel
         private void Model_MaintenanceChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(Maintenance));
+            OnPropertyChanged(nameof(Vehicles));
         }
         #endregion
 
