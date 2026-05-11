@@ -10,7 +10,7 @@ namespace TransportTycoon.WPF.ViewModel
     {
         public int TerrainPrice { get; } = Terrain.Price;
         public int RoadPrice { get; } = Road.Price;
-        public int BridgePrice { get; } = 100;
+        public int BridgePrice { get; } = 80;
         public int StopPrice { get; } = Stop.Price;
         public int PickupPrice { get; } = Pickup.Price;
         public int VanPrice { get; } = Van.Price;
