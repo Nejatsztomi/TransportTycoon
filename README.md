@@ -38,7 +38,7 @@ A MÁV-csoport\* bemutatja a népszerű [Transport Tycoon](https://www.openttd.o
 
 ## Képernyőképek és videók a játékról 📸🎥
 
-[Képek a játékról](../../wikis/Képek)
+[Képek a játékról](../../wikis/K%C3%A9pek)
 
 ## Dokumentáció 📚
 
