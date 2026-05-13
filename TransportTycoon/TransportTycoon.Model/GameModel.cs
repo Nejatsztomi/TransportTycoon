@@ -6,23 +6,20 @@ using TransportTycoon.Persistence;
 using LoadType = TransportTycoon.MapData.LoadType;
 namespace TransportTycoon.Model
 {
+    /// <summary>
+    /// Enumeration representing the different modes of the game, which may affect the behavior of the game logic and user interactions. The game modes include Run, Paused, and Editor, with corresponding integer values of 0, 1, and 2 respectively. This enumeration can be used to control the flow of the game and enable or disable certain features based on the current mode, such as allowing editing of the map in Editor mode or pausing game updates in Paused mode.
+    /// </summary>
     public enum GameMode { Run, Paused, Editor }
-    public enum TimeSpeed { Normal = 1, Fast = 2, SuperFast = 3 }
-    public enum Difficulty { Easy = 0, Medium = 1, Hard = 2 }
 
-    //Mintázat az összes osztályban
-    #region Fields
-    #endregion
-    #region Properties
-    #endregion
-    #region Constructor
-    #endregion
-    #region Public Methods
-    #endregion
-    #region Private Methods
-    #endregion
-    #region Private event Methods
-    #endregion
+    /// <summary>
+    /// Enumeration representing the different time speed settings available in the game, which affect the rate at which in-game time progresses. The time speed settings include Normal, Fast, and SuperFast, with corresponding integer values of 1, 2, and 3 respectively. This enumeration can be used to configure the game's time progression based on the player's preference for a slower or faster gameplay experience.
+    /// </summary>
+    public enum TimeSpeed { Normal = 1, Fast = 2, SuperFast = 3 }
+
+    /// <summary>
+    /// Enumeration representing the difficulty levels available in the game, which may affect various gameplay parameters such as starting balance, tax rates, or other economic factors. The difficulty levels are defined as Easy, Medium, and Hard, with corresponding integer values of 0, 1, and 2 respectively. This enumeration can be used to configure the game settings based on the player's choice of difficulty level at the start of a new game session.
+    /// </summary>
+    public enum Difficulty { Easy = 0, Medium = 1, Hard = 2 }
 
     /// <summary>
     /// The <see cref="GameModel"/> class serves as the central component of the game's architecture, encapsulating the core game logic, state management, and interactions between various game entities.
@@ -1173,7 +1170,7 @@ namespace TransportTycoon.Model
                     && vehicle.Prouth.Stops.Count > 1
                     && !vehicle.IsLost
                     && vehicle.CurrentRoute is not null
-                    )
+                    && vehicle.TileProgress < 0.0001)
                 {
                     Field currentField = Map[vehicle.MapX, vehicle.MapY];
                     if (currentField is Stop stop)
