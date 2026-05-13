@@ -997,7 +997,6 @@ namespace TransportTycoon.Model
 
                 Maintenance += vehicle.Maintenance;
                 Vehicles.Add(vehicle);
-                _tileOccupancy[vehicle.MapX, vehicle.MapY, vehicle.GetLaneIdx()] = vehicle;
             });
 
 
