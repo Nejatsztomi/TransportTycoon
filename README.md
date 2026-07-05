@@ -40,7 +40,22 @@ A MÁV-csoport\* bemutatja a népszerű [Transport Tycoon](https://www.openttd.o
 
 ## Képernyőképek és videók a játékról 📸🎥
 
-[Képek a játékról](../../wikis/K%C3%A9pek)
+
+Kezdőképernyő
+<img width="1919" height="1108" alt="kép" src="https://github.com/user-attachments/assets/704673b5-eb5e-48ae-b538-60cce4634b13" />
+
+Játék tábla generáló menü
+<img width="1919" height="1105" alt="kép (1)" src="https://github.com/user-attachments/assets/d794aa66-325b-4fbd-b03b-25b2f0f9f60e" />
+
+Szünet menü
+<img width="1916" height="1108" alt="kép (2)" src="https://github.com/user-attachments/assets/466c4c06-2e1c-4d10-8390-ffa1a1a1cbfa" />
+
+Játékképernyő 1
+<img width="1919" height="1106" alt="kép (3)" src="https://github.com/user-attachments/assets/c7bffd89-b412-4ed4-89c4-a3d4ce1af316" />
+
+Játékképernyő 2
+<img width="1919" height="1111" alt="kép (4)" src="https://github.com/user-attachments/assets/916d415f-f435-4792-9d73-fda7a509df2b" />
+
 
 [Felvétel a játékról](https://youtu.be/tDQ1OAJ-2nY?si=V_F2gu1arPmXaPWv)
 
