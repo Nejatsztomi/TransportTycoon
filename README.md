@@ -1,5 +1,7 @@
 # Transport Tycoon by MÁV-Csoport
 
+**Ez a repository csak egy másolata az eredeti privát repositorynak!**
+
 A MÁV-csoport\* bemutatja a népszerű [Transport Tycoon](https://www.openttd.org/) egyedi megvalósítását C#, .NET 10, WPF környezetben. A játékban a játékosnak egy térképen kell úthálózatot kiépítenie városok, gyárak és nyersanyaglelőhelyek között, hogy minél több profitot szerezzen.
 
 ## Csoport tagjai 👥
