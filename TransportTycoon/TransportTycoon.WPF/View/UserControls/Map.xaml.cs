@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF.View.UserControls
@@ -13,6 +15,9 @@ namespace TransportTycoon.WPF.View.UserControls
         #region Private fields
         private Point? _dragStartPoint = null;
         private Point _dragStartCamera;
+        private bool _isLeftDragging;
+        private int _lastDragRoadX = -1;
+        private int _lastDragRoadY = -1;
         #endregion
 
         #region Bindings
@@ -51,42 +56,12 @@ namespace TransportTycoon.WPF.View.UserControls
         public Map()
         {
             InitializeComponent();
+
+            CompositionTarget.Rendering += OnFrameRendered;
         }
         #endregion
 
         #region Private methods
-        /// <summary>
-        /// Updates the camera position and zoom level to display the specified region of the map.
-        /// </summary>
-        /// <remarks>
-        /// If the requested camera position would cause the viewport to extend beyond the map
-        /// boundaries, the position is automatically adjusted to keep the camera within valid bounds.
-        /// </remarks>
-        /// <param name="desiredCameraX">The desired horizontal position of the camera in world coordinates.
-        /// Values outside the map bounds are clamped to the valid range.</param>
-        /// <param name="desiredCameraY">The desired vertical position of the camera in world coordinates.
-        /// Values outside the map bounds are clamped to the valid range.</param>
-        /// <param name="zoomLevel">The zoom level to apply to the camera. Higher values zoom in, lower zoom out.</param>
-        private void UpdateCamera(double desiredCameraX, double desiredCameraY, double zoomLevel)
-        {
-            double visibleWorldWidth = InternalGameMapRenderer.ActualWidth / zoomLevel;
-            double visibleWorldHeight = InternalGameMapRenderer.ActualHeight / zoomLevel;
-
-            // Max bounds (right and bottom side)
-            double maxCameraX = (InternalGameMapRenderer.Map.GetLength(0) * FastMapRenderer.TileSize) - visibleWorldWidth;
-            double maxCameraY = (InternalGameMapRenderer.Map.GetLength(1) * FastMapRenderer.TileSize) - visibleWorldHeight;
-
-            // Min bounds (left and top side)
-            maxCameraX = Math.Max(0.0, maxCameraX);
-            maxCameraY = Math.Max(0.0, maxCameraY);
-
-            // Apply the changes
-            // We don't have to worry about multiple redraw calls.
-            InternalGameMapRenderer.ZoomLevel = zoomLevel;
-            InternalGameMapRenderer.CameraX = Math.Clamp(desiredCameraX, 0.0, maxCameraX);
-            InternalGameMapRenderer.CameraY = Math.Clamp(desiredCameraY, 0.0, maxCameraY);
-        }
-
         /// <summary>
         /// Calculates the tile coordinates corresponding to the specified mouse position in screen space.
         /// </summary>
@@ -128,6 +103,26 @@ namespace TransportTycoon.WPF.View.UserControls
 
         #region Private event methods
         /// <summary>
+        /// WPF's game loop event. We use it to trigger redraws of the map.
+        /// </summary>
+        /// <param name="_1"></param>
+        /// <param name="_2"></param>
+        private void OnFrameRendered(object? _1, EventArgs _2)
+        {
+            InternalGameMapRenderer.Redraw();
+        }
+
+        /// <summary>
+        /// Unload event to prevent memory leaks.
+        /// </summary>
+        /// <param name="_1"></param>
+        /// <param name="_2"></param>
+        private void UserControl_Unloaded(object? _1, EventArgs _2)
+        {
+            CompositionTarget.Rendering -= OnFrameRendered;
+        }
+
+        /// <summary>
         /// The method which is triggered when the <see cref="ViewModel"/> property changes.
         /// It is responsible for subscribing to the new viewmodel's events and unsubscribing from the old one.
         /// </summary>
@@ -139,16 +134,101 @@ namespace TransportTycoon.WPF.View.UserControls
             GameViewModel? oldVm = e.OldValue as GameViewModel;
             GameViewModel? newVm = e.NewValue as GameViewModel;
 
-            oldVm?.MapUpdated -= map.GameViewModel_MapUpdated;
-            newVm?.MapUpdated += map.GameViewModel_MapUpdated;
+            oldVm?.ShowBalanceMessage -= map.GameViewModel_OnShowBalanceMessage;
+
+            newVm?.ShowBalanceMessage += map.GameViewModel_OnShowBalanceMessage;
         }
 
-        /// <summary>
-        /// An eventhandler to issue a map redraw.
-        /// </summary>
-        private void GameViewModel_MapUpdated()
+        private void GameViewModel_OnShowBalanceMessage(int x, int y, int value)
         {
-            InternalGameMapRenderer.Redraw();
+            string text = value.ToString();
+            _ = ShowFloatingMessage(text, x, y);
+        }
+
+        private async Task ShowFloatingMessage(string text, int tileX, int tileY)
+        {
+            //Pixel point coordinates
+            double worldX = tileX * FastMapRenderer.TileSize;
+            double worldY = tileY * FastMapRenderer.TileSize;
+
+            //Pixel point coordinates from screen's upper left corner
+            double screenX = (worldX - InternalGameMapRenderer.CameraX) * InternalGameMapRenderer.ZoomLevel;
+            double screenY = (worldY - InternalGameMapRenderer.CameraY) * InternalGameMapRenderer.ZoomLevel;
+
+            //Message color
+            Brush textColor;
+            if (text.StartsWith("-")) textColor = Brushes.Red;
+            else textColor = Brushes.Green;
+
+            //Message text
+            var textBlock = new System.Windows.Controls.TextBlock
+            {
+                Text = text.StartsWith("-") ? text : "+" + text,
+                FontSize = 20,
+                FontWeight = FontWeights.Bold,
+                Foreground = textColor,
+                FontFamily = (FontFamily)Application.Current.FindResource("GameFont"),
+                Opacity = 1.0,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            // Coin picture
+            var coinImage = new Image
+            {
+                Source = new BitmapImage(new Uri("/Assets/Images/Icons/coin.png", UriKind.Relative)),
+                Width = 34,
+                Height = 34,
+                Opacity = 1.0,
+            };
+
+            // StackPanel for message
+            var stackPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness(0)
+            };
+            stackPanel.Children.Add(textBlock);
+            stackPanel.Children.Add(coinImage);
+
+            //Stackpanel added to canvas
+            FloatingCanvas.Children.Add(stackPanel);
+            Canvas.SetLeft(stackPanel, screenX);
+            Canvas.SetTop(stackPanel, screenY);
+
+            //Animation start and end point, timer for animation and duration of animation
+            double startY = screenY;
+            double endY = screenY - 50;
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            double durationMs = 1000;
+
+            //Animation loop
+            while (sw.ElapsedMilliseconds < durationMs)
+            {
+                //Elapsed time ratio
+                double t = sw.ElapsedMilliseconds / durationMs;
+                //New point with interpolation due to elapsed time ratio
+                double newY = startY + (endY - startY) * t;
+                //Reduce opacity
+                double newOpacity = 1.0 - t;
+
+                //Set new properties of stackpanel
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    Canvas.SetTop(stackPanel, newY);
+                    stackPanel.Opacity = newOpacity;
+                });
+
+                //Wait a little in order to smooth animation
+                await Task.Delay(16);
+            }
+
+            //Remove stackpanel from canvas
+            await Dispatcher.InvokeAsync(() => FloatingCanvas.Children.Remove(stackPanel));
+        }
+
+        private void GameViewModel_OnVehichleDestroyed(UInt64 vehicleId)
+        {
+            GameMapRenderer.RemoveVehicleFromCache(vehicleId);
         }
 
         /// <summary>
@@ -166,6 +246,32 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseMove(object? _, MouseEventArgs e)
         {
+            if (DataContext is not GameViewModel viewModel) return;
+
+            if (_isLeftDragging && (viewModel.SelectedButton == 21 || viewModel.SelectedButton == 24))
+            {
+                Point dragMousePos = e.GetPosition(InternalGameMapRenderer);
+
+                if (dragMousePos.X < 0 || dragMousePos.Y < 0 ||
+                    dragMousePos.X > InternalGameMapRenderer.ActualWidth || dragMousePos.Y > InternalGameMapRenderer.ActualHeight)
+                {
+                    return;
+                }
+
+                (int dragX, int dragY) = GetTileCoordinatesFromMousePosition(dragMousePos);
+
+                if (IsInMapBounds(dragX, dragY))
+                {
+                    if (dragX != _lastDragRoadX || dragY != _lastDragRoadY)
+                    {
+                        _lastDragRoadX = dragX;
+                        _lastDragRoadY = dragY;
+
+                        viewModel.OnTileLeftClick(dragX, dragY);
+                    }
+                }
+            }
+
             if (_dragStartPoint.HasValue)
             {
                 Point screenMousePos = e.GetPosition(this);
@@ -178,7 +284,7 @@ namespace TransportTycoon.WPF.View.UserControls
                 double desiredCameraX = _dragStartCamera.X - deltaX;
                 double desiredCameraY = _dragStartCamera.Y - deltaY;
 
-                UpdateCamera(desiredCameraX, desiredCameraY, InternalGameMapRenderer.ZoomLevel);
+                InternalGameMapRenderer.SetCameraView(desiredCameraX, desiredCameraY, InternalGameMapRenderer.ZoomLevel);
             }
             else
             {
@@ -224,15 +330,11 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseWheel(object? _, MouseWheelEventArgs e)
         {
-            // TODO: Move to class, calculate max zoom based on map size and tile size
             const double ZOOM_IN_STEP = 1.1;
             const double ZOOM_OUT_STEP = 1 / 1.1;
-            const double MIN_ZOOM = 0.2;
-            const double MAX_ZOOM = 3.0;
 
             double zoomFactor = e.Delta > 0 ? ZOOM_IN_STEP : ZOOM_OUT_STEP;
-
-            double newZoomLevel = Math.Clamp(InternalGameMapRenderer.ZoomLevel * zoomFactor, MIN_ZOOM, MAX_ZOOM);
+            double newZoomLevel = InternalGameMapRenderer.ZoomLevel * zoomFactor;
 
             // Get mouse position
             Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
@@ -242,7 +344,7 @@ namespace TransportTycoon.WPF.View.UserControls
             double desiredCameraX = wordX - (screenMousePos.X / newZoomLevel);
             double desiredCameraY = wordY - (screenMousePos.Y / newZoomLevel);
 
-            UpdateCamera(desiredCameraX, desiredCameraY, newZoomLevel);
+            InternalGameMapRenderer.SetCameraView(desiredCameraX, desiredCameraY, newZoomLevel);
         }
 
         /// <summary>
@@ -256,19 +358,25 @@ namespace TransportTycoon.WPF.View.UserControls
 
             if (IsInMapBounds(tileX, tileY))
             {
-                InternalGameMapRenderer.SelectedX = tileX;
-                InternalGameMapRenderer.SelectedY = tileY;
+                //InternalGameMapRenderer.SelectedTile = tileX;
+                //InternalGameMapRenderer.SelectedY = tileY;
+
+                _isLeftDragging = true;
+                _lastDragRoadX = tileX;
+                _lastDragRoadY = tileY;
+
+                InternalGameMapRenderer.CaptureMouse();
 
                 if (DataContext is GameViewModel viewModel)
                 {
                     viewModel.OnTileLeftClick(tileX, tileY);
                 }
             }
-            else
-            {
-                InternalGameMapRenderer.SelectedX = -1;
-                InternalGameMapRenderer.SelectedY = -1;
-            }
+            //else
+            //{
+            //    InternalGameMapRenderer.SelectedTile = -1;
+            //    InternalGameMapRenderer.SelectedY = -1;
+            //}
         }
 
         /// <summary>
@@ -276,8 +384,34 @@ namespace TransportTycoon.WPF.View.UserControls
         /// </summary>
         private void GameMapRenderer_PreviewMouseLeftButtonUp(object? _1, MouseButtonEventArgs _2)
         {
-            InternalGameMapRenderer.SelectedX = -1;
-            InternalGameMapRenderer.SelectedY = -1;
+            //InternalGameMapRenderer.SelectedTile = -1;
+            //InternalGameMapRenderer.SelectedY = -1;
+
+            _isLeftDragging = false;
+            _lastDragRoadX = -1;
+            _lastDragRoadY = -1;
+
+            InternalGameMapRenderer.ReleaseMouseCapture();
+        }
+
+        /// <summary>
+        /// An eventhandler Middle/Wheel Mouse Button press.
+        /// </summary>
+        private void GameMapRenderer_PreviewMouseDown(object? _1, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton != MouseButton.Middle) return;
+
+            Point screenMousePos = e.GetPosition(InternalGameMapRenderer);
+
+            (int tileX, int tileY) = GetTileCoordinatesFromMousePosition(screenMousePos);
+
+            if (IsInMapBounds(tileX, tileY))
+            {
+                if (DataContext is GameViewModel viewModel)
+                {
+                    viewModel.OnTileWheelClick(tileX, tileY);
+                }
+            }
         }
         #endregion
     }

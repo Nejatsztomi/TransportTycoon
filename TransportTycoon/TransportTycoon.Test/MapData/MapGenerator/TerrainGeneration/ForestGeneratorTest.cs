@@ -7,10 +7,9 @@ namespace TransportTycoon.Test.MapData.MapGenerator.TerrainGeneration;
 
 public class ForestGeneratorTest
 {
-    [TestClass]
     public class FactoryCreateTest
     {
-        [TestMethod]
+        [Fact]
         public void ForestGeneratorFactory_Create_WithValidParameters()
         {
             // Arrange
@@ -20,17 +19,16 @@ public class ForestGeneratorTest
             IForestGenerator result = ForestGeneratorFactory.Create(noiseGenerator);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<ForestGenerator>(result);
+            Assert.NotNull(result);
+            Assert.IsType<ForestGenerator>(result);
         }
     }
 
-    [TestClass]
     public class GenerateForestsTest
     {
-        private IForestGenerator _forestGenerator = null!;
-        private MapGenerationContext _context = default;
-        private int[,] _heightMap = null!;
+        private readonly IForestGenerator _forestGenerator;
+        private readonly MapGenerationContext _context;
+        private readonly int[,] _heightMap;
 
         private INoiseGenerator GetMockedNoiseGenerator()
         {
@@ -60,8 +58,7 @@ public class ForestGeneratorTest
             return heightMap;
         }
 
-        [TestInitialize]
-        public void Initialize()
+        public GenerateForestsTest()
         {
             INoiseGenerator noiseGenerator_mock = GetMockedNoiseGenerator();
             _context = new MapGenerationContext(20, 20, 42, new MapGenerationSettings());
@@ -71,18 +68,18 @@ public class ForestGeneratorTest
             _heightMap = GenerateHeightMap(_context.Width, _context.Height);
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateForests_ReturnsCorrectDimensions()
         {
             // Act
             int[,] forestMap = _forestGenerator.GenerateForests(_heightMap, _context);
 
             // Assert
-            Assert.AreEqual(_context.Width, forestMap.GetLength(0), "Forest map width should match context");
-            Assert.AreEqual(_context.Height, forestMap.GetLength(1), "Forest map height should match context");
+            Assert.Equal(_context.Width, forestMap.GetLength(0));
+            Assert.Equal(_context.Height, forestMap.GetLength(1));
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateForests_AllValuesAreValidForestDensities()
         {
             // Arrange
@@ -102,10 +99,10 @@ public class ForestGeneratorTest
                     validDensity = minDensity <= density && density <= maxDensity;
                 }
             }
-            Assert.IsTrue(validDensity, "All forest densities should be valid");
+            Assert.True(validDensity, "All forest densities should be valid");
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateForests_NoForestsOnVeryHighTerrain()
         {
             // Arrange - Create height map with some very high terrain (height = 4)
@@ -124,10 +121,10 @@ public class ForestGeneratorTest
                     hasForest = forestMap[x, y] > 0;
                 }
             }
-            Assert.IsFalse(hasForest, "Forests should not appear on very high terrain");
+            Assert.False(hasForest, "Forests should not appear on very high terrain");
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateForests_LowPercentageProducesFewerTrees()
         {
             // Arrange
@@ -158,10 +155,10 @@ public class ForestGeneratorTest
             }
 
             // Assert - Higher percentage should generally produce more trees
-            Assert.IsGreaterThanOrEqualTo(lowTreeCount, highTreeCount, $"Higher forest percentage should produce more trees: low={lowTreeCount}, high={highTreeCount}");
+            Assert.True(highTreeCount >= lowTreeCount, $"Higher forest percentage should produce more trees: low={lowTreeCount}, high={highTreeCount}");
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateForests_SameSeedProducesSameResult()
         {
             // Arrange
@@ -186,10 +183,10 @@ public class ForestGeneratorTest
                     hasDifferentTrees = forest1[x, y] != forest2[x, y];
                 }
             }
-            Assert.IsFalse(hasDifferentTrees, "Same seed should generate same forest");
+            Assert.False(hasDifferentTrees, "Same seed should generate same forest");
         }
 
-        [TestMethod]
+        [Fact]
         public void GenerateForests_DifferentSeedProducesDifferentesult()
         {
             // Arrange
@@ -211,10 +208,10 @@ public class ForestGeneratorTest
             {
                 for (int y = 0; y < context1.Height && !hasDifferentTrees; y++)
                 {
-                    hasDifferentTrees = forest1[x, y] == forest2[x, y];
+                    hasDifferentTrees = forest1[x, y] != forest2[x, y];
                 }
             }
-            Assert.IsTrue(hasDifferentTrees, "Different seed should generate different forest");
+            Assert.True(hasDifferentTrees, "Different seed should generate different forest");
         }
     }
 }

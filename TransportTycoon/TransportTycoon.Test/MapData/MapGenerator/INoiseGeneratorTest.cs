@@ -5,32 +5,34 @@ namespace TransportTycoon.Test.MapData.MapGenerator;
 
 public class INoiseGeneratorTest
 {
-    [TestClass]
     public class FactoryCreateTest
     {
-        [TestMethod]
+        [Fact]
         public void PerlinNoiseFactoryCreate_WithAllParameters()
         {
-            MapGenerationContext context = new(10, 15, 0, new MapGenerationSettings());
-            INoiseGenerator result = PerlinNoiseGeneratorFactory.Create(new RandomProvider(), context);
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType<PerlinNoiseGenerator>(result);
+            // Arrange
+            float frequency = 0.1f;
+
+            // Act
+            INoiseGenerator result = ValueNoiseGeneratorFactory.Create(frequency);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsType<ValueNoiseGenerator>(result);
         }
     }
 
-    [TestClass]
     public class NoiseGenerationTest
     {
-        [TestClass]
-        public class PerlinNoiseGeneratorTest
+        public class ValueNoiseGenerationTest
         {
-            private static readonly MapGenerationContext _context = new(10, 15, 0, new MapGenerationSettings());
-            private static INoiseGenerator _generator = null!;
+            private readonly MapGenerationContext _context;
+            private readonly INoiseGenerator _generator;
 
-            [ClassInitialize]
-            public static void Initialize(TestContext _)
+            public ValueNoiseGenerationTest()
             {
-                _generator = PerlinNoiseGeneratorFactory.Create(new RandomProvider(), _context);
+                _context = new(10, 15, 0, new MapGenerationSettings());
+                _generator = ValueNoiseGeneratorFactory.Create(0.1f);
             }
         }
     }

@@ -78,6 +78,10 @@ dotnet_naming_style.camel_case_style.capitalization = camel_case
 dotnet_naming_style.underscore_camel_case_style.capitalization = camel_case
 dotnet_naming_style.underscore_camel_case_style.required_prefix = _
 
+# UPPER_CASE with underscores (for consts)
+dotnet_naming_style.const_upper_style.capitalization = all_upper
+dotnet_naming_style.const_upper_style.word_separator = _
+
 # Symbol Groups
 
 # Group A: PascalCase (Dotnet standard): everything (Catch-all)
@@ -88,9 +92,14 @@ dotnet_naming_symbols.all_elements.applicable_accessibilities = *
 dotnet_naming_symbols.parameters.applicable_kinds = parameter, local
 dotnet_naming_symbols.parameters.applicable_accessibilities = *
 
-# Group C: underscore_camelCase: private Fields
+# Group C: underscore_camelCase: private and protected fields
 dotnet_naming_symbols.private_fields.applicable_kinds = field
-dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private, protected
+
+# Group D: UPPER_CASE for const fields and local constants
+dotnet_naming_symbols.const_symbols.applicable_kinds = field, local
+dotnet_naming_symbols.const_symbols.required_modifiers = const
+dotnet_naming_symbols.const_symbols.applicable_accessibilities = *
 
 # Apply Naming Rules
 
@@ -109,7 +118,27 @@ dotnet_naming_rule.private_fields_rule.severity = suggestion
 dotnet_naming_rule.private_fields_rule.symbols = private_fields
 dotnet_naming_rule.private_fields_rule.style = underscore_camel_case_style
 
+# Rule 4: apply UPPER_CASE to all const symbols
+dotnet_naming_rule.const_upper_rule.severity = suggestion
+dotnet_naming_rule.const_upper_rule.symbols = const_symbols
+dotnet_naming_rule.const_upper_rule.style = const_upper_style
+
+### Dotnet Rules ###
+dotnet_remove_unnecessary_imports = true
+
 ### Analyzer Rule Overrides ###
 
 # Disable SonarAnalyzer S3400: Remove this method and declare a constant
 dotnet_diagnostic.S3400.severity = none
+
+# Suggestion about IDE0005: unused imports
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+# Disable IDE0290 primary constructors
+dotnet_diagnostic.IDE0290.severity = none
+
+# Disabele RCS1268: simply numeric comparison
+dotnet_diagnostic.RCS1268.severity = none
+
+# Enable IDE0041: Use 'is null' check
+dotnet_diagnostic.IDE0041.severity = error

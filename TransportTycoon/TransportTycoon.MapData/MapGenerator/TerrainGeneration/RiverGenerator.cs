@@ -1,31 +1,51 @@
-﻿using System.Diagnostics;
+﻿using System.Runtime.CompilerServices;
 
 namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
+    /// <summary>
+    /// A factory class for creating instances of <see cref="IWaterGenerator"/>.
+    /// </summary>
     public static class RiverGeneratorFactory
     {
+        /// <summary>
+        /// Creates a new instance of an IWaterGenerator for generating rivers using the specified random provider and
+        /// map generation context.
+        /// </summary>
+        /// <param name="randomProvider">The random number provider used to introduce randomness into the river generation process. Cannot be null.</param>
+        /// <param name="context">The context containing map generation parameters and state information required for river generation. Cannot
+        /// be null.</param>
+        /// <returns>An IWaterGenerator instance configured to generate rivers based on the provided context and random provider.</returns>
         public static IWaterGenerator Create(IRandomProvider randomProvider, MapGenerationContext context) => new RiverGenerator(randomProvider, context);
     }
 
     internal class RiverGenerator : IWaterGenerator
     {
         #region Private fields
-        private readonly IRandom _random;
+        private readonly IRandomProvider _randomProvider;
+        private readonly MapGenerationContext _context;
+        private const string PluginId = "BaseGame.Rivers";
+        #endregion
+
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.WaterLayer;
         #endregion
 
         #region Constructors
-        public RiverGenerator(IRandomProvider randomProvider, MapGenerationContext context)
+        internal RiverGenerator(IRandomProvider randomProvider, MapGenerationContext context)
         {
-            _random = randomProvider.GetRandom(context.Seed, GenerationDomain.Rivers);
+            _randomProvider = randomProvider;
+            _context = context;
         }
         #endregion
 
         #region Public methods
-        public bool[,] GenerateWaterMap(int[,] heightMap, bool[,] waterMap, MapGenerationContext context)
+        public bool[,] GenerateWaterMap(float[,] noiseMap, bool[,] waterMap, MapGenerationContext context)
         {
+            IRandom random = _randomProvider.GetRandom(context.Seed, PluginId);
+
             for (int i = 0; i < context.Settings.RiverCount; i++)
             {
-                SpawnRiver(heightMap, waterMap, context);
+                SpawnRiver(noiseMap, waterMap, context, random);
             }
 
             return waterMap;
@@ -33,11 +53,10 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         #endregion
 
         #region Private methods
-        private void SpawnRiver(int[,] heightMap, bool[,] waterMap, MapGenerationContext context)
+        private void SpawnRiver(float[,] noiseMap, bool[,] waterMap, MapGenerationContext context, IRandom random)
         {
-
-            int currentX = _random.Next(5, context.Width - 5);
-            int currentY = _random.Next(5, context.Height - 5);
+            int currentX = random.Next(5, context.Width - 5);
+            int currentY = random.Next(5, context.Height - 5);
 
             if (waterMap[currentX, currentY]) return;
             bool[,] preexistingWaterMap = (bool[,])waterMap.Clone();
@@ -45,7 +64,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
             // Width = sqrt(radius)
             float minRadius = (float)Math.Sqrt(context.Settings.MinRiverWidth);
             float maxRadius = (float)Math.Sqrt(context.Settings.MaxRiverWidth);
-            float currentRadius = (float)Math.Sqrt(_random.Next(context.Settings.MinRiverWidth, context.Settings.MaxRiverWidth));
+            float currentRadius = (float)Math.Sqrt(random.Next(context.Settings.MinRiverWidth, context.Settings.MaxRiverWidth));
 
             HashSet<(int X, int Y)> alreadyVisited = [];
 
@@ -53,20 +72,20 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
             {
                 alreadyVisited.Add((currentX, currentY));
 
-                PaintWaterBrush(heightMap, waterMap, currentX, currentY, currentRadius, context);
+                PaintWaterBrush(noiseMap, waterMap, currentX, currentY, currentRadius, context);
 
-                float widthChange = (_random.NextSingle() * 0.4f) - 0.2f;
+                float widthChange = (random.NextSingle() * 0.4f) - 0.2f;
                 currentRadius = Math.Clamp(currentRadius + widthChange, minRadius, maxRadius);
 
                 // Go downhill
                 (int x, int y) nextTile = (-1, -1);
-                int lowestHeight = int.MaxValue;
+                float lowestHeight = float.MaxValue;
 
                 List<(int dx, int dy)> directions = [(0, 1), (1, 0), (0, -1), (-1, 0)];
 
                 while (directions.Count > 0)
                 {
-                    int idx = _random.Next(directions.Count);
+                    int idx = random.Next(directions.Count);
                     (int dx, int dy) = directions[idx];
                     directions.RemoveAt(idx);
 
@@ -77,10 +96,10 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
                     {
                         if (!alreadyVisited.Contains((nx, ny)))
                         {
-                            if (heightMap[nx, ny] < lowestHeight ||
-                                (heightMap[nx, ny] == lowestHeight && lowestHeight >= heightMap[currentX, currentY]))
+                            if (noiseMap[nx, ny] < lowestHeight ||
+                                (Math.Abs(noiseMap[nx, ny] - lowestHeight) <= 0.0001f && lowestHeight >= noiseMap[currentX, currentY]))
                             {
-                                lowestHeight = heightMap[nx, ny];
+                                lowestHeight = noiseMap[nx, ny];
                                 nextTile = (nx, ny);
                             }
                         }
@@ -90,7 +109,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
                 // No next tile
                 if (nextTile == (-1, -1))
                 {
-                    PaintWaterBrush(heightMap, waterMap, currentX, currentY, 3.5f, context);
+                    PaintWaterBrush(noiseMap, waterMap, currentX, currentY, 3.5f, context);
                     break;
                 }
 
@@ -108,7 +127,7 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         /// <summary>
         /// Paints a circle of water around a center point based on a radius.
         /// </summary>
-        private void PaintWaterBrush(int[,] heightMap, bool[,] waterMap, int centerX, int centerY, float radius, MapGenerationContext context)
+        private void PaintWaterBrush(float[,] noiseMap, bool[,] waterMap, int centerX, int centerY, float radius, MapGenerationContext context)
         {
             int r = (int)Math.Ceiling(radius);
 
@@ -123,21 +142,22 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
                         int mapY = centerY + j;
                         if ((0 <= mapX && mapX < context.Width) && (0 <= mapY && mapY < context.Height))
                         {
-                            waterMap[mapX, mapY] = IsValidNeighbouringHeights(mapX, mapY, heightMap, context);
+                            waterMap[mapX, mapY] = IsValidNeighbouringHeights(mapX, mapY, noiseMap, context);
                         }
                     }
                 }
             }
         }
 
-        private bool IsValidNeighbouringHeights(int x, int y, int[,] heightMap, MapGenerationContext context)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool IsValidNeighbouringHeights(int x, int y, float[,] noiseMap, MapGenerationContext context)
         {
             // TODO: Replace magic number with TerrainHeight enum
             bool valid = true;
-            if (x + 1 < context.Width) valid &= heightMap[x + 1, y] <= 2;
-            if (0 <= x - 1) valid &= heightMap[x - 1, y] <= 2;
-            if (y + 1 < context.Height) valid &= heightMap[x, y + 1] <= 2;
-            if (0 <= y - 1) valid &= heightMap[x, y - 1] <= 2;
+            if (x + 1 < context.Width) valid &= noiseMap[x + 1, y] <= context.Settings.Biome.HillRange;
+            if (0 <= x - 1) valid &= noiseMap[x - 1, y] <= context.Settings.Biome.HillRange;
+            if (y + 1 < context.Height) valid &= noiseMap[x, y + 1] <= context.Settings.Biome.HillRange;
+            if (0 <= y - 1) valid &= noiseMap[x, y - 1] <= context.Settings.Biome.HillRange;
             return valid;
         }
         #endregion

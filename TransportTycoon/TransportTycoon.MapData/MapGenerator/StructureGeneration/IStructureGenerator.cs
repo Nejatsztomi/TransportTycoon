@@ -2,32 +2,17 @@
 
 namespace TransportTycoon.MapData.MapGenerator.StructureGeneration
 {
-    public interface IStructureGenerator
+    /// <summary>
+    /// An interface for generating structures on the map.
+    /// This includes buildings and other non-natural features that add character and functionality to the game world.
+    /// Implementations of this interface will define how structures are placed, their types, and their interactions with the environment and other game elements.
+    /// </summary>
+    public interface IStructureGenerator : IMapPluginGenerator
     {
         /// <summary>
-        /// Tries to place a structure of the given type on the map.
-        /// It checks if the placement is valid (e.g., not on water, not on another structure) and returns the placed entity if successful.
-        /// If it cannot place the structure, it returns null.
-        /// If x, y, and radius are provided, it tries to place the structure within the specified radius of the given coordinates.
+        /// Generates structures within the map using the specified generation context.
         /// </summary>
-        /// <param name="heightMap"></param>
-        /// <param name="waterMap"></param>
-        /// <param name="structureMap"></param>
-        /// <param name="buildingEntity">What structure to place</param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public bool TryPlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY);
-
-        /// <summary>
-        /// Forces the placement of a structure of the given type on the map.
-        /// If x, y, and radius are provided, it tries to place the structure within the specified radius of the given coordinates.
-        /// </summary>
-        /// <param name="heightMap"></param>
-        /// <param name="waterMap"></param>
-        /// <param name="structureMap"></param>
-        /// <param name="buildingEntity"></param>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public void ForcePlace(int[,] heightMap, bool[,] waterMap, bool[,] structureMap, BuildingEntity buildingEntity, MapGenerationContext context, int centerX, int centerY);
+        /// <param name="context">The context that provides information and services required for map structure generation. Cannot be <see langword="null"/>.</param>
+        public List<BuildingEntity> GenerateStructures(MapGenerationContext context);
     }
 }

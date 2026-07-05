@@ -2,11 +2,12 @@
 using System.Diagnostics;
 using System.Windows;
 using TransportTycoon.MapData.MapGenerator;
+using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 using TransportTycoon.Model;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class CreateGameViewModel : ViewModelViewConstraintBase
+    public sealed partial class CreateGameViewModel : ViewModelViewConstraintBase
     {
         #region Properties
         #region IViewConstraint
@@ -15,7 +16,7 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Game specific settings
-        public string SaveName { get; set; } = string.Empty;
+        public string SaveName { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss");
         public string GameHeight { get; set; } = "100";
         public string GameWidth { get; set; } = "100";
         public string GameSeed { get; set; } = "42";
@@ -36,8 +37,8 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Events
-        public event EventHandler? BackToMainMenu;
-        public event EventHandler<MapGenerationContext>? CreateGame;
+        public event Action? BackToMainMenu;
+        public event Action<GameCreationData>? CreateGame;
         #endregion
 
         #region Constructors
@@ -50,7 +51,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             try
             {
-                if (SaveName == String.Empty)
+                if (SaveName.Length <= 0 || string.IsNullOrWhiteSpace(SaveName))
                 {
                     throw new ArgumentException("Invalid save name.");
                 }
@@ -67,7 +68,9 @@ namespace TransportTycoon.WPF.ViewModel
 
                 Debug.WriteLine($"Map generation settings:");
                 Debug.WriteLine($"Biome: {SettingsBiome}");
+                IBiome biome = TryConvertToBiome(SettingsBiome);
                 Debug.WriteLine($"Water biome: {SettingsWaterBiome}");
+                IWaterBiome waterBiome = TryConvertToWaterBiome(SettingsWaterBiome);
                 float forestPercentage = SettingsForestPercentage / 100.0f;
                 Debug.WriteLine($"Forest percentage: {forestPercentage}");
                 int riverCount = int.Parse(SettingsRiverCount);
@@ -81,18 +84,22 @@ namespace TransportTycoon.WPF.ViewModel
                 int maxStructures = int.Parse(SettingsMaxStructures);
                 Debug.WriteLine($"Max structures: {maxStructures}");
 
-                MapGenerationSettings settings = new()
+                var settings = new MapGenerationSettings()
                 {
+                    Biome = biome,
+                    WaterBiome = waterBiome,
                     ForestPercentage = forestPercentage,
                     RiverCount = riverCount,
                     MinCities = minCities,
                     MaxCities = maxCities,
                     MinStructure = minStructures,
-                    MaxStructureRange = maxStructures,
+                    MaxStructure = maxStructures,
                 };
-                MapGenerationContext context = new(width, height, seed, settings);
+                var context = new MapGenerationContext(width, height, seed, settings);
 
-                CreateGame?.Invoke(this, context);
+                var data = new GameCreationData(context, SaveName, difficulty, starterBalance);
+
+                CreateGame?.Invoke(data);
             }
             catch (Exception ex)
             {
@@ -104,14 +111,36 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnBackToMainMenu()
         {
-            BackToMainMenu?.Invoke(this, EventArgs.Empty);
+            BackToMainMenu?.Invoke();
         }
         #endregion
 
         #region Private methods
-        public void ShowErrorMsgBox(string message)
+        private void ShowErrorMsgBox(string message)
         {
             MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private IWaterBiome TryConvertToWaterBiome(int num)
+        {
+            return num switch
+            {
+                0 => WaterBiomes.Normal,
+                1 => WaterBiomes.Dry,
+                2 => WaterBiomes.Wet,
+                _ => throw new ArgumentException("Invalid water biome!")
+            };
+        }
+
+        private IBiome TryConvertToBiome(int num)
+        {
+            return num switch
+            {
+                0 => Biomes.Default,
+                1 => Biomes.Flat,
+                2 => Biomes.Mountainous,
+                _ => throw new ArgumentException("Invalid biome!")
+            };
         }
         #endregion
     }

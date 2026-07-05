@@ -1,15 +1,17 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using TransportTycoon.MapData;
+using TransportTycoon.MapData.Buildings;
 using TransportTycoon.Model;
 using TransportTycoon.WPF.Utils;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class GameViewModel : ViewModelViewConstraintBase, IDisposable
+    public sealed partial class GameViewModel : ViewModelViewConstraintBase, IDisposable
     {
         #region Properties
         #region IViewConstraints
@@ -19,8 +21,13 @@ namespace TransportTycoon.WPF.ViewModel
 
         public GameModel Model { get; init; }
 
+        public List<Vehicle> Vehicles => Model.Vehicles;
+        public List<StopData> Stops { get; private set; } = [];
+        public PriceViewModel Prices { get; } = new PriceViewModel();
         public int Balance => Model.Balance;
-        public int GameTime => Model.GameTime;
+        public int Maintenance => Model.Maintenance;
+        public ulong GameTime => Model.GameTime;
+        public DateTime GameDate => new DateTime(1970, 1, 1).AddDays(GameTime);
         public bool IsPaused => Model.Mode == GameMode.Paused;
         public bool IsEditorMode => Model.Mode == GameMode.Editor;
 
@@ -28,12 +35,21 @@ namespace TransportTycoon.WPF.ViewModel
         public GameTable Map => Model.Map;
         public int Width => Model.Map.Width;
         public int Height => Model.Map.Height;
-        public IField[,] Tiles { get; }
+        public Field[,] Tiles { get; }
         public WriteableBitmap MinimapImage { get; set; }
+        public Field? SelectedField => Model.SelectedField;
+        public Vehicle? ShownVehicle { get; private set; }
         #endregion
 
         [ObservableProperty]
+        private int _selectedTabIndex = -1;
+        [ObservableProperty]
         private int _selectedButton = 0;
+        [ObservableProperty]
+        private int _selectedSpeed = 1;
+        [ObservableProperty]
+        private FieldInfoViewModel? _currentFieldInfo;
+
         #endregion
 
         #region Events
@@ -42,9 +58,25 @@ namespace TransportTycoon.WPF.ViewModel
         /// This is needed because some changes to the map (like tree growth) don't trigger any of the other events, but they still require a redraw.
         /// </summary>
         public event Action? MapUpdated;
+
+        /// <summary>
+        /// A simple event to notify the view that the user wants to go back to the main menu.
+        /// </summary>
+        public event Action? BackToMainMenu;
+
+        public event Action? SaveGame;
+
+        public event Action<int, int, int>? ShowBalanceMessage;
         #endregion
 
         #region Constructors
+        public GameViewModel()
+        {
+            Model = null!;
+            Tiles = null!;
+            MinimapImage = null!;
+        }
+
         public GameViewModel(GameModel model)
         {
             Model = model;
@@ -55,6 +87,10 @@ namespace TransportTycoon.WPF.ViewModel
             model.FieldChanged += Model_FieldChanged;
             model.BalanceChanged += Model_BalanceChanged;
             model.SelectedFieldChanged += Model_SelectedFieldChanged;
+            model.SelectedStopFieldsChanged += Model_SelectedStopFieldsChanged;
+            model.ProductionChanged += Model_ProductionChanged;
+            model.MaintenanceChanged += Model_MaintenanceChanged;
+            model.BalanceMessage += (s, e) => ShowBalanceMessage?.Invoke(e.X, e.Y, e.Value);
 
             Tiles = model.Map.Table;
             MinimapImage = new(Width, Height, 96, 96, PixelFormats.Bgra32, null);
@@ -63,6 +99,20 @@ namespace TransportTycoon.WPF.ViewModel
         #endregion
 
         #region Public methods
+        public void PauseGame()
+        {
+            Model.Mode = GameMode.Paused;
+            OnPropertyChanged(nameof(IsPaused));
+        }
+
+        public void ResumeGame()
+        {
+            Model.Mode = GameMode.Run;
+            if (Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
+            Model.DeleteRoute(-1, -1);
+            OnPropertyChanged(nameof(IsPaused));
+        }
+
         /// <summary>
         /// Generates a Minimap based on the current state of the map.
         /// Each tile is represented by a color (pixel) based on its FieldType.
@@ -75,7 +125,7 @@ namespace TransportTycoon.WPF.ViewModel
             {
                 for (int x = 0; x < Width; x++)
                 {
-                    IField tile = Map[x, y];
+                    Field tile = Map[x, y];
 
                     int index = (y * Width) + x;
 
@@ -103,28 +153,96 @@ namespace TransportTycoon.WPF.ViewModel
             // Predicate
             if (!IsEditorMode) return;
 
+            var tile = Tiles[x, y];
+
             switch (SelectedButton)
             {
-                case 1:
-                    Model.DecreaseHeight(x, y);
-                    break;
-                case 2:
-                    Model.IncreaseHeight(x, y);
-                    break;
                 case 11:
-                    Model.BuildRoad(x, y);
+                    Model.DecreaseHeight(tile.X, tile.Y);
                     break;
                 case 12:
-                    Model.BuildBridge(x, y);
+                    Model.IncreaseHeight(tile.X, tile.Y);
                     break;
-                case 13:
-                    Model.BuildStop(x, y);
+                case 21:
+                    Model.BuildRoad(tile.X, tile.Y);
+                    break;
+                case 22:
+                    Model.BuildBridge(tile.X, tile.Y);
+                    break;
+                case 23:
+                    Model.BuildStop(tile.X, tile.Y);
+                    break;
+                case 24:
+                    Model.Destroy(tile.X, tile.Y);
+                    break;
+                case 31:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Pickup);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 32:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Van);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 33:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.Truck);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 34:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.LiquidTruck);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 35:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.SmallBus);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 36:
+                    Model.BuyVehicle(tile.X, tile.Y, VehicleType.BigBus);
+                    Debug.WriteLine("Vehicle bought!");
+                    break;
+                case 41:
+                    Model.DefineRoute(tile.X, tile.Y);
+                    Debug.WriteLine("Route defined!");
+                    break;
+                case 42:
+                    Model.QueryRoute(tile.X, tile.Y);
+                    break;
+                case 43:
+                    Model.AssignRoute(tile.X, tile.Y);
+                    Debug.WriteLine("Route assigned!");
+                    break;
+                case 44:
+                    Model.DeleteRoute(tile.X, tile.Y);
                     break;
                 default:
                     break;
             }
             MapUpdated?.Invoke();
             UpdateMinimapTile(x, y, ConvertTileToColor(Map[x, y]));
+        }
+
+        public void OnTileWheelClick(int x, int y)
+        {
+            var field = Tiles[x, y];
+            ShownVehicle = Vehicles.FirstOrDefault(v => v.MapX == x && v.MapY == y);
+            if (ShownVehicle is not null) CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle, field);
+            else CurrentFieldInfo = FieldInfoFactory.CreateField(field);
+        }
+
+        public void RefreshFieldInfo(int x, int y)
+        {
+            if (CurrentFieldInfo is null) return;
+
+            if (ShownVehicle is not null)
+            {
+                CurrentFieldInfo = FieldInfoFactory.ShowVehicle(ShownVehicle, Tiles[ShownVehicle.MapX, ShownVehicle.MapY]);
+                return;
+            }
+
+            if (CurrentFieldInfo.X == x && CurrentFieldInfo.Y == y)
+            {
+                var field = Tiles[x, y];
+                CurrentFieldInfo = FieldInfoFactory.CreateField(field);
+            }
         }
         #endregion
 
@@ -134,90 +252,39 @@ namespace TransportTycoon.WPF.ViewModel
         /// </summary>
         /// <param name="tile">The field.</param>
         /// <returns>The <see cref="uint"/> ARGB format.</returns>
-        private uint ConvertTileToColor(IField tile)
+        private uint ConvertTileToColor(Field tile)
         {
             // Moved from FieldViewModel
-            Color colorName = tile.FieldType switch
+            Color colorName = tile switch
             {
                 // Structures
-                FieldType.House => Colors.Yellow,
-                FieldType.Farm => Colors.LightGreen,
-                FieldType.Mine => Colors.DarkOrange,
-                FieldType.LumberCamp => Colors.SaddleBrown,
-                FieldType.Mill => Colors.LightGray,
-                FieldType.Factory => Colors.DimGray,
+                House _ => Colors.Yellow,
+                Farm => Colors.LightGreen,
+                Mine => Colors.DarkOrange,
+                LumberCamp => Colors.SaddleBrown,
+                Mill => Colors.LightGray,
+                Factory => Colors.DimGray,
 
                 // Infrastructure
-                FieldType.Road => Colors.DarkGray,
-                FieldType.Bridge => Colors.Red,
-                FieldType.Stop => Colors.Red,
+                Road => Colors.DarkGray,
+                Bridge => Colors.Red,
+                Stop => Colors.Red,
 
                 // Terrain
-                FieldType.Water => Colors.Blue,
-                FieldType.Plain => Colors.Green,
-                FieldType.Hill => Colors.DarkGreen,
-                FieldType.Mountain => Colors.Gray,
-                FieldType.HighMountain => Colors.DarkGreen,
+                Water => Colors.Blue,
+                Terrain t => t.TerrainType switch
+                {
+                    TerrainType.Plain => Colors.Green,
+                    TerrainType.Hill => Colors.DarkGreen,
+                    TerrainType.Mountain => Colors.Gray,
+                    TerrainType.HighMountain => Colors.DarkGreen,
+                    _ => Colors.Black
+                },
 
                 _ => Colors.Black,
             };
 
             return ColorConverterUtil.ColorToUInt32(colorName);
-        }
-
-        // Nem tudom egyelőre ennek a függvénynek van-e valami haszna
-        // Lehet, hogy meg kell jeleníteni a kiválasztott mezőt a térképen
-        private void Model_SelectedFieldChanged(object? _1, (int x, int y) _2)
-        {
-            //if (Model.SelectedField == null)
-            //{
-            //    var tile = Tiles.FirstOrDefault(t => t.IsSelected);
-            //    if (tile != null) tile.IsSelected = false;
-            //}
-            //else
-            //{
-            //    var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
-            //    if (tile != null) tile.IsSelected = true;
-            //}
-        }
-
-        private void Model_BalanceChanged(object? _1, EventArgs _2)
-        {
-            OnPropertyChanged(nameof(Balance));
-        }
-
-        // Ezt se tudom pontosan mit csinál.
-        private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs _2)
-        {
-            //var tile = Tiles.FirstOrDefault(t => t.X == e.X && t.Y == e.Y);
-
-            //if (tile != null)
-            //{
-            //    tile.RefreshTerrain(Model.Map[e.X, e.Y]);
-            //}
-        }
-
-        // TODO: hídak esetén minden Minimapbeli pontot frissíteni ez alapján
-        // TODO2: esetleg egy olyan Minimap frissítő ami listával végzi el
-        private void Model_InfrastructureBuilt(object? _1, List<(int x, int y)> _2)
-        {
-            //foreach (var (x, y) in changedFields)
-            //{
-            //    FieldViewModel? tile = Tiles.FirstOrDefault(t => t.X == x && t.Y == y);
-            //    if (tile != null)
-            //    {
-            //        string oldPath = tile.ImagePath;
-            //        int index = Tiles.IndexOf(tile);
-            //        Tiles[index] = new(Model.Map[x, y], oldPath);
-            //        tile.RefreshInfrastructure();
-            //    }
-            //}
-        }
-
-        // Ez is felesleges lesz, össze kell vonni majd az eventeket, hogy csak globális frissítő event legyen
-        private void Model_GameAdvanced(object? _1, List<Tuple<int, int>> _2)
-        {
-            MapUpdated?.Invoke();
         }
         #endregion
 
@@ -227,6 +294,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.Normal;
             OnResumeGame();
+            SelectedSpeed = 1;
         }
 
         [RelayCommand]
@@ -234,6 +302,7 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.Fast;
             OnResumeGame();
+            SelectedSpeed = 2;
         }
 
         [RelayCommand]
@@ -241,30 +310,40 @@ namespace TransportTycoon.WPF.ViewModel
         {
             Model.TimeSpeed = TimeSpeed.SuperFast;
             OnResumeGame();
+            SelectedSpeed = 4;
         }
 
         [RelayCommand]
         private void OnPauseGame()
         {
-            Model.Mode = GameMode.Paused;
+            PauseGame();
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = -1;
+            SelectedSpeed = -1;
         }
 
         [RelayCommand]
         private void OnResumeGame()
         {
-            Model.Mode = GameMode.Run;
+            ResumeGame();
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = -1;
+            SelectedSpeed = 1;
         }
 
         [RelayCommand]
         private void OnEditorMode()
         {
             Model.Mode = GameMode.Editor;
+            OnPropertyChanged(nameof(IsEditorMode));
+            SelectedTabIndex = 0;
+            SelectedSpeed = 0;
         }
 
         [RelayCommand]
         private void OnIncreaseHeight()
         {
-            if (Model.SelectedField != null)
+            if (Model.SelectedField is not null)
             {
                 Model.IncreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
             }
@@ -273,29 +352,130 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void OnDecreaseHeight()
         {
-            if (Model.SelectedField != null)
+            if (Model.SelectedField is not null)
             {
                 Model.DecreaseHeight(Model.SelectedField.X, Model.SelectedField.Y);
             }
         }
 
         [RelayCommand]
-        private void OnSetSelectedButton(object x)
+        private void OnSetSelectedButton(object? x)
         {
-            if (x == null) return;
+            if (x is null) return;
             SelectedButton = Convert.ToInt32(x);
-            Model.SetSelectedField(-1, -1);
+            if (SelectedButton < 10)
+            {
+                if (Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
+                Model.DeleteRoute(-1, -1);
+            }
+            else if (SelectedButton > 20 && SelectedButton < 30 && SelectedButton != 22 && Model.SelectedField is not null) Model.SetSelectedField(-1, -1);
+            else if (SelectedButton > 40 && SelectedButton == 42) Model.DeleteRoute(-1, -1);
         }
+
+        #region Pause menu
+        [RelayCommand]
+        private void OnExitGame()
+        {
+            App.Current.MainWindow?.Close();
+        }
+
+        [RelayCommand]
+        private async Task OnSaveGame()
+        {
+            SaveGame?.Invoke();
+        }
+
+        [RelayCommand]
+        private void OnBackToMainMenu()
+        {
+            BackToMainMenu?.Invoke();
+        }
+        #endregion
         #endregion
 
         #region Event methods
+        private void Model_NewGameCreated(object? _1, EventArgs _2) { }
         // Ha a renderelés sokáig tartanak feliratkozhatunk erre,
         // de automatikus megjelenik a térkép, ha kész a render.
-        private void Model_NewGameCreated(object? _1, EventArgs _2) { }
-
         private void Model_GameTicked(object? _1, EventArgs _2)
         {
             OnPropertyChanged(nameof(GameTime));
+            OnPropertyChanged(nameof(GameDate));
+        }
+
+        private void Model_SelectedStopFieldsChanged(object? _1, List<Stop> list)
+        {
+            Stops = [.. list.Select((stop, index) => new StopData(stop.X, stop.Y, index + 1))];
+            Debug.WriteLine("Got {0} of stops to show! These are at:", Stops.Count);
+            Stops.ForEach(stop =>
+            {
+                Debug.WriteLine("Stop at X={0}, Y={1} with order number: {2}", stop.X, stop.Y, stop.Order);
+            });
+            OnPropertyChanged(nameof(Stops));
+        }
+
+        private void Model_SelectedFieldChanged(object? _1, (int, int) _2)
+        {
+            //if (Model.SelectedField is null)
+            //{
+            //    var tile = Tiles.FirstOrDefault(t => t.IsSelected);
+            //    tile?.IsSelected = false;
+            //}
+            //else
+            //{
+            //        var tile = Tiles.FirstOrDefault(t => t.X == e.Item1 && t.Y == e.Item2);
+            //        tile?.IsSelected = true;
+            //}
+            OnPropertyChanged(nameof(SelectedField));
+        }
+
+        private void Model_BalanceChanged(object? _1, EventArgs _2)
+        {
+            OnPropertyChanged(nameof(Balance));
+        }
+
+        private void Model_FieldChanged(object? _1, TransportTycoonFieldEventArgs _2)
+        {
+            RefreshFieldInfo(_2.X, _2.Y);
+        }
+
+        private void Model_InfrastructureBuilt(object? _1, List<(int X, int Y)> changedFields)
+        {
+            foreach (var (x, y) in changedFields)
+            {
+                Field tile = Tiles[x, y];
+                UpdateMinimapTile(x, y, ConvertTileToColor(tile));
+                RefreshFieldInfo(x, y);
+            }
+        }
+
+        // Ez is felesleges lesz, össze kell vonni majd az eventeket, hogy csak globális frissítő event legyen
+        private void Model_GameAdvanced(object? _1, List<Tuple<int, int>> _2)
+        {
+            MapUpdated?.Invoke();
+            foreach (var (x, y) in _2)
+            {
+                RefreshFieldInfo(x, y);
+            }
+        }
+
+        private void Model_ProductionChanged(object? sender, List<(int, int)> e)
+        {
+            foreach (var (x, y) in e)
+            {
+                RefreshFieldInfo(x, y);
+            }
+        }
+
+        partial void OnSelectedTabIndexChanged(int value)
+        {
+            OnSetSelectedButton(value);
+        }
+
+        private void Model_MaintenanceChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Maintenance));
+            OnPropertyChanged(nameof(Vehicles));
         }
         #endregion
 

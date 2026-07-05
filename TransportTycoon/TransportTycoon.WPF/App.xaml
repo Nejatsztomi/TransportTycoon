@@ -4,5 +4,6 @@
              xmlns:local="clr-namespace:TransportTycoon.WPF"
              >
     <Application.Resources>
+        <FontFamily x:Key="GameFont">Assets/Fonts/PressStart2P.ttf#Press Start 2P</FontFamily>
     </Application.Resources>
 </Application>

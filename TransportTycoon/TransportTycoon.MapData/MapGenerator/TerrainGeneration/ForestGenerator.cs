@@ -2,8 +2,16 @@
 
 namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
 {
+    /// <summary>
+    /// A factory class for creating instances of <see cref="IForestGenerator"/>.
+    /// </summary>
     public static class ForestGeneratorFactory
     {
+        /// <summary>
+        /// Creates a new instance of an object that generates forests using the specified noise generator.
+        /// </summary>
+        /// <param name="noiseGenerator">The noise generator to use for procedural forest generation. Cannot be null.</param>
+        /// <returns>An object that implements the IForestGenerator interface and uses the provided noise generator.</returns>
         public static IForestGenerator Create(INoiseGenerator noiseGenerator) => new ForestGenerator(noiseGenerator);
     }
 
@@ -13,8 +21,12 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
         private readonly INoiseGenerator _noiseGenerator;
         #endregion
 
+        #region Public properties
+        public GenerationPhase Phase => GenerationPhase.Forest;
+        #endregion
+
         #region Constructors
-        public ForestGenerator(INoiseGenerator noiseGenerator)
+        internal ForestGenerator(INoiseGenerator noiseGenerator)
         {
             _noiseGenerator = noiseGenerator;
         }
@@ -32,7 +44,10 @@ namespace TransportTycoon.MapData.MapGenerator.TerrainGeneration
                 for (int j = 0; j < context.Height; j++)
                 {
                     // TODO: Don't use magic number, later on there will a TerrainHeight enum
-                    if (heightMap[i, j] >= 4) continue;
+                    if (heightMap[i, j] >= 3)
+                    {
+                        continue;
+                    }
 
                     if (randomTreeNoiseMap[i, j] < forestPercentage) continue;
 

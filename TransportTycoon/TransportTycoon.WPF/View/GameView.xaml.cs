@@ -1,4 +1,7 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
+using System.Windows.Input;
+using TransportTycoon.WPF.ViewModel;
 
 namespace TransportTycoon.WPF.View
 {
@@ -11,6 +14,45 @@ namespace TransportTycoon.WPF.View
         public GameView()
         {
             InitializeComponent();
+
+            Loaded += (_, _) =>
+            {
+                Focus();
+            };
+        }
+        #endregion
+
+        #region Private event methods
+        private void UserControl_PreviewKeyDown(object? _1, KeyEventArgs e)
+        {
+            Debug.WriteLine($"Key pressed: {e.Key}");
+            if (e.Key != Key.Escape) return;
+
+            if (DataContext is not GameViewModel viewModel) return;
+
+            if (viewModel.IsPaused)
+            {
+                if (viewModel.NormalSpeedCommand.CanExecute(null))
+                {
+                    viewModel.NormalSpeedCommand.Execute(null);
+                }
+            }
+            else
+            {
+                if (viewModel.PauseGameCommand.CanExecute(null))
+                {
+                    viewModel.PauseGameCommand.Execute(null);
+                }
+            }
+
+            Focus();
+            e.Handled = true;
+        }
+
+        private void UserControl_MouseDown(object? _1, MouseButtonEventArgs _2)
+        {
+            Focus();
+            Keyboard.Focus(this);
         }
         #endregion
     }

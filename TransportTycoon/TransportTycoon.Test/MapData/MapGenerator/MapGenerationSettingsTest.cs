@@ -1,118 +1,241 @@
 using NSubstitute;
-using TransportTycoon.MapData;
 using TransportTycoon.MapData.MapGenerator;
-using TransportTycoon.MapData.MapGenerator.TerrainGeneration;
 
 namespace TransportTycoon.Test.MapData.MapGenerator;
 
 public class MapGenerationSettingsTest
 {
-    [TestClass]
-    public class DefaultValuesTest
-    {
-        [TestMethod]
-        public void DefaultSettings_HasCorrectDefaultValues()
-        {
-            // Act
-            MapGenerationSettings settings = new();
-
-            // Assert
-            Assert.AreEqual(MapGenerationSettingsDefaults.RiverCount, settings.RiverCount);
-            Assert.AreEqual(MapGenerationSettingsDefaults.ForestPercentage, settings.ForestPercentage);
-            Assert.AreEqual(MapGenerationSettingsDefaults.MinStructureRange, settings.MinStructureRange);
-            Assert.AreEqual(MapGenerationSettingsDefaults.MaxStructureRange, settings.MaxStructureRange);
-            Assert.AreEqual(MapGenerationSettingsDefaults.MinCities, settings.MinCities);
-            Assert.AreEqual(MapGenerationSettingsDefaults.MaxCities, settings.MaxCities);
-            Assert.AreEqual(MapGenerationSettingsDefaults.MinStructure, settings.MinStructure);
-            Assert.AreEqual(MapGenerationSettingsDefaults.MaxStructure, settings.MaxStructure);
-            Assert.AreEqual(MapGenerationSettingsDefaults.TerrainNoiseScale, settings.TerrainNoiseScale);
-            Assert.AreEqual(MapGenerationSettingsDefaults.ForestNoiseScale, settings.ForestNoiseScale);
-            Assert.AreEqual(MapGenerationSettingsDefaults.WaterNoiseScale, settings.WaterNoiseScale);
-            Assert.AreEqual(MapGenerationSettingsDefaults.Biome, settings.Biome);
-        }
-    }
-
-    [TestClass]
     public class RiverCountTest
     {
-        [TestMethod]
-        [DataRow(0, DisplayName = "Zero rivers")]
-        [DataRow(1, DisplayName = "Single river")]
-        [DataRow(5, DisplayName = "Multiple rivers")]
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(5)]
         public void RiverCount_CanBeNonNegative(int riverCount)
         {
             // Act
             MapGenerationSettings settings = new() { RiverCount = riverCount };
 
             // Assert
-            Assert.AreEqual(riverCount, settings.RiverCount);
+            Assert.Equal(riverCount, settings.RiverCount);
         }
 
-        [TestMethod]
+        [Fact]
         public void RiverCount_CannotBeNegative()
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { RiverCount = -1 }; }, "ArgumentOutOfRangeException should be thrown for negative RiverCount");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    RiverCount = -1
+                };
+            });
         }
     }
 
-    [TestClass]
+    public class RiverWidthTest
+    {
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(5)]
+        public void MinRiverWidth_CanBePositive(int width)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinRiverWidth = width };
+
+            // Assert
+            Assert.Equal(width, settings.MinRiverWidth);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void MinRiverWidth_MustBePositive(int width)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinRiverWidth = width
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 5)]
+        public void MaxRiverWidth_CanBeGreaterThanOrEqualMinRiverWidth(int minWidth, int maxWidth)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinRiverWidth = minWidth, MaxRiverWidth = maxWidth };
+
+            // Assert
+            Assert.Equal(minWidth, settings.MinRiverWidth);
+            Assert.Equal(maxWidth, settings.MaxRiverWidth);
+        }
+
+        [Theory]
+        [InlineData(1, 0)]
+        [InlineData(2, 1)]
+        public void MaxRiverWidth_MustBeGreaterThanOrEqualMinRiverWidth(int minWidth, int maxWidth)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinRiverWidth = minWidth,
+                    MaxRiverWidth = maxWidth
+                };
+            });
+        }
+    }
+
     public class ForestPercentageTest
     {
-        [TestMethod]
-        [DataRow(0.0f, DisplayName = "Zero forest percentage")]
-        [DataRow(0.5f, DisplayName = "Half forest percentage")]
-        [DataRow(1.0f, DisplayName = "Full forest percentage")]
+        [Theory]
+        [InlineData(0.0f)]
+        [InlineData(0.5f)]
+        [InlineData(1.0f)]
         public void ForestPercentage_CanBetweenZeroAndOne(float forestPercentage)
         {
             // Act
-            MapGenerationSettings settings = new() { ForestPercentage = forestPercentage };
+            MapGenerationSettings settings = new()
+            {
+                ForestPercentage = forestPercentage
+            };
 
             // Assert
-            Assert.AreEqual(forestPercentage, settings.ForestPercentage);
+            Assert.Equal(forestPercentage, settings.ForestPercentage);
         }
 
-        [TestMethod]
-        [DataRow(-0.1f, DisplayName = "Negative forest percentage")]
-        [DataRow(1.1f, DisplayName = "Forest percentage greater than one")]
+        public class StructureSizeTest
+        {
+            [Theory]
+            [InlineData(2)]
+            [InlineData(3)]
+            [InlineData(5)]
+            public void StructureWidth_CanBeAtLeastTwo(int width)
+            {
+                // Act
+                MapGenerationSettings settings = new() { StructureWidth = width };
+
+                // Assert
+                Assert.Equal(width, settings.StructureWidth);
+            }
+
+            [Theory]
+            [InlineData(1)]
+            [InlineData(0)]
+            [InlineData(-1)]
+            public void StructureWidth_MustBeAtLeastTwo(int width)
+            {
+                // Act & Assert
+                Assert.Throws<ArgumentOutOfRangeException>(() =>
+                {
+                    new MapGenerationSettings()
+                    {
+                        StructureWidth = width
+                    };
+                });
+            }
+
+            [Theory]
+            [InlineData(2)]
+            [InlineData(3)]
+            [InlineData(5)]
+            public void StructureHeight_CanBeAtLeastTwo(int height)
+            {
+                // Act
+                MapGenerationSettings settings = new() { StructureHeight = height };
+
+                // Assert
+                Assert.Equal(height, settings.StructureHeight);
+            }
+
+            [Theory]
+            [InlineData(1)]
+            [InlineData(0)]
+            [InlineData(-1)]
+            public void StructureHeight_MustBeAtLeastTwo(int height)
+            {
+                // Act & Assert
+                Assert.Throws<ArgumentOutOfRangeException>(() =>
+                {
+                    new MapGenerationSettings()
+                    {
+                        StructureHeight = height
+                    };
+                });
+            }
+        }
+
+        [Theory]
+        [InlineData(-0.1f)]
+        [InlineData(1.1f)]
         public void ForestPercentage_MustBeBetweenZeroAndOne(float forestPercentage)
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { ForestPercentage = forestPercentage }; }, "ArgumentOutOfRangeException should be thrown for values outside 0 and 1");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    ForestPercentage = forestPercentage
+                };
+            });
         }
     }
 
-    [TestClass]
     public class NoiseScalesTest
     {
-        [TestMethod]
-        [DataRow(0.0f, DisplayName = "Zero noise scales")]
-        [DataRow(0.1f, DisplayName = "Valid noise scales")]
-        [DataRow(1.0f, DisplayName = "Full noise scales")]
+        [Theory]
+        [InlineData(0.0f)]
+        [InlineData(0.1f)]
+        [InlineData(1.0f)]
         public void TerrainNoiseScale_CanBetweenZeroAndOne(float scale)
         {
             MapGenerationSettings settings = new() { TerrainNoiseScale = scale, ForestNoiseScale = scale, WaterNoiseScale = scale };
-            Assert.AreEqual(scale, settings.TerrainNoiseScale);
-            Assert.AreEqual(scale, settings.ForestNoiseScale);
-            Assert.AreEqual(scale, settings.WaterNoiseScale);
+            Assert.Equal(scale, settings.TerrainNoiseScale);
+            Assert.Equal(scale, settings.ForestNoiseScale);
+            Assert.Equal(scale, settings.WaterNoiseScale);
         }
 
-        [TestMethod]
-        [DataRow(-0.1f, DisplayName = "Negative noise scales")]
-        [DataRow(1.1f, DisplayName = "Noise scales greater than one")]
+        [Theory]
+        [InlineData(-0.1f)]
+        [InlineData(1.1f)]
         public void TerrainNoiseScale_MustBetweenZeroAndOne(float scale)
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { TerrainNoiseScale = scale }; }, "ArgumentOutOfRangeException should be thrown for values outside 0 and 1");
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { ForestNoiseScale = scale }; }, "ArgumentOutOfRangeException should be thrown for values outside 0 and 1");
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { WaterNoiseScale = scale }; }, "ArgumentOutOfRangeException should be thrown for values outside 0 and 1");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    TerrainNoiseScale = scale
+                };
+            });
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    ForestNoiseScale = scale
+                };
+            });
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    WaterNoiseScale = scale
+                };
+            });
         }
     }
 
-    [TestClass]
     public class BiomeTest
     {
-        [TestMethod]
+        [Fact]
         public void Biome_CanBeChanged()
         {
             // Act
@@ -120,132 +243,339 @@ public class MapGenerationSettingsTest
             MapGenerationSettings settings = new() { Biome = customBiome };
 
             // Assert
-            Assert.AreEqual(customBiome, settings.Biome);
+            Assert.Equal(customBiome, settings.Biome);
         }
     }
 
-    [TestClass]
     public class StructureGenerationTest
     {
-        [TestMethod]
-        [DataRow(0, DisplayName = "Zero minimum structure range")]
-        [DataRow(5, DisplayName = "Positive minimum structure range")]
+        [Theory]
+        [InlineData(0)]
+        [InlineData(5)]
         public void MinStructureRange_CanBeNonNegative(int range)
         {
             // Act
             MapGenerationSettings settings = new() { MinStructureRange = range };
 
             // Assert
-            Assert.AreEqual(range, settings.MinStructureRange);
+            Assert.Equal(range, settings.MinStructureRange);
         }
 
-        [TestMethod]
+        [Fact]
         public void MinStructureRange_MustBeNonNegative()
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructureRange = -1 }; }, "ArgumentOutOfRangeException should be thrown for negative values");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinStructureRange = -1
+                };
+            });
         }
 
-        [TestMethod]
-        [DataRow(0, DisplayName = "Zero maximum structure range")]
-        [DataRow(5, DisplayName = "Positive maximum structure range")]
+        [Theory]
+        [InlineData(0)]
+        [InlineData(5)]
         public void MaxStructureRange_CanBeGreaterThanOrEqualMinStructureRange(int range)
         {
             // Act
             MapGenerationSettings settings = new() { MinStructureRange = 0, MaxStructureRange = range };
 
             // Assert
-            Assert.AreEqual(range, settings.MaxStructureRange);
+            Assert.Equal(range, settings.MaxStructureRange);
         }
 
-        [TestMethod]
+        [Fact]
         public void MaxStructureRange_MustBeGreaterThanOrEqualMinStructureRange()
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructureRange = 1, MaxStructureRange = 0 }; }, "ArgumentOutOfRangeException should be thrown if MaxStructureRange is smaller then MinStructureRange");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinStructureRange = 1,
+                    MaxStructureRange = 0
+                };
+            });
         }
 
-        [TestMethod]
-        [DataRow(1, DisplayName = "Minimum structures")]
-        [DataRow(5, DisplayName = "More than minimum structures")]
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
         public void MinStructure_CanBePositive(int min)
         {
             // Act
             MapGenerationSettings settings = new() { MinStructure = min };
 
             // Assert
-            Assert.AreEqual(min, settings.MinStructure);
+            Assert.Equal(min, settings.MinStructure);
         }
 
-        [TestMethod]
-        [DataRow(0, DisplayName = "Zero structure")]
-        [DataRow(-1, DisplayName = "Negative structures")]
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
         public void MinStructure_MustBePositive(int min)
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructure = min }; }, "ArgumentOutOfRangeException should be thrown for non-positve values");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinStructure = min
+                };
+            });
         }
 
-        [TestMethod]
-        [DataRow(1, 1, DisplayName = "Max structures equal to min structures")]
-        [DataRow(1, 5, DisplayName = "Max structures greater than min structures")]
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(1, 5)]
         public void MaxStructure_CanBeGreaterThanOrEqualMinStructure(int min, int max)
         {
             // Act
             MapGenerationSettings settings = new() { MinStructure = min, MaxStructure = max };
 
             // Assert
-            Assert.AreEqual(max, settings.MaxStructure);
-            Assert.AreEqual(min, settings.MinStructure);
+            Assert.Equal(max, settings.MaxStructure);
+            Assert.Equal(min, settings.MinStructure);
         }
 
-        [TestMethod]
+        [Fact]
         public void MaxStructure_MustBeGreaterThanOrEqualMinStructure()
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinStructure = 1, MaxStructure = 0 }; }, "ArgumentOutOfRangeException should be thrown if MaxStrucure is smaller then MinStructure");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinStructure = 1,
+                    MaxStructure = 0
+                };
+            });
         }
 
-        [TestMethod]
-        [DataRow(2, DisplayName = "Minimum cities")]
-        [DataRow(5, DisplayName = "More than minimum cities")]
+        [Theory]
+        [InlineData(2)]
+        [InlineData(5)]
         public void MinCitites_CanBeAtLeastTwo(int min)
         {
             // Act
             MapGenerationSettings settings = new() { MinCities = min };
 
             // Assert
-            Assert.AreEqual(min, settings.MinCities);
+            Assert.Equal(min, settings.MinCities);
         }
 
-        [TestMethod]
-        [DataRow(1, DisplayName = "Less than minimum cities")]
-        [DataRow(0, DisplayName = "Zero cities")]
-        [DataRow(-1, DisplayName = "Negative cities")]
+        [Theory]
+        [InlineData(1)]
+        [InlineData(0)]
+        [InlineData(-1)]
         public void MinCities_MustBeAtLeastTwo(int min)
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinCities = min }; }, "ArgumentOutOfRangeException should be thrown for values below 2");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinCities = min
+                };
+            });
         }
 
-        [TestMethod]
-        [DataRow(2, 2, DisplayName = "Max cities equal to min cities")]
-        [DataRow(2, 5, DisplayName = "Max cities greater than min cities")]
+        [Theory]
+        [InlineData(2, 2)]
+        [InlineData(2, 5)]
         public void MaxCities_CanBeGreaterThanOrEqualMinCities(int min, int max)
         {
             // Act
             MapGenerationSettings settings = new() { MinCities = min, MaxCities = max };
 
             // Assert
-            Assert.AreEqual(max, settings.MaxCities);
-            Assert.AreEqual(min, settings.MinCities);
+            Assert.Equal(max, settings.MaxCities);
+            Assert.Equal(min, settings.MinCities);
         }
 
-        [TestMethod]
+        [Fact]
         public void MaxCities_MustBeGreaterThanOrEqualMinCities()
         {
             // Act & Assert
-            Assert.Throws<ArgumentOutOfRangeException>(() => { new MapGenerationSettings() { MinCities = 2, MaxCities = 1 }; }, "ArgumentOutOfRangeException should be thrown if MaxCities is smaller then MinCities");
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinCities = 2,
+                    MaxCities = 1
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(5)]
+        public void MinCityRange_CanBeNonNegative(int range)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinCityRange = range };
+
+            // Assert
+            Assert.Equal(range, settings.MinCityRange);
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(-5)]
+        public void MinCityRange_MustBeNonNegative(int range)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinCityRange = range
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(2, 5)]
+        public void MaxCityRange_CanBeGreaterThanOrEqualMinCityRange(int minRange, int maxRange)
+        {
+            // Act
+            MapGenerationSettings settings = new() { MinCityRange = minRange, MaxCityRange = maxRange };
+
+            // Assert
+            Assert.Equal(minRange, settings.MinCityRange);
+            Assert.Equal(maxRange, settings.MaxCityRange);
+        }
+
+        [Theory]
+        [InlineData(0, -1)]
+        [InlineData(2, 1)]
+        public void MaxCityRange_MustBeGreaterThanOrEqualMinCityRange(int minRange, int maxRange)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    MinCityRange = minRange,
+                    MaxCityRange = maxRange
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public void CityWidth_CanBeAtLeastThree(int width)
+        {
+            // Act
+            MapGenerationSettings settings = new() { CityWidth = width };
+
+            // Assert
+            Assert.Equal(width, settings.CityWidth);
+        }
+
+        [Theory]
+        [InlineData(2)]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void CityWidth_MustBeAtLeastThree(int width)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    CityWidth = width
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(4)]
+        [InlineData(5)]
+        [InlineData(6)]
+        public void CityHeight_CanBeGreaterThanThree(int height)
+        {
+            // Act
+            MapGenerationSettings settings = new() { CityHeight = height };
+
+            // Assert
+            Assert.Equal(height, settings.CityHeight);
+        }
+
+        [Theory]
+        [InlineData(3)]
+        [InlineData(2)]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void CityHeight_MustBeGreaterThanThree(int height)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    CityHeight = height
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void RoadLength_CanBePositive(int length)
+        {
+            // Act
+            MapGenerationSettings settings = new() { RoadLength = length };
+
+            // Assert
+            Assert.Equal(length, settings.RoadLength);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void RoadLength_MustBePositive(int length)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    RoadLength = length
+                };
+            });
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(5)]
+        public void BranchCount_CanBePositive(int count)
+        {
+            // Act
+            MapGenerationSettings settings = new() { BranchCount = count };
+
+            // Assert
+            Assert.Equal(count, settings.BranchCount);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        public void BranchCount_MustBePositive(int count)
+        {
+            // Act & Assert
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                new MapGenerationSettings()
+                {
+                    BranchCount = count
+                };
+            });
         }
     }
 }

@@ -4,94 +4,180 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TransportTycoon.WPF.View"
-             xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:CreateGameViewModel}"
+             xmlns:viewmodel="clr-namespace:TransportTycoon.WPF.ViewModel" 
+             d:DataContext="{d:DesignInstance Type=viewmodel:CreateGameViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
-             Background="Wheat"
-             >
-    
-    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-        <TextBlock Text="Create new game" FontSize="30" HorizontalAlignment="Center"/>
+             d:DesignHeight="700" d:DesignWidth="800"
+             Background="OrangeRed"
+             FontFamily="/Assets/Fonts/#Press Start 2P"
+             FontSize="14">
 
-        <!-- Game specific setttings -->
-        <StackPanel Margin="0 10 0 5" Orientation="Horizontal">
-            <TextBlock Text="Save name: "/>
-            <TextBox Text="{Binding SaveName}" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
+    <UserControl.Resources>
+        <Style x:Key="RetroButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="/Assets/Fonts/#Press Start 2P"/>
+            <Setter Property="Background" Value="Orange"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="15,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
 
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Game width: "/>
-            <TextBox Text="{Binding GameWidth}" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
 
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Game height: "/>
-            <TextBox Text="{Binding GameHeight}" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="Yellow"/>
+                            </Trigger>
 
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Seed: "/>
-            <TextBox Text="{Binding GameSeed}" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="Gold"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Starter balance: "/>
-            <TextBox Text="{Binding GameStarterBalance}" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
-        
-        <TextBlock Text="Select difficulty" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <ComboBox SelectedIndex="{Binding SelectedDifficulty, FallbackValue=1}">
-            <ComboBoxItem Content="Easy Mode"></ComboBoxItem>
-            <ComboBoxItem Content="Medium Mode"></ComboBoxItem>
-            <ComboBoxItem Content="Hard Mode"></ComboBoxItem>
-        </ComboBox>
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="/Assets/Fonts/#Press Start 2P"/>
+            <Setter Property="Background" Value="Orange"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,3,0,3"/>
+        </Style>
 
-        <!-- Map generation settings -->
-        <TextBlock Text="Select biome" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <ComboBox SelectedIndex="{Binding SettingsBiome, FallbackValue=0}">
-            <ComboBoxItem Content="Default"></ComboBoxItem>
-        </ComboBox>
+        <Style TargetType="ComboBox">
+            <Setter Property="FontFamily" Value="/Assets/Fonts/#Press Start 2P"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="BorderBrush" Value="Black"/>
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,3,0,3"/>
+        </Style>
 
-        <TextBlock Text="Select water biome" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <ComboBox SelectedIndex="{Binding SettingsWaterBiome, FallbackValue=0}">
-            <ComboBoxItem Content="Normal"></ComboBoxItem>
-            <ComboBoxItem Content="Dry"></ComboBoxItem>
-            <ComboBoxItem Content="Wet"></ComboBoxItem>
-        </ComboBox>
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+    </UserControl.Resources>
 
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Forest percentage: "/>
-            <Slider Orientation="Horizontal" Width="200" HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Value="{Binding SettingsForestPercentage}"
-                    Minimum="0"
-                    Maximum="100"
-                    />
-        </StackPanel>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel HorizontalAlignment="Center" Margin="0,40,0,40">
 
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="River count: "/>
-            <TextBox Text="{Binding SettingsRiverCount}" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
-        
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Minimum number of cities: "/>
-            <TextBox Text="{Binding SettingsMinCities}" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Maximum number of cities: "/>
-            <TextBox Text="{Binding SettingsMaxCities}" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
+            <TextBlock Text="- Create New Game -" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,40"></TextBlock>
 
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Minimum number of structures: "/>
-            <TextBox Text="{Binding SettingsMinStructures}" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
-        <StackPanel Margin="0 0 0 5" Orientation="Horizontal">
-            <TextBlock Text="Maximum number of structures: "/>
-            <TextBox Text="{Binding SettingsMaxStructures}" Width="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        </StackPanel>
+            <Grid Margin="0,0,0,30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="350"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <Button Content="Create new game" Command="{Binding CreateNewGameCommand}"/>
-        <Button Content="Back to menu" Command="{Binding BackToMainMenuCommand}"/>
-    </StackPanel>
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Save name:" Margin="0,10"/>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SaveName}" Height="35"/>
+
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Game width:" Margin="0,10"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding GameWidth}" Width="80" HorizontalAlignment="Left" Height="35"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Game height:" Margin="0,10"/>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding GameHeight}" Width="80" HorizontalAlignment="Left" Height="35"/>
+
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Seed:" Margin="0,10"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding GameSeed}" Width="80" HorizontalAlignment="Left" Height="35"/>
+
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Starter balance:" Margin="0,10"/>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding GameStarterBalance}" Height="35"/>
+
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Select difficulty:" Margin="0,10"/>
+                <ComboBox Grid.Row="5" Grid.Column="1" SelectedIndex="{Binding SelectedDifficulty, FallbackValue=1}" Height="35">
+                    <ComboBoxItem Content="Easy Mode"/>
+                    <ComboBoxItem Content="Medium Mode"/>
+                    <ComboBoxItem Content="Hard Mode"/>
+                </ComboBox>
+
+                <TextBlock Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Text="- Map Generation Settings -" HorizontalAlignment="Center" 
+                           Foreground="Yellow"  Margin="0,10,0,20">
+                    <TextBlock.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="0" ShadowDepth="3" Direction="315" />
+                    </TextBlock.Effect>
+                </TextBlock>
+
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="Select biome:" Margin="0,10"/>
+                <ComboBox Grid.Row="8" Grid.Column="1" SelectedIndex="{Binding SettingsBiome, FallbackValue=0}" Height="35">
+                    <ComboBoxItem Content="Default"/>
+                    <ComboBoxItem Content="Flat"/>
+                    <ComboBoxItem Content="Mountainous"/>
+                </ComboBox>
+
+                <TextBlock Grid.Row="9" Grid.Column="0" Text="Select water biome:" Margin="0,10"/>
+                <ComboBox Grid.Row="9" Grid.Column="1" SelectedIndex="{Binding SettingsWaterBiome, FallbackValue=0}" Height="35">
+                    <ComboBoxItem Content="Normal" />
+                    <ComboBoxItem Content="Dry"/>
+                    <ComboBoxItem Content="Wet"/>
+                </ComboBox>
+
+                <TextBlock Grid.Row="10" Grid.Column="0" Text="Forest percentage:" Margin="0,10"/>
+                <Slider Grid.Row="10" Grid.Column="1" Value="{Binding SettingsForestPercentage}" Minimum="0" Maximum="100" VerticalAlignment="Center" Margin="0,10"/>
+
+                <TextBlock Grid.Row="11" Grid.Column="0" Text="River count:" Margin="0,10"/>
+                <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding SettingsRiverCount}" Width="60" HorizontalAlignment="Left" Height="35"/>
+
+                <TextBlock Grid.Row="12" Grid.Column="0" Text="Cities (Min/Max):" Margin="0,10"/>
+                <StackPanel Grid.Row="12" Grid.Column="1" Orientation="Horizontal">
+                    <TextBox Text="{Binding SettingsMinCities}" Width="60" Height="35"/>
+                    <TextBlock Text=" - " Margin="10,0" Foreground="Black"/>
+                    <TextBox Text="{Binding SettingsMaxCities}" Width="60" Height="35"/>
+                </StackPanel>
+
+                <TextBlock Grid.Row="13" Grid.Column="0" Text="Structures (Min/Max):" Margin="0,10"/>
+                <StackPanel Grid.Row="13" Grid.Column="1" Orientation="Horizontal">
+                    <TextBox Text="{Binding SettingsMinStructures}" Width="60" Height="35"/>
+                    <TextBlock Text=" - " Margin="10,0" Foreground="Black"/>
+                    <TextBox Text="{Binding SettingsMaxStructures}" Width="60" Height="35"/>
+                </StackPanel>
+
+            </Grid>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button Content="Create Game" Command="{Binding CreateNewGameCommand}" Style="{StaticResource RetroButton}" Width="220" Margin="0,0,20,0"/>
+                <Button Content="Back to Menu" Command="{Binding BackToMainMenuCommand}" Style="{StaticResource RetroButton}" Width="220"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

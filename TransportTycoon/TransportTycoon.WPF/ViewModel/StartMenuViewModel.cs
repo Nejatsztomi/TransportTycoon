@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace TransportTycoon.WPF.ViewModel
 {
-    public partial class StartMenuViewModel : ViewModelViewConstraintBase
+    public sealed partial class StartMenuViewModel : ViewModelViewConstraintBase
     {
         #region Properties
         #region IViewConstraints
@@ -13,7 +13,7 @@ namespace TransportTycoon.WPF.ViewModel
 
         #region Events
         public event EventHandler? StartingNewGame;
-        public event EventHandler<string>? LoadingGame;
+        public event Action? LoadingGame;
         public event EventHandler? ExitingGame;
         public event EventHandler? ShowGameCreationView;
         #endregion
@@ -32,7 +32,7 @@ namespace TransportTycoon.WPF.ViewModel
         [RelayCommand]
         private void LoadGame()
         {
-            LoadingGame?.Invoke(this, String.Empty);
+            LoadingGame?.Invoke();
         }
 
         [RelayCommand]
